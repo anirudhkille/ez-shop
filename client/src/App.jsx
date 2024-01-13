@@ -8,11 +8,12 @@ import CategoryProduct from "./pages/CategoryProduct";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import Checkout from "./pages/Checkout";
 const App = () => {
   return (
     <>
       <Header />
-      <main className="min-h-[100dvh]">
+      <main className="min-h-[100dvh] pt-5">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -20,6 +21,7 @@ const App = () => {
           <Route path="/products/:id" element={<DetailProduct />} />
           <Route path="products/category/:name" element={<CategoryProduct />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
       </main>
       <Footer />

@@ -8,16 +8,30 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useCartContext } from "../context/cartContext";
 import { useUserContext } from "../context/userContext";
 import LogoutIcon from "@mui/icons-material/Logout";
+import LogoutDialog from "./LogoutDialog";
 
 const Header = () => {
-  const [isMenuOpen, setMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const toggleMenu = () => {
-    setMenuOpen(!isMenuOpen);
+    setIsMenuOpen(!isMenuOpen);
   };
 
-  const { cartItems, addToCart, removeFromCart, clearCart, getCartTotal } =
-    useCartContext();
+  const openLogoutDialog = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const closeLogoutDialog = () => {
+    setShowLogoutDialog(false);
+  };
+
+  const handleLogout = () => {
+    setShowLogoutDialog(false);
+    setLogin(false);
+  };
+
+  const { cartItems } = useCartContext();
   const { login, setLogin } = useUserContext();
 
   return (
@@ -58,15 +72,17 @@ const Header = () => {
             >
               Accessories
             </Link>
-            <Link to="/login" className="hover:text-indigo-500">
+            <div className="hover:text-indigo-500">
               {login ? (
-                <IconButton onClick={()=>setLogin(false)}>
+                <IconButton onClick={openLogoutDialog}>
                   <LogoutIcon />
                 </IconButton>
               ) : (
-                "Login"
+                <Link to="/login" className="hover:text-indigo-500">
+                  Login
+                </Link>
               )}
-            </Link>
+            </div>
           </div>
 
           <NavLink to="/cart">
@@ -81,34 +97,46 @@ const Header = () => {
               <MenuIcon />
             </IconButton>
             {isMenuOpen && (
-              <div className="absolute top-16 right-0 bg-white p-8 shadow-md text-center">
+              <div className="absolute top-14 right-0 bg-white p-8 shadow-md text-center">
                 <Link
                   to="products/category/men's clothing"
                   className="block py-2 hover:text-indigo-500"
+                  onClick={() => {
+                    setIsMenuOpen(!isMenuOpen);
+                  }}
                 >
                   Mens
                 </Link>
                 <Link
                   to="products/category/women's clothing"
                   className="block py-2 hover:text-indigo-500"
+                  onClick={() => {
+                    setIsMenuOpen(!isMenuOpen);
+                  }}
                 >
                   Womens
                 </Link>
                 <Link
                   to="products/category/electronics"
                   className="block py-2 hover:text-indigo-500"
+                  onClick={() => {
+                    setIsMenuOpen(!isMenuOpen);
+                  }}
                 >
                   Electronics
                 </Link>
                 <Link
                   to="products/category/jewelery"
                   className="block py-2 hover:text-indigo-500"
+                  onClick={() => {
+                    setIsMenuOpen(!isMenuOpen);
+                  }}
                 >
                   Accessories
                 </Link>
                 {login ? (
                   <IconButton
-                    onClick={() => setLogin(false)}
+                    onClick={openLogoutDialog}
                     className="block py-2 hover:text-indigo-500"
                   >
                     <LogoutIcon />
@@ -117,6 +145,9 @@ const Header = () => {
                   <Link
                     to="/login"
                     className="block py-2 hover:text-indigo-500"
+                    onClick={() => {
+                      setIsMenuOpen(!isMenuOpen);
+                    }}
                   >
                     Login
                   </Link>
@@ -126,6 +157,11 @@ const Header = () => {
           </div>
         </div>
       </nav>
+      <LogoutDialog
+        isOpen={showLogoutDialog}
+        onClose={closeLogoutDialog}
+        onLogout={handleLogout}
+      />
     </header>
   );
 };
