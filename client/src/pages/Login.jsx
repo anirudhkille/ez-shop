@@ -1,17 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Toast from "../components/Toast";
 Toast;
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/userContext";
+import { CircularProgress } from "@mui/material";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [showToast, setShowToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { setLogin } = useUserContext();
+  const { login } = useUserContext();
   const navigate = useNavigate();
 
   const handleValidation = (e) => {
@@ -23,16 +25,18 @@ const Login = () => {
     };
 
     axios
-      .post("http://localhost:7777/api/login", body)
-      .then(() => {
+      .post("https://ez-shop-server.onrender.com/api/login", body)
+      .then((res) => {
         navigate("/");
-        setLogin(true);
+        login(res.data._id);
+        setLoading(true);
       })
       .catch((error) => {
         setErrorMessage("Invalid email or password");
         callingToast();
         console.error("Login failed:", error);
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   const callingToast = () => {
@@ -121,6 +125,13 @@ const Login = () => {
           >
             Create an account
           </button>
+          {loading ? (
+            <div className="mt-1">
+              <CircularProgress style={{ color: "#6366F1" }} />
+            </div>
+          ) : (
+            ""
+          )}
         </p>
       </div>
     </div>

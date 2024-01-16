@@ -8,17 +8,31 @@ const DetailProduct = () => {
   const { id } = useParams();
   const [product, setProduct] = useState([]);
   const { addToCart } = useCartContext();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
+
     fetch(`https://fakestoreapi.com/products/${id}`)
       .then((res) => res.json())
-      .then((result) => setProduct([result]))
-      .catch((error) => console.error("Error fetching data:", error));
+      .then((result) => {
+        setProduct([result]);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [id]);
 
   return (
     <section className="text-gray-600 body-font overflow-hidden min-h-[100vh] flex ">
-      {product.length === 0 ? (
+      {loading ? (
+        <div className="text-black text-2xl flex justify-center items-center mx-auto min:h-[100vh]">
+          <CircularProgress style={{ color: "#4F46E5" }} />
+        </div>
+      ) : product.length === 0 ? (
         <div className="text-black text-2xl flex justify-center items-center mx-auto min:h-[100vh]">
           Product not found
         </div>

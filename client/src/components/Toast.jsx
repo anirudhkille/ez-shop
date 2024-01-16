@@ -4,7 +4,7 @@ import AlertTitle from "@mui/material/AlertTitle";
 
 const Toast = ({ message }) => {
   return (
-    <Alert severity="error" className="w-1/2 m-auto max-sm:w-full">
+    <Alert severity="error" className="w-1/2 m-auto max-sm:w-full ">
       <AlertTitle>{message}</AlertTitle>
     </Alert>
   );

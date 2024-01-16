@@ -2,7 +2,7 @@
   "name": "client",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "module","author": "anirudh kille",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,6 +14,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.3",
     "@mui/material": "^5.15.3",
+    "@stripe/stripe-js": "^2.3.0",
     "axios": "^1.6.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

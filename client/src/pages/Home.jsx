@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Products from "../components/Products";
 import axios from "axios";
 
-
 const Home = () => {
   const [products, setProducts] = useState([]);
 

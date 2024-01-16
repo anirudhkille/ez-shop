@@ -1,11 +1,9 @@
 import React from "react";
-import IconButton from "@mui/material/IconButton";
-import LogoutIcon from "@mui/icons-material/Logout";
 
 const LogoutDialog = ({ isOpen, onClose, onLogout }) => {
   return (
     <div
-      className={`absolute top-0  right-0 left-0  bg-slate-50 m-auto  rounded sm:w-1/2 p-8 shadow-md text-center ${
+      className={`absolute top-100  right-0 left-0  bg-slate-50 m-auto  rounded sm:w-1/2 p-8 shadow-lg text-center ${
         isOpen ? "block" : "hidden"
       }`}
     >

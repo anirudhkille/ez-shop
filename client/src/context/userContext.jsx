@@ -4,16 +4,17 @@ const UserContext = createContext();
 
 export const useUserContext = () => {
   const context = useContext(UserContext);
-  if (!context) {
-    throw new Error("useUserContext must be used within a UserContextProvider");
-  }
+
   return context;
 };
 
 export const UserContextProvider = ({ children }) => {
-  const [login, setLogin] = useState(false);
+  const [userId, setUserId] = useState(false);
+  const login = (newUserId) => {
+    setUserId(newUserId);
+  };
   return (
-    <UserContext.Provider value={{ login, setLogin }}>
+    <UserContext.Provider value={{ userId, login }}>
       {children}
     </UserContext.Provider>
   );

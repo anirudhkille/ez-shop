@@ -28,12 +28,12 @@ const Header = () => {
 
   const handleLogout = () => {
     setShowLogoutDialog(false);
-    setLogin(false);
+    login("");
   };
 
   const { cartItems } = useCartContext();
-  const { login, setLogin } = useUserContext();
-
+  const { userId,login } = useUserContext();
+  
   return (
     <header className="text-gray-600 body-font shadow-lg fixed w-full bg-white">
       <nav className="flex items-center gap-11 justify-between px-4 py-2 font-bold  ">
@@ -73,7 +73,7 @@ const Header = () => {
               Accessories
             </Link>
             <div className="hover:text-indigo-500">
-              {login ? (
+              {userId ? (
                 <IconButton onClick={openLogoutDialog}>
                   <LogoutIcon />
                 </IconButton>
@@ -134,7 +134,7 @@ const Header = () => {
                 >
                   Accessories
                 </Link>
-                {login ? (
+                {userId ? (
                   <IconButton
                     onClick={openLogoutDialog}
                     className="block py-2 hover:text-indigo-500"

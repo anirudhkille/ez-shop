@@ -26,7 +26,7 @@ const Products = ({ products }) => {
                   <h2 className="text-black title-font text-lg font-medium ">
                     {product.title}
                   </h2>
-                  <div className="flex items-center justify-between mt-1 mr-15">
+                  <div className="flex items-center justify-between mt-1">
                     <p>₹ {(product.price * 10).toFixed(2)}</p>
                     <span className="text-white bg-[#388E3C] rounded px-1  flex items-center text-sm gap-1 justify-center">
                       <svg

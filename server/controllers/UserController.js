@@ -36,7 +36,7 @@ export const login = async (req, res) => {
   }
 
   const existingUser = await User.findOne({ email });
- 
+
   if (await existingUser.matchPassword(password)) {
     const response = {
       _id: existingUser._id,

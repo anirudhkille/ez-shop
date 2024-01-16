@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 import cors from "cors";
-import router from "./router/UserRouter.js";
+import userRouter from "./router/userRouter.js";
+import orderRouter from "./router/orderRouter.js";
 
 dotenv.config();
 const app = express();
@@ -23,7 +24,8 @@ const connectDb = async () => {
 };
 connectDb();
 
-app.use("/api", router);
+app.use("/api", userRouter);
+app.use("/api", orderRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

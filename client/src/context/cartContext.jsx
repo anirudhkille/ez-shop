@@ -51,10 +51,13 @@ export const CartContextProvider = ({ children }) => {
 
   const getCartTotal = () => {
     return cartItems.reduce(
-      (total, item) =>
-        total + ((item.price * 10) || 0) * item.quantity,
+      (total, item) => total + (item.price * 10 || 0) * item.quantity,
       0
     );
+  };
+
+  const emptyCart = () => {
+    return setCartItems([]);
   };
 
   return (
@@ -64,7 +67,7 @@ export const CartContextProvider = ({ children }) => {
         addToCart,
         removeFromCart,
         clearCart,
-        getCartTotal,
+        getCartTotal,emptyCart
       }}
     >
       {children}

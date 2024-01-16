@@ -2,15 +2,18 @@ import { useState } from "react";
 import Toast from "../components/Toast";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { useUserContext } from "../context/userContext";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
+  const { login } = useUserContext();
 
   const callingToast = () => {
     setShowToast(true);
@@ -39,12 +42,16 @@ const SignUp = () => {
       };
 
       axios
-        .post("http://localhost:7777/api/signUp", body)
-        .then(() => {
+        .post("https://ez-shop-server.onrender.com/api/signUp", body)
+        .then((res) => {
           navigate("/");
-          setLogin(true);
+          login(res.data._id);
+          setLoading(true);
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+        });
     }
   };
 
@@ -152,6 +159,13 @@ const SignUp = () => {
           >
             SignUp
           </Link>
+          {loading ? (
+            <div className="mt-1">
+              <CircularProgress style={{ color: "#6366F1" }} />
+            </div>
+          ) : (
+            ""
+          )}
         </p>
       </div>
     </div>

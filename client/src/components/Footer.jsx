@@ -1,8 +1,8 @@
 import InstagramIcon from "@mui/icons-material/Instagram";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedinIcon from "@mui/icons-material/LinkedIn";
-
 import { Link } from "react-router-dom";
+
 const Footer = () => {
   return (
     <footer className="text-gray-400 bg-gray-900 body-font ">
