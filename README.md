@@ -27,31 +27,86 @@ Visit the live deployment at [EZ Shop on Render](https://ez-shop.onrender.com/).
 
 ## Screenshots
 
-**Home Page**
-![Home Page](./readme/loader.png)
-![Mobile View](./readme/mobile.png)
-![Menu bar](./readme/mobile.png)
+## Home Page
 
-**login Page**
-![Login Page](./readme/login.png)
+<span>
+  <img src = "./readme/loader.png" width = "100%"/>  
+    &ensp; &ensp;
+</span>
+<span>
+  <img src = "./readme/mobile.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
+<span>
+  <img src = "./readme/menu-bar.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
 
-**Signup Page**
-![App Page](./readme/signup.png)
-![App Page](./readme/signup-length-error.png)
-![App Page](./readme/signup-password-error.png)
+## login Page
 
-**Cart Page**
-![Cart Page](./readme/empty-cart.png)
-![Cart Page](./readme/cart.png)
+<span>
+  <img src = "./readme/login.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
 
-**Checkout Page**
-![Checkout Page](./readme/checkout.png)
-![Checkout Page](./readme/checkout-2.png)
+## Signup Page
 
-**Payment Page**
-![Payment Page](./readme/payment.png)
-![Payment Page](./readme/payment-2.png)
-![Payment Page](./readme/payment-3.png)
+<span>
+  <img src = "./readme/signup.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
+<span>
+  <img src = "./readme/signup-length-error.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
+<span>
+  <img src = "./readme/signup-password-error.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
 
-**Order Sucessful Page**
-![Order Page](./readme/order-sucessfull.png)
+## Cart Page
+
+
+<span>
+  <img src = "./readme/empty-cart.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
+<span>
+  <img src = "./readme/cart.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
+
+## Checkout Page
+
+
+<span>
+  <img src = "./readme/checkout.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
+<span>
+  <img src = "./readme/checkout-2.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
+
+
+## Payment Page
+
+<span>
+  <img src = "./readme/payment.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
+<span>
+  <img src = "./readme/payment-2.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
+<span>
+  <img src = "./readme/payment-3.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
+
+## Order Sucessful Page
+
+<span>
+  <img src = "./readme/order-sucessfull.png" width = "200px"/>  
+    &ensp; &ensp;
+</span>
