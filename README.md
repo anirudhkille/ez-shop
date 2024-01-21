@@ -2,6 +2,11 @@
 
 EZ Shop is a full-stack web application built using the MERN (MongoDB, Express.js, React.js, Node.js) stack. It serves as an ecommerce platform, allowing users to browse products, add them to the cart, and place orders. The application provides a seamless and intuitive shopping experience.
 
+## Deployment
+
+Visit the live deployment at [EZ Shop on Render](https://ez-shop.onrender.com/).
+
+
 ## Features
 
 - User able to login and signup.
@@ -21,9 +26,6 @@ EZ Shop is a full-stack web application built using the MERN (MongoDB, Express.j
 
 **API:** Fakestore API
 
-## Deployment
-
-Visit the live deployment at [EZ Shop on Render](https://ez-shop.onrender.com/).
 
 ## Screenshots
 
