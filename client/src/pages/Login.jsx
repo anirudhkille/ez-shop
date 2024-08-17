@@ -1,20 +1,20 @@
 import { useState } from "react";
 import Toast from "../components/Toast";
-Toast;
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useUserContext } from "../context/userContext";
 import { CircularProgress } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { login } from "../features/user/userSlice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [showToast, setShowToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { login } = useUserContext();
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleValidation = (e) => {
     e.preventDefault();
@@ -28,7 +28,7 @@ const Login = () => {
       .post("https://ez-shop-server.onrender.com/api/login", body)
       .then((res) => {
         navigate("/");
-        login(res.data._id);
+        dispatch(login(res.data._id));
         setLoading(true);
       })
       .catch((error) => {
@@ -47,14 +47,14 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm mt-5">
+    <div className="flex flex-col justify-center min-h-full px-6 py-12 lg:px-8">
+      <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
         <img
-          className="mx-auto h-10 w-auto"
+          className="w-auto h-10 mx-auto"
           src="/logo.png"
           alt="Your Company"
         />
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+        <h2 className="mt-10 text-2xl font-bold leading-9 tracking-tight text-center text-gray-900">
           Login in to your account
         </h2>
       </div>
@@ -117,10 +117,10 @@ const Login = () => {
           </div>
         </form>
 
-        <p className="mt-5 text-center text-sm text-gray-500 font-semibold">
+        <p className="mt-5 text-sm font-semibold text-center text-gray-500">
           New to EZ Shop ?
           <button
-            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500 mx-2"
+            className="mx-2 font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
             onClick={() => navigate("/signUp")}
           >
             Create an account

@@ -1,38 +1,36 @@
-import { useState } from "react";
-import Toast from "../components/Toast";
+import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { useUserContext } from "../context/userContext";
+import { toast, ToastContainer } from "react-toastify";
+import { useDispatch } from "react-redux";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [signupClicked, setSignupClicked] = useState(false);
+
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
-  const { login } = useUserContext();
 
-  const callingToast = () => {
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+  const callingToast = (msg) => {
+    toast.error(msg);
   };
 
   const handleValidation = (e) => {
     e.preventDefault();
+    setSignupClicked(true);
+
     const passwordRegex =
       /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+
     if (password.length < 8) {
-      callingToast();
-      setErrorMessage("Password must contain minimum of 8 charcters");
+      callingToast("Password must contain a minimum of 8 characters");
     } else if (!password.match(passwordRegex)) {
-      callingToast();
-      setErrorMessage(
-        "Password must contain atleast 1 uppercase , 1 digit and 1 special charcter"
+      callingToast(
+        "Password must contain at least 1 uppercase, 1 digit, and 1 special character"
       );
     } else {
       const body = {
@@ -45,30 +43,30 @@ const SignUp = () => {
         .post("https://ez-shop-server.onrender.com/api/signUp", body)
         .then((res) => {
           navigate("/");
-          login(res.data._id);
+          dispatch(login(res.data._id));
           setLoading(true);
         })
         .catch((error) => {
           console.log(error);
           setLoading(false);
+          callingToast("An error occurred. Please try again.");
         });
     }
   };
 
   return (
-    <div className="flex  flex-col justify-center px-6 py-12 lg:px-8 ">
+    <div className="flex flex-col justify-center px-6 py-12 lg:px-8 ">
+      {signupClicked && <ToastContainer />}
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
-          className="mx-auto h-10 w-auto"
+          className="w-auto h-10 mx-auto"
           src="/logo.png"
           alt="Your Company"
         />
-        <h2 className="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+        <h2 className="mt-5 text-2xl font-bold leading-9 tracking-tight text-center text-gray-900">
           Create an account
         </h2>
       </div>
-
-      {showToast && <Toast message={errorMessage} />}
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form className="space-y-3" method="POST" onSubmit={handleValidation}>
@@ -151,10 +149,10 @@ const SignUp = () => {
           </div>
         </form>
 
-        <p className="mt-5 text-center text-sm text-gray-500 font-semibold">
+        <p className="mt-5 text-sm font-semibold text-center text-gray-500">
           Already an user ?
           <Link
-            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500 mx-2"
+            className="mx-2 font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
             to="/login"
           >
             SignUp

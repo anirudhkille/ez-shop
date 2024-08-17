@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useCartContext } from "../context/cartContext";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useUserContext } from "../context/userContext";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const Payment = () => {
   const { cartItems, getCartTotal } = useCartContext();
   const [paymentTypeCard, setPaymentTypeCard] = useState("cash");
-  const { userId } = useUserContext();
+  const { userId } = useSelector((state) => state.user.id);
 
   const [cardData, setCardData] = useState({
     cardName: "",
@@ -90,30 +90,30 @@ const Payment = () => {
   return (
     <section className="min-h-[100vh]">
       <div className="max-w-[1500px] m-auto max-md:w-full pt-10 flex flex-wrap max-sm:block">
-        <div className="grow px-4 py-6 sm:px-6">
+        <div className="px-4 py-6 grow sm:px-6">
           <div className="border border-slate-700">
-            <h2 className="bg-slate-100 p-2 font-bold">Order Summary</h2>
+            <h2 className="p-2 font-bold bg-slate-100">Order Summary</h2>
             <ul role="list" className="divide-y divide-gray-200">
               {cartItems?.map((cart) => (
-                <li className="py-6 max-sm:block mt-3" key={cart.id}>
+                <li className="py-6 mt-3 max-sm:block" key={cart.id}>
                   <div className="flex text-base font-medium text-gray-900  max-[280px]:block ">
                     <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 max-sm:h-14 max-sm:w-14 ml-4 w-[>280px]-w-full ">
                       <img
                         src={cart.image}
                         alt={cart.title}
-                        className="h-full w-full object-contain object-center"
+                        className="object-contain object-center w-full h-full"
                       />
                     </div>
                     <div className="block">
                       <h3 className="ml-3">{cart.title}</h3>
-                      <p className="mt-1 ml-3 text-sm text-gray-500 mb-2">
+                      <p className="mt-1 mb-2 ml-3 text-sm text-gray-500">
                         {cart.category}
                       </p>
                       <div className="flex">
-                        <p className="tracking-wider mr-2 ml-3">
+                        <p className="ml-3 mr-2 tracking-wider">
                           ₹{(cart.price * 10).toFixed(2)}
                         </p>{" "}
-                        X<p className="text-gray-700 ml-2">{cart.quantity}</p>
+                        X<p className="ml-2 text-gray-700">{cart.quantity}</p>
                         <p className="ml-20">
                           ₹ {(cart.price * 10).toFixed(2) * cart.quantity}
                         </p>
@@ -124,7 +124,7 @@ const Payment = () => {
               ))}
             </ul>
             <hr></hr>
-            <div className="flex justify-evenly text-base font-medium text-gray-900 p-2">
+            <div className="flex p-2 text-base font-medium text-gray-900 justify-evenly">
               <div>
                 <p>Subtotal</p>
                 <p>Shipping</p>
@@ -141,13 +141,13 @@ const Payment = () => {
           </div>
         </div>
 
-        <div className=" flex-1 px-4 py-6 sm:px-6 flex-wrap mx-auto">
+        <div className="flex-wrap flex-1 px-4 py-6 mx-auto sm:px-6">
           <div className="border border-slate-700">
-            <h2 className="bg-slate-100 p-2 font-bold tracking-wider">
+            <h2 className="p-2 font-bold tracking-wider bg-slate-100">
               Deliver to:
             </h2>
-            <div className=" m-2 ">
-              <p className="bold text-lg capitalize">
+            <div className="m-2 ">
+              <p className="text-lg capitalize bold">
                 {data?.fName} {data?.lName}
               </p>
               <p className="">
@@ -162,13 +162,13 @@ const Payment = () => {
             </div>
           </div>
 
-          <div className="border border-slate-700 mt-2 ">
-            <h2 className="bg-slate-100 p-2 font-bold tracking-wider">
+          <div className="mt-2 border border-slate-700 ">
+            <h2 className="p-2 font-bold tracking-wider bg-slate-100">
               Payment method:
             </h2>
 
-            <div className=" flex flex-col  border border-slate-700">
-              <div className=" flex gap-2 px-2 items-center">
+            <div className="flex flex-col border border-slate-700">
+              <div className="flex items-center gap-2 px-2 ">
                 <label htmlFor="cash" className="w-full px-3 py-2 font-bold">
                   <input
                     type="radio"
@@ -186,7 +186,7 @@ const Payment = () => {
               </div>
 
               <div className="border border-slate-700"></div>
-              <div className=" flex gap-2 px-2 items-center">
+              <div className="flex items-center gap-2 px-2 ">
                 <label htmlFor="card" className="w-full px-3 py-2 font-bold">
                   <input
                     type="radio"
@@ -224,7 +224,7 @@ const Payment = () => {
                   className="w-full h-10 p-2 mb-2 border border-slate-700"
                 />
 
-                <div className="flex items-center justify-between flex-wrap">
+                <div className="flex flex-wrap items-center justify-between">
                   <select
                     className="h-10 p-2 border border-slate-700 "
                     onChange={handleChange}
@@ -240,7 +240,7 @@ const Payment = () => {
                   </select>
 
                   <select
-                    className="h-10 p-2 border border-slate-700 ml-2"
+                    className="h-10 p-2 ml-2 border border-slate-700"
                     onChange={handleChange}
                     value={cardData.expiryYear}
                     name="expiryYear"
@@ -263,16 +263,16 @@ const Payment = () => {
                     onChange={handleChange}
                     name="cvv"
                     value={cardData.cvv}
-                    className="w-1/4 ml-1 h-10 p-2 mt-1 border border-slate-700"
+                    className="w-1/4 h-10 p-2 mt-1 ml-1 border border-slate-700"
                   />
                 </div>
               </div>
             ) : (
               ""
             )}
-            <div className="justify-center items-center flex mt-2">
+            <div className="flex items-center justify-center mt-2">
               <button
-                className="text-white bg-indigo-500 px-5 py-2 m-auto mb-2 rounded "
+                className="px-5 py-2 m-auto mb-2 text-white bg-indigo-500 rounded "
                 onClick={handlePlaceOrder}
               >
                 Place Order

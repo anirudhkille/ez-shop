@@ -1,16 +1,17 @@
-import Home from "./pages/Home";
 import "./index.css";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import { Header, Footer, ProtectedRoute } from "./components/index";
 import { Route, Routes } from "react-router-dom";
-import DetailProduct from "./pages/DetailProduct";
-import CategoryProduct from "./pages/CategoryProduct";
-import Cart from "./pages/Cart";
-import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
-import Checkout from "./pages/Checkout";
-import Payment from "./pages/Payment";
-import OrderSummary from "./pages/OrderSummary";
+import {
+  Cart,
+  CategoryProduct,
+  Checkout,
+  DetailProduct,
+  Home,
+  Login,
+  OrderSummary,
+  Payment,
+  SignUp,
+} from "./pages/index";
 
 const App = () => {
   return (
@@ -24,9 +25,31 @@ const App = () => {
           <Route path="/products/:id" element={<DetailProduct />} />
           <Route path="products/category/:name" element={<CategoryProduct />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/order-summary" element={<OrderSummary />} />
+
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <Checkout />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment"
+            element={
+              <ProtectedRoute>
+                <Payment />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/order-summary"
+            element={
+              <ProtectedRoute>
+                <OrderSummary />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </main>
       <Footer />

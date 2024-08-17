@@ -6,16 +6,16 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="text-gray-400 bg-gray-900 body-font ">
-      <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
-        <a className="flex title-font font-medium items-center md:justify-start justify-center text-white">
+      <div className="container flex flex-col items-center px-5 py-8 mx-auto sm:flex-row">
+        <a className="flex items-center justify-center font-medium text-white title-font md:justify-start">
           <img src="/logo.png" alt="logo" height={35} width={35} />
           <span className="ml-3 text-xl">EZ Shop</span>
         </a>
-        <p className="text-sm text-gray-400 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-800 sm:py-2 sm:mt-0 mt-4">
+        <p className="mt-4 text-sm text-gray-400 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-800 sm:py-2 sm:mt-0">
           © 2024 EZ Shop —
           <a
             href="https://github.com/anirudhkille"
-            className="text-gray-500 ml-1"
+            className="ml-1 text-gray-500"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -23,7 +23,7 @@ const Footer = () => {
           </a>
         </p>
 
-        <span className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
+        <span className="inline-flex justify-center mt-4 sm:ml-auto sm:mt-0 sm:justify-start">
           <Link
             className="text-gray-400 hover:text-indigo-500"
             to="https://instagram.com/anirudh_kille"

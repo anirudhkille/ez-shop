@@ -5,14 +5,18 @@ import MenuIcon from "@mui/icons-material/Menu";
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { useCartContext } from "../context/cartContext";
-import { useUserContext } from "../context/userContext";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LogoutDialog from "./LogoutDialog";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../features/user/userSlice";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const dispatch = useDispatch();
+
+  const cartItems = useSelector((state) => state.cart.cartItems || []);
+  const userId = useSelector((state) => state.user.id);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -28,18 +32,15 @@ const Header = () => {
 
   const handleLogout = () => {
     setShowLogoutDialog(false);
-    login("");
+    dispatch(logout());
   };
 
-  const { cartItems } = useCartContext();
-  const { userId,login } = useUserContext();
-  
   return (
-    <header className="text-gray-600 body-font shadow-lg fixed w-full bg-white">
-      <nav className="flex items-center gap-11 justify-between px-4 py-2 font-bold  ">
+    <header className="fixed w-full text-gray-600 bg-white shadow-lg body-font">
+      <nav className="flex items-center justify-between px-4 py-2 font-bold gap-11">
         <Link
           to="/"
-          className="flex title-font font-medium items-center text-gray-900"
+          className="flex items-center font-medium text-gray-900 title-font"
         >
           <img src="/logo.png" alt="logo" height={35} width={35} />
           <span className="ml-3 text-xl font-bold">EZ Shop</span>
@@ -47,7 +48,7 @@ const Header = () => {
 
         <div className="flex items-center space-x-4">
           {/* Navigation Links for Larger Screens */}
-          <div className="hidden md:flex space-x-4 items-center">
+          <div className="items-center hidden space-x-4 md:flex">
             <Link
               to="products/category/men's clothing"
               className="hover:text-indigo-500"
@@ -97,7 +98,7 @@ const Header = () => {
               <MenuIcon />
             </IconButton>
             {isMenuOpen && (
-              <div className="absolute top-14 right-0 bg-white p-8 shadow-md text-center">
+              <div className="absolute right-0 p-8 text-center bg-white shadow-md top-14">
                 <Link
                   to="products/category/men's clothing"
                   className="block py-2 hover:text-indigo-500"

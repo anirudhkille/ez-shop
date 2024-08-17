@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useCartContext } from "../context/cartContext";
 import CircularProgress from "@mui/material/LinearProgress";
 import Rating from "@mui/material/Rating";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../features/cart/cartSlice";
 
 const DetailProduct = () => {
   const { id } = useParams();
   const [product, setProduct] = useState([]);
-  const { addToCart } = useCartContext();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,17 +40,17 @@ const DetailProduct = () => {
       ) : (
         <div className="container px-5 py-6 mx-auto mt-12">
           {product?.map((product) => (
-            <div className="lg:w-4/5 mx-auto flex flex-wrap" key={product.id}>
+            <div className="flex flex-wrap mx-auto lg:w-4/5" key={product.id}>
               <img
                 alt={product.title}
                 className="lg:w-1/2 w-full lg:h-auto h-54 object-contain max-h-[400px] object-center max-sm:w-1/2 m-auto"
                 src={product.image}
               />
-              <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
-                <h2 className="text-sm title-font text-gray-500 tracking-widest">
+              <div className="w-full mt-6 lg:w-1/2 lg:pl-10 lg:py-6 lg:mt-0">
+                <h2 className="text-sm tracking-widest text-gray-500 title-font">
                   {product.category}
                 </h2>
-                <h1 className="text-gray-900 text-3xl title-font font-medium mb-2 ">
+                <h1 className="mb-2 text-3xl font-medium text-gray-900 title-font ">
                   {product.title}
                 </h1>
                 <div className="flex mb-2">
@@ -62,20 +63,20 @@ const DetailProduct = () => {
                       style={{ color: "#4F46E5" }}
                     />
 
-                    <span className="text-gray-600 ml-3">
+                    <span className="ml-3 text-gray-600">
                       {product.rating.rate} & {product.rating.count} Reviews
                     </span>
                   </span>
                 </div>
                 <p className="leading-relaxed">{product.description}</p>
                 <div className="flex">
-                  <span className="title-font font-medium text-2xl text-gray-900 mt-2">
+                  <span className="mt-2 text-2xl font-medium text-gray-900 title-font">
                     ₹ {(product.price * 10).toFixed(2)}
                   </span>
                 </div>
                 <button
-                  className="flex mt-3 text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600   rounded "
-                  onClick={() => addToCart(product)}
+                  className="flex px-6 py-2 mt-3 text-white bg-indigo-500 border-0 rounded focus:outline-none hover:bg-indigo-600 "
+                  onClick={() => dispatch(addToCart(product))}
                 >
                   Add to Cart
                 </button>

@@ -1,29 +1,33 @@
 import { Link } from "react-router-dom";
-import { useCartContext } from "../context/cartContext";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../features/cart/cartSlice";
 
 const Products = ({ products }) => {
-  const { addToCart } = useCartContext();
+  const dispatch = useDispatch();
 
   return (
     <div className="text-gray-400 body-font min-h-[100vh]">
-      <div className="container px-5 py-14 mx-auto ">
+      <div className="container px-5 mx-auto py-14 ">
         <div className="flex flex-wrap -m-4 ">
           {products?.map((product) => (
-            <div className="lg:w-1/4 md:w-1/2 p-4 w-full mt-5 " key={product.id}>
+            <div
+              className="w-full p-4 mt-5 lg:w-1/4 md:w-1/2 "
+              key={product.id}
+            >
               <Link to={`/products/${product.id}`}>
-                <div className="block relative h-48 rounded overflow-hidden -z-10">
+                <div className="relative block h-48 overflow-hidden rounded -z-10">
                   <img
                     alt="ecommerce"
-                    className="object-cover object-center w-full h-full block "
+                    className="block object-cover object-center w-full h-full "
                     src={product.image}
                     style={{ objectFit: "contain" }}
                   />
                 </div>
                 <div className="mt-4">
-                  <h3 className="text-gray-500 text-xs tracking-widest title-font mb-1">
+                  <h3 className="mb-1 text-xs tracking-widest text-gray-500 title-font">
                     {product.category}
                   </h3>
-                  <h2 className="text-black title-font text-lg font-medium ">
+                  <h2 className="text-lg font-medium text-black title-font ">
                     {product.title}
                   </h2>
                   <div className="flex items-center justify-between mt-1">
@@ -47,8 +51,8 @@ const Products = ({ products }) => {
                 </div>
               </Link>
               <button
-                className="flex mt-5 text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded  mx-auto"
-                onClick={() => addToCart(product)}
+                className="flex px-6 py-2 mx-auto mt-5 text-white bg-indigo-500 border-0 rounded focus:outline-none hover:bg-indigo-600"
+                onClick={() => dispatch(addToCart(product))}
               >
                 Add to Cart
               </button>
