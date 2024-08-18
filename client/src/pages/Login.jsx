@@ -19,6 +19,8 @@ const Login = () => {
   const handleValidation = (e) => {
     e.preventDefault();
 
+    setLoading(true); // Start loading before making the request
+
     const body = {
       email,
       password,
@@ -27,16 +29,17 @@ const Login = () => {
     axios
       .post("https://ez-shop-server.onrender.com/api/login", body)
       .then((res) => {
+        dispatch(login({ userId: res.data._id })); // Correct dispatch format
         navigate("/");
-        dispatch(login(res.data._id));
-        setLoading(true);
       })
       .catch((error) => {
         setErrorMessage("Invalid email or password");
         callingToast();
         console.error("Login failed:", error);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false); // Stop loading after request completes
+      });
   };
 
   const callingToast = () => {
@@ -111,8 +114,13 @@ const Login = () => {
             <button
               type="submit"
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              disabled={loading} // Disable button during loading
             >
-              Log in
+              {loading ? (
+                <CircularProgress size={24} style={{ color: "#FFF" }} />
+              ) : (
+                "Log in"
+              )}
             </button>
           </div>
         </form>
@@ -125,13 +133,6 @@ const Login = () => {
           >
             Create an account
           </button>
-          {loading ? (
-            <div className="mt-1">
-              <CircularProgress style={{ color: "#6366F1" }} />
-            </div>
-          ) : (
-            ""
-          )}
         </p>
       </div>
     </div>

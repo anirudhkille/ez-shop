@@ -43,7 +43,7 @@ const SignUp = () => {
         .post("https://ez-shop-server.onrender.com/api/signUp", body)
         .then((res) => {
           navigate("/");
-          dispatch(login(res.data._id));
+          dispatch(login({ id: res.data._id }));
           setLoading(true);
         })
         .catch((error) => {

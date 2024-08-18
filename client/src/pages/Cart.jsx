@@ -13,8 +13,9 @@ const Cart = () => {
   const navigate = useNavigate();
   const total = useSelector((state) => cartTotal(state));
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const userId = useSelector((state) => state.user.id);
+  const userId = useSelector((state) => state.user.userId);
 
+  console.log(userId)
   return (
     <div className="w-3/4 pt-10 m-auto max-md:w-full">
       {cartItems.length === 0 ? (

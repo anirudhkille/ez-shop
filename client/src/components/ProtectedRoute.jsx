@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ProtectedRoute = ({ children }) => {
-  const { cartItems } = useSelector((state) => state.cart.items);
+  const cartItems = useSelector((state) => state.cart.cartItems);
   const navigate = useNavigate();
   useEffect(() => {
     if (cartItems.length === 0) return navigate("/");

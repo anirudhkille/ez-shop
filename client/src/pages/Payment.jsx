@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { useCartContext } from "../context/cartContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { cartTotal } from "../features/cart/cartSlice";
 
 const Payment = () => {
-  const { cartItems, getCartTotal } = useCartContext();
   const [paymentTypeCard, setPaymentTypeCard] = useState("cash");
-  const { userId } = useSelector((state) => state.user.id);
+  const cartItems = useSelector((state) => state.cart.cartItems);
+  const userId = useSelector((state) => state.user.userId);
+  const getCartTotal = useSelector(cartTotal);
 
   const [cardData, setCardData] = useState({
     cardName: "",
@@ -21,15 +22,11 @@ const Payment = () => {
   const data = location.state;
   const navigate = useNavigate();
 
-  const subTotal = getCartTotal();
+  const subTotal = getCartTotal;
   const taxCharge = subTotal * 0.1;
-  let shippmentCharge = 0;
-  if (subTotal < 500) {
-    shippmentCharge = 100;
-  } else {
-    shippmentCharge = 0;
-  }
+  const shippmentCharge = subTotal < 500 ? 100 : 0;
   const totalAmount = subTotal + taxCharge + shippmentCharge;
+
   const cartProducts = cartItems.map((items) => ({
     id: items.id,
     name: items.title,
@@ -46,43 +43,57 @@ const Payment = () => {
     }));
   };
 
+  const validateCardData = () => {
+    if (cardData.cardName === "") {
+      alert("Name field can't be empty");
+      return false;
+    } else if (
+      cardData.cardNumber.length !== 16 ||
+      !/^\d+$/.test(cardData.cardNumber)
+    ) {
+      alert("Card number must have 16 digits and only contain digits");
+      return false;
+    } else if (
+      cardData.expiryMonth === "MM" ||
+      cardData.expiryYear === "YEAR"
+    ) {
+      alert("Please select a valid expiry date");
+      return false;
+    } else if (cardData.cvv.length !== 3 || !/^\d+$/.test(cardData.cvv)) {
+      alert("CVV must be 3 digits and only contain digits");
+      return false;
+    }
+    return true;
+  };
+
   const orderProduct = async () => {
     try {
-      const response = await axios.post(
-        "https://ez-shop-server.onrender.com/api/order",
-        {
-          userId: userId,
-          products: cartProducts,
-          shippingAddress: {
-            fName: data.fName,
-            lName: data.lName,
-            address: data.address,
-            zipCode: data.zipCode,
-            mobileNo: data.phone,
-            emailId: data.email,
-          },
-          amountPayable: totalAmount,
-          paymentMethod: paymentTypeCard,
-        }
-      );
-      navigate("/order-summary");
+      const response = await axios.post("http://localhost:7777/api/order", {
+        userId,
+        products: cartProducts,
+        shippingAddress: {
+          fName: data.fName,
+          lName: data.lName,
+          address: data.address,
+          zipCode: data.zipCode,
+          mobileNo: data.phone,
+          emailId: data.email,
+        },
+        amountPayable: totalAmount,
+        paymentMethod: paymentTypeCard,
+      });
+      if (response) {
+        navigate("/order-summary");
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Order failed:", error);
+      alert("Failed to place order. Please try again.");
     }
   };
 
   const handlePlaceOrder = () => {
     if (paymentTypeCard === "card") {
-      if (cardData.cardName === "") {
-        alert("Name field can't be empty");
-      } else if (
-        cardData.cardNumber.length !== 16 ||
-        !/^\d+$/.test(cardData.cardNumber)
-      ) {
-        alert("Card number must have 16 digits and only contain digits");
-      } else {
-        orderProduct();
-      }
+      if (!validateCardData()) return;
     }
     orderProduct();
   };
@@ -267,9 +278,7 @@ const Payment = () => {
                   />
                 </div>
               </div>
-            ) : (
-              ""
-            )}
+            ) : null}
             <div className="flex items-center justify-center mt-2">
               <button
                 className="px-5 py-2 m-auto mb-2 text-white bg-indigo-500 rounded "

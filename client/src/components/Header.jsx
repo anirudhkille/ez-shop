@@ -16,7 +16,7 @@ const Header = () => {
   const dispatch = useDispatch();
 
   const cartItems = useSelector((state) => state.cart.cartItems || []);
-  const userId = useSelector((state) => state.user.id);
+  const userId = useSelector((state) => state.user.userId);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

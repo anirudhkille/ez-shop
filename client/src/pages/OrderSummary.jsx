@@ -1,24 +1,25 @@
 import React, { useEffect } from "react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { useCartContext } from "../context/cartContext";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../features/cart/cartSlice";
 
 const OrderSummary = () => {
-  const { emptyCart } = useCartContext();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    emptyCart();
+    dispatch(clearCart());
   }, []);
 
   return (
     <div>
-      <div className="text-center mt-20">
-        <div className="text-2xl font-bold text-indigo-500 mb-4">
+      <div className="mt-20 text-center">
+        <div className="mb-4 text-2xl font-bold text-indigo-500">
           <div>
             <CheckCircleIcon style={{ height: 70, width: 70 }} />
           </div>
           Order Placed Successfully!
         </div>
-        <p className="text-lg text-indigo-500 font-bold px-2 tracking-wider">
+        <p className="px-2 text-lg font-bold tracking-wider text-indigo-500">
           Thank you for ordering with EZ Shop.Your Package will be deliver
           within 3 days.
         </p>

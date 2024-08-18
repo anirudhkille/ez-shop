@@ -8,7 +8,7 @@ const userslice = createSlice({
   initialState,
   reducers: {
     login: (state, action) => {
-      state.userId = action.userId;
+      state.userId = action.payload.userId;
     },
     logout: (state) => {
       state.userId = null;
