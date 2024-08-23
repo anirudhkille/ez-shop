@@ -12,8 +12,8 @@ const SignUp = () => {
   const [signupClicked, setSignupClicked] = useState(false);
 
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
+  
 
   const callingToast = (msg) => {
     toast.error(msg);
