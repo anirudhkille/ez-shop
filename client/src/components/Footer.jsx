@@ -5,8 +5,8 @@ import { Link, useLocation } from "react-router-dom";
 
 const Footer = () => {
   const location = useLocation();
-
-  if (location.pathname !== "/login" && location.pathname !== "/signUp")
+  const paths = ["/login", "/signup", "/forgot-password", "/reset-password"];
+  if (!paths.includes(location.pathname))
     return (
       <footer className="text-gray-400 bg-gray-900 body-font ">
         <div className="container flex flex-col items-center px-5 py-8 mx-auto sm:flex-row">

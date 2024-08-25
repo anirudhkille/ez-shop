@@ -9,7 +9,7 @@ const generateToken = (user) => {
   });
 };
 
-export const signUp = async (req, res) => {
+export const signUpController = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -107,7 +107,9 @@ export const forgotPassword = async (req, res) => {
     const resetToken = user.generateResetToken();
     await user.save({ validateBeforeSave: false });
 
-    const resetUrl = `${process.env.FROTEND_URL}/reset-password?token=${resetToken}`;
+    const resetUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/api/v1/reset-password/${resetToken}`;
 
     const message = `
       <h2>Password Reset Request</h2>

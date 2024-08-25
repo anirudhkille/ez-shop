@@ -35,7 +35,8 @@ const Header = () => {
     dispatch(logout());
   };
 
-  if (location.pathname !== "/login" && location.pathname !== "/signUp")
+  const paths = ["/login", "/signup", "/forgot-password", "/reset-password"];
+  if (!paths.includes(location.pathname))
     return (
       <header className="fixed w-full text-gray-600 bg-white shadow-lg body-font">
         <nav className="flex items-center justify-between px-4 py-2 font-bold gap-11">

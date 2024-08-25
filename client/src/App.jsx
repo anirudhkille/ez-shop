@@ -5,20 +5,25 @@ import LoadingBar from "react-top-loading-bar";
 import TopLoadingBar from "./components/ui/TopLoadingBar";
 
 // Lazy load the pages
+const Login = lazy(() => import("./pages/auth/Login"));
+const SignUp = lazy(() => import("./pages/auth/SignUp"));
+const ForgotPassword = lazy(() => import("./pages/auth/FogotPassword"));
+const ResetPassword = lazy(() => import("./pages/auth/ResetPasswrod"));
+
 const Cart = lazy(() => import("./pages/Cart"));
 const CategoryProduct = lazy(() => import("./pages/CategoryProduct"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const DetailProduct = lazy(() => import("./pages/DetailProduct"));
 const Home = lazy(() => import("./pages/Home"));
-const Login = lazy(() => import("./pages/Login"));
 const OrderSummary = lazy(() => import("./pages/OrderSummary"));
 const Payment = lazy(() => import("./pages/Payment"));
-const SignUp = lazy(() => import("./pages/SignUp"));
 
 const routes = [
-  { path: "/", element: <Home />, protected: false },
   { path: "/login", element: <Login />, protected: false },
   { path: "/signup", element: <SignUp />, protected: false },
+  { path: "/forgot-password", element: <ForgotPassword />, protected: false },
+  { path: "/reset-password", element: <ResetPassword />, protected: false },
+  { path: "/", element: <Home />, protected: false },
   { path: "/products/:id", element: <DetailProduct />, protected: false },
   {
     path: "/products/category/:name",
@@ -44,7 +49,7 @@ const App = () => {
     <>
       <TopLoadingBar ref={loadingBarRef} />
       <Header />
-      <main className="min-h-[100dvh] pt-5">
+      <main className="min-h-dvh">
         <Suspense fallback={<LoadingBar />}>
           <Routes>
             {routes.map((r) =>
