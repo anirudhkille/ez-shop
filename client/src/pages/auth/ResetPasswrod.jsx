@@ -1,50 +1,70 @@
 import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../../features/user/userSlice";
 import { Card, Heading, Button, Input, Label, Text } from "../../components";
+import { useResetPasswordMutation } from "../../features/user/userAPI";
+import { toast } from "sonner";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
   const [formData, setFormData] = useState({
     newPassword: "",
     confirmPassword: "",
   });
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleValidation = (e) => {
+  const handleValidation = async (e) => {
     e.preventDefault();
-
-    setLoading(true); // Start loading before making the request
-
-    axios
-      .post("https://ez-shop-server.onrender.com/api/login", formData)
-      .then((res) => {
-        dispatch(login({ userId: res.data._id })); // Correct dispatch format
-        navigate("/");
-      })
-      .catch((error) => {
-        // setErrorMessage("Invalid email or password");
-        // callingToast();
-        console.error("Login failed:", error);
-      })
-      .finally(() => {
-        setLoading(false); // Stop loading after request completes
-      });
-  };
-
-  const callingToast = () => {
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+    if (!formData.newPassword) {
+      toast.error("New password can't be empty");
+      return;
+    } else if (!formData.confirmPassword) {
+      toast.error("Confirm password can't be empty");
+      return;
+    } else if (
+      formData.confirmPassword.trim().length < 8 &&
+      formData.newPassword.trim().length < 8
+    ) {
+      toast.error("Password must contain a minimum of 8 characters");
+      return;
+    } else if (formData.newPassword !== formData.confirmPassword) {
+      toast.error("New password and confirm password does not match");
+      return;
+    }
+    try {
+      const { newPassword } = formData; 
+      const res = await resetPassword({
+        token: token,
+        password: newPassword,
+      }).unwrap();
+      dispatch(login({ userDetails: res.data })); 
+      toast.success("Password reset successfully");
+      navigate("/login");
+    } catch (error) {
+      console.log(error); // Log the error for debugging
+      let errorMessage = "Something went wrong";
+      if (error.status) {
+        switch (error.status) {
+          case 400:
+            errorMessage = "Invalid or expired reset link";
+            break;
+          case 500:
+            errorMessage = "Internal server error";
+            break;
+          default:
+            errorMessage = "Something went wrong";
+        }
+      }
+      toast.error(errorMessage);
+    }
   };
 
   return (
@@ -82,7 +102,7 @@ const ResetPassword = () => {
             />
           </div>
         </div>
-        <Button className="w-full" type="submit" loading={loading}>
+        <Button className="w-full" type="submit" disabled={isLoading}>
           Reset Password
         </Button>
 

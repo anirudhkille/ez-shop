@@ -9,11 +9,12 @@ import { toast } from "sonner";
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [login, { isLoading, error }] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -21,21 +22,36 @@ const Login = () => {
 
   const handleValidation = async (e) => {
     e.preventDefault();
+
     if (!formData.email) {
       toast.error("Email can't be empty");
+      return;
     } else if (!formData.password) {
       toast.error("Password can't be empty");
-    } else {
-      try {
-        const res = await login(formData).unwrap();
-        console.log("Login Response:", res);
-        dispatch(userLogin({ userId: res._id }));
-        toast.success("Login successful");
-        navigate("/");
-      } catch (err) {
-        console.error("Login Error:", err);
-        toast.error("Something went wrong");
+      return;
+    }
+
+    try {
+      const res = await login(formData).unwrap();
+      dispatch(userLogin({ userDetails: res.data }));
+      toast.success("Login successful");
+      navigate("/");
+    } catch (err) {
+      let errorMessage = "Something went wrong";
+
+      if (err.status) {
+        switch (err.status) {
+          case 401:
+            errorMessage = "Invalid email or password";
+            break;
+          case 500:
+            errorMessage = "Internal server error";
+            break;
+          default:
+            errorMessage = "An unexpected error occurred";
+        }
       }
+      toast.error(errorMessage);
     }
   };
 

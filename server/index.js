@@ -5,6 +5,7 @@ import userRouter from "./router/userRouter.js";
 import orderRouter from "./router/orderRouter.js";
 import connectDb from "./database/connectDb.js";
 import { apiLimiter } from "./config/limiter.js";
+import compression from "compression";
 
 dotenv.config();
 
@@ -22,7 +23,7 @@ const corsOptions = {
   },
   credentials: true,
 };
-
+app.use(compression())
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(apiLimiter);

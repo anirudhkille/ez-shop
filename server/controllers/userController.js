@@ -34,9 +34,9 @@ export const signUp = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      token,
-      user: {
+      data: {
         id: newUser._id,
+        token: token,
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
@@ -78,9 +78,9 @@ export const login = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "User logged in successfully",
-      token,
-      user: {
+      data: {
         id: user._id,
+        token: token,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -97,6 +97,7 @@ export const forgotPassword = async (req, res) => {
     const { email } = req.body;
 
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -170,8 +171,8 @@ export const resetPassword = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Password reset successful",
-      token,
-      user: {
+      data: {
+        token,
         id: user._id,
         name: user.name,
         email: user.email,
@@ -202,7 +203,7 @@ export const editProfile = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
-      user,
+      data: user,
     });
   } catch (error) {
     console.error("Error during edit profile:", error);
@@ -212,7 +213,7 @@ export const editProfile = async (req, res) => {
 
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.find(req.user.id).select("-password");
 
     if (!user) {
       return res.status(404).json({

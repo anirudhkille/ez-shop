@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Label, Card, Button, Heading, Text, Input } from "../../components";
+import { toast } from "sonner";
+import { useSignupMutation } from "../../features/user/userAPI";
+import { login } from "../../features/user/userSlice";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -13,43 +14,57 @@ const SignUp = () => {
     email: "",
     password: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [signupClicked, setSignupClicked] = useState(false);
+  const [signup, { isLoading }] = useSignupMutation();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const callingToast = (msg) => {
-    toast.error(msg);
-  };
-
-  const handleValidation = (e) => {
+  const handleValidation = async (e) => {
     e.preventDefault();
-    setSignupClicked(true);
 
-    const passwordRegex =
-      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-
-    if (password.length < 8) {
-      callingToast("Password must contain a minimum of 8 characters");
-    } else if (!password.match(passwordRegex)) {
-      callingToast(
-        "Password must contain at least 1 uppercase, 1 digit, and 1 special character"
-      );
-    } else {
-      axios
-        .post("https://ez-shop-server.onrender.com/api/signUp", formData)
-        .then((res) => {
-          navigate("/");
-          dispatch(login({ id: res.data._id }));
-          setLoading(true);
-        })
-        .catch((error) => {
-          console.log(error);
-          setLoading(false);
-          callingToast("An error occurred. Please try again.");
-        });
+    // const passwordRegex =
+    //   /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+    if (!formData.name) {
+      toast.error("Name can't be empty");
+      return;
+    } else if (!formData.email) {
+      toast.error("Email can't be empty");
+      return;
+    } else if (!formData.password) {
+      toast.error("Password can't be empty");
+      return;
+    } else if (formData.password.length < 8) {
+      toast.error("Password must contain a minimum of 8 characters");
+      return;
+    }
+    //  else if (!formData.password.match(passwordRegex)) {
+    //   toast.error(
+    //     "Password must contain at least 1 uppercase, 1 digit, and 1 special character"
+    //   );
+    //   return;}
+    else {
+      try {
+        const res = await signup(formData).unwrap();
+        dispatch(login({ userDetails: res.data }));
+        toast.success("Account created successfully");
+        navigate("/");
+      } catch (error) {
+        let errorMessage = "Something went wrong";
+        if (error.status) {
+          switch (error.status) {
+            case 409:
+              errorMessage = "Email already been used";
+              break;
+            case 500:
+              errorMessage = "Internal server error";
+              break;
+            default:
+              errorMessage = "Something went wrong";
+          }
+        }
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -70,7 +85,7 @@ const SignUp = () => {
         <div className="space-y-4">
           <div className="space-y-1">
             <Label id="name">Name</Label>
-            <Input id="name" value={formData.email} onChange={handleChange} />
+            <Input id="name" value={formData.name} onChange={handleChange} />
           </div>
 
           <div className="space-y-1">
@@ -101,7 +116,7 @@ const SignUp = () => {
             />
           </div>
         </div>
-        <Button className="w-full" type="submit" loading={loading}>
+        <Button className="w-full" type="submit" disabled={isLoading}>
           Create an Account
         </Button>
 

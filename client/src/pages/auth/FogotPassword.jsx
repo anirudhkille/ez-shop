@@ -1,51 +1,43 @@
 import { useState } from "react";
-import Toast from "../../components/Toast";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-import { useDispatch } from "react-redux";
-import { login } from "../../features/user/userSlice";
 import { Card, Heading, Button, Input, Label, Text } from "../../components";
+import { toast } from "sonner";
+import { useForgotPasswordMutation } from "../../features/user/userAPI";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [loading, setLoading] = useState(false);
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
+  const [email, setEmail] = useState("");
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
-
-  const handleValidation = (e) => {
+  const handleValidation = async (e) => {
     e.preventDefault();
+    const trimmedEmail = email.trim();
 
-    setLoading(true); // Start loading before making the request
+    if (!trimmedEmail) {
+      toast.error("Email can't be empty");
+      return;
+    }
 
-    axios
-      .post("https://ez-shop-server.onrender.com/api/login", formData)
-      .then((res) => {
-        dispatch(login({ userId: res.data._id })); // Correct dispatch format
-        navigate("/");
-      })
-      .catch((error) => {
-        // setErrorMessage("Invalid email or password");
-        // callingToast();
-        console.error("Login failed:", error);
-      })
-      .finally(() => {
-        setLoading(false); // Stop loading after request completes
-      });
-  };
-
-  const callingToast = () => {
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+    try {
+      const res = await forgotPassword({ email: trimmedEmail }).unwrap();
+      if (res) toast.success("Password reset link has been sent your email");
+    } catch (error) {
+      console.log(error);
+      let errorMessage = "Something went wrong";
+      if (error.status) {
+        switch (error.status) {
+          case 404:
+            errorMessage = "User with email doesn't exist";
+            break;
+          case 500:
+            errorMessage = "Internal server error";
+            break;
+          default:
+            errorMessage = "Something went wrong";
+        }
+      }
+      toast.error(errorMessage);
+    }
   };
 
   return (
@@ -59,7 +51,10 @@ const ForgotPassword = () => {
           <Heading as="h2" className="text-3xl">
             Forgot password
           </Heading>
-          <Text>Enter your email address below and we'll send you a link to reset your password</Text>
+          <Text>
+            Enter your email address below and we'll send you a link to reset
+            your password
+          </Text>
         </div>
 
         <div className="space-y-4">
@@ -68,12 +63,12 @@ const ForgotPassword = () => {
             <Input
               id="email"
               type="email"
-              value={formData.email}
-              onChange={handleChange}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
         </div>
-        <Button className="w-full" type="submit" loading={loading}>
+        <Button className="w-full" type="submit" disabled={isLoading}>
           Reset Password
         </Button>
 
