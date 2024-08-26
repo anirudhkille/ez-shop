@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login as userLogin } from "../../features/user/userSlice";
 import { Card, Heading, Button, Input, Label, Text } from "../../components";
-import { useLoginMutation } from "../../features/user/userApi";
+import { useLoginMutation } from "../../features/user/userAPI";
 import { toast } from "sonner";
 
 const Login = () => {
