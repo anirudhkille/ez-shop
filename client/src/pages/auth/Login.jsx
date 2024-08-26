@@ -21,16 +21,21 @@ const Login = () => {
 
   const handleValidation = async (e) => {
     e.preventDefault();
-
-    try {
-      const res = await login(formData).unwrap();
-      console.log("Login Response:", res); // Debugging log
-      dispatch(userLogin({ userId: res._id }));
-      toast.success("Login successful");
-      navigate("/");
-    } catch (err) {
-      console.error("Login Error:", err); // Debugging log
-      toast.error("Something went wrong");
+    if (!formData.email) {
+      toast.error("Email can't be empty");
+    } else if (!formData.password) {
+      toast.error("Password can't be empty");
+    } else {
+      try {
+        const res = await login(formData).unwrap();
+        console.log("Login Response:", res);
+        dispatch(userLogin({ userId: res._id }));
+        toast.success("Login successful");
+        navigate("/");
+      } catch (err) {
+        console.error("Login Error:", err);
+        toast.error("Something went wrong");
+      }
     }
   };
 

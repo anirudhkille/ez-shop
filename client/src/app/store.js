@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import cartReducer from "../features/cart/cartSlice";
 import userReducer from "../features/user/userSlice";
-import { userAPI } from "../features/user/userApi";
+import { userAPI } from "../features/user/userAPI";
 
 export const store = configureStore({
   reducer: {

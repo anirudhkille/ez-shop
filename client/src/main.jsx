@@ -18,6 +18,6 @@ root.render(
         </React.StrictMode>
       </BrowserRouter>
     </Provider>
-    <Toaster />
+    <Toaster position="top-center"/>
   </React.StrictMode>
 );

@@ -25,15 +25,15 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use("/api/", apiLimiter);
+app.use(apiLimiter);
 
 const startServer = () => {
-  app.get("/api", (req, res) => {
+  app.get("/", (req, res) => {
     res.send("Api is running");
   });
 
-  app.use("/api/user", userRouter);
-  app.use("/api/order", orderRouter);
+  app.use("/user", userRouter);
+  app.use("/order", orderRouter);
 
   app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
