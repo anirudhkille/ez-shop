@@ -6,7 +6,7 @@ import {
   login,
   resetPassword,
   signUp,
-} from "../controllers/UserController.js";
+} from "../controllers/userController.js";
 
 const router = express.Router();
 router.post("/signup", signUp);

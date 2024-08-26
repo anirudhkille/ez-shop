@@ -1,11 +1,10 @@
 import { useState } from "react";
-import Toast from "../../components/Toast";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { login } from "../../features/user/userSlice";
+import { login as userLogin } from "../../features/user/userSlice";
 import { Card, Heading, Button, Input, Label, Text } from "../../components";
+import { useLoginMutation } from "../../features/user/userApi";
+import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,38 +13,25 @@ const Login = () => {
     email: "",
     password: "",
   });
-  const [loading, setLoading] = useState(false);
+  const [login, { isLoading, error }] = useLoginMutation();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleValidation = (e) => {
+  const handleValidation = async (e) => {
     e.preventDefault();
 
-    setLoading(true); // Start loading before making the request
-
-    axios
-      .post("https://ez-shop-server.onrender.com/api/login", formData)
-      .then((res) => {
-        dispatch(login({ userId: res.data._id })); // Correct dispatch format
-        navigate("/");
-      })
-      .catch((error) => {
-        // setErrorMessage("Invalid email or password");
-        // callingToast();
-        console.error("Login failed:", error);
-      })
-      .finally(() => {
-        setLoading(false); // Stop loading after request completes
-      });
-  };
-
-  const callingToast = () => {
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+    try {
+      const res = await login(formData).unwrap();
+      console.log("Login Response:", res); // Debugging log
+      dispatch(userLogin({ userId: res._id }));
+      toast.success("Login successful");
+      navigate("/");
+    } catch (err) {
+      console.error("Login Error:", err); // Debugging log
+      toast.error("Something went wrong");
+    }
   };
 
   return (
@@ -91,7 +77,7 @@ const Login = () => {
             />
           </div>
         </div>
-        <Button className="w-full" type="submit" loading={loading}>
+        <Button className="w-full" type="submit" disabled={isLoading}>
           Login
         </Button>
 

@@ -1,8 +1,7 @@
 import React, { useRef, lazy, Suspense, useEffect } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
-import { Header, Footer, ProtectedRoute } from "./components/index";
+import { useRoutes, useLocation } from "react-router-dom";
 import LoadingBar from "react-top-loading-bar";
-import TopLoadingBar from "./components/ui/TopLoadingBar";
+import { Layout, ProtectedRoute, TopLoadingBar } from "./components";
 
 // Lazy load the pages
 const Login = lazy(() => import("./pages/auth/Login"));
@@ -18,27 +17,59 @@ const Home = lazy(() => import("./pages/Home"));
 const OrderSummary = lazy(() => import("./pages/OrderSummary"));
 const Payment = lazy(() => import("./pages/Payment"));
 
-const routes = [
-  { path: "/login", element: <Login />, protected: false },
-  { path: "/signup", element: <SignUp />, protected: false },
-  { path: "/forgot-password", element: <ForgotPassword />, protected: false },
-  { path: "/reset-password", element: <ResetPassword />, protected: false },
-  { path: "/", element: <Home />, protected: false },
-  { path: "/products/:id", element: <DetailProduct />, protected: false },
-  {
-    path: "/products/category/:name",
-    element: <CategoryProduct />,
-    protected: false,
-  },
-  { path: "/cart", element: <Cart />, protected: true },
-  { path: "/checkout", element: <Checkout />, protected: true },
-  { path: "/payment", element: <Payment />, protected: true },
-  { path: "/order-summary", element: <OrderSummary />, protected: true },
-];
+const NotFound = lazy(() => import("./components/layout/NotFound"));
 
 const App = () => {
   const loadingBarRef = useRef(null);
   const location = useLocation();
+
+  const element = useRoutes([
+    {
+      element: <Layout />,
+      children: [
+        { path: "/", element: <Home /> },
+        { path: "/products/:id", element: <DetailProduct /> },
+        { path: "/products/category/:name", element: <CategoryProduct /> },
+        {
+          path: "/cart",
+          element: (
+            <ProtectedRoute>
+              <Cart />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/checkout",
+          element: (
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/payment",
+          element: (
+            <ProtectedRoute>
+              <Payment />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/order-summary",
+          element: (
+            <ProtectedRoute>
+              <OrderSummary />
+            </ProtectedRoute>
+          ),
+        },
+      ],
+    },
+    { path: "/login", element: <Login /> },
+    { path: "/signup", element: <SignUp /> },
+    { path: "/forgot-password", element: <ForgotPassword /> },
+    { path: "/reset-password", element: <ResetPassword /> },
+    { path: "*", element: <NotFound /> },
+  ]);
 
   useEffect(() => {
     loadingBarRef.current.continuousStart();
@@ -48,25 +79,7 @@ const App = () => {
   return (
     <>
       <TopLoadingBar ref={loadingBarRef} />
-      <Header />
-      <main className="min-h-dvh">
-        <Suspense fallback={<LoadingBar />}>
-          <Routes>
-            {routes.map((r) =>
-              r.protected ? (
-                <Route
-                  key={r.path}
-                  path={r.path}
-                  element={<ProtectedRoute>{r.element}</ProtectedRoute>}
-                />
-              ) : (
-                <Route key={r.path} path={r.path} element={r.element} />
-              )
-            )}
-          </Routes>
-        </Suspense>
-      </main>
-      <Footer />
+      <Suspense fallback={<LoadingBar />}>{element}</Suspense>
     </>
   );
 };
