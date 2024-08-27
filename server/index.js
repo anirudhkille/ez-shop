@@ -23,7 +23,7 @@ const corsOptions = {
   },
   credentials: true,
 };
-app.use(compression())
+app.use(compression());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(apiLimiter);
