@@ -1,6 +1,9 @@
-# Allow all crawlers access to the entire site
+# *
 User-agent: *
-Disallow: 
+Allow: /
 
-# Specify the location of your sitemap
+# Host
+Host: https://ez-shop.onrender.com
+
+# Sitemaps
 Sitemap: https://ez-shop.onrender.com/sitemap.xml
