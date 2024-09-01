@@ -2,7 +2,15 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../../features/user/userSlice";
-import { Card, Heading, Button, Input, Label, Text } from "../../components";
+import {
+  Card,
+  Heading,
+  Button,
+  Input,
+  Label,
+  Text,
+  Head,
+} from "../../components";
 import { useResetPasswordMutation } from "../../features/user/userAPI";
 import { toast } from "sonner";
 
@@ -40,12 +48,12 @@ const ResetPassword = () => {
       return;
     }
     try {
-      const { newPassword } = formData; 
+      const { newPassword } = formData;
       const res = await resetPassword({
         token: token,
         password: newPassword,
       }).unwrap();
-      dispatch(login({ userDetails: res.data })); 
+      dispatch(login({ userDetails: res.data }));
       toast.success("Password reset successfully");
       navigate("/login");
     } catch (error) {
@@ -68,55 +76,61 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-dvh">
-      <Card
-        className="p-5 space-y-6 sm:p-8 w-[420px] rounded-lg"
-        as="form"
-        onSubmit={handleValidation}
-      >
-        <div className="space-y-2">
-          <Heading as="h2" className="text-3xl">
-            Reset password
-          </Heading>
-          <Text>Enter a new password for your account.</Text>
-        </div>
-
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <Label id="newPassword">New Password</Label>
-            <Input
-              id="newPassword"
-              type="password"
-              value={formData.newPassword}
-              onChange={handleChange}
-            />
+    <>
+      <Head
+        title="Reset Password | EZ Shop"
+        description="Reset your EZ Shop password securely. Enter your new password to update your account and regain access."
+      />
+      <div className="flex items-center justify-center min-h-dvh">
+        <Card
+          className="p-5 space-y-6 sm:p-8 w-[420px] rounded-lg"
+          as="form"
+          onSubmit={handleValidation}
+        >
+          <div className="space-y-2">
+            <Heading as="h2" className="text-3xl">
+              Reset password
+            </Heading>
+            <Text>Enter a new password for your account.</Text>
           </div>
 
-          <div className="space-y-1">
-            <Label id="confirmPassword">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-        <Button className="w-full" type="submit" disabled={isLoading}>
-          Reset Password
-        </Button>
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <Label id="newPassword">New Password</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                value={formData.newPassword}
+                onChange={handleChange}
+              />
+            </div>
 
-        <div className="text-center">
-          <Button
-            variant="link"
-            className="mx-auto"
-            onClick={() => navigate("/forgot-password")}
-          >
-            Back to reset password
+            <div className="space-y-1">
+              <Label id="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+          <Button className="w-full" type="submit" disabled={isLoading}>
+            Reset Password
           </Button>
-        </div>
-      </Card>
-    </div>
+
+          <div className="text-center">
+            <Button
+              variant="link"
+              className="mx-auto"
+              onClick={() => navigate("/forgot-password")}
+            >
+              Back to reset password
+            </Button>
+          </div>
+        </Card>
+      </div>
+    </>
   );
 };
 

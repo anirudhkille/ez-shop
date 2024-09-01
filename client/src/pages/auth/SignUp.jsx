@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { Label, Card, Button, Heading, Text, Input } from "../../components";
+import {
+  Label,
+  Card,
+  Button,
+  Heading,
+  Text,
+  Input,
+  Head,
+} from "../../components";
 import { toast } from "sonner";
 import { useSignupMutation } from "../../features/user/userAPI";
 import { login } from "../../features/user/userSlice";
@@ -69,68 +77,74 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-[100vh] px-3 overflow-hidden">
-      <Card
-        className="p-5 space-y-4 sm:p-8 w-[420px]"
-        as="form"
-        onSubmit={handleValidation}
-      >
-        <div className="space-y-2">
-          <Heading as="h2" className="text-3xl">
-            Create an account
-          </Heading>
-          <Text>Enter your details to create a new account</Text>
-        </div>
-
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <Label id="name">Name</Label>
-            <Input id="name" value={formData.name} onChange={handleChange} />
+    <>
+      <Head
+        title="Create an Account | EZ Shop"
+        description="Join EZ Shop today! Create your account by entering your email, password, and other details. Start enjoying personalized features and more."
+      />
+      <div className="flex items-center justify-center h-[100vh] px-3 overflow-hidden">
+        <Card
+          className="p-5 space-y-4 sm:p-8 w-[420px]"
+          as="form"
+          onSubmit={handleValidation}
+        >
+          <div className="space-y-2">
+            <Heading as="h2" className="text-3xl">
+              Create an account
+            </Heading>
+            <Text>Enter your details to create a new account</Text>
           </div>
 
-          <div className="space-y-1">
-            <Label id="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <Label id="password">Password</Label>
-              <Button
-                variant="link"
-                onClick={() => navigate("/forgot-password")}
-              >
-                Forgot Password?
-              </Button>
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <Label id="name">Name</Label>
+              <Input id="name" value={formData.name} onChange={handleChange} />
             </div>
-            <Input
-              id="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-        <Button className="w-full" type="submit" disabled={isLoading}>
-          Create an Account
-        </Button>
 
-        <div className="text-center">
-          <Button
-            variant="link"
-            className="mx-auto"
-            onClick={() => navigate("/login")}
-          >
-            Already have an account? Login
+            <div className="space-y-1">
+              <Label id="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <Label id="password">Password</Label>
+                <Button
+                  variant="link"
+                  onClick={() => navigate("/forgot-password")}
+                >
+                  Forgot Password?
+                </Button>
+              </div>
+              <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+          <Button className="w-full" type="submit" disabled={isLoading}>
+            Create an Account
           </Button>
-        </div>
-      </Card>
-    </div>
+
+          <div className="text-center">
+            <Button
+              variant="link"
+              className="mx-auto"
+              onClick={() => navigate("/login")}
+            >
+              Already have an account? Login
+            </Button>
+          </div>
+        </Card>
+      </div>
+    </>
   );
 };
 

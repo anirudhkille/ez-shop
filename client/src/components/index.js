@@ -1,5 +1,6 @@
 // layout
 export { default as Footer } from "./layout/Footer";
+export { default as Head } from "./layout/Head";
 export { default as Header } from "./layout/Header";
 export { default as Layout } from "./layout/Layout";
 export { default as NotFound } from "./layout/NotFound";

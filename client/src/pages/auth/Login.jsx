@@ -2,7 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login as userLogin } from "../../features/user/userSlice";
-import { Card, Heading, Button, Input, Label, Text } from "../../components";
+import {
+  Card,
+  Heading,
+  Button,
+  Input,
+  Label,
+  Text,
+  Head,
+} from "../../components";
 import { useLoginMutation } from "../../features/user/userAPI";
 import { toast } from "sonner";
 
@@ -56,63 +64,69 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center px-3 min-h-dvh">
-      <Card
-        className="p-5 space-y-6 sm:p-8 w-[420px]"
-        as="form"
-        onSubmit={handleValidation}
-      >
-        <div className="space-y-2">
-          <Heading as="h2" className="text-3xl">
-            Login to your account
-          </Heading>
-          <Text>Enter your email and password to login</Text>
-        </div>
-
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <Label id="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
+    <>
+      <Head
+        title="Login | EZ Shop"
+        description="Access your account on EZ Shop. Enter your email and password to login securely. If you don't have an account, you can sign up for one."
+      />
+      <div className="flex items-center justify-center px-3 min-h-dvh">
+        <Card
+          className="p-5 space-y-6 sm:p-8 w-[420px]"
+          as="form"
+          onSubmit={handleValidation}
+        >
+          <div className="space-y-2">
+            <Heading as="h2" className="text-3xl">
+              Login to your account
+            </Heading>
+            <Text>Enter your email and password to login</Text>
           </div>
 
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <Label id="password">Password</Label>
-              <Button
-                variant="link"
-                onClick={() => navigate("/forgot-password")}
-              >
-                Forgot Password?
-              </Button>
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <Label id="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
             </div>
-            <Input
-              id="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-        <Button className="w-full" type="submit" disabled={isLoading}>
-          Login
-        </Button>
 
-        <div className="text-center">
-          <Button
-            variant="link"
-            className="mx-auto"
-            onClick={() => navigate("/signup")}
-          >
-            Don't have an account? Sign Up
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <Label id="password">Password</Label>
+                <Button
+                  variant="link"
+                  onClick={() => navigate("/forgot-password")}
+                >
+                  Forgot Password?
+                </Button>
+              </div>
+              <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+          <Button className="w-full" type="submit" disabled={isLoading}>
+            Login
           </Button>
-        </div>
-      </Card>
-    </div>
+
+          <div className="text-center">
+            <Button
+              variant="link"
+              className="mx-auto"
+              onClick={() => navigate("/signup")}
+            >
+              Don't have an account? Sign Up
+            </Button>
+          </div>
+        </Card>
+      </div>
+    </>
   );
 };
 
