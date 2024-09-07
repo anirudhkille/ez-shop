@@ -19,6 +19,7 @@
     "@stripe/stripe-js": "^2.3.0",
     "axios": "^1.6.5",
     "clsx": "^2.1.1",
+    "lucide-react": "^0.439.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
