@@ -51,20 +51,7 @@ const productSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  reviews: [
-    {
-      userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-      comment: String,
-      rating: Number,
-      createdAt: {
-        type: Date,
-        default: Date.now,
-      },
-    },
-  ],
+  
   stock: {
     type: Number,
     required: true,
