@@ -6,7 +6,7 @@ import {
   removeFromCart,
   clearFromCart,
   cartTotal,
-} from "../features/cart/cartSlice";
+} from "../import { connect } from 'react-redux'/cart/cartSlice";
 
 const Cart = () => {
   const dispatch = useDispatch();

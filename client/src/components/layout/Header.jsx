@@ -7,7 +7,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LogoutDialog from "../LogoutDialog";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../features/user/userSlice";
+import { logout } from "../../redux/reducer/userReducer";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

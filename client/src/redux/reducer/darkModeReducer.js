@@ -4,7 +4,7 @@ const initialState = {
   darkMode: JSON.parse(localStorage.getItem("darkMode")) || false,
 };
 
-const darkModeSlice = createSlice({
+const darkModeReducer = createSlice({
   name: "darkMode",
   initialState,
   reducers: {
@@ -24,6 +24,6 @@ const darkModeSlice = createSlice({
 });
 
 export const { toggleDarkMode, enableDarkMode, disableDarkMode } =
-  darkModeSlice.actions;
+  darkModeReducer.actions;
 
-export default darkModeSlice.reducer;
+export default darkModeReducer.reducer;

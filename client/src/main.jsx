@@ -4,7 +4,7 @@ import App from "./App";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-import store from "./app/store";
+import store from "./redux/store";
 import { Toaster } from "sonner";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
