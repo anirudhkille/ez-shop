@@ -10,7 +10,7 @@ import {
   Head,
 } from "../../components";
 import { toast } from "sonner";
-import { useForgotPasswordMutation } from "../../features/user/userAPI";
+import { useForgotPasswordMutation } from "../../redux/api/userAPI";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();

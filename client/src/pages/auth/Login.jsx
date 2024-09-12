@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { login as userLogin } from "../../features/user/userSlice";
+import { login as userLogin } from "../../redux/reducer/userReducer";
 import {
   Card,
   Heading,
@@ -11,7 +11,7 @@ import {
   Text,
   Head,
 } from "../../components";
-import { useLoginMutation } from "../../features/user/userAPI";
+import { useLoginMutation } from "../../redux/api/userAPI";
 import { toast } from "sonner";
 
 const Login = () => {

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useDispatch } from "react-redux";
-import { clearCart } from "../features/cart/cartSlice";
+import { clearCart } from "../redux/reducer/userReducer";
 
 const OrderSummary = () => {
   const dispatch = useDispatch();

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { cartTotal } from "../features/cart/cartSlice";
+import { cartTotal } from "../redux/reducer/cartReducer";
 
 const Payment = () => {
   const [paymentTypeCard, setPaymentTypeCard] = useState("cash");

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import CircularProgress from "@mui/material/LinearProgress";
 import Rating from "@mui/material/Rating";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../features/cart/cartSlice";
+import { addToCart } from "../redux/reducer/cartReducer";
 
 const DetailProduct = () => {
   const { id } = useParams();

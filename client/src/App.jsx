@@ -32,11 +32,7 @@ const App = () => {
         { path: "/products/category/:name", element: <CategoryProduct /> },
         {
           path: "/cart",
-          element: (
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          ),
+          element: <Cart />,
         },
         {
           path: "/checkout",

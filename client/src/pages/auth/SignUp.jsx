@@ -11,8 +11,8 @@ import {
   Head,
 } from "../../components";
 import { toast } from "sonner";
-import { useSignupMutation } from "../../features/user/userAPI";
-import { login } from "../../features/user/userSlice";
+import { useSignupMutation } from "../../redux/api/userAPI";
+import { login } from "../../redux/reducer/userReducer";
 
 const SignUp = () => {
   const dispatch = useDispatch();

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { login } from "../../features/user/userSlice";
+import { login } from "../../redux/reducer/userReducer";
 import {
   Card,
   Heading,
@@ -11,7 +11,7 @@ import {
   Text,
   Head,
 } from "../../components";
-import { useResetPasswordMutation } from "../../features/user/userAPI";
+import { useResetPasswordMutation } from "../../redux/api/userAPI";
 import { toast } from "sonner";
 
 const ResetPassword = () => {
