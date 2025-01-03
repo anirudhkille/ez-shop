@@ -1,15 +1,15 @@
-import User from "../model/User.js";
+import Admin from "../model/Admin.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 
-const generateToken = (user) => {
-  return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-    expiresIn: "1h", // Token expiry set to 1 hour
+const generateToken = (admin) => {
+  return jwt.sign({ id: admin._id, role: admin.role }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
   });
 };
 
-export const signUpController = async (req, res) => {
+export const signUp = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -20,26 +20,26 @@ export const signUpController = async (req, res) => {
       });
     }
 
-    const userExists = await User.findOne({ email });
-    if (userExists) {
+    const adminExists = await Admin.findOne({ email });
+    if (adminExists) {
       return res.status(409).json({
         success: false,
         message: "Email already registered with ezshop",
       });
     }
 
-    const newUser = await User.create({ name, email, password });
-    const token = generateToken(newUser);
+    const newAdmin = await Admin.create({ name, email, password });
+    const token = generateToken(newAdmin);
 
     res.status(201).json({
       success: true,
-      message: "User registered successfully",
-      token,
-      user: {
-        id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
+      message: "Admin registered successfully",
+      data: {
+        token,
+        id: newAdmin._id,
+        name: newAdmin.name,
+        email: newAdmin.email,
+        role: newAdmin.role,
       },
     });
   } catch (error) {
@@ -59,31 +59,31 @@ export const login = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
-    if (!user) {
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
       return res
         .status(401)
         .json({ success: false, message: "Invalid email or password" });
     }
 
-    const isMatch = await user.matchPassword(password);
+    const isMatch = await admin.matchPassword(password);
     if (!isMatch) {
       return res
         .status(401)
         .json({ success: false, message: "Invalid email or password" });
     }
 
-    const token = generateToken(user);
+    const token = generateToken(admin);
 
     res.status(200).json({
       success: true,
-      message: "User logged in successfully",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
+      message: "Admin logged in successfully",
+      data: {
+        token,
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: admin.role,
       },
     });
   } catch (error) {
@@ -96,20 +96,18 @@ export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) {
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
       return res.status(404).json({
         success: false,
-        message: "User with this email does not exist",
+        message: "Admin with this email does not exist",
       });
     }
 
-    const resetToken = user.generateResetToken();
-    await user.save({ validateBeforeSave: false });
+    const resetToken = admin.generateResetToken();
+    await admin.save({ validateBeforeSave: false });
 
-    const resetUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/api/v1/reset-password/${resetToken}`;
+    const resetUrl = `${process.env.FROTEND_URL}/reset-password?token=${resetToken}`;
 
     const message = `
       <h2>Password Reset Request</h2>
@@ -121,13 +119,13 @@ export const forgotPassword = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
-        user: process.env.SMTP_EMAIL,
+        admin: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASSWORD,
       },
     });
 
     await transporter.sendMail({
-      to: user.email,
+      to: admin.email,
       subject: "Password Reset Request",
       html: message,
     });
@@ -149,35 +147,35 @@ export const resetPassword = async (req, res) => {
       .update(req.params.token)
       .digest("hex");
 
-    const user = await User.findOne({
+    const admin = await Admin.findOne({
       resetPasswordToken,
       resetPasswordExpires: { $gt: Date.now() },
     });
 
-    if (!user) {
+    if (!admin) {
       return res.status(400).json({
         success: false,
         message: "Invalid or expired reset token",
       });
     }
 
-    user.password = req.body.password;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+    admin.password = req.body.password;
+    admin.resetPasswordToken = undefined;
+    admin.resetPasswordExpires = undefined;
 
-    await user.save();
+    await admin.save();
 
-    const token = generateToken(user);
+    const token = generateToken(admin);
 
     res.status(200).json({
       success: true,
       message: "Password reset successful",
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
+      admin: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: admin.role,
       },
     });
   } catch (error) {
@@ -189,22 +187,22 @@ export const resetPassword = async (req, res) => {
 export const editProfile = async (req, res) => {
   try {
     const updates = req.body;
-    const user = await User.findByIdAndUpdate(req.user.id, updates, {
+    const admin = await Admin.findByIdAndUpdate(req.admin.id, updates, {
       new: true,
       runValidators: true,
     }).select("-password");
 
-    if (!user) {
+    if (!admin) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Admin not found",
       });
     }
 
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
-      user,
+      admin,
     });
   } catch (error) {
     console.error("Error during edit profile:", error);
@@ -214,18 +212,18 @@ export const editProfile = async (req, res) => {
 
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const admin = await Admin.findById(req.admin.id).select("-password");
 
-    if (!user) {
+    if (!admin) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Admin not found",
       });
     }
 
     res.status(200).json({
       success: true,
-      user,
+      admin,
     });
   } catch (error) {
     console.error("Error during get profile:", error);

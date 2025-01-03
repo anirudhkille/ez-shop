@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 
-const userSchema = mongoose.Schema(
+const adminSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -19,36 +19,18 @@ const userSchema = mongoose.Schema(
     },
     role: {
       type: String,
-      default: "user",
+      default: "admin",
     },
-    address: [
-      {
-        name: String,
-        mobileNo: String,
-        houseNo: String,
-        street: String,
-        landmark: String,
-        city: String,
-        country: String,
-        postalCode: String,
-      },
-    ],
     phoneNumber: {
       type: String,
     },
-    orderHistory: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Order",
-      },
-    ],
     resetPasswordToken: String,
     resetPasswordExpires: Date,
   },
   { timestamps: true }
 );
 
-userSchema.pre("save", async function (next) {
+adminSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
@@ -58,11 +40,11 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.methods.matchPassword = async function (enteredPassword) {
+adminSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-userSchema.methods.generateResetToken = function () {
+adminSchema.methods.generateResetToken = function () {
   const token = crypto.randomBytes(20).toString("hex");
 
   this.resetPasswordToken = crypto
@@ -75,5 +57,5 @@ userSchema.methods.generateResetToken = function () {
   return token;
 };
 
-const User = mongoose.model("User", userSchema);
-export default User;
+const Admin = mongoose.model("Admin", adminSchema);
+export default Admin;

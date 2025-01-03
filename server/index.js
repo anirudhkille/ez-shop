@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import adminRoutes from "./router/adminRoutes.js";
 import userRouter from "./router/userRouter.js";
 import orderRouter from "./router/orderRouter.js";
 import connectDb from "./database/connectDb.js";
@@ -22,6 +23,7 @@ const startServer = () => {
     res.send("Api is running");
   });
 
+  app.use("/admin", adminRoutes);
   app.use("/user", userRouter);
   app.use("/order", orderRouter);
 
