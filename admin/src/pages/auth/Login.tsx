@@ -1,3 +1,5 @@
+import { postLogin } from "@/api/auth";
+import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,8 +11,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Login as LoginInterface } from "@/types/api";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -24,11 +29,38 @@ export default function Login() {
     setFormData({ ...formData, [id]: value });
   };
 
-  const handleSubmit = () => {};
+  const { mutate: login, isPending } = useMutation({
+    mutationFn: (formData: LoginInterface) => postLogin(formData),
+    onSuccess: () => {
+      toast.success("Login successful!");
+      navigate("/dashboard");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "An error occurred while logging in.");
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!formData.email) {
+      toast.error("Email can't be empty");
+      return;
+    }
+    if (!formData.password) {
+      toast.error("Password can't be empty");
+      return;
+    }
+    login(formData);
+    navigate("/");
+  };
+
   return (
     <div className="flex items-center justify-center h-screen px-3">
       <Card className="w-full max-w-sm">
-        <CardHeader>
+        <CardHeader className="text-center">
+          <div className="flex items-center justify-center w-full mb-5">
+            <Logo />
+          </div>
           <CardTitle>Login to your account</CardTitle>
           <CardDescription>
             Enter your email and password to login
@@ -70,7 +102,7 @@ export default function Login() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button className="w-full" type="submit">
+            <Button className="w-full" type="submit" disabled={isPending}>
               Login
             </Button>
           </CardFooter>

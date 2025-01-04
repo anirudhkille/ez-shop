@@ -16,9 +16,38 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
+  <title>Entry 360 Building Manager</title>
+  <style>
+    body {
+      font-family: 'Geist', sans-serif;
+    }
+  </style>
+  <script>
+    (function () {
+      const storageKey = 'vite-ui-theme';
+      const root = document.documentElement;
+
+      const getSystemTheme = () => {
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      };
+
+      const getInitialTheme = () => {
+        const storedTheme = localStorage.getItem(storageKey);
+        if (storedTheme === 'dark' || storedTheme === 'light') {
+          return storedTheme;
+        }
+        return getSystemTheme();
+      };
+
+      const initialTheme = getInitialTheme();
+      root.className = initialTheme;
+
+      if (!localStorage.getItem(storageKey)) {
+        localStorage.setItem(storageKey, initialTheme);
+      }
+    })();
+  </script>
 </head>
 
 <body>

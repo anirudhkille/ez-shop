@@ -110,13 +110,6 @@ export const forgotPassword = async (req, res) => {
 
     const resetUrl = `${process.env.FROTEND_URL}/reset-password?token=${resetToken}`;
 
-    const message = `
-      <h2>Password Reset Request</h2>
-      <p>Click on the following link to reset your password:</p>
-      <a href="${resetUrl}">Reset Password</a>
-      <p>This link will expire in 10 minutes.</p>
-    `;
-
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
@@ -128,7 +121,7 @@ export const forgotPassword = async (req, res) => {
     await transporter.sendMail({
       to: user.email,
       subject: "Password Reset Request",
-      html: message,
+      html: resetPasswordTemplate(user.name, resetUrl),
     });
 
     res.status(200).json({

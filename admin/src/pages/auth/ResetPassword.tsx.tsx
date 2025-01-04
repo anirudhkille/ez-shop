@@ -1,3 +1,5 @@
+import { putResetPassword } from "@/api/auth";
+import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,10 +11,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ResetPassword as ResetPasswordInterface } from "@/types/api";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function ResetPassword() {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     newPassword: "",
@@ -23,12 +30,44 @@ export default function ResetPassword() {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
   };
-  
-  const handleSubmit = () => {};
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (formData: ResetPasswordInterface) =>
+      putResetPassword(formData),
+    onSuccess: () => {
+      toast.success("Password changed successfully");
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.message || "An error occurred while updating the password."
+      );
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!formData.newPassword) {
+      toast.error("New password can't be empty");
+      return;
+    }
+    if (!formData.confirmPassword) {
+      toast.error("Confirm password can't be empty");
+      return;
+    }
+    if (formData.newPassword !== formData.confirmPassword) {
+      toast.error("Password not matching");
+      return;
+    }
+    mutate({ password: formData.confirmPassword, token: token ?? "" });
+  };
+
   return (
     <div className="flex items-center justify-center h-screen px-3">
       <Card className="w-full max-w-sm">
-        <CardHeader>
+        <CardHeader className="text-center">
+          <div className="flex items-center justify-center w-full mb-5">
+            <Logo />
+          </div>
           <CardTitle>Reset password</CardTitle>
           <CardDescription>
             Enter a new password for your account.
@@ -61,7 +100,7 @@ export default function ResetPassword() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-3">
-            <Button className="w-full" type="submit">
+            <Button className="w-full" type="submit" disabled={isPending}>
               Reset password
             </Button>
             <Button variant="link" onClick={() => navigate("/")}>

@@ -20,6 +20,7 @@
     "react-dom": "^18.3.1",
     "react-router": "^7.1.1",
     "react-router-dom": "^6.26.2",
+    "sonner": "^1.7.1",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"
   },

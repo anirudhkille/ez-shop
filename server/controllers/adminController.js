@@ -2,6 +2,7 @@ import Admin from "../model/Admin.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import { resetPasswordTemplate } from "../utils/resetEmailTemplate.js";
 
 const generateToken = (admin) => {
   return jwt.sign({ id: admin._id, role: admin.role }, process.env.JWT_SECRET, {
@@ -107,19 +108,14 @@ export const forgotPassword = async (req, res) => {
     const resetToken = admin.generateResetToken();
     await admin.save({ validateBeforeSave: false });
 
-    const resetUrl = `${process.env.FROTEND_URL}/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.ADMIN_URL}/reset-password?token=${resetToken}`;
 
-    const message = `
-      <h2>Password Reset Request</h2>
-      <p>Click on the following link to reset your password:</p>
-      <a href="${resetUrl}">Reset Password</a>
-      <p>This link will expire in 10 minutes.</p>
-    `;
+    const message = resetPasswordTemplate(admin.name, resetUrl);
 
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
-        admin: process.env.SMTP_EMAIL,
+        user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASSWORD,
       },
     });
@@ -127,7 +123,7 @@ export const forgotPassword = async (req, res) => {
     await transporter.sendMail({
       to: admin.email,
       subject: "Password Reset Request",
-      html: message,
+      html: resetPasswordTemplate(admin.name, resetUrl),
     });
 
     res.status(200).json({
@@ -141,10 +137,11 @@ export const forgotPassword = async (req, res) => {
 };
 
 export const resetPassword = async (req, res) => {
+  console.log(req.body)
   try {
     const resetPasswordToken = crypto
       .createHash("sha256")
-      .update(req.params.token)
+      .update(req.body.token)
       .digest("hex");
 
     const admin = await Admin.findOne({
