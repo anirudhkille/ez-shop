@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import useAuthStore from "@/store/authStore";
 import { Login as LoginInterface } from "@/types/api";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
@@ -19,6 +20,7 @@ import { toast } from "sonner";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuthStore();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -29,11 +31,14 @@ export default function Login() {
     setFormData({ ...formData, [id]: value });
   };
 
-  const { mutate: login, isPending } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (formData: LoginInterface) => postLogin(formData),
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Login successful!");
-      navigate("/dashboard");
+      const { name, email,  token } = data?.data;
+      console.log('Login Data:', { name, email, token });
+      login({ name: name, email: email, token: token });
+      navigate("/dashboard")
     },
     onError: (error: any) => {
       toast.error(error.message || "An error occurred while logging in.");
@@ -50,8 +55,7 @@ export default function Login() {
       toast.error("Password can't be empty");
       return;
     }
-    login(formData);
-    navigate("/");
+    mutate(formData);
   };
 
   return (
