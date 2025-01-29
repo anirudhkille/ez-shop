@@ -3,6 +3,7 @@ import { verifyUser } from "../middleware/verifyUser.js";
 import {
   forgotPassword,
   getProfile,
+  googleLogin,
   login,
   resetPassword,
   signUp,
@@ -10,6 +11,7 @@ import {
 
 const router = express.Router();
 // router.post("/signup", signUp);
+router.post("/google-login", googleLogin);
 router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password", resetPassword);

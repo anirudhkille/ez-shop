@@ -1,9 +1,11 @@
+import { OAuth2Client } from "google-auth-library";
 import Admin from "../model/Admin.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 import { resetPasswordTemplate } from "../utils/resetEmailTemplate.js";
 
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const generateToken = (admin) => {
   return jwt.sign({ id: admin._id, role: admin.role }, process.env.JWT_SECRET, {
     expiresIn: "1h",
@@ -137,7 +139,7 @@ export const forgotPassword = async (req, res) => {
 };
 
 export const resetPassword = async (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
   try {
     const resetPasswordToken = crypto
       .createHash("sha256")
@@ -224,6 +226,67 @@ export const getProfile = async (req, res) => {
     });
   } catch (error) {
     console.error("Error during get profile:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const googleLogin = async (req, res) => {
+  try {
+    const { token: tokenId } = req.body;
+
+    if (!tokenId) {
+      return res.status(400).json({
+        success: false,
+        message: "Google token is required",
+      });
+    }
+
+    // Log the tokenId to ensure it's received correctly
+    console.log("Received Google token:", tokenId);
+
+    // Verify the token with Google's OAuth client
+    const ticket = await client.verifyIdToken({
+      idToken: tokenId,
+      audience: process.env.GOOGLE_CLIENT_ID, // Make sure this matches your Google Client ID
+    });
+
+    // Log the payload to see the details from Google
+    const { email, name, sub: googleId } = ticket.getPayload();
+    console.log("Google token payload:", { email, name, googleId });
+
+    // Check if the user exists in your Admin database
+    const admin = await Admin.findOne({ email });
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Email not registered",
+      });
+    }
+
+    // Generate a token for the admin
+    const token = generateToken(admin);
+
+    return res.status(200).json({
+      success: true,
+      message: "Admin logged in successfully",
+      data: {
+        token,
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: admin.role,
+      },
+    });
+  } catch (error) {
+    console.error("Error during Google login:", error);
+    if (error.response) {
+      // If error comes from Google's OAuth client
+      return res.status(400).json({
+        success: false,
+        message: error.response.error || "Invalid Google token",
+      });
+    }
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
