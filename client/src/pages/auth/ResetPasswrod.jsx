@@ -2,17 +2,10 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/reducer/userReducer";
-import {
-  Card,
-  Heading,
-  Button,
-  Input,
-  Label,
-  Text,
-  Head,
-} from "../../components";
+import { Button, Input, Label, Head } from "../../components";
 import { useResetPasswordMutation } from "../../redux/api/userAPI";
 import { toast } from "sonner";
+import AuthLayout from "../../components/layout/AuthLayout";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -81,19 +74,13 @@ const ResetPassword = () => {
         title="Reset Password | EZ Shop"
         description="Reset your EZ Shop password securely. Enter your new password to update your account and regain access."
       />
-      <div className="flex items-center justify-center min-h-dvh">
-        <Card
-          className="p-5 space-y-6 sm:p-8 w-[420px] rounded-lg"
-          as="form"
-          onSubmit={handleValidation}
-        >
-          <div className="space-y-2">
-            <Heading as="h2" className="text-3xl">
-              Reset password
-            </Heading>
-            <Text>Enter a new password for your account.</Text>
-          </div>
-
+      <AuthLayout
+        heading="Reset password"
+        description="Enter a new password for your account."
+        redirect="/forgot-password"
+        redirectText="Back to reset password"
+      >
+        <form onSubmit={handleValidation}>
           <div className="space-y-4">
             <div className="space-y-1">
               <Label id="newPassword">New Password</Label>
@@ -118,18 +105,8 @@ const ResetPassword = () => {
           <Button className="w-full" type="submit" disabled={isLoading}>
             Reset Password
           </Button>
-
-          <div className="text-center">
-            <Button
-              variant="link"
-              className="mx-auto"
-              onClick={() => navigate("/forgot-password")}
-            >
-              Back to reset password
-            </Button>
-          </div>
-        </Card>
-      </div>
+        </form>
+      </AuthLayout>
     </>
   );
 };

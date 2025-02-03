@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { useSignupMutation } from "../../redux/api/userAPI";
 import { login } from "../../redux/reducer/userReducer";
+import AuthLayout from "../../components/layout/AuthLayout";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -31,8 +32,6 @@ const SignUp = () => {
   const handleValidation = async (e) => {
     e.preventDefault();
 
-    // const passwordRegex =
-    //   /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
     if (!formData.name) {
       toast.error("Name can't be empty");
       return;
@@ -82,19 +81,13 @@ const SignUp = () => {
         title="Create an Account | EZ Shop"
         description="Join EZ Shop today! Create your account by entering your email, password, and other details. Start enjoying personalized features and more."
       />
-      <div className="flex items-center justify-center h-[100vh] px-3 overflow-hidden">
-        <Card
-          className="p-5 space-y-4 sm:p-8 w-[420px]"
-          as="form"
-          onSubmit={handleValidation}
-        >
-          <div className="space-y-2">
-            <Heading as="h2" className="text-3xl">
-              Create an account
-            </Heading>
-            <Text>Enter your details to create a new account</Text>
-          </div>
-
+      <AuthLayout
+        heading="Create an account"
+        description="Enter your details to create a new account"
+        redirect="/login"
+        redirectText="Already have an account? Login"
+      >
+        <form onSubmit={handleValidation}>
           <div className="space-y-4">
             <div className="space-y-1">
               <Label id="name">Name</Label>
@@ -132,18 +125,8 @@ const SignUp = () => {
           <Button className="w-full" type="submit" disabled={isLoading}>
             Create an Account
           </Button>
-
-          <div className="text-center">
-            <Button
-              variant="link"
-              className="mx-auto"
-              onClick={() => navigate("/login")}
-            >
-              Already have an account? Login
-            </Button>
-          </div>
-        </Card>
-      </div>
+        </form>
+      </AuthLayout>
     </>
   );
 };

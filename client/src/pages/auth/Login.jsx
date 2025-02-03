@@ -2,17 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login as userLogin } from "../../redux/reducer/userReducer";
-import {
-  Card,
-  Heading,
-  Button,
-  Input,
-  Label,
-  Text,
-  Head,
-} from "../../components";
+import { Button, Input, Label, Head } from "../../components";
 import { useLoginMutation } from "../../redux/api/userAPI";
 import { toast } from "sonner";
+import AuthLayout from "../../components/layout/AuthLayout";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -69,19 +62,13 @@ const Login = () => {
         title="Login | EZ Shop"
         description="Access your account on EZ Shop. Enter your email and password to login securely. If you don't have an account, you can sign up for one."
       />
-      <div className="flex items-center justify-center px-3 min-h-dvh">
-        <Card
-          className="p-5 space-y-6 sm:p-8 w-[420px]"
-          as="form"
-          onSubmit={handleValidation}
-        >
-          <div className="space-y-2">
-            <Heading as="h2" className="text-3xl">
-              Login to your account
-            </Heading>
-            <Text>Enter your email and password to login</Text>
-          </div>
-
+      <AuthLayout
+        heading="Login to your account"
+        description="Enter your email and password to login"
+        redirect="/signup"
+        redirectText="Don't have an account? Sign Up"
+      >
+        <form onSubmit={handleValidation}>
           <div className="space-y-4">
             <div className="space-y-1">
               <Label id="email">Email</Label>
@@ -114,18 +101,8 @@ const Login = () => {
           <Button className="w-full" type="submit" disabled={isLoading}>
             Login
           </Button>
-
-          <div className="text-center">
-            <Button
-              variant="link"
-              className="mx-auto"
-              onClick={() => navigate("/signup")}
-            >
-              Don't have an account? Sign Up
-            </Button>
-          </div>
-        </Card>
-      </div>
+        </form>
+      </AuthLayout>
     </>
   );
 };

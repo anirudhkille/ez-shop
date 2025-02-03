@@ -7,8 +7,6 @@ import {
   CardContent,
 } from "../ui/card";
 import Logo from "../shared/Logo";
-import { Toaster } from "../ui/toaster";
-
 interface AuthProps {
   title: string;
   description: string;
@@ -22,7 +20,7 @@ export default function AuthLayout({
 }: AuthProps) {
   return (
     <div className="flex items-center justify-center h-screen px-3">
-      <Card className="w-full max-w-sm">
+      <Card className="w-full max-w-sm py-5">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center w-full mb-5">
             <Logo />
@@ -32,8 +30,6 @@ export default function AuthLayout({
         </CardHeader>
         <CardContent>{children}</CardContent>
       </Card>
-
-      <Toaster />
     </div>
   );
 }
