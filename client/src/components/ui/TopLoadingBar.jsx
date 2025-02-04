@@ -7,7 +7,7 @@ const TopLoadingBar = forwardRef((props, ref) => {
       color="#2563EB"
       ref={ref}
       shadow={true}
-      height={3}
+      height={2.5}
       {...props}
     />
   );

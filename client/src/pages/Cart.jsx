@@ -1,18 +1,15 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addToCart,
-  removeFromCart,
-  clearFromCart,
-  cartTotal,
-} from "../redux/reducer/cartReducer";
+import { useSelector } from "react-redux";
+import useCartStore from "../store/cartStore";
+import Link from "../components/ui/Link";
 
 const Cart = () => {
-  const dispatch = useDispatch();
+  const { cartItems, addToCart, removeFromCart, clearFromCart } =
+    useCartStore();
   const navigate = useNavigate();
-  const total = useSelector((state) => cartTotal(state));
-  const cartItems = useSelector((state) => state.cart.cartItems);
+  const total = useCartStore.getState().cartTotal();
+
   const userId = useSelector((state) => state.user.userId);
 
   return (
@@ -68,16 +65,14 @@ const Cart = () => {
                       <div className="flex items-end justify-between flex-1 text-sm">
                         <p className="text-gray-500">
                           <button
-                            onClick={() =>
-                              dispatch(removeFromCart({ id: cart.id }))
-                            }
+                            onClick={() => removeFromCart({ id: cart.id })}
                             className="px-2 mr-2 font-bold text-center text-white bg-indigo-600"
                           >
                             -
                           </button>
                           {cart.quantity}
                           <button
-                            onClick={() => dispatch(addToCart({ id: cart.id }))}
+                            onClick={() => addToCart({ id: cart.id })}
                             className="px-2 ml-1 font-bold text-center text-white bg-indigo-600"
                           >
                             +
@@ -86,9 +81,7 @@ const Cart = () => {
 
                         <div className="flex">
                           <button
-                            onClick={() =>
-                              dispatch(clearFromCart({ id: cart.id }))
-                            }
+                            onClick={() => clearFromCart(cart.id)}
                             className="font-medium text-indigo-600 hover:text-indigo-500"
                           >
                             Remove
@@ -112,17 +105,11 @@ const Cart = () => {
             </p>
             <div className="mt-6">
               {userId ? (
-                <Link
-                  to="/checkout"
-                  className="flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700"
-                >
+                <Link variant="default" to="/checkout" className="w-full">
                   Checkout
                 </Link>
               ) : (
-                <Link
-                  to="/login"
-                  className="flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700"
-                >
+                <Link to="/login" className="w-full">
                   Login to Checkout
                 </Link>
               )}

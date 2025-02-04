@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
@@ -8,13 +8,14 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import LogoutDialog from "../LogoutDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/reducer/userReducer";
+import useCartStore from "../../store/cartStore";
 
 const Header = () => {
+  const { cartItems } = useCartStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const dispatch = useDispatch();
 
-  const cartItems = useSelector((state) => state.cart.cartItems || []);
   const userId = useSelector((state) => state.user.userId);
 
   const toggleMenu = () => {

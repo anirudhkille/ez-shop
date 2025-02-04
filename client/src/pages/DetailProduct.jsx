@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CircularProgress from "@mui/material/LinearProgress";
 import Rating from "@mui/material/Rating";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/reducer/cartReducer";
+import useCartStore from "../store/cartStore";
+import Button from "../components/ui/Button";
 
 const DetailProduct = () => {
   const { id } = useParams();
   const [product, setProduct] = useState([]);
-  const dispatch = useDispatch();
+  const { addToCart } = useCartStore();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const DetailProduct = () => {
                       defaultValue={product.rating.rate}
                       precision={0.5}
                       readOnly
-                      style={{ color: "#4F46E5" }}
+                      style={{ color: "#000000" }}
                     />
 
                     <span className="ml-3 text-gray-600">
@@ -74,12 +74,13 @@ const DetailProduct = () => {
                     ₹ {(product.price * 10).toFixed(2)}
                   </span>
                 </div>
-                <button
-                  className="flex px-6 py-2 mt-3 text-white bg-indigo-500 border-0 rounded focus:outline-none hover:bg-indigo-600 "
-                  onClick={() => dispatch(addToCart(product))}
+                <Button
+                  className="mt-3"
+                  size="lg"
+                  onClick={() => addToCart(product)}
                 >
                   Add to Cart
-                </button>
+                </Button>
               </div>
             </div>
           ))}

@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/reducer/cartReducer";
+import useCartStore from "../store/cartStore";
+import Button from "../components/ui/Button"
 
 const Products = ({ products }) => {
-  const dispatch = useDispatch();
-
+  const { addToCart } = useCartStore();
+  
   return (
     <div className="text-gray-400 body-font min-h-[100vh]">
       <div className="container px-5 mx-auto py-14 ">
@@ -32,7 +32,7 @@ const Products = ({ products }) => {
                   </h2>
                   <div className="flex items-center justify-between mt-1">
                     <p>₹ {(product.price * 10).toFixed(2)}</p>
-                    <span className="text-white bg-[#388E3C] rounded px-1  flex items-center text-sm gap-1 justify-center">
+                    <span className="flex items-center justify-center gap-1 px-1 text-sm text-white bg-black rounded">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -50,12 +50,12 @@ const Products = ({ products }) => {
                   </div>
                 </div>
               </Link>
-              <button
-                className="flex px-6 py-2 mx-auto mt-5 text-white bg-indigo-500 border-0 rounded focus:outline-none hover:bg-indigo-600"
-                onClick={() => dispatch(addToCart(product))}
+              <Button
+                className="flex px-10 mx-auto mt-5"
+                onClick={() => addToCart(product)}
               >
                 Add to Cart
-              </button>
+              </Button>
             </div>
           ))}
         </div>

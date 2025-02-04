@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { cartTotal } from "../redux/reducer/cartReducer";
+import useCartStore from "../store/cartStore";
 
 const Payment = () => {
+  const { cartTotal } = useCartStore();
   const [paymentTypeCard, setPaymentTypeCard] = useState("cash");
   const cartItems = useSelector((state) => state.cart.cartItems);
   const userId = useSelector((state) => state.user.userId);
-  const getCartTotal = useSelector(cartTotal);
 
   const [cardData, setCardData] = useState({
     cardName: "",
@@ -22,7 +22,7 @@ const Payment = () => {
   const data = location.state;
   const navigate = useNavigate();
 
-  const subTotal = getCartTotal;
+  const subTotal = cartTotal;
   const taxCharge = subTotal * 0.1;
   const shippmentCharge = subTotal < 500 ? 100 : 0;
   const totalAmount = subTotal + taxCharge + shippmentCharge;
