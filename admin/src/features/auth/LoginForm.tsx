@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import React from "react";
 import {
   Form,
   FormControl,
@@ -8,31 +8,36 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import NextLink from "@/components/ui/link";
-import { toast } from "@/hooks/use-toast";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Toaster } from "../ui/toaster";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast, Toaster } from "sonner";
+import { LinkButton } from "@/components/ui/link";
 
 const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
+  password: z.string().nonempty({
+    message: "Please enter a password",
+  }),
 });
 
-export default function ForgotPasswordForm() {
+export default function LoginForm() {
+  const router = useRouter();
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
-  const [message, setMessage] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
+      password: "",
     },
   });
 
@@ -40,7 +45,7 @@ export default function ForgotPasswordForm() {
     setStatus("loading");
 
     try {
-      const response = await fetch("/api/auth/forgot-password", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
@@ -50,20 +55,14 @@ export default function ForgotPasswordForm() {
 
       if (data.success) {
         setStatus("success");
-        toast({
-          title: "Success",
-          description: data.message,
-        });
+        toast.success(data.message);
+        router.push("/dashboard");
       } else {
         setStatus("error");
-        toast({
-          title: "Error",
-          description: data.message,
-        });
+        toast.error(data.message);
       }
     } catch (error) {
       setStatus("error");
-      setMessage("An error occurred. Please try again later.");
     } finally {
       setStatus("idle");
     }
@@ -71,7 +70,7 @@ export default function ForgotPasswordForm() {
 
   return (
     <>
-      <Toaster />
+      <Toaster position="top-center" />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -87,17 +86,33 @@ export default function ForgotPasswordForm() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <FormLabel htmlFor="password">Password</FormLabel>
+                  <LinkButton variant="link"  href="/forgot-password">
+                    Forgot your password?
+                  </LinkButton>
+                </div>
+
+                <FormControl>
+                  <Input type="password" placeholder="********" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <Button
             type="submit"
             disabled={status === "loading"}
             className="w-full"
           >
-            Reset Password
+            {status === "loading" ? "Logging in..." : "Log in"}
           </Button>
-          <NextLink href="/" className="justify-center w-full">
-            Remember your password? Login
-          </NextLink>
         </form>
       </Form>
     </>

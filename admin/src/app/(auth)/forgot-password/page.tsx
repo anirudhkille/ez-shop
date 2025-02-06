@@ -1,5 +1,9 @@
-import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
+import ForgotPasswordForm from "@/features/auth/ForgotPasswordForm";
 import AuthLayout from "@/components/layout/AuthLayout";
+
+export const metadata = {
+  title: "Forgot Password | EZ Shop Admin",
+};
 
 export default function page() {
   return (

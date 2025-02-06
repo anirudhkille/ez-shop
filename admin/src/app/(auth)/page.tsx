@@ -1,7 +1,11 @@
-import GoogleLogin from "@/components/auth/GoogleLogin";
-import LoginForm from "@/components/auth/LoginForm";
+import GoogleLogin from "@/features/auth/GoogleLogin";
+import LoginForm from "@/features/auth/LoginForm";
 import AuthLayout from "@/components/layout/AuthLayout";
 import { Separator } from "@/components/ui/separator";
+
+export const metadata = {
+  title: "Login | EZ Shop Admin",
+};
 
 export default function page() {
   return (

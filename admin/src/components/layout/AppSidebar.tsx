@@ -47,22 +47,22 @@ const navMain = [
   },
   {
     title: "Products",
-    url: "/products",
+    url: "/dashboard/products",
     icon: Package,
   },
   {
     title: "Category",
-    url: "/category",
+    url: "/dashboard/category",
     icon: Tags,
   },
   {
     title: "Orders",
-    url: "/orders",
+    url: "/dashboard/orders",
     icon: ShoppingCart,
   },
   {
     title: "Users",
-    url: "/users",
+    url: "/dashboard/users",
     icon: Users,
   },
 ];
