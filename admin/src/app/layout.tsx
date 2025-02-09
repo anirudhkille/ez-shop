@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { DeleteDialogProvider } from "@/context/DeleteContext";
+import DeleteDialog from "@/components/shared/DeleteDialog";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +40,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main>{children}</main>
+          <DeleteDialogProvider>
+            <main>{children}</main>
+            <DeleteDialog />
+          </DeleteDialogProvider>
         </ThemeProvider>
       </body>
     </html>

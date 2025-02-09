@@ -13,21 +13,33 @@ import { Slash } from "lucide-react";
 
 export default function BreadCrumbs() {
   const pathname = usePathname();
-  const segments = pathname.split("/").slice(2);
+  const segments = pathname.split("/").slice(2); 
 
-  console.log(segments.length);
+  if (segments.length === 0) {
+    return (
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbPage>Dashboard</BreadcrumbPage>
+        </BreadcrumbList>
+      </Breadcrumb>
+    );
+  }
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
+        {/* Mobile View */}
         <BreadcrumbPage className="capitalize md:hidden">
-          {segments.length > 0 ? segments[0] : "Dashboard"}
+          {decodeURIComponent(segments[segments.length - 1])}
         </BreadcrumbPage>
 
+        {/* Desktop View */}
         <BreadcrumbItem className="hidden md:block">
           <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
         </BreadcrumbItem>
+
         {segments.map((segment, index) => {
-          const href = "/" + segments.slice(0, index + 1).join("/");
+          const href = "/dashboard/" + segments.slice(0, index + 1).join("/");
 
           return (
             <div className="items-center hidden gap-2 md:flex" key={href}>
