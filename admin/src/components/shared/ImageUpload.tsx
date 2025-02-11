@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
+import Image from "next/image";
 
 interface ImageUploadProps {
   onUploadSuccess: (url: string) => void;
@@ -64,7 +65,7 @@ export function ImageUpload({
 
       {preview ? (
         <div className="relative w-fit">
-          <img src={preview} alt="Preview" className="rounded-lg size-72" />
+          <Image src={preview} alt="Preview" height={288} width={288} className="rounded-lg size-72" />
           <Button
             variant="destructive"
             size="icon"

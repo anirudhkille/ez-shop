@@ -33,6 +33,7 @@ export async function POST(req: Request) {
       {
         success: false,
         message: "Internal server error",
+        error: error.message,
       },
       { status: 500 }
     );
@@ -44,18 +45,16 @@ export async function GET() {
     await connect();
 
     const categories = await Category.find({});
-    return Response.json(
-      {
-        success: true,
-        data: categories,
-      },
-     
-    );
-  } catch (error) {
+    return Response.json({
+      success: true,
+      data: categories,
+    });
+  } catch (error: any) {
     return Response.json(
       {
         success: false,
         message: "Internal server error",
+        error: error.message,
       },
       { status: 500 }
     );

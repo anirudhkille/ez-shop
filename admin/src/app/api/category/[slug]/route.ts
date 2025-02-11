@@ -26,11 +26,12 @@ export async function GET(
       message: "Category fetched successfully",
       data: categories,
     });
-  } catch (error) {
+  } catch (error:any) {
     return Response.json(
       {
         success: false,
         message: "Internal server error",
+        error: error.message,
       },
       { status: 500 }
     );
@@ -66,11 +67,12 @@ export async function PATCH(
       message: "Category updated successfully",
       data: categories,
     });
-  } catch (error) {
+  } catch (error:any) {
     return Response.json(
       {
         success: false,
         message: "Internal server error",
+        error: error.message,
       },
       { status: 500 }
     );
@@ -101,11 +103,12 @@ export async function DELETE(
       success: true,
       message: "Category deleted successfully",
     });
-  } catch (error) {
+  } catch (error:any) {
     return Response.json(
       {
         success: false,
         message: "Internal server error",
+        error: error.message,
       },
       { status: 500 }
     );

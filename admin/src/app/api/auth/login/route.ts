@@ -63,19 +63,20 @@ export async function POST(req: Request) {
         success: true,
         message: "Admin logged in successfully",
         data: {
-          name:admin.name,
-          email:admin.email,
+          name: admin.name,
+          email: admin.email,
           token,
           refreshToken,
         },
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: any) {
     return Response.json(
       {
         success: false,
         message: "Internal server error",
+        error: error.message,
       },
       { status: 500 }
     );

@@ -37,7 +37,7 @@ categorySchema.pre("save", async function (next) {
     return next();
   }
 
-  let baseSlug = generateSlug(category.title);
+  const baseSlug = generateSlug(category.title);
   let uniqueSlug = baseSlug;
   let counter = 1;
 
@@ -58,7 +58,7 @@ categorySchema.pre("findOneAndUpdate", async function (next) {
     return next();
   }
 
-  let baseSlug = generateSlug(update.title);
+  const baseSlug = generateSlug(update.title);
   let uniqueSlug = baseSlug;
   let counter = 1;
 

@@ -11,7 +11,7 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       if (account?.provider === "google") {
         await connect();
         const existingAdmin = await Admin.findOne({ email: user.email });
