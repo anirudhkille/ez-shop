@@ -63,6 +63,11 @@ export default function LoginForm() {
       }
     } catch (error) {
       setStatus("error");
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setStatus("idle");
     }
@@ -93,7 +98,7 @@ export default function LoginForm() {
               <FormItem>
                 <div className="flex items-center justify-between">
                   <FormLabel htmlFor="password">Password</FormLabel>
-                  <LinkButton variant="link"  href="/forgot-password">
+                  <LinkButton variant="link" href="/forgot-password">
                     Forgot your password?
                   </LinkButton>
                 </div>

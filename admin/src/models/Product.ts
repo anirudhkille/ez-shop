@@ -16,9 +16,9 @@ export interface IProduct {
   content: string;
   colors?: Map[];
   sizes?: Map[];
-  price: Number;
-  discountPrice: Number;
-  stock: Number;
+  price: number;
+  discountPrice: number;
+  stock: number;
   publish: boolean;
 }
 
@@ -96,7 +96,6 @@ productSchema.pre("save", async function (next) {
 });
 
 productSchema.pre("findOneAndUpdate", async function (next) {
-  const query = this.getQuery();
   const update = this.getUpdate() as IProduct;
 
   if (!update.title) {

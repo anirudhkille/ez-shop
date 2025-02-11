@@ -26,12 +26,13 @@ export async function GET(
       message: "Category fetched successfully",
       data: categories,
     });
-  } catch (error:any) {
+  } catch (error: unknown) {
+    const errMessage = error instanceof Error ? error.message : "Unknown error";
     return Response.json(
       {
         success: false,
         message: "Internal server error",
-        error: error.message,
+        error: errMessage,
       },
       { status: 500 }
     );
@@ -67,12 +68,13 @@ export async function PATCH(
       message: "Category updated successfully",
       data: categories,
     });
-  } catch (error:any) {
+  } catch (error: unknown) {
+    const errMessage = error instanceof Error ? error.message : "Unknown error";
     return Response.json(
       {
         success: false,
         message: "Internal server error",
-        error: error.message,
+        error: errMessage,
       },
       { status: 500 }
     );
@@ -103,12 +105,13 @@ export async function DELETE(
       success: true,
       message: "Category deleted successfully",
     });
-  } catch (error:any) {
+  } catch (error: unknown) {
+    const errMessage = error instanceof Error ? error.message : "Unknown error";
     return Response.json(
       {
         success: false,
         message: "Internal server error",
-        error: error.message,
+        error: errMessage,
       },
       { status: 500 }
     );

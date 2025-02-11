@@ -71,12 +71,13 @@ export async function POST(req: Request) {
       },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errMessage = error instanceof Error ? error.message : "Unknown error";
     return Response.json(
       {
         success: false,
         message: "Internal server error",
-        error: error.message,
+        error: errMessage,
       },
       { status: 500 }
     );

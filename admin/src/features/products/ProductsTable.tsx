@@ -152,14 +152,14 @@ export const columns: ColumnDef<Payment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("publish")}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue("publish")}</div>
+    ),
   },
   {
     id: "actions",
-    header:"Actions",
-    cell: ({ row }) => {
-      const payment = row.original;
-
+    header: "Actions",
+    cell: () => {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

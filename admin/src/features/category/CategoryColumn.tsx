@@ -14,6 +14,7 @@ import {
 import { ICategory } from "@/models/Category";
 import { useRouter } from "next/navigation";
 import { useDeleteDialog } from "@/context/DeleteContext";
+import Image from "next/image";
 
 export const columns: ColumnDef<ICategory>[] = [
   {
@@ -42,7 +43,9 @@ export const columns: ColumnDef<ICategory>[] = [
     accessorKey: "image",
     header: "Image",
     cell: ({ row }) => (
-      <img
+      <Image
+        height={48}
+        width={48}
         src={row.getValue("image")}
         alt="Category"
         className="object-cover w-12 h-12 rounded-md"

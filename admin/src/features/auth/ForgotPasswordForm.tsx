@@ -26,7 +26,6 @@ export default function ForgotPasswordForm() {
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
-  const [message, setMessage] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,7 +55,11 @@ export default function ForgotPasswordForm() {
       }
     } catch (error) {
       setStatus("error");
-      setMessage("An error occurred. Please try again later.");
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setStatus("idle");
     }
@@ -88,7 +91,7 @@ export default function ForgotPasswordForm() {
           >
             Reset Password
           </Button>
-          <LinkButton href="/"  variant="link" className="justify-center w-full">
+          <LinkButton href="/" variant="link" className="justify-center w-full">
             Remember your password? Login
           </LinkButton>
         </form>

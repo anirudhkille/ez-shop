@@ -51,7 +51,6 @@ categorySchema.pre("save", async function (next) {
 });
 
 categorySchema.pre("findOneAndUpdate", async function (next) {
-  const query = this.getQuery();
   const update = this.getUpdate() as ICategory;
 
   if (!update.title) {
