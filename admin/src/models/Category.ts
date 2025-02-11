@@ -1,8 +1,7 @@
 import { generateSlug } from "@/lib/slug";
-import mongoose from "mongoose";
+import mongoose, { type Document, type Model } from "mongoose";
 
-export interface ICategory {
-  _id: mongoose.Types.ObjectId;
+export interface ICategory extends Document {
   image: string;
   title: string;
   publish: boolean;
@@ -31,13 +30,10 @@ const categorySchema = new mongoose.Schema<ICategory>(
   { timestamps: true }
 );
 
-categorySchema.pre("save", async function (next) {
-  const category = this;
-  if (!category.isModified("title")) {
-    return next();
-  }
-
-  const baseSlug = generateSlug(category.title);
+const generateUniqueSlug = async (
+  baseSlug: string,
+  Category: Model<ICategory>
+): Promise<string> => {
   let uniqueSlug = baseSlug;
   let counter = 1;
 
@@ -46,31 +42,39 @@ categorySchema.pre("save", async function (next) {
     counter++;
   }
 
-  category.slug = uniqueSlug;
+  return uniqueSlug;
+};
+
+categorySchema.pre("save", async function (next) {
+  if (!this.isModified("title")) {
+    return next();
+  }
+
+  const baseSlug = generateSlug(this.title);
+  this.slug = await generateUniqueSlug(
+    baseSlug,
+    this.constructor as Model<ICategory>
+  );
   next();
 });
 
 categorySchema.pre("findOneAndUpdate", async function (next) {
-  const update = this.getUpdate() as ICategory;
+  const update = this.getUpdate() as Partial<ICategory>;
 
   if (!update.title) {
     return next();
   }
 
   const baseSlug = generateSlug(update.title);
-  let uniqueSlug = baseSlug;
-  let counter = 1;
-
-  while (await Category.exists({ slug: uniqueSlug })) {
-    uniqueSlug = `${baseSlug}-${counter}`;
-    counter++;
-  }
-
-  update.slug = uniqueSlug;
+  update.slug = await generateUniqueSlug(
+    baseSlug,
+    this.model as Model<ICategory>
+  );
   next();
 });
 
 const Category =
-  mongoose.models.Category || mongoose.model("Category", categorySchema);
+  mongoose.models.Category ||
+  mongoose.model<ICategory>("Category", categorySchema);
 
 export default Category;

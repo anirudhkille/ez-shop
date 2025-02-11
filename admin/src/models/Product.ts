@@ -1,12 +1,12 @@
 import { generateSlug } from "@/lib/slug";
-import mongoose from "mongoose";
+import mongoose, { type Document, type Model } from "mongoose";
 
 interface Map {
   key: string;
   value: string;
 }
 
-export interface IProduct {
+export interface IProduct extends Document {
   _id: mongoose.Types.ObjectId;
   title: string;
   slug: string;
@@ -76,46 +76,49 @@ const productSchema = new mongoose.Schema<IProduct>(
   { timestamps: true }
 );
 
-productSchema.pre("save", async function (next) {
-  const product = this;
-  if (!product.isModified("title")) {
-    return next();
-  }
-
-  let baseSlug = generateSlug(product.title);
+const generateUniqueSlug = async (
+  baseSlug: string,
+  Category: Model<IProduct>
+): Promise<string> => {
   let uniqueSlug = baseSlug;
   let counter = 1;
 
-  while (await Product.exists({ slug: uniqueSlug })) {
+  while (await Category.exists({ slug: uniqueSlug })) {
     uniqueSlug = `${baseSlug}-${counter}`;
     counter++;
   }
 
-  product.slug = uniqueSlug;
+  return uniqueSlug;
+};
+
+productSchema.pre("save", async function (next) {
+  if (!this.isModified("title")) {
+    return next();
+  }
+
+  const baseSlug = generateSlug(this.title);
+  this.slug = await generateUniqueSlug(
+    baseSlug,
+    this.constructor as Model<IProduct>
+  );
   next();
 });
 
 productSchema.pre("findOneAndUpdate", async function (next) {
-  const update = this.getUpdate() as IProduct;
+  const update = this.getUpdate() as Partial<IProduct>;
 
   if (!update.title) {
     return next();
   }
 
-  let baseSlug = generateSlug(update.title);
-  let uniqueSlug = baseSlug;
-  let counter = 1;
-
-  while (await Product.exists({ slug: uniqueSlug })) {
-    uniqueSlug = `${baseSlug}-${counter}`;
-    counter++;
-  }
-
-  update.slug = uniqueSlug;
+  const baseSlug = generateSlug(update.title);
+  update.slug = await generateUniqueSlug(
+    baseSlug,
+    this.model as Model<IProduct>
+  );
   next();
 });
 
 const Product =
-  mongoose.models.Product || mongoose.model("Product", productSchema);
-
+  mongoose.models.Product || mongoose.model<IProduct>("Product", productSchema);
 export default Product;

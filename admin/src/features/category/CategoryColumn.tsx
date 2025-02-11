@@ -1,7 +1,6 @@
 import * as React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -13,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ICategory } from "@/models/Category";
 import { useRouter } from "next/navigation";
-import { useDeleteDialog } from "@/context/DeleteContext";
 import Image from "next/image";
 
 export const columns: ColumnDef<ICategory>[] = [
@@ -61,17 +59,15 @@ export const columns: ColumnDef<ICategory>[] = [
   },
   {
     accessorKey: "publish",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Publish
-          <ArrowUpDown />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Publish
+        <ArrowUpDown />
+      </Button>
+    ),
     cell: ({ row }) => (
       <div className="capitalize">
         {row.getValue("publish") ? "Published" : "Draft"}
@@ -83,37 +79,40 @@ export const columns: ColumnDef<ICategory>[] = [
     header: "Actions",
     cell: ({ row }) => {
       const category = row.original;
-      const router = useRouter();
-      const { toggleDialog } = useDeleteDialog();
-
-      const handleView = () => {
-        router.push(`/dashboard/category/${category.slug}`);
-      };
-
-      const handleDelete = async () => {
-        const response = await fetch(`/api/category/${category.slug}`, {
-          method: "DELETE",
-        });
-        if (response.ok) {
-          router.refresh();
-        }
-      };
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="w-8 h-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={handleView}>View</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      return <CategoryActions category={category} />;
     },
   },
 ];
+
+const CategoryActions = ({ category }: { category: ICategory }) => {
+  const router = useRouter();
+
+  const handleView = () => {
+    router.push(`/dashboard/category/${category.slug}`);
+  };
+
+  const handleDelete = async () => {
+    const response = await fetch(`/api/category/${category.slug}`, {
+      method: "DELETE",
+    });
+    if (response.ok) {
+      router.refresh();
+    }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="w-8 h-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuItem onClick={handleView}>View</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};

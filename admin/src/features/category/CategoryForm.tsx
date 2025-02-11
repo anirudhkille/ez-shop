@@ -61,8 +61,12 @@ export default function CategoryForm({ data }: CategoryFormProps) {
       } else {
         toast.error(result.message);
       }
-    } catch (error: any) {
-      toast.error(error.message || "Something went wrong");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     }
   };
 
