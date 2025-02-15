@@ -7,8 +7,10 @@ export const metadata = {
   title: "Category | Dashboard - EZ Shop Admin",
 };
 
-export default async function page() {
-  const data = await fetch(`${process.env.NEXT_DOMAIN_NAME}/api/category`);
+export default async function Page() {
+  const data = await fetch(`${process.env.NEXT_DOMAIN_NAME}/api/category`, {
+    cache: "no-store",
+  });
   const posts = await data.json();
 
   return (
@@ -20,7 +22,7 @@ export default async function page() {
       />
 
       <Separator />
-      <CategoryTable data={posts.data} />
+      <CategoryTable data={posts.data || []} />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { connect } from "@/dbConfig/dbConfig";
 import Category from "@/models/Category";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
@@ -52,7 +53,7 @@ export async function GET() {
     });
   } catch (error: unknown) {
     const errMessage = error instanceof Error ? error.message : "Unknown error";
-    return Response.json(
+    return NextResponse.json(
       {
         success: false,
         message: "Internal server error",

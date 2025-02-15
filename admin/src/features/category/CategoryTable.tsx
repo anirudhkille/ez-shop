@@ -36,7 +36,7 @@ export default function CategoryTable({ data }: { data: ICategory[] }) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data ,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
