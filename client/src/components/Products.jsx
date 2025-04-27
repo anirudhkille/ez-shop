@@ -27,7 +27,7 @@ const Products = ({ products }) => {
                   <h3 className="mb-1 text-xs tracking-widest text-gray-500 title-font">
                     {product.category}
                   </h3>
-                  <h2 className="text-lg font-medium text-black title-font ">
+                  <h2 className="text-lg font-medium text-primary title-font ">
                     {product.title}
                   </h2>
                   <div className="flex items-center justify-between mt-1">

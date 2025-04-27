@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-
 import useCartStore from "../store/cartStore";
+import { CircleCheck } from "lucide-react";
 
 const OrderSummary = () => {
   const { clearCart } = useCartStore();
@@ -11,18 +10,14 @@ const OrderSummary = () => {
   }, []);
 
   return (
-    <div>
-      <div className="mt-20 text-center">
-        <div className="mb-4 text-2xl font-bold text-indigo-500">
-          <div>
-            <CheckCircleIcon style={{ height: 70, width: 70 }} />
-          </div>
-          Order Placed Successfully!
-        </div>
-        <p className="px-2 text-lg font-bold tracking-wider text-indigo-500">
-          Thank you for ordering with EZ Shop.Your Package will be deliver
-          within 3 days.
-        </p>
+    <div className="mt-20 space-y-5 text-center">
+      <CircleCheck className="mx-auto size-10" />
+      <p className="px-2 text-xl font-bold tracking-wider text-primary">
+        Order Placed Successfully!
+      </p>
+      <div className="px-2 text-lg tracking-wider text-primary">
+        <p>Thank you for ordering with EZ Shop.</p>
+        <p>Your Package will be deliver within 3 days.</p>
       </div>
     </div>
   );

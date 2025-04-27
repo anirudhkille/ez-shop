@@ -64,7 +64,7 @@ const ForgotPassword = () => {
               />
             </div>
           </div>
-          <Button className="w-full" type="submit" disabled={isLoading}>
+          <Button className="w-full mt-4" type="submit" disabled={isLoading}>
             Reset Password
           </Button>
         </form>

@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useSelector } from "react-redux";
 import useCartStore from "../store/cartStore";
 import Link from "../components/ui/Link";
+import { ShoppingCart } from "lucide-react";
 
 const Cart = () => {
   const { cartItems, addToCart, removeFromCart, clearFromCart } =
@@ -19,12 +19,12 @@ const Cart = () => {
           <h2 className="text-2xl font-medium text-center text-gray-900">
             Your Cart Is Empty!
           </h2>
-          <ShoppingCartIcon
-            style={{ height: "150px", width: "150px", color: "GrayText" }}
-          />
+
+          <ShoppingCart className="size-[150px]" strokeWidth={1} />
+
           <button
             onClick={() => navigate("/")}
-            className="px-5 py-3 text-white bg-indigo-500 border rounded"
+            className="px-5 py-3 text-white border rounded bg-primary"
           >
             Shop Now
           </button>
@@ -65,15 +65,15 @@ const Cart = () => {
                       <div className="flex items-end justify-between flex-1 text-sm">
                         <p className="text-gray-500">
                           <button
-                            onClick={() => removeFromCart({ id: cart.id })}
-                            className="px-2 mr-2 font-bold text-center text-white bg-indigo-600"
+                            onClick={() => removeFromCart(cart.id)}
+                            className="px-2 mr-2 font-bold text-center text-white bg-primary"
                           >
                             -
                           </button>
                           {cart.quantity}
                           <button
-                            onClick={() => addToCart({ id: cart.id })}
-                            className="px-2 ml-1 font-bold text-center text-white bg-indigo-600"
+                            onClick={() => addToCart(cart)}
+                            className="px-2 ml-1 font-bold text-center text-white bg-primary"
                           >
                             +
                           </button>
@@ -82,7 +82,7 @@ const Cart = () => {
                         <div className="flex">
                           <button
                             onClick={() => clearFromCart(cart.id)}
-                            className="font-medium text-indigo-600 hover:text-indigo-500"
+                            className="font-medium text-primary hover:text-primary"
                           >
                             Remove
                           </button>
@@ -119,7 +119,7 @@ const Cart = () => {
                 or{" "}
                 <button
                   onClick={() => navigate(-1)}
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                  className="font-medium text-primary hover:text-primary"
                 >
                   Continue Shopping
                   <span aria-hidden="true"> &rarr;</span>

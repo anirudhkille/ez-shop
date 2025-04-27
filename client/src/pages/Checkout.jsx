@@ -191,7 +191,7 @@ const Checkout = () => {
             <div className="flex items-center justify-center">
               <button
                 type="submit"
-                className="text-white bg-indigo-500 px-5 py-3 rounded text-center mb-3"
+                className="text-white bg-primary px-5 py-3 rounded text-center mb-3"
               >
                 Continue to Payment
               </button>

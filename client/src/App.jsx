@@ -53,9 +53,9 @@ const App = () => {
         {
           path: "/order-summary",
           element: (
-            <ProtectedRoute>
+            <>
               <OrderSummary />
-            </ProtectedRoute>
+            </>
           ),
         },
       ],

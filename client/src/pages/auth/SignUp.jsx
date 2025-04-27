@@ -1,15 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import {
-  Label,
-  Card,
-  Button,
-  Heading,
-  Text,
-  Input,
-  Head,
-} from "../../components";
+import { Label, Button, Input, Head } from "../../components";
 import { toast } from "sonner";
 import { useSignupMutation } from "../../redux/api/userAPI";
 import { login } from "../../redux/reducer/userReducer";
@@ -44,13 +36,7 @@ const SignUp = () => {
     } else if (formData.password.length < 8) {
       toast.error("Password must contain a minimum of 8 characters");
       return;
-    }
-    //  else if (!formData.password.match(passwordRegex)) {
-    //   toast.error(
-    //     "Password must contain at least 1 uppercase, 1 digit, and 1 special character"
-    //   );
-    //   return;}
-    else {
+    } else {
       try {
         const res = await signup(formData).unwrap();
         dispatch(login({ userDetails: res.data }));
@@ -122,7 +108,7 @@ const SignUp = () => {
               />
             </div>
           </div>
-          <Button className="w-full" type="submit" disabled={isLoading}>
+          <Button className="w-full mt-4" type="submit" disabled={isLoading}>
             Create an Account
           </Button>
         </form>

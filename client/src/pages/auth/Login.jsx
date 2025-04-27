@@ -98,7 +98,7 @@ const Login = () => {
               />
             </div>
           </div>
-          <Button className="w-full" type="submit" disabled={isLoading}>
+          <Button className="w-full mt-4" type="submit" disabled={isLoading}>
             Login
           </Button>
         </form>

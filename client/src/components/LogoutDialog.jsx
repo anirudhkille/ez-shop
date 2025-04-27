@@ -17,7 +17,7 @@ const LogoutDialog = ({ isOpen, onClose, onLogout }) => {
         </button>
         <button
           onClick={onClose}
-          className="border px-4 py-2  bg-indigo-600 text-white  rounded"
+          className="border px-4 py-2  bg-primary text-white  rounded"
         >
           Cancel
         </button>

@@ -6,7 +6,7 @@ const Label = ({ className, children, id, ...props }) => {
     <label
       htmlFor={id}
       className={cn(
-        "text-black font-medium text-sm",
+        "text-primary font-medium text-sm",
         className
       )}
       {...props}

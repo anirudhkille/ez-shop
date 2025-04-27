@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import CircularProgress from "@mui/material/LinearProgress";
-import Rating from "@mui/material/Rating";
 import useCartStore from "../store/cartStore";
 import Button from "../components/ui/Button";
 
@@ -29,16 +27,12 @@ const DetailProduct = () => {
 
   return (
     <section className="text-gray-600 body-font overflow-hidden min-h-[100vh] flex ">
-      {loading ? (
-        <div className="text-black text-2xl flex justify-center items-center mx-auto min:h-[100vh]">
-          <CircularProgress style={{ color: "#4F46E5" }} />
-        </div>
-      ) : product.length === 0 ? (
-        <div className="text-black text-2xl flex justify-center items-center mx-auto min:h-[100vh]">
+      {product.length === 0 ? (
+        <div className="text-primary text-2xl flex justify-center items-center mx-auto min:h-[100vh]">
           Product not found
         </div>
       ) : (
-        <div className="container px-5 py-6 mx-auto mt-12">
+        <div className="container px-5 py-6 mx-auto">
           {product?.map((product) => (
             <div className="flex flex-wrap mx-auto lg:w-4/5" key={product.id}>
               <img
@@ -53,21 +47,7 @@ const DetailProduct = () => {
                 <h1 className="mb-2 text-3xl font-medium text-gray-900 title-font ">
                   {product.title}
                 </h1>
-                <div className="flex mb-2">
-                  <span className="flex items-center">
-                    <Rating
-                      name="half-rating-read"
-                      defaultValue={product.rating.rate}
-                      precision={0.5}
-                      readOnly
-                      style={{ color: "#000000" }}
-                    />
 
-                    <span className="ml-3 text-gray-600">
-                      {product.rating.rate} & {product.rating.count} Reviews
-                    </span>
-                  </span>
-                </div>
                 <p className="leading-relaxed">{product.description}</p>
                 <div className="flex">
                   <span className="mt-2 text-2xl font-medium text-gray-900 title-font">

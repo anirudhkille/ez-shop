@@ -281,7 +281,7 @@ const Payment = () => {
             ) : null}
             <div className="flex items-center justify-center mt-2">
               <button
-                className="px-5 py-2 m-auto mb-2 text-white bg-indigo-500 rounded "
+                className="px-5 py-2 m-auto mb-2 text-white bg-primary rounded "
                 onClick={handlePlaceOrder}
               >
                 Place Order
