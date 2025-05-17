@@ -6,10 +6,6 @@ const productSchema = mongoose.Schema({
     required: true,
     trim: true,
   },
-  brand: {
-    type: String,
-    required: true,
-  },
   description: {
     type: String,
     required: true,
@@ -17,9 +13,7 @@ const productSchema = mongoose.Schema({
   category: {
     type: String,
     required: true,
-  },
-  subCategory: {
-    type: String,
+    ref: "Category",
   },
   price: {
     type: Number,
@@ -28,32 +22,16 @@ const productSchema = mongoose.Schema({
   discountPrice: {
     type: Number,
   },
-  colors: [
-    {
-      name: String,
-      hexCode: String,
-      imageUrl: String,
-    },
-  ],
-  sizes: [
-    {
-      size: String,
-      stock: Number,
-    },
-  ],
   images: [
     {
       url: String,
       altText: String,
     },
   ],
-  rating: {
-    type: Number,
-    default: 0,
-  },
   stock: {
     type: Number,
     required: true,
+    default: 0,
   },
   isFeatured: {
     type: Boolean,
@@ -63,21 +41,7 @@ const productSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  tags: [String],
-  sku: {
-    type: String,
-    unique: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
 });
 
 const Product = mongoose.model("Product", productSchema);
-
-module.exports = Product;
+export default Product;

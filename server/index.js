@@ -1,40 +1,53 @@
-import express from "express";
 import dotenv from "dotenv";
-import cors from "cors";
-import adminRoutes from "./router/adminRoutes.js";
-import userRouter from "./router/userRouter.js";
-import orderRouter from "./router/orderRouter.js";
-import connectDb from "./database/connectDb.js";
-import { apiLimiter } from "./config/limiter.js";
-import compression from "compression";
-import { corsOptions } from "./config/corsOptions.js";
-
 dotenv.config();
+
+import express from "express";
+import cors from "cors";
+import compression from "compression";
+
+import { shouldCompress } from "./config/compression.js";
+import { corsOptions } from "./config/corsOptions.js";
+import { databaseConnection } from "./config/database.js";
+import { apiLimiter } from "./config/limiter.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
+
+import adminRoutes from "./routes/adminRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 const app = express();
 
 app.use(compression());
 app.use(cors(corsOptions));
+app.use(compression({ filter: shouldCompress, level: 6 }));
 app.use(express.json());
 app.use(apiLimiter);
 
-const startServer = () => {
-  app.get("/", (req, res) => {
-    res.send("Api is running");
-  });
+app.get("/", (req, res) => {
+  res.send("Api is running");
+});
 
-  app.use("/admin", adminRoutes);
-  app.use("/user", userRouter);
-  app.use("/order", orderRouter);
+app.use("/admin", adminRoutes);
+app.use("/user", userRoutes);
+app.use("/order", orderRoutes);
 
-  app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${process.env.PORT}`);
-  });
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: "Route not found" });
+});
+
+app.use(errorHandler);
+
+const startServer = async () => {
+  try {
+    await databaseConnection();
+    const port = process.env.PORT;
+    app.listen(port, () => {
+      console.log(`Server Listening @ ${port}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
 };
 
-connectDb()
-  .then(() => startServer())
-  .catch((error) => {
-    console.error("Failed to start server:", error.message);
-    process.exit(1);
-  });
+startServer();
