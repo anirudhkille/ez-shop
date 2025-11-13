@@ -1,10 +1,11 @@
+import GoogleLogin from "@/components/auth/google-login";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { FormInput } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useLogin } from "@/hooks/useUser";
-import AuthLayout from "@/layout/AuthLayout";
-import Head from "@/layout/Head";
+import AuthLayout from "@/layout/auth-layout";
+import Head from "@/layout/head";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -88,6 +89,8 @@ export default function Login() {
           <Button className="w-full" type="submit" disabled={isPending}>
             Login
           </Button>
+
+          <GoogleLogin />
         </form>
       </AuthLayout>
     </>

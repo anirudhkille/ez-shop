@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axiosInstance";
-import type { TLogin, TSignup } from "@/types/user";
+import type { TLogin, TSignup, TUser } from "@/types/user";
 
 export const postSignup = async (formData: TSignup) => {
   const res = await axiosInstance.post("/user/signup", {
@@ -29,6 +29,12 @@ export const resetPassword = async (token: string, password: string) => {
   const res = await axiosInstance.put(`/user/reset-password?token=${token}`, {
     password: password,
   });
+
+  return res.data;
+};
+
+export const updateProfile = async (formData: Partial<TUser>) => {
+  const res = await axiosInstance.patch(`/user`, formData);
 
   return res.data;
 };

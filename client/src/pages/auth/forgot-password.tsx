@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form";
 import { useForgotPassword } from "@/hooks/useUser";
-import AuthLayout from "@/layout/AuthLayout";
-import Head from "@/layout/Head";
+import AuthLayout from "@/layout/auth-layout";
+import Head from "@/layout/head";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";

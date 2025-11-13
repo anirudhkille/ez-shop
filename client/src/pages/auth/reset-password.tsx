@@ -1,11 +1,11 @@
 import { useSearchParams } from "react-router";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import AuthLayout from "@/layout/AuthLayout";
+import AuthLayout from "@/layout/auth-layout";
 import z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Head from "@/layout/Head";
+import Head from "@/layout/head";
 import { useResetPassword } from "@/hooks/useUser";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 

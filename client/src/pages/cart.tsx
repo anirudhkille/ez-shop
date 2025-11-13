@@ -40,7 +40,7 @@ const Cart = () => {
               <ul role="list" className="-my-6 divide-y divide-gray-200">
                 {cartItems.map((cart) => (
                   <li className="flex py-6 max-sm:block" key={cart.id}>
-                    <div className="flex-shrink-0 w-24 h-24 ml-4 overflow-hidden border border-gray-200 rounded-md max-sm:h-14 max-sm:w-14">
+                    <div className="shrink-0 w-24 h-24 ml-4 overflow-hidden border border-gray-200 rounded-md max-sm:h-14 max-sm:w-14">
                       <img
                         src={cart.image}
                         alt={cart.title}

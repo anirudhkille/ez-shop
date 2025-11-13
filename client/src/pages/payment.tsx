@@ -99,7 +99,7 @@ const Payment = () => {
   };
 
   return (
-    <section className="min-h-[100vh]">
+    <section className="min-h-screen">
       <div className="max-w-[1500px] m-auto max-md:w-full pt-10 flex flex-wrap max-sm:block">
         <div className="px-4 py-6 grow sm:px-6">
           <div className="border border-slate-700">
@@ -108,7 +108,7 @@ const Payment = () => {
               {cartItems?.map((cart) => (
                 <li className="py-6 mt-3 max-sm:block" key={cart.id}>
                   <div className="flex text-base font-medium text-gray-900  max-[280px]:block ">
-                    <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 max-sm:h-14 max-sm:w-14 ml-4 w-[>280px]-w-full ">
+                    <div className="h-24 w-24 shrink-0 overflow-hidden rounded-md border border-gray-200 max-sm:h-14 max-sm:w-14 ml-4 w-[>280px]-w-full ">
                       <img
                         src={cart.image}
                         alt={cart.title}

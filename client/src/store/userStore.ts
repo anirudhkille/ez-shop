@@ -5,7 +5,7 @@ type UserState = {
   token?: string | null;
   name: string | null;
   email: string | null;
-  login: (payload: Partial<UserState>) => void;
+  setUser: (payload: Partial<UserState>) => void;
   logout: () => void;
 };
 
@@ -15,7 +15,7 @@ const useUserStore = create<UserState>()(
       token: null,
       name: null,
       email: null,
-      login: (payload) =>
+      setUser: (payload) =>
         set((state) => ({
           token: payload.token ?? state.token,
           name: payload.name ?? state.name,

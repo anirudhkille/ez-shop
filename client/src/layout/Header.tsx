@@ -1,16 +1,22 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router";
-import { X, ShoppingBag, Menu, LogOut } from "lucide-react";
-import MaxContainer from "./MaxContainer";
+import { X, ShoppingBag, Menu, LogOut, User } from "lucide-react";
+import Container from "./container";
 import { Button } from "@/components/ui/button";
 import LogoutDialog from "@/components/LogoutDialog";
 import useAuthStore from "@/store/userStore";
 
+const menus = [
+  { href: "men's clothing", name: "Mens" },
+  { href: "women's clothing", name: "Womens" },
+  { href: "electronics", name: "Electronics" },
+  { href: "jewelery", name: "Accessories" },
+];
+
 const Header = () => {
-  const {token}=useAuthStore()
+  const {  name } = useAuthStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
- 
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -20,26 +26,26 @@ const Header = () => {
 
   const handleLogout = () => {
     setShowLogoutDialog(false);
- 
   };
-
-  const menus = [
-    { href: "men's clothing", name: "Mens" },
-    { href: "women's clothing", name: "Womens" },
-    { href: "electronics", name: "Electronics" },
-    { href: "jewelery", name: "Accessories" },
-  ];
 
   return (
     <header className="sticky top-0 w-full text-gray-600 bg-white">
       <div className="bg-[#F5F5F5] w-full">
-        <MaxContainer className="justify-end hidden gap-5 px-5 py-1.5 text-sm font-semibold text-primary md:flex">
-          <NavLink to="/signup">Signup</NavLink> |
-          <NavLink to="/login">Login</NavLink>
-        </MaxContainer>
+        <Container className="justify-end hidden gap-5 px-5 py-1.5 text-sm font-semibold text-primary md:flex">
+          {!name ? (
+            <>
+              <NavLink to="/signup">Signup</NavLink>
+              <NavLink to="/login">Login</NavLink>
+            </>
+          ) : (
+            <Link to="/account/account-details" className="flex items-center gap-2">
+              <User className="size-5"/> Hi, {name}
+            </Link>
+          )}
+        </Container>
       </div>
 
-      <MaxContainer className="flex items-center justify-between px-5 py-3 font-bold gap-11">
+      <Container className="flex items-center justify-between px-5 py-3 font-bold gap-11">
         <Link to="/" className="flex items-center gap-3">
           <img src="/logo.png" alt="logo" height={35} width={35} />
           <span className="text-xl font-bold text-primary">EZ Shop</span>
@@ -48,8 +54,8 @@ const Header = () => {
         <nav className="items-center hidden space-x-4 md:flex">
           {menus.map((m) => (
             <Link
-              to={`/products/category/${m.href}`}
-              className="text-primary hover:underline underline-offset-4"
+              to={`/products/category/${m.href}`} key={m.name}
+              className="text-primary hover:underline underline-offset-4" 
             >
               {m.name}
             </Link>
@@ -73,7 +79,7 @@ const Header = () => {
             <Menu />
           </button>
         </div>
-      </MaxContainer>
+      </Container>
 
       <div className="top-0 right-0 w-full h-full md:hidden bg-black/50">
         <div
@@ -90,7 +96,7 @@ const Header = () => {
 
           <nav className="mt-10 space-y-3">
             {menus.map((m) => (
-              <Link
+              <Link key={m.name}
                 to={`/products/category/${m.href}`}
                 className="block text-2xl font-semibold text-primary"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -101,7 +107,7 @@ const Header = () => {
           </nav>
 
           <div className="mt-10">
-            {token ? (
+            {name ? (
               <Button
                 onClick={openLogoutDialog}
                 className="block py-2 hover:text-primary"

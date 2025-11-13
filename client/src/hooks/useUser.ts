@@ -3,23 +3,27 @@ import {
   postLogin,
   postSignup,
   resetPassword,
+  updateProfile,
 } from "@/api/user";
 import useAuthStore from "@/store/userStore";
-import type { TLogin, TSignup } from "@/types/user";
+import type { TLogin, TSignup, TUser } from "@/types/user";
 import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 export const useSignup = () => {
-  const { login } = useAuthStore();
+  const { setUser } = useAuthStore();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: (formData: TSignup) => postSignup(formData),
     onSuccess: (res) => {
       toast.success("User created successfully");
-      login({
-        token: res.data.token,
+      setUser({
         name: res.data.name,
         email: res.data.email,
+        token: res.data.token,
       });
+      navigate("/");
     },
     onError: (error: any) => {
       toast.error(
@@ -30,16 +34,18 @@ export const useSignup = () => {
 };
 
 export const useLogin = () => {
-  const { login } = useAuthStore();
+  const { setUser } = useAuthStore();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: (formData: TLogin) => postLogin(formData),
     onSuccess: (res) => {
       toast.success("User logged successfully");
-      login({
-        token: res.data.token,
+      setUser({
         name: res.data.name,
         email: res.data.email,
+        token: res.data.token,
       });
+      navigate("/");
     },
     onError: (error: any) => {
       toast.error(
@@ -73,6 +79,27 @@ export const useResetPassword = () => {
     onError: (error: any) => {
       toast.error(
         error.response.data.message || "An error occurred while creating user."
+      );
+    },
+  });
+};
+
+export const useUpdateProfile = () => {
+  const { setUser } = useAuthStore();
+  return useMutation({
+    mutationFn: (formData: Partial<TUser>) => updateProfile(formData),
+    onSuccess: (res) => {
+      toast.success("User profile updated successfully");
+      setUser({
+        name: res.data.name,
+        email: res.data.email,
+        token: res.data.token,
+      });
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response.data.message ||
+          "An error occurred while updating profile."
       );
     },
   });
