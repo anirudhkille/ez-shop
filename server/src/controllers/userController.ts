@@ -1,4 +1,4 @@
-import User, { IUser } from "../models/User";
+import User from "../models/User";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 import { asyncHandler } from "../middlewares/asyncHandler";
@@ -8,7 +8,7 @@ import {
 } from "../utils/generateToken";
 import { Request, Response } from "express";
 import { resetPasswordTemplate } from "../utils/resetEmailTemplate";
-import jwt from "jsonwebtoken";
+import { refreshCookieOptions } from "../utils/cookies";
 
 export const signUp = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -35,12 +35,7 @@ export const signUp = asyncHandler(async (req: Request, res: Response) => {
   await newUser.save();
 
   res
-    .cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    })
+    .cookie("refreshToken", refreshToken, refreshCookieOptions())
     .status(201)
     .json({
       success: true,
@@ -57,7 +52,6 @@ export const signUp = asyncHandler(async (req: Request, res: Response) => {
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  console.log("h")
 
   if (!email || !password) {
     return res
@@ -81,9 +75,10 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   res
     .cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.node_env === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
     })
     .status(200)
     .json({
@@ -115,7 +110,7 @@ export const forgotPassword = asyncHandler(
     const resetToken = user.generateResetToken();
     await user.save({ validateBeforeSave: false });
 
-    const resetUrl = `${process.env.FROTEND_URL}/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
     const transporter = nodemailer.createTransport({
       service: "Gmail",
@@ -168,12 +163,7 @@ export const resetPassword = asyncHandler(
     await user.save();
 
     res
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      })
+      .cookie("refreshToken", refreshToken, refreshCookieOptions())
       .status(200)
       .json({
         success: true,
@@ -190,7 +180,7 @@ export const resetPassword = asyncHandler(
 );
 
 export const getProfile = asyncHandler(async (req: any, res: Response) => {
-  const user = await User.find(req.user._id).select("-password");
+  const user = await User.findById(req.user._id).select("-password");
 
   if (!user) {
     return res.status(404).json({
@@ -205,53 +195,50 @@ export const getProfile = asyncHandler(async (req: any, res: Response) => {
   });
 });
 
-export const updateProfile = asyncHandler(
-  async (req: any, res: Response) => {
-    const { _id } = req.user;
-    const updates = req.body;
-    const user = await User.findByIdAndUpdate(_id, updates, {
-      new: true,
-      runValidators: true,
-    });
+export const updateProfile = asyncHandler(async (req: any, res: Response) => {
+  const { _id } = req.user;
+  const updates = req.body;
+  const user = await User.findByIdAndUpdate(_id, updates, {
+    new: true,
+    runValidators: true,
+  });
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Profile updated successfully",
-      data: user,
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
     });
   }
-);
+
+  res.status(200).json({
+    success: true,
+    message: "Profile updated successfully",
+    data: user,
+  });
+});
 
 export const refreshToken = asyncHandler(
   async (req: Request, res: Response) => {
-    const token = req.cookies.refreshToken;
-    if (!token)
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken)
       return res
         .status(401)
         .json({ success: false, message: "No refresh token" });
 
-    const user = await User.findOne({ refreshToken: token });
+    const user = await User.findOne({ refreshToken: refreshToken });
+
     if (!user)
       return res
         .status(403)
         .json({ success: false, message: "Invalid refresh token" });
 
-    jwt.verify(token, process.env.JWT_REFRESH_SECRET, (err, decoded) => {
-      if (err || decoded.id !== user.id) {
-        return res
-          .status(403)
-          .json({ success: false, message: "Token expired or invalid" });
-      }
+    const accessToken = generateAccessToken(user);
 
-      const newAccessToken = generateAccessToken(user);
-      res.json({ token: newAccessToken });
+    res.status(200).json({
+      success: true,
+      message: "Access token generated successfully",
+      token: accessToken,
     });
   }
 );
@@ -266,11 +253,55 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     await user.save();
   }
 
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-  });
+  res.clearCookie("refreshToken", { ...refreshCookieOptions(), maxAge: 0 });
 
   res.status(200).json({ success: true, message: "Logged out successfully" });
+});
+
+export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
+  const googleUser = req.user as {
+    email?: string;
+    name?: string;
+    googleId: string;
+    avatar?: string;
+  };
+
+  if (!googleUser || !googleUser.email) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid Google user data" });
+  }
+
+  let user = await User.findOne({ email: googleUser.email });
+
+  if (!user) {
+    user = await User.create({
+      name: googleUser.name,
+      email: googleUser.email,
+
+      googleId: googleUser.googleId,
+      avatar: googleUser.avatar,
+    });
+  }
+
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
+
+  user.refreshToken = refreshToken;
+  await user.save();
+
+  res
+    .cookie("refreshToken", refreshToken, refreshCookieOptions())
+    .status(200)
+    .json({
+      success: true,
+      message: "Google login successful",
+      data: {
+        id: user._id,
+        token: accessToken,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
 });

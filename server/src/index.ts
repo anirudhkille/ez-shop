@@ -4,11 +4,13 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import compression from "compression";
-
+import session from "express-session";
+import cookieParser from "cookie-parser";
 import { shouldCompress } from "./config/compression";
 import { corsOptions } from "./config/corsOptions";
 import { databaseConnection } from "./config/database";
 import { apiLimiter } from "./config/limiter";
+import passport from "./config/passport";
 import { errorHandler } from "./middlewares/errorHandler";
 
 import addressRoutes from "./routes/addressRoutes";
@@ -27,8 +29,20 @@ const app = express();
 app.use(compression());
 app.use(cors(corsOptions));
 app.use(compression({ filter: shouldCompress, level: 6 }));
+app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(apiLimiter);
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get("/", (req, res) => {
   res.send("Api is running");

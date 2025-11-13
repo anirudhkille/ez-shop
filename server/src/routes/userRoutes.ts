@@ -8,18 +8,30 @@ import {
   resetPassword,
   signUp,
   updateProfile,
+  googleLogin,
 } from "../controllers/userController";
 import { protect } from "../middlewares/authMiddleware";
+import passport from "../config/passport";
 
 const router = express.Router();
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/auth/login-failed" }),
+  googleLogin
+);
+router.get("/login-failed", (req, res) => res.send("Google login failed"));
 router.get("/refresh", refreshToken);
 router.get("/profile", protect, getProfile);
 router.post("/signup", signUp);
 router.post("/login", login);
-router.post("/logout", logout);
 
+router.post("/logout", protect, logout);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
-router.patch("/", updateProfile);
+router.patch("/", protect, updateProfile);
 
 export default router;

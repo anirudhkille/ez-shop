@@ -5,7 +5,7 @@ import Admin from "../models/Admin";
 import { asyncHandler } from "./asyncHandler";
 
 interface ITokenPayload extends JwtPayload {
-  _id: string;
+  id: string;
   role: "User" | "Admin";
 }
 
@@ -23,14 +23,15 @@ export const protect = asyncHandler(
     try {
       const decoded = jwt.verify(
         token,
-        process.env.JWT_SECRET as string
+        process.env.JWT_ACCESS_SECRET as string
       ) as ITokenPayload;
 
       let user;
+
       if (decoded.role === "User") {
-        user = await User.findById(decoded._id).select("-password");
+        user = await User.findById(decoded.id).select("-password");
       } else if (decoded.role === "Admin") {
-        user = await Admin.findById(decoded._id).select("-password");
+        user = await Admin.findById(decoded.id).select("-password");
       }
 
       if (!user) {
@@ -42,9 +43,8 @@ export const protect = asyncHandler(
       req.user = user;
       next();
     } catch (error) {
-      console.error(error);
       return res
-        .status(401)
+        .status(403)
         .json({ success: false, message: "Invalid or expired token" });
     }
   }

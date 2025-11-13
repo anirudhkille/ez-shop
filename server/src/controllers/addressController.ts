@@ -2,8 +2,9 @@ import { asyncHandler } from "../middlewares/asyncHandler";
 import Address from "../models/Address";
 import { Request, Response } from "express";
 
-export const postAddress = asyncHandler(async (req: Request, res: Response) => {
-  const address = new Address(req.body);
+export const postAddress = asyncHandler(async (req: any, res: Response) => {
+  const { id } = req.user;
+  const address = await Address.create({ ...req.body, user: id });
   address.save();
 
   return res.status(201).json({
@@ -15,8 +16,8 @@ export const postAddress = asyncHandler(async (req: Request, res: Response) => {
 
 export const getAddressByUser = asyncHandler(
   async (req: any, res: Response) => {
-    const { _id } = req.user;
-    const address = await Address.find({ user: _id });
+    const { id } = req.user;
+    const address = await Address.find({ user: id });
 
     return res.status(200).json({
       success: true,

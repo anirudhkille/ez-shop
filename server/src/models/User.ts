@@ -6,7 +6,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   phoneNumber?: string;
-  password: string;
+  password: string | null;
   role: string;
   refreshToken?: string | null;
   resetPasswordToken?: string | null;
@@ -31,7 +31,6 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     password: {
       type: String,
-      required: true,
     },
     role: {
       type: String,

@@ -1,10 +1,21 @@
-import { IUser } from "../../models/User";
-import { IAdmin } from "../../models/Admin";
+import "express";
+import { Types, Document } from "mongoose";
 
 declare global {
   namespace Express {
+    interface User extends Document {
+      _id: Types.ObjectId; 
+      name: string;
+      email: string;
+      role: string;
+      googleId?: string;
+      avatar?: string;
+    }
+
     interface Request {
-      user?: IAdmin | IUser | { _id: string; role: "User" | "Admin" };
+      user?: User; // what protect middleware sets
     }
   }
 }
+
+export {};
