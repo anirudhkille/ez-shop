@@ -21,7 +21,9 @@ export const getWishlistByUser = asyncHandler(
   async (req: any, res: Response) => {
     const { _id } = req.user;
 
-    const wishlist = await Wishlist.find({ user: _id }).populate("products");
+    const wishlist = await Wishlist.findOne({ user: _id })
+      .populate("products")
+      .lean();
 
     res.status(200).json({
       success: true,
@@ -34,7 +36,7 @@ export const getWishlistByUser = asyncHandler(
 export const removeFromWishlist = asyncHandler(
   async (req: any, res: Response) => {
     const { _id } = req.user;
-    const { productId } = req.body;
+    const { productId } = req.params;
 
     const wishlist = await Wishlist.findOneAndUpdate(
       { user: _id },

@@ -3,17 +3,17 @@ import { protect } from "../middlewares/authMiddleware";
 import {
   getSearchProduct,
   postProduct,
-  getProduct,
-  getProductById,
+  getProducts,
+  getProductBySlug,
   updateProduct,
   deleteProduct,
 } from "../controllers/productController";
 
 const router = express.Router();
 
-router.get("/search", protect, getSearchProduct);
-router.get("/:id", protect, getProductById);
-router.get("/", protect, getProduct);
+router.get("/search", getSearchProduct);
+router.get("/:slug", getProductBySlug);
+router.get("/", getProducts);
 router.post("/", protect, postProduct);
 router.patch("/:id", protect, updateProduct);
 router.delete("/:id", protect, deleteProduct);

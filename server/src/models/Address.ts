@@ -4,7 +4,7 @@ export interface IAddress extends Document {
   user: Types.ObjectId;
   label: "Home" | "Work" | "Other";
   name: string;
-  mobileNo: string;
+  phone: string;
   addressLine1: string;
   addressLine2: string;
   zipCode: string;
@@ -27,7 +27,7 @@ const addressSchema = new mongoose.Schema<IAddress>(
       default: "Home",
     },
     name: { type: String, required: true },
-    mobileNo: { type: String, required: true },
+    phone: { type: String, required: true },
     addressLine1: { type: String, required: true },
     addressLine2: { type: String, required: true },
     zipCode: { type: String, required: true },

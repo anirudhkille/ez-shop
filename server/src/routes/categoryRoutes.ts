@@ -9,7 +9,7 @@ import {
 
 const router = express.Router();
 
-router.get("/", protect, getCategory);
+router.get("/",  getCategory);
 router.post("/", protect, postCategory);
 router.patch("/:id", protect, updateCategory);
 router.delete("/:id", protect, deleteCategory);

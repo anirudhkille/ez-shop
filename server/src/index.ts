@@ -18,17 +18,19 @@ import adminRoutes from "./routes/adminRoutes";
 import cartRoutes from "./routes/cartRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
 import orderRoutes from "./routes/orderRoutes";
+import paymentRoutes from "./routes/paymentRoutes";
 import productRoutes from "./routes/productRoutes";
 import reviewRoutes from "./routes/reviewRoutes";
-import stripeRoutes from "./routes/stripeRoutes";
 import userRoutes from "./routes/userRoutes";
 import wishlistRoutes from "./routes/wishlistRoutes";
+import stripeWebhook from "./webhook/stripeWebhook";
 
 const app = express();
 
 app.use(compression());
 app.use(cors(corsOptions));
 app.use(compression({ filter: shouldCompress, level: 6 }));
+app.use(stripeWebhook);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -53,9 +55,9 @@ app.use("/admin", adminRoutes);
 app.use("/cart", cartRoutes);
 app.use("/category", categoryRoutes);
 app.use("/order", orderRoutes);
+app.use("/payment", paymentRoutes);
 app.use("/product", productRoutes);
 app.use("/review", reviewRoutes);
-app.use("/stripe", stripeRoutes);
 app.use("/user", userRoutes);
 app.use("/wishlist", wishlistRoutes);
 

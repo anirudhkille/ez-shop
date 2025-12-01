@@ -5,7 +5,7 @@ import crypto from "crypto";
 export interface IAdmin extends Document {
   name: string;
   email: string;
-  phoneNumber?: string;
+  phone?: string;
   password: string;
   role: string;
   refreshToken?: string | null;
@@ -26,7 +26,7 @@ const adminSchema = new mongoose.Schema<IAdmin>(
       required: true,
       unique: true,
     },
-    phoneNumber: {
+    phone: {
       type: String,
     },
     password: {

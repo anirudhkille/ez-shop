@@ -1,8 +1,10 @@
 {
-  "name": "server",
+  "name": "ez-shop-backend",
+  "author": {
+    "name": "Anirudh Kille"
+  },
   "version": "1.0.0",
   "main": "index.js",
-  "author": "anirudh kille",
   "license": "ISC",
   "description": "",
   "dependencies": {
@@ -16,19 +18,19 @@
     "express-session": "^1.18.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^7.0.0",
-    "mongoose": "^8.19.3",
-    "nodemailer": "^7.0.10",
+    "mongoose": "^9.0.0",
+    "nodemailer": "^7.0.11",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "stripe": "^19.3.0"
+    "stripe": "^20.0.0"
   },
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "nodemon"
+    "dev": "tsx watch src/index.ts"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
+    "@types/bcryptjs": "^3.0.0",
     "@types/compression": "^1.8.1",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
@@ -36,9 +38,10 @@
     "@types/express-session": "^1.18.2",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
-    "@types/nodemailer": "^7.0.3",
+    "@types/nodemailer": "^7.0.4",
     "@types/passport-google-oauth20": "^2.0.17",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

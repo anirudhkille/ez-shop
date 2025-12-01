@@ -7,69 +7,54 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    sessionId: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     products: [
       {
-        productId: {
+        product: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
           required: true,
         },
-        name: {
-          type: String,
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-        },
-        price: {
-          type: Number,
-          required: true,
-        },
-        image: {
-          type: String,
-          required: true,
-        },
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true },
       },
     ],
-    shippingAddress: {
-      fName: { type: String, required: true },
-      lName: { type: String, required: true },
-      address: { type: String, required: true },
-      zipCode: { type: String, required: true },
-      mobileNo: { type: Number, required: true },
-      emailId: { type: String, required: true },
+    address: {
+      name: String,
+      addressLine1: String,
+      addressLine2: String,
+      city: String,
+      state: String,
+      zipCode: String,
+      country: String,
+      phone: String,
     },
-    subtotal: {
-      type: Number,
-      required: true,
-    },
-    shippingCharge: {
-      type: Number,
-      required: true,
-    },
-    amountPayable: {
-      type: Number,
-      required: true,
-    },
-    paymentMethod: {
+    deliveryMethod: {
       type: String,
-      enum: ["COD", "Card", "NetBanking", "UPI"],
+      enum: ["standard", "express", "same-day"],
+      default: "standard",
+    },
+    subtotal: Number,
+    deliveryCharge: Number,
+    totalAmount: Number,
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed"],
+      default: "pending",
+    },
+    paymentType: {
+      type: String,
+      enum: ["cod", "card"],
       required: true,
     },
+    paymentIntentId: String,
+    sessionId: String,
     orderStatus: {
       type: String,
-      enum: ["Processing", "Shipped", "Delivered", "Cancelled"],
-      default: "Processing",
+      enum: ["processing", "shipped", "delivered"],
+      default: "processing",
     },
   },
   { timestamps: true }
 );
 
-const Order = mongoose.model("Order", orderSchema);
-export default Order;
+export default mongoose.model("Order", orderSchema);

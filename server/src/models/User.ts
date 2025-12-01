@@ -5,7 +5,7 @@ import crypto from "crypto";
 export interface IUser extends Document {
   name: string;
   email: string;
-  phoneNumber?: string;
+  phone?: string;
   password: string | null;
   role: string;
   refreshToken?: string | null;
@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema<IUser>(
       required: true,
       unique: true,
     },
-    phoneNumber: {
+    phone: {
       type: String,
     },
     password: {
