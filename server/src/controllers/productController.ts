@@ -128,3 +128,97 @@ export const getSearchProduct = asyncHandler(
     });
   }
 );
+
+export const getFilteredProducts = asyncHandler(async (req: any, res: any) => {
+  const {
+    search,
+    category,
+    gender,
+    type,
+    price,
+    size,
+    color,
+    sort,
+    page = 1,
+    limit = 20,
+  } = req.query;
+
+  const query: any = { publish: true };
+
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  if (category) {
+    query.category = category;
+  }
+
+  if (gender) {
+    query.gender = gender.toLowerCase();
+  }
+
+  if (type) {
+    if (type === "New") query.isNewArrival = true;
+    if (type === "Featured") query.isFeatured = true;
+    if (type === "Sale") query.discountPrice = { $gt: 0 };
+  }
+
+  if (price) {
+    const [min, max] = price.split("-");
+    query.$and = [
+      { discountPrice: { $gte: Number(min) } },
+      { discountPrice: { $lte: Number(max) } },
+    ];
+  }
+
+  if (size) {
+    query["variants.sizes.size"] = size;
+  }
+
+  if (color) {
+    query["variants.color"] = color;
+  }
+
+  const skip = (Number(page) - 1) * Number(limit);
+
+  let sortOption: any = {};
+
+  switch (sort) {
+    case "price-low":
+      sortOption = { discountPrice: 1 };
+      break;
+    case "price-high":
+      sortOption = { discountPrice: -1 };
+      break;
+    case "newest":
+      sortOption = { createdAt: -1 };
+      break;
+    case "featured":
+      sortOption = { isFeatured: -1 };
+      break;
+    default:
+      sortOption = { createdAt: -1 };
+  }
+
+  const products = await Product.find(query)
+    .sort(sortOption)
+    .skip(skip)
+    .limit(Number(limit));
+
+  const total = await Product.countDocuments(query);
+
+  res.json({
+    success: true,
+    message: "Products fetched successfully",
+    data: products,
+    pagination: {
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / Number(limit)),
+    },
+  });
+});

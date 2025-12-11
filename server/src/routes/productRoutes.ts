@@ -6,11 +6,12 @@ import {
   getProducts,
   getProductBySlug,
   updateProduct,
-  deleteProduct,
+  deleteProduct,getFilteredProducts
 } from "../controllers/productController";
 
 const router = express.Router();
 
+router.get("/filter", getFilteredProducts);
 router.get("/search", getSearchProduct);
 router.get("/:slug", getProductBySlug);
 router.get("/", getProducts);
