@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./src/@types", "./node_modules/@types"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "baseUrl": "src",
