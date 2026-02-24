@@ -15,8 +15,33 @@
 
   "importOrder": [
     "^react$",
+    "^react-dom$",
+
+    "^react-router",
+    "^@tanstack/react-query$",
+    "^react-hook-form$",
+    "^zod$",
+    "^zustand$",
+
     "<THIRD_PARTY_MODULES>",
+
+    "^@radix-ui/.*$",
+    "^lucide-react$",
+
+    "^@/types/.*$",
+    "^@/lib/.*$",
+    "^@/api/.*$",
+    "^@/store/.*$",
+    "^@/hooks/.*$",
+
+    "^@/layout/.*$",
+    "^@/components/.*$",
+    "^@/pages/.*$",
+
+    "^@/assets/.*$",
+
     "^@/.*$",
+
     "^[./]"
   ],
   "importOrderSeparation": true,

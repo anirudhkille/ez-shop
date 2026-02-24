@@ -1,17 +1,20 @@
 import {
-  deleteAddress,
-  getAddresses,
-  postAddress,
-  updateAddress,
-} from "@/api/address";
-import type { TAddress } from "@/types/address";
-import {
   keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+
 import { toast } from "sonner";
+
+import type { TAddress } from "@/types/address";
+
+import {
+  deleteAddress,
+  getAddresses,
+  postAddress,
+  updateAddress,
+} from "@/api/address";
 
 export const useAddresss = () => {
   return useQuery({
@@ -33,7 +36,7 @@ export const usePostAddress = () => {
     onError: (error: any) => {
       toast.error(
         error.response.data.message ||
-          "An error occurred while creating address",
+          "An error occurred while creating address"
       );
     },
   });
@@ -56,8 +59,7 @@ export const useUpdateAddress = () => {
     },
     onError: (error: any) => {
       toast.error(
-        error.response.data.message ||
-          "An error occurred while updated address",
+        error.response.data.message || "An error occurred while updated address"
       );
     },
   });

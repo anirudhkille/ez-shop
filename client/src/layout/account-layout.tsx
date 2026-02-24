@@ -1,6 +1,8 @@
 import { Link, Outlet } from "react-router";
-import Container from "./container";
+
 import { Lock, MapPin, User } from "lucide-react";
+
+import Container from "./container";
 
 const tabs = [
   { icon: User, name: "Account Details", href: "account-details" },
@@ -10,19 +12,16 @@ const tabs = [
 
 export default function AccountLayout() {
   return (
-    <Container className="flex px-5 sm:px-8 md:px-10 py-10">
-      <div className="space-y-5 w-fit">
+    <Container className="flex px-5 py-10 sm:px-8 md:px-10">
+      <div className="w-fit space-y-5">
         {tabs.map((t) => (
           <Link key={t.href} to={`/account/${t.href}`} className="flex gap-2">
-            <t.icon strokeWidth={1.5} className="shrink-0"/>
-            <span className="shrink-0">
-
-            {t.name}
-            </span>
+            <t.icon strokeWidth={1.5} className="shrink-0" />
+            <span className="shrink-0">{t.name}</span>
           </Link>
         ))}
       </div>
-      <div className="px-5 md:px-8 lg:px-10 flex-1">
+      <div className="flex-1 px-5 md:px-8 lg:px-10">
         <Outlet />
       </div>
     </Container>

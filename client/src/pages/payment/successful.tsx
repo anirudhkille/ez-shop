@@ -1,7 +1,10 @@
-import OrderSuccess from "@/components/payment/order-success";
-import { useOrderById, useOrderBySessionId } from "@/hooks/useOrder";
-import useUserStore from "@/store/userStore";
 import { useSearchParams } from "react-router";
+
+import useUserStore from "@/store/userStore";
+
+import { useOrderById, useOrderBySessionId } from "@/hooks/useOrder";
+
+import OrderSuccess from "@/components/payment/order-success";
 
 export default function SuccessPage() {
   const [q] = useSearchParams();
@@ -19,7 +22,7 @@ export default function SuccessPage() {
 
   // Loading state
   if ((orderId && loadingId) || (sessionId && loadingSession)) {
-    return <div className="text-center py-10">Loading...</div>;
+    return <div className="py-10 text-center">Loading...</div>;
   }
 
   // COD path
@@ -44,9 +47,9 @@ export default function SuccessPage() {
   }
 
   return (
-    <div className="text-center py-20">
+    <div className="py-20 text-center">
       <h2 className="text-xl font-semibold">Invalid request</h2>
-      <p className="text-gray-600 mt-2">
+      <p className="mt-2 text-gray-600">
         No order information found. Please return to the home page.
       </p>
     </div>

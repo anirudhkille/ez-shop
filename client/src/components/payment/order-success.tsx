@@ -79,18 +79,18 @@ export default function OrderSuccess({
   const maskedPhone = allowShowFull
     ? shipping.phone
     : maskPhone(shipping.phone);
-  const maskedEmail = allowShowFull ? email ?? "" : maskEmail(email ?? "");
+  const maskedEmail = allowShowFull ? (email ?? "") : maskEmail(email ?? "");
 
   return (
-    <main className="max-w-4xl mx-auto p-6">
-      <section className="text-center py-8">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-linear-to-br from-slate-900 to-gray-700 text-white mb-4">
+    <main className="mx-auto max-w-4xl p-6">
+      <section className="py-8 text-center">
+        <div className="mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-slate-900 to-gray-700 text-white">
           ✓
         </div>
         <h1 className="text-3xl font-semibold">
           Thank you — Your order is confirmed
         </h1>
-        <p className="text-sm text-mute-foreground mt-2">
+        <p className="text-mute-foreground mt-2 text-sm">
           We've received your order and sent a confirmation to{" "}
           <strong>{maskedEmail || "your email"}</strong>
         </p>
@@ -100,24 +100,24 @@ export default function OrderSuccess({
         </p>
       </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {/* LEFT: Order summary */}
-        <div className="md:col-span-2 bg-white p-6 rounded-xl shadow">
-          <h2 className="text-lg font-medium mb-4">Order summary</h2>
+        <div className="rounded-xl bg-white p-6 shadow md:col-span-2">
+          <h2 className="mb-4 text-lg font-medium">Order summary</h2>
 
           <div className="divide-y">
             {order?.products.map((it) => (
               <div key={it._id} className="flex items-center py-4">
-                <div className="w-20 h-20 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
+                <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded bg-gray-100">
                   <img
                     src={it.product.image ?? "/placeholder.png"}
                     alt={it.product.name}
-                    className="object-cover w-full h-full"
+                    className="h-full w-full object-cover"
                   />
                 </div>
                 <div className="ml-4">
                   <div className="font-medium">{it.product.name}</div>
-                  <div className="text-sm text-mute-foreground">
+                  <div className="text-mute-foreground text-sm">
                     Qty: {it.quantity}
                   </div>
                 </div>
@@ -129,15 +129,15 @@ export default function OrderSuccess({
           </div>
 
           <div className="mt-6 border-t pt-4">
-            <div className="flex justify-between text-sm text-mute-foreground">
+            <div className="text-mute-foreground flex justify-between text-sm">
               <div>Subtotal</div>
               <div>{formatINR(order.subtotal)}</div>
             </div>
-            <div className="flex justify-between text-sm text-mute-foreground mt-2">
+            <div className="text-mute-foreground mt-2 flex justify-between text-sm">
               <div>Delivery</div>
               <div>{formatINR(order.deliveryCharge)}</div>
             </div>
-            <div className="flex justify-between text-lg font-semibold mt-4">
+            <div className="mt-4 flex justify-between text-lg font-semibold">
               <div>Total</div>
               <div>{formatINR(order.totalAmount)}</div>
             </div>
@@ -146,13 +146,13 @@ export default function OrderSuccess({
           <div className="mt-6 flex gap-3">
             <a
               href={`/orders/${order._id}`}
-              className="inline-block px-4 py-2 bg-slate-900 text-white rounded shadow hover:opacity-95"
+              className="inline-block rounded bg-slate-900 px-4 py-2 text-white shadow hover:opacity-95"
             >
               View order
             </a>
             <a
               href="/"
-              className="inline-block px-4 py-2 border rounded text-slate-900 hover:bg-slate-50"
+              className="inline-block rounded border px-4 py-2 text-slate-900 hover:bg-slate-50"
             >
               Continue shopping
             </a>
@@ -165,9 +165,9 @@ export default function OrderSuccess({
           </div>
         </div>
 
-        <aside className="bg-white p-6 rounded-xl shadow space-y-4">
+        <aside className="space-y-4 rounded-xl bg-white p-6 shadow">
           <div>
-            <h3 className="text-sm text-mute-foreground">Payment</h3>
+            <h3 className="text-mute-foreground text-sm">Payment</h3>
             <div className="mt-2 flex items-center justify-between">
               <div>
                 <div className="font-medium">
@@ -175,11 +175,11 @@ export default function OrderSuccess({
                     ? `Card ••••${
                         order.paymentIntentId
                           ? order.paymentIntentId.slice(-4)
-                          : order.sessionId?.slice(-4) ?? ""
+                          : (order.sessionId?.slice(-4) ?? "")
                       }`
                     : order.paymentType?.toUpperCase()}
                 </div>
-                <div className="text-xs text-mute-foreground">
+                <div className="text-mute-foreground text-xs">
                   Status:{" "}
                   <span className="font-medium">{order.paymentStatus}</span>
                 </div>
@@ -191,7 +191,7 @@ export default function OrderSuccess({
           </div>
 
           <div>
-            <h3 className="text-sm text-mute-foreground">Shipping</h3>
+            <h3 className="text-mute-foreground text-sm">Shipping</h3>
             <div className="mt-2 text-sm text-slate-700">
               <div className="font-medium">
                 {allowShowFull ? shipping.name : shipping.name?.split(" ")[0]}
@@ -212,8 +212,8 @@ export default function OrderSuccess({
           </div>
 
           <div>
-            <h3 className="text-sm text-mute-foreground">Order details</h3>
-            <div className="mt-2 text-xs text-mute-foreground">
+            <h3 className="text-mute-foreground text-sm">Order details</h3>
+            <div className="text-mute-foreground mt-2 text-xs">
               <div>
                 Order ID: <span className="font-medium">{order._id}</span>
               </div>
@@ -230,7 +230,7 @@ export default function OrderSuccess({
             </div>
           </div>
 
-          <div className="pt-2 text-xs text-mute-foreground">
+          <div className="text-mute-foreground pt-2 text-xs">
             Need help?{" "}
             <a href="mailto:anirudhkille@gmail.com" className="underline">
               anirudhkille@gmail.com

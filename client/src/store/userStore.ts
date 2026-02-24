@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { persist } from "zustand/middleware";
 
 type UserState = {
@@ -35,8 +36,8 @@ const useUserStore = create<UserState>()(
         name: state.name,
         email: state.email,
       }),
-    },
-  ),
+    }
+  )
 );
 
 export default useUserStore;

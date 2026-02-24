@@ -1,5 +1,6 @@
-import { getFilteredProducts, getProduct, getProducts } from "@/api/product";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+
+import { getFilteredProducts, getProduct, getProducts } from "@/api/product";
 
 export const useProducts = (filters?: any) => {
   return useQuery({

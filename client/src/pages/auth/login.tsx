@@ -1,15 +1,21 @@
+import { useNavigate } from "react-router";
+
+import { Controller, useForm } from "react-hook-form";
+
+import { z } from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { useLogin } from "@/hooks/useUser";
+
+import AuthLayout from "@/layout/auth-layout";
+import Head from "@/layout/head";
+
 import GoogleLogin from "@/components/auth/google-login";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { FormInput } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useLogin } from "@/hooks/useUser";
-import AuthLayout from "@/layout/auth-layout";
-import Head from "@/layout/head";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
-import { z } from "zod";
 
 const formSchema = z.object({
   email: z.string().email({

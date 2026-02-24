@@ -1,5 +1,6 @@
-import { cn } from "@/lib/utils";
 import type { ImgHTMLAttributes } from "react";
+
+import { cn } from "@/lib/utils";
 
 type ImageProps = {
   src: string;
@@ -21,7 +22,7 @@ export default function Image({
       src={src}
       alt={alt}
       loading={loading}
-      className={cn("w-full h-full object-cover", className)}
+      className={cn("h-full w-full object-cover", className)}
     />
   );
 }

@@ -1,17 +1,19 @@
 import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+import { toast } from "sonner";
+
+import {
   addToCart,
   clearCart,
   getCart,
   removeFromCart,
   updateCartQuantity,
 } from "@/api/cart";
-import { toast } from "sonner";
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
 
 export const useCart = () => {
   return useQuery({

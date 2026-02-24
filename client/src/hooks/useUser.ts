@@ -1,3 +1,11 @@
+import { useNavigate } from "react-router";
+
+import { useMutation } from "@tanstack/react-query";
+
+import { toast } from "sonner";
+
+import type { TLogin, TSignup, TUser } from "@/types/user";
+
 import {
   forgotPassword,
   postLogin,
@@ -5,11 +13,8 @@ import {
   resetPassword,
   updateProfile,
 } from "@/api/user";
+
 import useAuthStore from "@/store/userStore";
-import type { TLogin, TSignup, TUser } from "@/types/user";
-import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router";
-import { toast } from "sonner";
 
 export const useSignup = () => {
   const { setUser } = useAuthStore();

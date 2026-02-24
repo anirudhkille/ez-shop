@@ -1,16 +1,21 @@
 import { useState } from "react";
+
+import { useNavigate, useSearchParams } from "react-router";
+
 import { ChevronDown, Settings2 } from "lucide-react";
+
+import type { TProduct } from "@/types/product";
+
+import { useFilteredProducts } from "@/hooks/useProduct";
+
+import FilterSidebar from "@/components/product/filter-sidebar";
+import ProductCard from "@/components/product/product-card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import ProductCard from "@/components/product/product-card";
-import FilterSidebar from "@/components/product/filter-sidebar";
-import { useFilteredProducts } from "@/hooks/useProduct";
-import type { TProduct } from "@/types/product";
-import { useNavigate, useSearchParams } from "react-router";
 
 const SORT_OPTIONS = [
   { label: "Featured", value: "featured" },
@@ -42,7 +47,6 @@ export default function Products() {
 
   const { data, isLoading } = useFilteredProducts(filters);
 
- 
   const handleSortBy = (value: string) => {
     const params = new URLSearchParams(location.search);
     params.set("sortBy", value);

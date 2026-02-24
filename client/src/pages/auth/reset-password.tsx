@@ -1,13 +1,19 @@
 import { useSearchParams } from "react-router";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import AuthLayout from "@/layout/auth-layout";
-import z from "zod";
+
 import { Controller, useForm } from "react-hook-form";
+
+import z from "zod";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import Head from "@/layout/head";
+
 import { useResetPassword } from "@/hooks/useUser";
+
+import AuthLayout from "@/layout/auth-layout";
+import Head from "@/layout/head";
+
+import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 export const formSchema = z
   .object({

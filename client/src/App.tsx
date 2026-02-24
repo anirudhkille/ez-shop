@@ -1,5 +1,6 @@
-import { Route, Routes } from "react-router";
 import { lazy, Suspense } from "react";
+
+import { Route, Routes } from "react-router";
 
 const Layout = lazy(() => import("./layout/layout"));
 const RedirectIfAuthenticated = lazy(

@@ -1,7 +1,10 @@
-import { useCart } from "@/hooks/useCart";
 import { useSearchParams } from "react-router";
-import Image from "../ui/img";
+
 import type { TProduct } from "@/types/product";
+
+import { useCart } from "@/hooks/useCart";
+
+import Image from "../ui/img";
 
 export default function OrderSummary() {
   const [q] = useSearchParams();
@@ -11,31 +14,31 @@ export default function OrderSummary() {
 
   return (
     <div className="w-full lg:w-80">
-      <div className="border border-border rounded-lg p-6 sticky top-8">
-        <h2 className="text-lg font-medium mb-4">Order Summary</h2>
+      <div className="border-border sticky top-8 rounded-lg border p-6">
+        <h2 className="mb-4 text-lg font-medium">Order Summary</h2>
 
         {data?.data?.products?.map((p: { product: TProduct }) => (
-          <div className="flex gap-3 pb-4 border-b border-border">
-            <div className="w-16 h-16 bg-[#f5f5f5] rounded-md shrink-0">
+          <div className="border-border flex gap-3 border-b pb-4">
+            <div className="h-16 w-16 shrink-0 rounded-md bg-[#f5f5f5]">
               <Image
                 src={p?.product?.image}
                 alt={p?.product?.name}
-                className="w-full h-full object-contain"
+                className="h-full w-full object-contain"
               />
             </div>
             <div className="flex-1">
-              <h4 className="font-medium text-sm">{p?.product?.name}</h4>
-              <p className="text-xs text-muted-foreground">
+              <h4 className="text-sm font-medium">{p?.product?.name}</h4>
+              <p className="text-muted-foreground text-xs">
                 Size 38.5 | Qty: 2
               </p>
-              <p className="text-sm font-medium mt-1">
+              <p className="mt-1 text-sm font-medium">
                 ₹{p?.product?.discountPrice}
               </p>
             </div>
           </div>
         ))}
 
-        <div className="py-4 space-y-3">
+        <div className="space-y-3 py-4">
           <div className="flex justify-between text-sm">
             <span>Subtotal</span>
             <span>₹{data?.data?.subtotal}</span>
@@ -50,7 +53,7 @@ export default function OrderSummary() {
           </div>
         </div>
 
-        <div className="border-t border-border pt-4">
+        <div className="border-border border-t pt-4">
           <div className="flex justify-between font-medium">
             <span>Total</span>
             <span>₹{data?.data?.total}</span>

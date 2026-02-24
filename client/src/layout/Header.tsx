@@ -1,9 +1,14 @@
 import { useState } from "react";
+
 import { Link } from "react-router";
-import { X, ShoppingBag, Menu, User, Heart, Search } from "lucide-react";
-import Container from "./container";
+
+import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
+
 import useAuthStore from "@/store/userStore";
+
 import { useCart } from "@/hooks/useCart";
+
+import Container from "./container";
 
 const menus = [
   { href: "?new-featured", name: "New & Featured" },
@@ -28,7 +33,7 @@ function Mobile() {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   return (
     <header className="sticky top-0 w-full bg-white md:hidden">
-      <Container className="flex items-center justify-between px-5 py-3 font-bold gap-11">
+      <Container className="flex items-center justify-between gap-11 px-5 py-3 font-bold">
         <Link to="/" className="flex items-center gap-3">
           <img src="/logo.png" alt="logo" height={35} width={35} />
           <span className="text-xl font-bold">EZ Shop</span>
@@ -51,9 +56,9 @@ function Mobile() {
         </div>
       </Container>
 
-      <div className="top-0 right-0 w-full h-full bg-black/50">
+      <div className="top-0 right-0 h-full w-full bg-black/50">
         <div
-          className={`fixed p-8 bg-white shadow-md top-0 righ-0 z-50 w-full h-full max-w-sm duration-700 transform ${
+          className={`righ-0 fixed top-0 z-50 h-full w-full max-w-sm transform bg-white p-8 shadow-md duration-700 ${
             isMenuOpen ? "right-0" : "-right-full"
           }`}
         >
@@ -89,7 +94,7 @@ function Mobile() {
               <div className="flex gap-5">
                 <Link
                   to="/login"
-                  className="block w-full py-2 text-center text-white bg-black rounded-full"
+                  className="block w-full rounded-full bg-black py-2 text-center text-white"
                   onClick={() => {
                     setIsMenuOpen(!isMenuOpen);
                   }}
@@ -99,7 +104,7 @@ function Mobile() {
 
                 <Link
                   to="/signup"
-                  className="block w-full py-2 font-semibold text-center border border-gray-400 rounded-full"
+                  className="block w-full rounded-full border border-gray-400 py-2 text-center font-semibold"
                   onClick={() => {
                     setIsMenuOpen(!isMenuOpen);
                   }}
@@ -118,9 +123,9 @@ function Mobile() {
 function DeskTop() {
   const { name } = useAuthStore();
   return (
-    <header className="sticky top-0 w-full bg-white hidden md:block z-50">
-      <div className="bg-[#F5F5F5] w-full">
-        <Container className="justify-end hidden gap-5 px-5 py-1.5 text-sm font-semibold md:flex">
+    <header className="sticky top-0 z-50 hidden w-full bg-white md:block">
+      <div className="w-full bg-[#F5F5F5]">
+        <Container className="hidden justify-end gap-5 px-5 py-1.5 text-sm font-semibold md:flex">
           {!name ? (
             <>
               <Link to="/signup">Signup</Link>
@@ -137,18 +142,18 @@ function DeskTop() {
         </Container>
       </div>
 
-      <Container className="flex items-center justify-between px-5 py-3 gap-10">
+      <Container className="flex items-center justify-between gap-10 px-5 py-3">
         <Link to="/" className="flex items-center gap-3">
           <img src="/logo.png" alt="logo" height={35} width={35} />
           <span className="text-xl font-bold">EZ Shop</span>
         </Link>
 
-        <nav className="items-center hidden space-x-4 md:flex">
+        <nav className="hidden items-center space-x-4 md:flex">
           {menus.map((m) => (
             <Link
               to={`/products/${m.href}`}
               key={m.name}
-              className="font-semibold hover:underline underline-offset-4"
+              className="font-semibold underline-offset-4 hover:underline"
             >
               {m.name}
             </Link>
@@ -179,10 +184,7 @@ function Cart() {
     <Link to="/cart" className="relative">
       <ShoppingBag className="text-primary size-6" strokeWidth={1.5} />
       {cartCount >= 1 && (
-        <div
-          className="absolute text-sm text-center rounded-full -right-3 -top-3 px-1.5
-             text-secondary bg-primary"
-        >
+        <div className="text-secondary bg-primary absolute -top-3 -right-3 rounded-full px-1.5 text-center text-sm">
           {cartCount}
         </div>
       )}

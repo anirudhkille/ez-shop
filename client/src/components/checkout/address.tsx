@@ -1,14 +1,20 @@
-import { Plus, Trash2, MapPin, Edit2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+
+import { useNavigate } from "react-router";
+
+import { Edit2, MapPin, Plus, Trash2 } from "lucide-react";
+
+import type { TAddress } from "@/types/address";
+
 import {
   useAddresss,
   useDeleteAddress,
   useUpdateAddress,
 } from "@/hooks/useAddress";
-import type { TAddress } from "@/types/address";
-import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
+
 import AddressModal from "../account/address-modal";
-import { useNavigate } from "react-router";
 
 type ShippingAddressProps = {
   goToNextStep: () => void;
@@ -42,8 +48,8 @@ export default function Address({ goToNextStep }: ShippingAddressProps) {
       <h2 className="text-lg font-medium">Shipping Information</h2>
 
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
             Shipping Address
           </h3>
 
@@ -51,9 +57,9 @@ export default function Address({ goToNextStep }: ShippingAddressProps) {
             variant="ghost"
             size="sm"
             onClick={() => setOpen("new")}
-            className="text-sm text-foreground hover:text-foreground/80 gap-1"
+            className="text-foreground hover:text-foreground/80 gap-1 text-sm"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="h-4 w-4" />
             Add New
           </Button>
         </div>
@@ -62,15 +68,15 @@ export default function Address({ goToNextStep }: ShippingAddressProps) {
         {
           <div className="space-y-3">
             {addresses?.length === 0 ? (
-              <div className="border border-dashed border-border rounded-lg p-6 text-center">
-                <MapPin className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+              <div className="border-border rounded-lg border border-dashed p-6 text-center">
+                <MapPin className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
                 <p className="text-muted-foreground mb-3">No saved addresses</p>
                 <Button
                   variant="outline"
                   onClick={() => setOpen("new")}
                   className="gap-2 bg-transparent"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="h-4 w-4" />
                   Add Address
                 </Button>
               </div>
@@ -78,7 +84,7 @@ export default function Address({ goToNextStep }: ShippingAddressProps) {
               addresses?.map((a: TAddress) => (
                 <label
                   key={a._id}
-                  className={`flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+                  className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors ${
                     selectedAddress?._id === a._id
                       ? "border-foreground bg-muted/50"
                       : "border-border hover:border-muted-foreground"
@@ -93,22 +99,22 @@ export default function Address({ goToNextStep }: ShippingAddressProps) {
                       setSelectedAddress(a);
                       navigate(`?address=${a._id}`);
                     }}
-                    className="w-4 h-4 mt-1 accent-foreground"
+                    className="accent-foreground mt-1 h-4 w-4"
                   />
 
-                  <div className="flex justify-between items-start w-full">
+                  <div className="flex w-full items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold text-base">
+                        <p className="text-base font-semibold">
                           {a.label} Address
                         </p>
                         {a.isDefault && (
-                          <span className="text-xs bg-primary text-white px-2 py-0.5 rounded">
+                          <span className="bg-primary rounded px-2 py-0.5 text-xs text-white">
                             Default
                           </span>
                         )}
                       </div>
-                      <p className="text-sm mt-3">
+                      <p className="mt-3 text-sm">
                         {a.name} — {a.phone}
                       </p>
                       <p className="text-sm">
@@ -158,7 +164,7 @@ export default function Address({ goToNextStep }: ShippingAddressProps) {
       <Button
         onClick={goToNextStep}
         disabled={!selectedAddress}
-        className="w-full rounded-full py-6 text-base bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-foreground text-background hover:bg-foreground/90 w-full rounded-full py-6 text-base disabled:cursor-not-allowed disabled:opacity-50"
       >
         Continue to Payment
       </Button>

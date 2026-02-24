@@ -1,5 +1,6 @@
-import axiosInstance from "@/lib/axiosInstance";
 import type { TOrder } from "@/types/order";
+
+import axiosInstance from "@/lib/axiosInstance";
 
 export const placeCodOrder = async (formData: TOrder) => {
   const res = await axiosInstance.post("/order/cod", formData);

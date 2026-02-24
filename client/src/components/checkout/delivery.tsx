@@ -1,4 +1,5 @@
 import { useLocation, useNavigate, useSearchParams } from "react-router";
+
 import { Button } from "../ui/button";
 
 type DeliveryProps = {
@@ -13,7 +14,7 @@ export default function Delivery({ goToNextStep }: DeliveryProps) {
 
   return (
     <div className="px-4">
-      <h1 className="text-xl font-medium mb-6">Choose Delivery Method</h1>
+      <h1 className="mb-6 text-xl font-medium">Choose Delivery Method</h1>
 
       <div className="space-y-4">
         {[
@@ -38,7 +39,7 @@ export default function Delivery({ goToNextStep }: DeliveryProps) {
         ].map((opt, index) => (
           <div
             key={index}
-            className={`border p-4 rounded-xl flex items-center justify-between hover:border-black transition cursor-pointer ${
+            className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition hover:border-black ${
               opt.id === deliveryMethod && "border-black"
             }`}
             onClick={() => {
@@ -59,7 +60,7 @@ export default function Delivery({ goToNextStep }: DeliveryProps) {
 
       <Button
         onClick={goToNextStep}
-        className="w-full rounded-full py-6 text-base bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed mt-5"
+        className="bg-foreground text-background hover:bg-foreground/90 mt-5 w-full rounded-full py-6 text-base disabled:cursor-not-allowed disabled:opacity-50"
       >
         Continue to Payment
       </Button>

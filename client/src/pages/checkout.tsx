@@ -1,10 +1,13 @@
 import { useState } from "react";
+
+import { ChevronRight } from "lucide-react";
+
 import Container from "@/layout/container";
-import OrderSummary from "@/components/checkout/order-summary";
+
 import Address from "@/components/checkout/address";
 import Delivery from "@/components/checkout/delivery";
+import OrderSummary from "@/components/checkout/order-summary";
 import Payment from "@/components/checkout/payment";
-import { ChevronRight } from "lucide-react";
 
 type Step = "shipping" | "delivery" | "payment";
 
@@ -42,21 +45,21 @@ export default function Checkout() {
   const isStepActive = (step: Step) => currentStep === step;
 
   return (
-    <Container className="flex flex-col lg:flex-row gap-8 px-5 sm:px-8 md:px-10 py-10">
+    <Container className="flex flex-col gap-8 px-5 py-10 sm:px-8 md:px-10 lg:flex-row">
       <div className="flex-1">
-        <h1 className="text-2xl font-medium mb-8">Checkout</h1>
+        <h1 className="mb-8 text-2xl font-medium">Checkout</h1>
 
-        <div className="flex items-center mb-8">
+        <div className="mb-8 flex items-center">
           {steps.map((step, index) => (
             <div key={step.id} className="flex items-center">
               <button
                 onClick={() => goToStep(step.id)}
-                className={`flex items-center cursor-pointer px-3 py-2 ${
+                className={`flex cursor-pointer items-center px-3 py-2 ${
                   isStepActive(step.id)
                     ? "text-primary"
                     : isStepCompleted(step.id)
-                    ? "text-primary"
-                    : "text-muted-foreground"
+                      ? "text-primary"
+                      : "text-muted-foreground"
                 }`}
                 disabled={!isStepCompleted(step.id) && !isStepActive(step.id)}
               >
@@ -69,7 +72,7 @@ export default function Checkout() {
           ))}
         </div>
 
-        <div className="border border-border rounded-lg p-6">
+        <div className="border-border rounded-lg border p-6">
           {currentStep === "shipping" && (
             <Address goToNextStep={goToNextStep} />
           )}

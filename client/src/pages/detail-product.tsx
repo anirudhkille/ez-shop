@@ -1,13 +1,19 @@
-import { Button } from "@/components/ui/button";
-import Image from "@/components/ui/img";
+import { useEffect, useState } from "react";
+
+import { useParams } from "react-router";
+
+import { Heart } from "lucide-react";
+
+import type { TVariant } from "@/types/product";
+
 import { useAddToCart } from "@/hooks/useCart";
 import { useProduct } from "@/hooks/useProduct";
 import { useAddToWishlist } from "@/hooks/useWishlist";
+
 import Container from "@/layout/container";
-import type { TVariant } from "@/types/product";
-import { Heart } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useParams } from "react-router";
+
+import { Button } from "@/components/ui/button";
+import Image from "@/components/ui/img";
 
 export default function DetailProduct() {
   const { slug } = useParams();
@@ -38,20 +44,18 @@ export default function DetailProduct() {
   const variantId = selectedVariant._id;
 
   return (
-    <Container className="px-5 sm:px-8 md:px-10 py-10">
-      <div className="grid md:grid-cols-2 gap-8">
+    <Container className="px-5 py-10 sm:px-8 md:px-10">
+      <div className="grid gap-8 md:grid-cols-2">
         <div className="flex gap-5">
           <div className="space-y-3">
             {galleryImages.map((img: string, i: number) => (
               <div
-                className={`size-20 rounded-xl overflow-hidden cursor-pointer border 
-          ${selectedImg === img ? "border-primary ring" : ""}
-        `}
+                className={`size-20 cursor-pointer overflow-hidden rounded-xl border ${selectedImg === img ? "border-primary ring" : ""} `}
               >
                 <Image
                   key={i}
                   src={img}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                   onClick={() => setSelectedImg(img)}
                   onMouseEnter={() => setSelectedImg(img)}
                 />
@@ -59,19 +63,19 @@ export default function DetailProduct() {
             ))}
           </div>
 
-          <div className="w-full h-[80vh] rounded-xl overflow-hidden">
-            <Image src={selectedImg} className="object-contain h-full w-full" />
+          <div className="h-[80vh] w-full overflow-hidden rounded-xl">
+            <Image src={selectedImg} className="h-full w-full object-contain" />
           </div>
         </div>
 
         <div className="max-w-sm">
-          <h1 className="text-lg md:text-xl font-semibold">{product.name}</h1>
+          <h1 className="text-lg font-semibold md:text-xl">{product.name}</h1>
 
-          <p className="text-sm md:text-base text-muted-foreground">
+          <p className="text-muted-foreground text-sm md:text-base">
             {product?.category?.name ?? ""}
           </p>
 
-          <p className="mt-5 font-medium flex gap-3">
+          <p className="mt-5 flex gap-3 font-medium">
             MRP : ₹{product.discountPrice}{" "}
             {product.discountPrice !== product.price && (
               <span className="text-muted-foreground line-through">
@@ -90,17 +94,15 @@ export default function DetailProduct() {
                     setSelectedImg(variant.images[0]);
                     setSelectedSize("");
                   }}
-                  className={`size-20 rounded-xl overflow-hidden cursor-pointer border 
-          ${
-            selectedVariantIndex === idx
-              ? "border-primary ring ring-primary"
-              : ""
-          }
-        `}
+                  className={`size-20 cursor-pointer overflow-hidden rounded-xl border ${
+                    selectedVariantIndex === idx
+                      ? "border-primary ring-primary ring"
+                      : ""
+                  } `}
                 >
                   <Image
                     src={variant.images[0]}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                 </div>
               ))}
@@ -108,19 +110,18 @@ export default function DetailProduct() {
           </div>
 
           <div className="mt-10">
-            <h2 className="font-semibold mb-3">Select Size</h2>
+            <h2 className="mb-3 font-semibold">Select Size</h2>
 
             <div className="grid grid-cols-3 gap-3">
               {selectedVariant.sizes.map((s: { size: string }, idx: number) => (
                 <button
                   key={idx}
                   onClick={() => setSelectedSize(s.size)}
-                  className={`border rounded py-2 text-center font-medium 
-                    hover:bg-accent transition ${
-                      selectedSize === s.size
-                        ? "border-black bg-accent"
-                        : "border-gray-300"
-                    }`}
+                  className={`hover:bg-accent rounded border py-2 text-center font-medium transition ${
+                    selectedSize === s.size
+                      ? "bg-accent border-black"
+                      : "border-gray-300"
+                  }`}
                 >
                   {s.size}
                 </button>
@@ -128,7 +129,7 @@ export default function DetailProduct() {
             </div>
           </div>
 
-          <div className="space-y-3 mt-8">
+          <div className="mt-8 space-y-3">
             <Button
               className="w-full"
               onClick={() =>
@@ -152,7 +153,7 @@ export default function DetailProduct() {
             </Button>
           </div>
 
-          <p className="mt-6 text-muted-foreground">{product.description}</p>
+          <p className="text-muted-foreground mt-6">{product.description}</p>
         </div>
       </div>
     </Container>

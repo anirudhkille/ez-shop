@@ -1,5 +1,7 @@
 import { useState } from "react";
+
 import { ChevronDown } from "lucide-react";
+
 import { Checkbox } from "@/components/ui/checkbox";
 
 const genders = ["Men", "Women", "Unisex"];
@@ -28,7 +30,7 @@ const colors = [
   { name: "Gray", value: "#6B7280" },
 ];
 
-const categories=["shoes","clothing"]
+const categories = ["shoes", "clothing"];
 
 export default function FilterSidebar() {
   const [openSections, setOpenSections] = useState({
@@ -48,7 +50,7 @@ export default function FilterSidebar() {
   };
 
   return (
-    <aside className="w-64 border-r border-gray-200 bg-white p-6 overflow-y-auto">
+    <aside className="w-64 overflow-y-auto border-r border-gray-200 bg-white p-6">
       <div>
         {/* Categories */}
         <div className="border-b border-gray-200">
@@ -222,7 +224,7 @@ export default function FilterSidebar() {
                 <button
                   key={color.name}
                   title={color.name}
-                  className="group relative h-8 w-8 rounded-full border-2 border-gray-200 transition-all hover:scale-110 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+                  className="group relative h-8 w-8 rounded-full border-2 border-gray-200 transition-all hover:scale-110 hover:border-gray-400 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:outline-none"
                   style={{ backgroundColor: color.value }}
                 >
                   <span className="sr-only">{color.name}</span>

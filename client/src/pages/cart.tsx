@@ -1,8 +1,12 @@
-import { Minus, Plus, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
-import Container from "@/layout/container";
+
+import { Heart, Minus, Plus } from "lucide-react";
+
 import { useCart, useUpdateCartQty } from "@/hooks/useCart";
+
+import Container from "@/layout/container";
+
+import { Button } from "@/components/ui/button";
 import Image from "@/components/ui/img";
 
 export default function Cart() {
@@ -14,36 +18,36 @@ export default function Cart() {
   if (!cart) return null;
 
   return (
-    <Container className=" px-5 sm:px-10 md:px-10 py-10">
-      <h1 className="text-2xl font-medium mb-6">Cart</h1>
+    <Container className="px-5 py-10 sm:px-10 md:px-10">
+      <h1 className="mb-6 text-2xl font-medium">Cart</h1>
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col gap-8 lg:flex-row">
         <div className="flex-1">
           {cart.products.map((c: any) => (
             <div key={c._id}>
               <div className="flex gap-4">
-                <div className="w-40 h-40 bg-[#f5f5f5] rounded-md shrink-0">
+                <div className="h-40 w-40 shrink-0 rounded-md bg-[#f5f5f5]">
                   <Image
                     src={c.product.image}
                     alt={c.product.name}
-                    className="w-full h-full object-contain"
+                    className="h-full w-full object-contain"
                   />
                 </div>
 
                 <div className="flex-1">
                   <div className="flex justify-between">
                     <div>
-                      <h3 className="font-medium text-base">
+                      <h3 className="text-base font-medium">
                         {c.product.name}
                       </h3>
 
-                      <p className="text-muted-foreground text-sm mt-1">
+                      <p className="text-muted-foreground mt-1 text-sm">
                         Size: {c.size || "Free Size"}
                       </p>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-muted-foreground line-through text-sm mr-2">
+                      <span className="text-muted-foreground mr-2 text-sm line-through">
                         ₹{c.priceAtPurchase}
                       </span>
                       <span className="font-medium">
@@ -54,8 +58,8 @@ export default function Cart() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 mt-6">
-                <div className="flex items-center border border-border rounded-full">
+              <div className="mt-6 flex items-center gap-4">
+                <div className="border-border flex items-center rounded-full border">
                   <button
                     onClick={() =>
                       updateQty({
@@ -63,12 +67,12 @@ export default function Cart() {
                         quantity: Math.max(1, c.quantity - 1),
                       })
                     }
-                    className="p-3 hover:bg-muted rounded-l-full transition-colors"
+                    className="hover:bg-muted rounded-l-full p-3 transition-colors"
                   >
-                    <Minus className="w-4 h-4" />
+                    <Minus className="h-4 w-4" />
                   </button>
 
-                  <span className="px-4 min-w-10 text-center">
+                  <span className="min-w-10 px-4 text-center">
                     {c.quantity}
                   </span>
 
@@ -79,24 +83,24 @@ export default function Cart() {
                         quantity: c.quantity + 1,
                       })
                     }
-                    className="p-3 hover:bg-muted rounded-r-full transition-colors"
+                    className="hover:bg-muted rounded-r-full p-3 transition-colors"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="h-4 w-4" />
                   </button>
                 </div>
 
-                <button className="p-3 border border-border rounded-full hover:bg-muted transition-colors">
-                  <Heart className="w-5 h-5" />
+                <button className="border-border hover:bg-muted rounded-full border p-3 transition-colors">
+                  <Heart className="h-5 w-5" />
                 </button>
               </div>
 
-              <div className="border-t border-border mt-8" />
+              <div className="border-border mt-8 border-t" />
             </div>
           ))}
         </div>
 
         <div className="w-full lg:w-80">
-          <h2 className="text-xl font-medium mb-6">Summary</h2>
+          <h2 className="mb-6 text-xl font-medium">Summary</h2>
 
           <div className="flex justify-between py-3">
             <span>Subtotal</span>
@@ -113,17 +117,17 @@ export default function Cart() {
             <span>Free</span>
           </div>
 
-          <div className="border-t border-border my-2" />
+          <div className="border-border my-2 border-t" />
 
           <div className="flex justify-between py-3 font-medium">
             <span>Total</span>
             <span>₹{cart.total}</span>
           </div>
 
-          <div className="border-t border-border my-2" />
+          <div className="border-border my-2 border-t" />
 
           <Link to="/checkout">
-            <Button className="w-full mt-4 rounded-full py-6 text-base bg-foreground text-background hover:bg-foreground/90">
+            <Button className="bg-foreground text-background hover:bg-foreground/90 mt-4 w-full rounded-full py-6 text-base">
               Checkout
             </Button>
           </Link>

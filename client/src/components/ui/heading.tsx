@@ -1,5 +1,6 @@
-import { cn } from "@/lib/utils";
 import type { ElementType, ReactNode } from "react";
+
+import { cn } from "@/lib/utils";
 
 type HeadingProps = {
   as?: ElementType;
@@ -13,7 +14,9 @@ export default function Heading({
   className,
 }: HeadingProps) {
   return (
-    <Tag className={cn("text-xl sm:text-2xl md:text-3xl font-medium", className)}>
+    <Tag
+      className={cn("text-xl font-medium sm:text-2xl md:text-3xl", className)}
+    >
       {children}
     </Tag>
   );

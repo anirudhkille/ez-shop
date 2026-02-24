@@ -1,19 +1,26 @@
+import { useEffect } from "react";
+
+import { useForm } from "react-hook-form";
+
+import z from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import type { TAddress } from "@/types/address";
+
+import { usePostAddress, useUpdateAddress } from "@/hooks/useAddress";
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { FormInput, FormSelect } from "../ui/form";
-import type { TAddress } from "@/types/address";
-import { usePostAddress, useUpdateAddress } from "@/hooks/useAddress";
-import { useEffect } from "react";
 
 type AddressModalProps = {
   isOpen: boolean;
@@ -78,7 +85,7 @@ export default function AddressModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md max-h-[95dvh] overflow-y-auto">
+      <DialogContent className="max-h-[95dvh] max-w-md overflow-y-auto">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Add New Address</DialogTitle>

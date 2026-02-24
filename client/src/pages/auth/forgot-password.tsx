@@ -1,11 +1,16 @@
-import { Button } from "@/components/ui/button";
-import { FormInput } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+
+import z from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { useForgotPassword } from "@/hooks/useUser";
+
 import AuthLayout from "@/layout/auth-layout";
 import Head from "@/layout/head";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import z from "zod";
+
+import { Button } from "@/components/ui/button";
+import { FormInput } from "@/components/ui/form";
 
 const formSchema = z.object({
   email: z.string().email({

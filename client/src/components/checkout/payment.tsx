@@ -1,8 +1,11 @@
 import { useLocation, useNavigate, useSearchParams } from "react-router";
-import { Button } from "../ui/button";
-import { usePayment } from "@/hooks/usePayment";
-import { usePlaceCodOrder } from "@/hooks/useOrder";
+
 import type { TDeliveryMethod } from "@/types/order";
+
+import { usePlaceCodOrder } from "@/hooks/useOrder";
+import { usePayment } from "@/hooks/usePayment";
+
+import { Button } from "../ui/button";
 
 const options = [
   { id: "card", label: "Credit / Debit Card" },
@@ -34,13 +37,13 @@ export default function Payment() {
 
   return (
     <div className="px-4">
-      <h1 className="text-xl font-bold mb-6">Payment</h1>
+      <h1 className="mb-6 text-xl font-bold">Payment</h1>
 
       <div className="space-y-4">
         {options.map((o) => (
           <button
             key={o.id}
-            className={`w-full border p-4 rounded-xl flex justify-between hover:border-black ${
+            className={`flex w-full justify-between rounded-xl border p-4 hover:border-black ${
               o.id === paymentMethod && "border-black"
             }`}
             onClick={() => {
@@ -57,7 +60,7 @@ export default function Payment() {
 
       <Button
         onClick={handlePlaceOrder}
-        className="w-full rounded-full py-6 text-base bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed mt-5"
+        className="bg-foreground text-background hover:bg-foreground/90 mt-5 w-full rounded-full py-6 text-base disabled:cursor-not-allowed disabled:opacity-50"
       >
         Place an Order
       </Button>
