@@ -1,68 +1,160 @@
-import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import Image from "@/components/ui/img";
+import { useAddToCart } from "@/hooks/useCart";
+import { useProduct } from "@/hooks/useProduct";
+import { useAddToWishlist } from "@/hooks/useWishlist";
+import Container from "@/layout/container";
+import type { TVariant } from "@/types/product";
+import { Heart } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router";
-import { Button } from "../components/ui/button";
-import { useCartStore } from "@/store/cartStore";
 
-const DetailProduct = () => {
-  const { id } = useParams();
-  const [product, setProduct] = useState([]);
-  const addToCart = useCartStore((state) => state.addToCart);
+export default function DetailProduct() {
+  const { slug } = useParams();
+  const { data } = useProduct(slug ?? "");
+  const { mutate: addToWishlist } = useAddToWishlist();
+  const { mutate: addToCart } = useAddToCart();
+  const product = data?.data;
+
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+  const [selectedImg, setSelectedImg] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
 
   useEffect(() => {
-    fetch(`https://fakestoreapi.com/products/${id}`)
-      .then((res) => res.json())
-      .then((result) => {
-        setProduct([result]);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      })
-      .finally(() => {});
-  }, [id]);
+    if (product) {
+      setSelectedVariantIndex(0);
+
+      const firstVariant = product.variants[0];
+      setSelectedImg(firstVariant.images[0]);
+    }
+  }, [product]);
+
+  if (!product) return null;
+
+  const selectedVariant = product.variants[selectedVariantIndex];
+
+  const galleryImages = selectedVariant.images;
+
+  const variantId = selectedVariant._id;
 
   return (
-    <section className="text-gray-600 body-font overflow-hidden min-h-screen flex ">
-      {product.length === 0 ? (
-        <div className="text-primary text-2xl flex justify-center items-center mx-auto min:h-screen">
-          Product not found
-        </div>
-      ) : (
-        <div className="container px-5 py-6 mx-auto">
-          {product?.map((product:any) => (
-            <div className="flex flex-wrap mx-auto lg:w-4/5" key={product.id}>
-              <img
-                alt={product.title}
-                className="lg:w-1/2 w-full lg:h-auto h-54 object-contain max-h-[400px] object-center max-sm:w-1/2 m-auto"
-                src={product.image}
-              />
-              <div className="w-full mt-6 lg:w-1/2 lg:pl-10 lg:py-6 lg:mt-0">
-                <h2 className="text-sm tracking-widest text-gray-500 title-font">
-                  {product.category}
-                </h2>
-                <h1 className="mb-2 text-3xl font-medium text-gray-900 title-font ">
-                  {product.title}
-                </h1>
-
-                <p className="leading-relaxed">{product.description}</p>
-                <div className="flex">
-                  <span className="mt-2 text-2xl font-medium text-gray-900 title-font">
-                    ₹ {(product.price * 10).toFixed(2)}
-                  </span>
-                </div>
-                <Button
-                  className="mt-3"
-                  size="lg"
-                  onClick={() => addToCart(product)}
-                >
-                  Add to Cart
-                </Button>
+    <Container className="px-5 sm:px-8 md:px-10 py-10">
+      <div className="grid md:grid-cols-2 gap-8">
+        <div className="flex gap-5">
+          <div className="space-y-3">
+            {galleryImages.map((img: string, i: number) => (
+              <div
+                className={`size-20 rounded-xl overflow-hidden cursor-pointer border 
+          ${selectedImg === img ? "border-primary ring" : ""}
+        `}
+              >
+                <Image
+                  key={i}
+                  src={img}
+                  className="w-full h-full object-cover"
+                  onClick={() => setSelectedImg(img)}
+                  onMouseEnter={() => setSelectedImg(img)}
+                />
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </section>
-  );
-};
+            ))}
+          </div>
 
-export default DetailProduct;
+          <div className="w-full h-[80vh] rounded-xl overflow-hidden">
+            <Image src={selectedImg} className="object-contain h-full w-full" />
+          </div>
+        </div>
+
+        <div className="max-w-sm">
+          <h1 className="text-lg md:text-xl font-semibold">{product.name}</h1>
+
+          <p className="text-sm md:text-base text-muted-foreground">
+            {product?.category?.name ?? ""}
+          </p>
+
+          <p className="mt-5 font-medium flex gap-3">
+            MRP : ₹{product.discountPrice}{" "}
+            {product.discountPrice !== product.price && (
+              <span className="text-muted-foreground line-through">
+                ₹{product.price}
+              </span>
+            )}
+          </p>
+
+          <div className="mt-10">
+            <div className="flex gap-3">
+              {product.variants.map((variant: TVariant, idx: number) => (
+                <div
+                  key={idx}
+                  onClick={() => {
+                    setSelectedVariantIndex(idx);
+                    setSelectedImg(variant.images[0]);
+                    setSelectedSize("");
+                  }}
+                  className={`size-20 rounded-xl overflow-hidden cursor-pointer border 
+          ${
+            selectedVariantIndex === idx
+              ? "border-primary ring ring-primary"
+              : ""
+          }
+        `}
+                >
+                  <Image
+                    src={variant.images[0]}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-10">
+            <h2 className="font-semibold mb-3">Select Size</h2>
+
+            <div className="grid grid-cols-3 gap-3">
+              {selectedVariant.sizes.map((s: { size: string }, idx: number) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedSize(s.size)}
+                  className={`border rounded py-2 text-center font-medium 
+                    hover:bg-accent transition ${
+                      selectedSize === s.size
+                        ? "border-black bg-accent"
+                        : "border-gray-300"
+                    }`}
+                >
+                  {s.size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3 mt-8">
+            <Button
+              className="w-full"
+              onClick={() =>
+                addToCart({
+                  productId: product._id,
+                  variantId,
+                  size: selectedSize,
+                  quantity: 1,
+                })
+              }
+            >
+              Add to Bag
+            </Button>
+
+            <Button
+              className="w-full"
+              variant="secondary"
+              onClick={() => addToWishlist(product._id)}
+            >
+              Wishlist <Heart className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+
+          <p className="mt-6 text-muted-foreground">{product.description}</p>
+        </div>
+      </div>
+    </Container>
+  );
+}

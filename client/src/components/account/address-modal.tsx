@@ -24,7 +24,7 @@ type AddressModalProps = {
 const formSchema = z.object({
   label: z.enum(["Home", "Work", "Other"]),
   name: z.string().min(1, "Name can't be empty"),
-  mobileNo: z.string().min(1, "Mobile Number can't be empty"),
+  phone: z.string().min(1, "Mobile Number can't be empty"),
   addressLine1: z.string().min(1, "Address Line 1 can't be empty"),
   addressLine2: z.string().min(1, "Address Line 2 can't be empty"),
   zipCode: z.string().min(1, "zip code can't be empty"),
@@ -47,7 +47,7 @@ export default function AddressModal({
     defaultValues: {
       label: "Home",
       name: "",
-      mobileNo: "",
+      phone: "",
       addressLine1: "",
       addressLine2: "",
       zipCode: "",
@@ -101,8 +101,8 @@ export default function AddressModal({
             <div className="grid gap-x-5 sm:grid-cols-2">
               <FormInput name="name" label="Name" control={form.control} />
               <FormInput
-                name="mobileNo"
-                label="Mobile Number"
+                name="phone"
+                label="Phone Number"
                 control={form.control}
               />
             </div>

@@ -60,7 +60,7 @@ export default function DeliveryAddresses() {
                       )}
                     </div>
                     <p className="text-sm mt-3">
-                      {a.name} — {a.mobileNo}
+                      {a.name} — {a.phone}
                     </p>
                     <p className="text-sm">
                       {a?.addressLine1}, {a?.addressLine2}
