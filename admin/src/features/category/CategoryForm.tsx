@@ -71,64 +71,62 @@ export default function CategoryForm({ data }: CategoryFormProps) {
   };
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Title Input */}
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter category title" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Title Input */}
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Title</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter category title" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Publish Dropdown */}
-          <FormField
-            control={form.control}
-            name="publish"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <PublishDropdown
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        {/* Publish Dropdown */}
+        <FormField
+          control={form.control}
+          name="publish"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <PublishDropdown
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Image Upload */}
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <ImageUpload
-                    initialImage={field.value}
-                    onUploadSuccess={(url) => field.onChange(url)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        {/* Image Upload */}
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <ImageUpload
+                  initialImage={field.value}
+                  onUploadSuccess={(url) => field.onChange(url)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Submit Button */}
-          <Button type="submit" className="w-full">
-            Save
-          </Button>
-        </form>
-      </Form>
-    </div>
+        {/* Submit Button */}
+        <Button type="submit" className="w-full">
+          Save
+        </Button>
+      </form>
+    </Form>
   );
 }

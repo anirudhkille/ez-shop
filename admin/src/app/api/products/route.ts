@@ -1,5 +1,5 @@
 import { connect } from "@/dbConfig/dbConfig";
-import Category from "@/models/Category";
+import Product from "@/models/Product";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -19,13 +19,13 @@ export async function POST(req: Request) {
 
     await connect();
 
-    const newCategory = new Category({ title, image, publish });
-    await newCategory.save();
+    const newProduct = new Product({ title, image, publish });
+    await newProduct.save();
 
     return Response.json(
       {
         success: true,
-        data: newCategory,
+        data: newProduct,
       },
       { status: 201 }
     );
@@ -46,10 +46,9 @@ export async function GET() {
   try {
     await connect();
 
-    const categories = await Category.find({});
+    const categories = await Product.find({});
     return Response.json({
       success: true,
-      message:"Category fetched successfully",
       data: categories,
     });
   } catch (error: unknown) {
