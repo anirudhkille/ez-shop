@@ -1,5 +1,6 @@
-import useAuthStore from "@/store/userStore";
 import { Navigate, Outlet } from "react-router";
+
+import useAuthStore from "@/store/userStore";
 
 const RedirectIfAuthenticated = () => {
   const { token } = useAuthStore();

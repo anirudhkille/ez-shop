@@ -1,19 +1,20 @@
 import {
-  Controller,
   type Control,
+  Controller,
   type FieldValues,
   type Path,
 } from "react-hook-form";
+
 import { Field, FieldError, FieldLabel } from "./field";
 import { Input } from "./input";
-import { Textarea } from "./textarea";
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "./select";
+import { Textarea } from "./textarea";
 
 type Option = {
   label: string;

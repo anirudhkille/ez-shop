@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import AddressModal from "@/components/account/address-modal";
+
 import { Edit2, Trash2 } from "lucide-react";
+
+import type { TAddress } from "@/types/address";
+
 import {
   useAddresss,
   useDeleteAddress,
   useUpdateAddress,
 } from "@/hooks/useAddress";
-import type { TAddress } from "@/types/address";
+
+import AddressModal from "@/components/account/address-modal";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function DeliveryAddresses() {
   const { data } = useAddresss();
@@ -34,10 +38,10 @@ export default function DeliveryAddresses() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-semibold text-lg sm:text-xl md:text-2xl">
+        <h1 className="text-lg font-semibold sm:text-xl md:text-2xl">
           Saved Delivery Addresses
         </h1>
-        <p className="text-sm text-muted-foreground max-w-sm">
+        <p className="text-muted-foreground max-w-sm text-sm">
           Manage your saved delivery addresses for faster checkout.
         </p>
       </div>
@@ -47,20 +51,20 @@ export default function DeliveryAddresses() {
           {addresses?.map((a: TAddress) => (
             <Card key={a._id}>
               <CardContent className="p-4">
-                <div className="flex justify-between items-start">
+                <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-base">
+                      <p className="text-base font-semibold">
                         {a.label} Address
                       </p>
                       {a.isDefault && (
-                        <span className="text-xs bg-primary text-white px-2 py-0.5 rounded">
+                        <span className="bg-primary rounded px-2 py-0.5 text-xs text-white">
                           Default
                         </span>
                       )}
                     </div>
-                    <p className="text-sm mt-3">
-                      {a.name} — {a.mobileNo}
+                    <p className="mt-3 text-sm">
+                      {a.name} — {a.phone}
                     </p>
                     <p className="text-sm">
                       {a?.addressLine1}, {a?.addressLine2}
@@ -104,7 +108,7 @@ export default function DeliveryAddresses() {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           You currently don't have any saved delivery addresses. Add one to be
           pre-filled during checkout.
         </p>

@@ -1,206 +1,90 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
 
-const Checkout = () => {
-  const [formData, setFormData] = useState({
-    fName: "",
-    lName: "",
-    email: "",
-    phone: "",
-    address: "",
-    state: "",
-    city: "",
-    zipCode: "",
-  });
+import { ChevronRight } from "lucide-react";
 
-  const navigate = useNavigate();
+import Container from "@/layout/container";
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+import Address from "@/components/checkout/address";
+import Delivery from "@/components/checkout/delivery";
+import OrderSummary from "@/components/checkout/order-summary";
+import Payment from "@/components/checkout/payment";
+
+type Step = "shipping" | "delivery" | "payment";
+
+const steps: { id: Step; label: string }[] = [
+  { id: "shipping", label: "Shipping" },
+  { id: "delivery", label: "Delivery" },
+  { id: "payment", label: "Payment" },
+];
+
+export default function Checkout() {
+  const [currentStep, setCurrentStep] = useState<Step>("shipping");
+  const [completedSteps, setCompletedSteps] = useState<Step[]>([]);
+
+  const getCurrentStepIndex = () =>
+    steps.findIndex((s) => s.id === currentStep);
+
+  const goToNextStep = () => {
+    const currentIndex = getCurrentStepIndex();
+    if (currentIndex < steps.length - 1) {
+      setCompletedSteps([...completedSteps, currentStep]);
+      setCurrentStep(steps[currentIndex + 1].id);
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    navigate("/payment", { state: formData });
+  const goToStep = (step: Step) => {
+    const targetIndex = steps.findIndex((s) => s.id === step);
+    const currentIndex = getCurrentStepIndex();
+
+    if (targetIndex < currentIndex || completedSteps.includes(step)) {
+      setCurrentStep(step);
+    }
   };
+
+  const isStepCompleted = (step: Step) => completedSteps.includes(step);
+  const isStepActive = (step: Step) => currentStep === step;
 
   return (
-    <section className="min-h-dvh">
-      <div className="max-w-[900px] m-auto max-md:w-full pt-10 flex flex-wrap">
-        <div className="flex-1 px-4 py-6 sm:px-6">
-          <form
-            className="border-slate-700 border rounded"
-            onSubmit={handleSubmit}
-          >
-            <h2 className=" bg-slate-100 p-2 font-bold">
-              Personal Information
-            </h2>
-            <div className="flex  gap-2 p-2 flex-wrap ">
-              <div className=" flex-1 px-2 ">
-                <label
-                  htmlFor="firstName"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  First Name
-                </label>
-                <input
-                  required
-                  type="text"
-                  id="firstName"
-                  name="fName"
-                  value={formData.fName}
-                  onChange={handleChange}
-                  className="mt-1 p-2 border-slate-700 border rounded-md "
-                />
-              </div>
-              <div className=" flex-1 px-2 ">
-                <label
-                  htmlFor="lastName"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Last Name
-                </label>
-                <input
-                  required
-                  type="text"
-                  id="lastName"
-                  name="lName"
-                  value={formData.lName}
-                  onChange={handleChange}
-                  className="mt-1 p-2 border border-slate-700 rounded-md "
-                />
-              </div>
-            </div>
+    <Container className="flex flex-col gap-8 px-5 py-10 sm:px-8 md:px-10 lg:flex-row">
+      <div className="flex-1">
+        <h1 className="mb-8 text-2xl font-medium">Checkout</h1>
 
-            <div className="flex gap-2 p-2 justify-around flex-wrap">
-              <div className=" flex-1 px-2">
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Email
-                </label>
-                <input
-                  required
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="mt-1 p-2 border border-slate-700 rounded-md "
-                />
-              </div>
-              <div className=" flex-1 px-2">
-                <label
-                  htmlFor="phone"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Phone
-                </label>
-                <input
-                  required
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  maxLength={10}
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="mt-1 p-2 border  border-slate-700 rounded-md "
-                />
-              </div>
-            </div>
-
-            <div className="mb-4 flex-1 px-4 ">
-              <label
-                htmlFor="address"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Address
-              </label>
-              <textarea
-                id="address"
-                name="address"
-                required
-                value={formData.address}
-                onChange={handleChange}
-                rows="3"
-                className="mt-1 p-2 border border-slate-700 rounded-md w-3/4"
-              ></textarea>
-            </div>
-
-            <div className="flex gap-2 p-2 justify-around flex-wrap">
-              <div className=" flex-1 px-2">
-                <label
-                  htmlFor="state"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  State
-                </label>
-                <input
-                  required
-                  type="text"
-                  id="state"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  className="mt-1 p-2 border border-slate-700 rounded-md "
-                />
-              </div>
-
-              <div className=" flex-1 px-2">
-                <label
-                  htmlFor="city"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  City
-                </label>
-                <input
-                  required
-                  type="text"
-                  id="city"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  className="mt-1 p-2 border  border-slate-700 rounded-md "
-                />
-              </div>
-
-              <div className=" flex-1 px-2">
-                <label
-                  htmlFor="zipCode"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Zip Code
-                </label>
-                <input
-                  required
-                  type="number"
-                  id="zipCode"
-                  name="zipCode"
-                  value={formData.zipCode}
-                  onChange={handleChange}
-                  maxLength={6}
-                  className="mt-1 p-2 border  border-slate-700 rounded-md "
-                />
-              </div>
-            </div>
-            <div className="flex items-center justify-center">
+        <div className="mb-8 flex items-center">
+          {steps.map((step, index) => (
+            <div key={step.id} className="flex items-center">
               <button
-                type="submit"
-                className="text-white bg-primary px-5 py-3 rounded text-center mb-3"
+                onClick={() => goToStep(step.id)}
+                className={`flex cursor-pointer items-center px-3 py-2 ${
+                  isStepActive(step.id)
+                    ? "text-primary"
+                    : isStepCompleted(step.id)
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                }`}
+                disabled={!isStepCompleted(step.id) && !isStepActive(step.id)}
               >
-                Continue to Payment
+                <span className="font-medium">{step.label}</span>
               </button>
+              {index < steps.length - 1 && (
+                <ChevronRight strokeWidth={1.5} className="size-4" />
+              )}
             </div>
-          </form>
+          ))}
+        </div>
+
+        <div className="border-border rounded-lg border p-6">
+          {currentStep === "shipping" && (
+            <Address goToNextStep={goToNextStep} />
+          )}
+
+          {currentStep === "delivery" && (
+            <Delivery goToNextStep={goToNextStep} />
+          )}
+          {currentStep === "payment" && <Payment />}
         </div>
       </div>
-    </section>
-  );
-};
 
-export default Checkout;
+      <OrderSummary />
+    </Container>
+  );
+}

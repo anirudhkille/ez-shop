@@ -1,14 +1,16 @@
+import { type ReactNode } from "react";
+
+import { useNavigate } from "react-router";
+
 import Logo from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from "@/components/ui/card";
-import { type ReactNode } from "react";
-import { useNavigate } from "react-router";
 
 type AuthLayoutProps = {
   title: string;

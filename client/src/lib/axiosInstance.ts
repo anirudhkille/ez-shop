@@ -1,8 +1,9 @@
 import axios, {
-  type AxiosInstance,
   AxiosError,
+  type AxiosInstance,
   type InternalAxiosRequestConfig,
 } from "axios";
+
 import useAuthStore from "@/store/userStore";
 
 interface RefreshResponse {

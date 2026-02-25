@@ -1,10 +1,15 @@
+import { useForm } from "react-hook-form";
+
+import z from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import useUserStore from "@/store/userStore";
+
+import { useUpdateProfile } from "@/hooks/useUser";
+
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form";
-import { useUpdateProfile } from "@/hooks/useUser";
-import useUserStore from "@/store/userStore";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import z from "zod";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name can't be empty"),
@@ -22,14 +27,13 @@ export default function AccountDetails() {
     },
   });
 
-
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     mutate(data);
   };
 
   return (
-    <div className="space-y-6 max-w-sm">
-      <h1 className="font-semibold text-lg sm:text-xl md:text-2xl">
+    <div className="max-w-sm space-y-6">
+      <h1 className="text-lg font-semibold sm:text-xl md:text-2xl">
         Account Details
       </h1>
 

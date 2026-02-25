@@ -1,25 +1,15 @@
-import { useEffect, useState } from "react";
-import Products from "../components/Products";
-import axios from "axios";
+import Categories from "@/components/home/categories";
+import FeaturedProducts from "@/components/home/featured-products";
+import HomeHero from "@/components/home/home-hero";
+import NewArrivals from "@/components/home/new-arrivals";
 
 export default function Home() {
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get("https://fakestoreapi.com/products");
-        setProducts(response.data);
-      } catch (error) {
-        console.error(`Error fetching products: ${error}`);
-      }
-    };
-    fetchProducts();
-  }, []);
-
   return (
-    <section>
-      <Products products={products} />
-    </section>
+    <>
+      <HomeHero />
+      <FeaturedProducts />
+      <Categories />
+      <NewArrivals />
+    </>
   );
 }

@@ -1,5 +1,6 @@
-import axiosInstance from "@/lib/axiosInstance";
 import type { TLogin, TSignup, TUser } from "@/types/user";
+
+import axiosInstance from "@/lib/axiosInstance";
 
 export const postSignup = async (formData: TSignup) => {
   const res = await axiosInstance.post("/user/signup", {

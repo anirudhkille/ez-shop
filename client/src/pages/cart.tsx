@@ -1,136 +1,138 @@
-import { useNavigate } from "react-router";
-import { useSelector } from "react-redux";
-import useCartStore from "../store/cartStore";
-import Link from "../components/ui/Link";
-import { ShoppingCart } from "lucide-react";
+import { Link } from "react-router";
 
-const Cart = () => {
-  const { cartItems, addToCart, removeFromCart, clearFromCart } =
-    useCartStore();
-  const navigate = useNavigate();
-  const total = useCartStore.getState().cartTotal();
+import { Heart, Minus, Plus } from "lucide-react";
 
-  const userId = useSelector((state) => state.user.userId);
+import { useCart, useUpdateCartQty } from "@/hooks/useCart";
+
+import Container from "@/layout/container";
+
+import { Button } from "@/components/ui/button";
+import Image from "@/components/ui/img";
+
+export default function Cart() {
+  const { data } = useCart();
+  const { mutate: updateQty } = useUpdateCartQty();
+
+  const cart = data?.data;
+
+  if (!cart) return null;
 
   return (
-    <div className="w-3/4 pt-10 m-auto max-md:w-full">
-      {cartItems.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-5 mt-10">
-          <h2 className="text-2xl font-medium text-center text-gray-900">
-            Your Cart Is Empty!
-          </h2>
+    <Container className="px-5 py-10 sm:px-10 md:px-10">
+      <h1 className="mb-6 text-2xl font-medium">Cart</h1>
 
-          <ShoppingCart className="size-[150px]" strokeWidth={1} />
+      <div className="flex flex-col gap-8 lg:flex-row">
+        <div className="flex-1">
+          {cart.products.map((c: any) => (
+            <div key={c._id}>
+              <div className="flex gap-4">
+                <div className="h-40 w-40 shrink-0 rounded-md bg-[#f5f5f5]">
+                  <Image
+                    src={c.product.image}
+                    alt={c.product.name}
+                    className="h-full w-full object-contain"
+                  />
+                </div>
 
-          <button
-            onClick={() => navigate("/")}
-            className="px-5 py-3 text-white border rounded bg-primary"
-          >
-            Shop Now
-          </button>
-        </div>
-      ) : (
-        <>
-          <div className="flex-1 px-4 py-6 sm:px-6">
-            <h2 className="text-lg font-medium text-center text-gray-900">
-              Shopping cart
-            </h2>
+                <div className="flex-1">
+                  <div className="flex justify-between">
+                    <div>
+                      <h3 className="text-base font-medium">
+                        {c.product.name}
+                      </h3>
 
-            <div className="mt-8">
-              <ul role="list" className="-my-6 divide-y divide-gray-200">
-                {cartItems.map((cart) => (
-                  <li className="flex py-6 max-sm:block" key={cart.id}>
-                    <div className="shrink-0 w-24 h-24 ml-4 overflow-hidden border border-gray-200 rounded-md max-sm:h-14 max-sm:w-14">
-                      <img
-                        src={cart.image}
-                        alt={cart.title}
-                        className="object-contain object-center w-full h-full"
-                      />
+                      <p className="text-muted-foreground mt-1 text-sm">
+                        Size: {c.size || "Free Size"}
+                      </p>
                     </div>
 
-                    <div className="flex flex-col flex-1 ml-4 ">
-                      <div className="">
-                        <div className="flex justify-between text-base font-medium text-gray-900">
-                          <h3 className="">
-                            <p>{cart.title}</p>
-                          </h3>
-                          <p className="ml-4 tracking-wider">
-                            ₹{(cart.price * cart.quantity).toFixed(2)}
-                          </p>
-                        </div>
-                        <p className="mt-1 mb-2 text-sm text-gray-500">
-                          {cart.category}
-                        </p>
-                      </div>
-                      <div className="flex items-end justify-between flex-1 text-sm">
-                        <p className="text-gray-500">
-                          <button
-                            onClick={() => removeFromCart(cart.id)}
-                            className="px-2 mr-2 font-bold text-center text-white bg-primary"
-                          >
-                            -
-                          </button>
-                          {cart.quantity}
-                          <button
-                            onClick={() => addToCart(cart)}
-                            className="px-2 ml-1 font-bold text-center text-white bg-primary"
-                          >
-                            +
-                          </button>
-                        </p>
-
-                        <div className="flex">
-                          <button
-                            onClick={() => clearFromCart(cart.id)}
-                            className="font-medium text-primary hover:text-primary"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
+                    <div className="text-right">
+                      <span className="text-muted-foreground mr-2 text-sm line-through">
+                        ₹{c.priceAtPurchase}
+                      </span>
+                      <span className="font-medium">
+                        ₹{c.discountPriceAtPurchase}
+                      </span>
                     </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+                  </div>
+                </div>
+              </div>
 
-          <div className="px-4 py-6 border-t border-gray-200 sm:px-6">
-            <div className="flex justify-between text-base font-medium text-gray-900">
-              <p>Subtotal</p>
-              <p className="tracking-wider">₹ {total.toFixed(2)}</p>
-            </div>
-            <p className="mt-0.5 text-sm text-gray-500">
-              Shipping and taxes calculated at checkout.
-            </p>
-            <div className="mt-6">
-              {userId ? (
-                <Link variant="default" to="/checkout" className="w-full">
-                  Checkout
-                </Link>
-              ) : (
-                <Link to="/login" className="w-full">
-                  Login to Checkout
-                </Link>
-              )}
-            </div>
-            <div className="flex justify-center mt-6 text-sm text-center text-gray-500">
-              <p>
-                or{" "}
-                <button
-                  onClick={() => navigate(-1)}
-                  className="font-medium text-primary hover:text-primary"
-                >
-                  Continue Shopping
-                  <span aria-hidden="true"> &rarr;</span>
+              <div className="mt-6 flex items-center gap-4">
+                <div className="border-border flex items-center rounded-full border">
+                  <button
+                    onClick={() =>
+                      updateQty({
+                        cartItemId: c._id,
+                        quantity: Math.max(1, c.quantity - 1),
+                      })
+                    }
+                    className="hover:bg-muted rounded-l-full p-3 transition-colors"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+
+                  <span className="min-w-10 px-4 text-center">
+                    {c.quantity}
+                  </span>
+
+                  <button
+                    onClick={() =>
+                      updateQty({
+                        cartItemId: c._id,
+                        quantity: c.quantity + 1,
+                      })
+                    }
+                    className="hover:bg-muted rounded-r-full p-3 transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <button className="border-border hover:bg-muted rounded-full border p-3 transition-colors">
+                  <Heart className="h-5 w-5" />
                 </button>
-              </p>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
+              </div>
 
-export default Cart;
+              <div className="border-border mt-8 border-t" />
+            </div>
+          ))}
+        </div>
+
+        <div className="w-full lg:w-80">
+          <h2 className="mb-6 text-xl font-medium">Summary</h2>
+
+          <div className="flex justify-between py-3">
+            <span>Subtotal</span>
+            <span>₹{cart.subtotal}</span>
+          </div>
+
+          <div className="flex justify-between py-3">
+            <span>Discount</span>
+            <span>₹{cart.discountTotal}</span>
+          </div>
+
+          <div className="flex justify-between py-3">
+            <span>Estimated Delivery</span>
+            <span>Free</span>
+          </div>
+
+          <div className="border-border my-2 border-t" />
+
+          <div className="flex justify-between py-3 font-medium">
+            <span>Total</span>
+            <span>₹{cart.total}</span>
+          </div>
+
+          <div className="border-border my-2 border-t" />
+
+          <Link to="/checkout">
+            <Button className="bg-foreground text-background hover:bg-foreground/90 mt-4 w-full rounded-full py-6 text-base">
+              Checkout
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </Container>
+  );
+}

@@ -46,9 +46,7 @@ const generateUniqueSlug = async (
 };
 
 categorySchema.pre("save", async function (next) {
-  if (!this.isModified("title")) {
-    return next();
-  }
+  if (!this.isModified("title")) return next();
 
   const baseSlug = generateSlug(this.title);
   this.slug = await generateUniqueSlug(
@@ -61,9 +59,7 @@ categorySchema.pre("save", async function (next) {
 categorySchema.pre("findOneAndUpdate", async function (next) {
   const update = this.getUpdate() as Partial<ICategory>;
 
-  if (!update.title) {
-    return next();
-  }
+  if (!update.title) return next();
 
   const baseSlug = generateSlug(update.title);
   update.slug = await generateUniqueSlug(

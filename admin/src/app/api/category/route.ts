@@ -49,6 +49,7 @@ export async function GET() {
     const categories = await Category.find({});
     return Response.json({
       success: true,
+      message:"Category fetched successfully",
       data: categories,
     });
   } catch (error: unknown) {

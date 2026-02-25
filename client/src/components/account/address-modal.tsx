@@ -1,19 +1,26 @@
+import { useEffect } from "react";
+
+import { useForm } from "react-hook-form";
+
+import z from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import type { TAddress } from "@/types/address";
+
+import { usePostAddress, useUpdateAddress } from "@/hooks/useAddress";
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { FormInput, FormSelect } from "../ui/form";
-import type { TAddress } from "@/types/address";
-import { usePostAddress, useUpdateAddress } from "@/hooks/useAddress";
-import { useEffect } from "react";
 
 type AddressModalProps = {
   isOpen: boolean;
@@ -24,7 +31,7 @@ type AddressModalProps = {
 const formSchema = z.object({
   label: z.enum(["Home", "Work", "Other"]),
   name: z.string().min(1, "Name can't be empty"),
-  mobileNo: z.string().min(1, "Mobile Number can't be empty"),
+  phone: z.string().min(1, "Mobile Number can't be empty"),
   addressLine1: z.string().min(1, "Address Line 1 can't be empty"),
   addressLine2: z.string().min(1, "Address Line 2 can't be empty"),
   zipCode: z.string().min(1, "zip code can't be empty"),
@@ -47,7 +54,7 @@ export default function AddressModal({
     defaultValues: {
       label: "Home",
       name: "",
-      mobileNo: "",
+      phone: "",
       addressLine1: "",
       addressLine2: "",
       zipCode: "",
@@ -78,7 +85,7 @@ export default function AddressModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md max-h-[95dvh] overflow-y-auto">
+      <DialogContent className="max-h-[95dvh] max-w-md overflow-y-auto">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Add New Address</DialogTitle>
@@ -101,8 +108,8 @@ export default function AddressModal({
             <div className="grid gap-x-5 sm:grid-cols-2">
               <FormInput name="name" label="Name" control={form.control} />
               <FormInput
-                name="mobileNo"
-                label="Mobile Number"
+                name="phone"
+                label="Phone Number"
                 control={form.control}
               />
             </div>

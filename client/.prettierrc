@@ -1,0 +1,51 @@
+{
+  "semi": true,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "printWidth": 80,
+  "useTabs": false,
+  "arrowParens": "always",
+  "endOfLine": "lf",
+
+  "plugins": [
+    "@trivago/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss"
+  ],
+
+  "importOrder": [
+    "^react$",
+    "^react-dom$",
+
+    "^react-router",
+    "^@tanstack/react-query$",
+    "^react-hook-form$",
+    "^zod$",
+    "^zustand$",
+
+    "<THIRD_PARTY_MODULES>",
+
+    "^@radix-ui/.*$",
+    "^lucide-react$",
+
+    "^@/types/.*$",
+    "^@/lib/.*$",
+    "^@/api/.*$",
+    "^@/store/.*$",
+    "^@/hooks/.*$",
+
+    "^@/layout/.*$",
+    "^@/components/.*$",
+    "^@/pages/.*$",
+
+    "^@/assets/.*$",
+
+    "^@/.*$",
+
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "importOrderGroupNamespaceSpecifiers": true,
+  "importOrderCaseInsensitive": true
+}

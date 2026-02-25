@@ -5,7 +5,12 @@ export default function GoogleLogin() {
     window.location.href = import.meta.env.VITE_API_BASE_URL + "/user/google";
   };
   return (
-    <Button type="button" variant="secondary" onClick={handleGoogleLogin} className="w-full">
+    <Button
+      type="button"
+      variant="secondary"
+      onClick={handleGoogleLogin}
+      className="w-full"
+    >
       Continue with Google
     </Button>
   );

@@ -92,9 +92,7 @@ const generateUniqueSlug = async (
 };
 
 productSchema.pre("save", async function (next) {
-  if (!this.isModified("title")) {
-    return next();
-  }
+  if (!this.isModified("title")) return next();
 
   const baseSlug = generateSlug(this.title);
   this.slug = await generateUniqueSlug(
@@ -106,10 +104,7 @@ productSchema.pre("save", async function (next) {
 
 productSchema.pre("findOneAndUpdate", async function (next) {
   const update = this.getUpdate() as Partial<IProduct>;
-
-  if (!update.title) {
-    return next();
-  }
+  if (!update.title) return next();
 
   const baseSlug = generateSlug(update.title);
   update.slug = await generateUniqueSlug(

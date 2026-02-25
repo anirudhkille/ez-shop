@@ -1,5 +1,6 @@
-import axiosInstance from "@/lib/axiosInstance";
 import type { TAddress } from "@/types/address";
+
+import axiosInstance from "@/lib/axiosInstance";
 
 export const postAddress = async (formData: TAddress) => {
   const res = await axiosInstance.post("/address", formData);
