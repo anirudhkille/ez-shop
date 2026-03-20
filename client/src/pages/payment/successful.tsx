@@ -4,7 +4,7 @@ import useUserStore from "@/store/userStore";
 
 import { useOrderById, useOrderBySessionId } from "@/hooks/useOrder";
 
-import OrderSuccess from "@/components/payment/order-success";
+import OrderSuccess from "@/features/payment/order-success";
 
 export default function SuccessPage() {
   const [q] = useSearchParams();

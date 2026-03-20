@@ -4,7 +4,7 @@ import type { TCategory } from "@/types/category";
 
 import { useCategorys } from "@/hooks/useCategory";
 
-import Heading from "../ui/heading";
+import Heading from "../../components/ui/heading";
 
 export default function Categories() {
   const { data } = useCategorys();

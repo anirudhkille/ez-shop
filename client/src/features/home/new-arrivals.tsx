@@ -1,6 +1,6 @@
 import { useProducts } from "@/hooks/useProduct";
 
-import ProductsSlider from "../shared/product-slider";
+import ProductsSlider from "../../components/shared/product-slider";
 
 export default function NewArrivals() {
   const { data } = useProducts({ isNewArrival: true });

@@ -8,8 +8,8 @@ import type { TProduct } from "@/types/product";
 
 import { useFilteredProducts } from "@/hooks/useProduct";
 
-import FilterSidebar from "@/components/product/filter-sidebar";
-import ProductCard from "@/components/product/product-card";
+import FilterSidebar from "@/features/product/filter-sidebar";
+import ProductCard from "@/features/product/product-card";
 import {
   DropdownMenu,
   DropdownMenuContent,

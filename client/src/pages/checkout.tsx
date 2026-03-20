@@ -4,10 +4,10 @@ import { ChevronRight } from "lucide-react";
 
 import Container from "@/layout/container";
 
-import Address from "@/components/checkout/address";
-import Delivery from "@/components/checkout/delivery";
-import OrderSummary from "@/components/checkout/order-summary";
-import Payment from "@/components/checkout/payment";
+import Address from "@/features/checkout/address";
+import Delivery from "@/features/checkout/delivery";
+import OrderSummary from "@/features/checkout/order-summary";
+import Payment from "@/features/checkout/payment";
 
 type Step = "shipping" | "delivery" | "payment";
 

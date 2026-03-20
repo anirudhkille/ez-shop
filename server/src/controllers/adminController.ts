@@ -1,7 +1,7 @@
 import Admin from "../models/Admin";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import { resetPasswordTemplate } from "../utils/resetEmailTemplate";
+import { resetPasswordTemplate } from "../templates/resetEmailTemplate";
 import { asyncHandler } from "../middlewares/asyncHandler";
 import { Request, Response } from "express";
 import {

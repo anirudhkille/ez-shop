@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 import type { TProduct } from "@/types/product";
 
-import Image from "../ui/img";
+import Image from "../../components/ui/img";
 
 export default function ProductCard({ product }: { product: TProduct }) {
   return (

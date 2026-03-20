@@ -5,7 +5,7 @@ import type { TDeliveryMethod } from "@/types/order";
 import { usePlaceCodOrder } from "@/hooks/useOrder";
 import { usePayment } from "@/hooks/usePayment";
 
-import { Button } from "../ui/button";
+import { Button } from "../../components/ui/button";
 
 const options = [
   { id: "card", label: "Credit / Debit Card" },

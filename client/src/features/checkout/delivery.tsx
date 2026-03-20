@@ -1,6 +1,6 @@
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 
-import { Button } from "../ui/button";
+import { Button } from "../../components/ui/button";
 
 type DeliveryProps = {
   goToNextStep: () => void;

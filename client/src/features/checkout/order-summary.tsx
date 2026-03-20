@@ -4,7 +4,7 @@ import type { TProduct } from "@/types/product";
 
 import { useCart } from "@/hooks/useCart";
 
-import Image from "../ui/img";
+import Image from "../../components/ui/img";
 
 export default function OrderSummary() {
   const [q] = useSearchParams();
