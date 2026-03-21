@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import {
   type Control,
   Controller,
@@ -21,19 +23,18 @@ type Option = {
   value: string | number;
 };
 
-// ---------------------
-// 🧩 Form Input
-// ---------------------
 function FormInput<T extends FieldValues>({
   name,
   control,
   label,
   placeholder,
+  prefix,
 }: {
   name: Path<T>;
   control: Control<T>;
-  label: string;
+  label?: String;
   placeholder?: string;
+  prefix?: ReactNode;
 }) {
   return (
     <Controller
@@ -41,14 +42,21 @@ function FormInput<T extends FieldValues>({
       name={name}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
-          <FieldLabel htmlFor={name}>{label}</FieldLabel>
-
-          <Input
-            id={name}
-            aria-invalid={fieldState.invalid}
-            placeholder={placeholder}
-            {...field}
-          />
+          {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
+          <div className="relative">
+            {prefix && (
+              <div className="text-muted-foreground pointer-events-none absolute top-5 right-0 left-5">
+                {prefix}
+              </div>
+            )}
+            <Input
+              id={name}
+              aria-invalid={fieldState.invalid}
+              placeholder={placeholder}
+              className={prefix ? "pl-11" : ""}
+              {...field}
+            />{" "}
+          </div>
 
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>
@@ -57,9 +65,6 @@ function FormInput<T extends FieldValues>({
   );
 }
 
-// ---------------------
-// 🧩 Form Textarea
-// ---------------------
 function FormTextarea<T extends FieldValues>({
   name,
   control,
@@ -93,9 +98,6 @@ function FormTextarea<T extends FieldValues>({
   );
 }
 
-// ---------------------
-// 🧩 Form Select
-// ---------------------
 function FormSelect<T extends FieldValues>({
   name,
   control,

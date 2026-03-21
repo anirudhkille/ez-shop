@@ -1,5 +1,7 @@
 import { Award, Globe, Shield, Zap } from "lucide-react";
 
+import Fade from "@/components/shared/fade";
+
 import brandStory from "@/assets/brand-story.jpg";
 
 const pillars = [
@@ -30,8 +32,7 @@ export default function BrandStory() {
     <section className="overflow-hidden py-24">
       <div className="mx-auto max-w-350 px-6 lg:px-10">
         <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
-          {/* Image side */}
-          <div className="relative">
+          <Fade direction="left" className="relative">
             <div
               className="relative overflow-hidden rounded-3xl"
               style={{ aspectRatio: "4/3" }}
@@ -44,7 +45,6 @@ export default function BrandStory() {
               <div className="from-background/60 absolute inset-0 bg-linear-to-tr to-transparent" />
             </div>
 
-            {/* Floating stat card */}
             <div className="bg-card border-brand-border absolute -right-4 -bottom-6 rounded-2xl border p-5 shadow-lg lg:right-10">
               <div className="font-display text-brand-orange text-4xl font-black">
                 50+
@@ -57,7 +57,6 @@ export default function BrandStory() {
               </div>
             </div>
 
-            {/* Floating award card */}
             <div className="bg-brand-orange absolute -top-4 -left-4 rounded-2xl p-4 shadow-lg lg:-left-8">
               <Award size={20} className="text-primary-foreground mb-1" />
               <div className="font-display text-primary-foreground text-sm font-bold">
@@ -67,10 +66,9 @@ export default function BrandStory() {
                 2025 Awards
               </div>
             </div>
-          </div>
+          </Fade>
 
-          {/* Text side */}
-          <div className="">
+          <Fade direction="right">
             <span className="font-body text-brand-orange text-xs font-semibold tracking-widest uppercase">
               Our Story
             </span>
@@ -94,13 +92,12 @@ export default function BrandStory() {
               </span>
             </p>
 
-            {/* Pillars */}
             <div className="mt-10 grid grid-cols-2 gap-4">
-              {pillars.map((pillar, i) => (
-                <div
+              {pillars.map((pillar) => (
+                <Fade
+                  delay={0.1}
                   key={pillar.title}
                   className="group flex items-start gap-3"
-                  style={{ transitionDelay: `${i * 100}ms` }}
                 >
                   <div className="bg-brand-orange/10 border-brand-orange/20 group-hover:bg-brand-orange/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors duration-200">
                     <pillar.icon size={18} className="text-brand-orange" />
@@ -113,10 +110,10 @@ export default function BrandStory() {
                       {pillar.desc}
                     </p>
                   </div>
-                </div>
+                </Fade>
               ))}
             </div>
-          </div>
+          </Fade>
         </div>
       </div>
     </section>

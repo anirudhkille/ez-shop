@@ -1,99 +1,128 @@
-import { useState } from "react";
-import { Mail, ArrowRight, CheckCircle } from "lucide-react";
+import { useForm } from "react-hook-form";
+
+import z from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { ArrowRight, CheckCircle, Mail } from "lucide-react";
+
+import { useSubscribeNewsletter } from "@/hooks/useNewsletter";
+
+import Fade from "@/components/shared/fade";
+import { Button } from "@/components/ui/button";
+import { FormInput } from "@/components/ui/form";
+
+const formSchema = z.object({
+  email: z.string().email({
+    message: "Invalid email",
+  }),
+});
 
 export default function Newsletter() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) {
-      setSubmitted(true);
-    }
-  };
-
   return (
-    <section className="py-24 bg-card/40">
-      <div className="max-w-350 mx-auto px-6 lg:px-10">
-        <div className="relative overflow-hidden rounded-3xl bg-card border border-brand-border p-8 md:p-16">
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-brand-orange/6 rounded-full blur-[100px] pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-orange/4 rounded-full blur-[80px] pointer-events-none" />
+    <section className="bg-card/40 py-24">
+      <div className="mx-auto max-w-350 px-6 lg:px-10">
+        <Fade className="bg-card border-brand-border relative overflow-hidden rounded-3xl border p-8 md:p-16">
+          <div className="bg-brand-orange/6 pointer-events-none absolute top-0 right-0 h-96 w-96 rounded-full blur-[100px]" />
+          <div className="bg-brand-orange/4 pointer-events-none absolute bottom-0 left-0 h-64 w-64 rounded-full blur-[80px]" />
 
-          {/* Giant BG text */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-            <span className="font-display text-[160px] font-black uppercase text-foreground/[0.018] select-none leading-none">
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+            <span className="font-display text-foreground/[0.018] text-[160px] leading-none font-black uppercase select-none">
               EZ SHOP
             </span>
           </div>
 
-          <div className="relative z-10 flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
-            {/* Left */}
+          <div className="relative z-10 flex flex-col items-center gap-10 lg:flex-row lg:gap-16">
             <div className="flex-1 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-brand-orange/10 border border-brand-orange/30 text-brand-orange text-xs font-body font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
+              <div className="bg-brand-orange/10 border-brand-orange/30 text-brand-orange font-body mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold tracking-widest uppercase">
                 <Mail size={12} />
                 Newsletter
               </div>
-              <h2 className="font-display text-4xl md:text-5xl font-black uppercase text-foreground leading-[0.95]">
+              <h2 className="font-display text-foreground text-4xl leading-[0.95] font-black uppercase md:text-5xl">
                 JOIN THE
                 <br />
                 <span className="text-gradient-orange">INNER CIRCLE</span>
               </h2>
-              <p className="font-body text-muted-foreground text-base mt-4 max-w-md mx-auto lg:mx-0 leading-relaxed">
-                Get early access to new drops, exclusive discounts, and training tips from pro athletes. No spam, ever.
+              <p className="font-body text-muted-foreground mx-auto mt-4 max-w-md text-base leading-relaxed lg:mx-0">
+                Get early access to new drops, exclusive discounts, and training
+                tips from pro athletes. No spam, ever.
               </p>
 
-              {/* Perks */}
-              <div className="flex flex-col sm:flex-row gap-4 mt-6 text-left">
-                {["10% off first order", "Early access drops", "Exclusive content"].map((perk) => (
+              <div className="mt-6 flex flex-col gap-4 text-left sm:flex-row">
+                {[
+                  "10% off first order",
+                  "Early access drops",
+                  "Exclusive content",
+                ].map((perk) => (
                   <div key={perk} className="flex items-center gap-2">
-                    <CheckCircle size={14} className="text-brand-orange shrink-0" />
-                    <span className="font-body text-xs text-muted-foreground">{perk}</span>
+                    <CheckCircle
+                      size={14}
+                      className="text-brand-orange shrink-0"
+                    />
+                    <span className="font-body text-muted-foreground text-xs">
+                      {perk}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Right — form */}
-            <div className="flex-1 w-full max-w-md">
-              {submitted ? (
-                <div className="flex flex-col items-center gap-3 py-10 text-center">
-                  <CheckCircle size={48} className="text-brand-orange" />
-                  <h3 className="font-display text-2xl font-bold text-foreground">You're in!</h3>
-                  <p className="font-body text-sm text-muted-foreground">Check your inbox for your welcome gift 🎁</p>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                  <div className="relative">
-                    <Mail
-                      size={16}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-                    />
-                    <input
-                      type="email"
-                      placeholder="Enter your email address"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="w-full bg-background border border-brand-border rounded-full pl-11 pr-5 py-4 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brand-orange transition-colors duration-200"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="flex items-center justify-center gap-2 px-8 py-4 bg-gradient-orange text-primary-foreground font-body font-semibold text-sm tracking-wider uppercase rounded-full btn-primary-glow transition-all duration-300 hover:scale-105"
-                  >
-                    Subscribe Now
-                    <ArrowRight size={16} />
-                  </button>
-                  <p className="font-body text-[11px] text-muted-foreground/60 text-center">
-                    By subscribing, you agree to our Privacy Policy. Unsubscribe anytime.
-                  </p>
-                </form>
-              )}
-            </div>
+            <NewsletterForm />
           </div>
-        </div>
+        </Fade>
       </div>
     </section>
+  );
+}
+
+function NewsletterForm() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const subscribe = useSubscribeNewsletter();
+
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    subscribe.mutate(data.email);
+  };
+
+  return (
+    <div className="w-full max-w-md flex-1">
+      {subscribe.isSuccess ? (
+        <div className="flex flex-col items-center gap-3 py-10 text-center">
+          <CheckCircle size={48} className="text-brand-orange" />
+          <h3 className="font-display text-foreground text-2xl font-bold">
+            You're in!
+          </h3>
+          <p className="font-body text-muted-foreground text-sm">
+            Stay tuned for exclusive updates and offers.
+          </p>
+        </div>
+      ) : (
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-3"
+        >
+          <FormInput
+            control={form.control}
+            name="email"
+            placeholder="Enter your email"
+            prefix={<Mail size={16} />}
+          />
+
+          <Button type="submit">
+            Subscribe Now
+            <ArrowRight size={16} />
+          </Button>
+          <p className="font-body text-muted-foreground/60 text-center text-[11px]">
+            By subscribing, you agree to our Privacy Policy. Unsubscribe
+            anytime.
+          </p>
+        </form>
+      )}
+    </div>
   );
 }
