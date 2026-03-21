@@ -1,5 +1,5 @@
-import Wishlist from "../models/Wishlist";
-import { asyncHandler } from "../middlewares/asyncHandler";
+import Wishlist from "@/models/Wishlist";
+import { asyncHandler } from "@/middlewares/asyncHandler";
 import { Request, Response } from "express";
 
 export const addToWishlist = asyncHandler(async (req: any, res: Response) => {

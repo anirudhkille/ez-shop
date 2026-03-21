@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "../middlewares/asyncHandler";
-import Cart from "../models/Cart";
-import Order from "../models/Order";
-import Address from "../models/Address";
+import { asyncHandler } from "@/middlewares/asyncHandler";
+import Cart from "@/models/Cart";
+import Order from "@/models/Order";
+import Address from "@/models/Address";
 
 export const placeCODOrder = asyncHandler(async (req: any, res) => {
   const userId = req.user._id;

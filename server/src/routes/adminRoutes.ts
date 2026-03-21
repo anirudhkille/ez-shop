@@ -5,8 +5,8 @@ import {
   login,
   resetPassword,
   editProfile,
-} from "../controllers/adminController";
-import { protect } from "../middlewares/authMiddleware";
+} from "@/controllers/adminController";
+import { protect } from "@/middlewares/authMiddleware";
 
 const router = express.Router();
 // router.post("/signup", signUp);

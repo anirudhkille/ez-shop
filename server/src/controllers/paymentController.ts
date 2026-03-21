@@ -1,9 +1,9 @@
 import Stripe from "stripe";
-import { asyncHandler } from "../middlewares/asyncHandler";
-import Cart from "../models/Cart";
-import Address from "../models/Address";
+import { asyncHandler } from "@/middlewares/asyncHandler";
+import Cart from "@/models/Cart";
+import Address from "@/models/Address";
 import { Request, Response } from "express";
-import Order from "../models/Order";
+import Order from "@/models/Order";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 

@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
-import User from "../models/User";
-import Admin from "../models/Admin";
+import { Response, NextFunction } from "express";
+import User from "@/models/User";
+import Admin from "@/models/Admin";
 import { asyncHandler } from "./asyncHandler";
 
 interface ITokenPayload extends JwtPayload {

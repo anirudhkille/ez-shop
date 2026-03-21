@@ -1,5 +1,5 @@
 import express from "express";
-import { protect } from "../middlewares/authMiddleware";
+import { protect } from "@/middlewares/authMiddleware";
 import {
   getSearchProduct,
   postProduct,
@@ -7,7 +7,7 @@ import {
   getProductBySlug,
   updateProduct,
   deleteProduct,getFilteredProducts
-} from "../controllers/productController";
+} from "@/controllers/productController";
 
 const router = express.Router();
 

@@ -1,18 +1,17 @@
-import User from "../models/User";
+import User from "@/models/User";
 import bcrypt from "bcryptjs";
-import nodemailer from "nodemailer";
-import { asyncHandler } from "../middlewares/asyncHandler";
+import { asyncHandler } from "@/middlewares/asyncHandler";
 import {
   generateAccessToken,
   generateRefreshToken,
-} from "../utils/generateToken";
+} from "@/utils/generateToken";
 import { Request, Response } from "express";
-import { resetPasswordTemplate } from "../templates/resetEmailTemplate";
-import { refreshCookieOptions } from "../utils/cookies";
-import { redis } from "../config/redis";
-import { generateOtp } from "../utils/generateOtp";
-import { sendEmail } from "services/emailService";
-import { verifyEmailTemplate } from "../templates/verifyEmailTemplate";
+import { resetPasswordTemplate } from "@/templates/resetEmailTemplate";
+import { refreshCookieOptions } from "@/utils/cookies";
+import { redis } from "@/config/redis";
+import { generateOtp } from "@/utils/generateOtp";
+import { sendEmail } from "@/services/emailService";
+import { verifyEmailTemplate } from "@/templates/verifyEmailTemplate";
 import jwt from "jsonwebtoken";
 
 export const signUp = asyncHandler(async (req: Request, res: Response) => {

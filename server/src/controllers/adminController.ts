@@ -1,13 +1,13 @@
-import Admin from "../models/Admin";
+import Admin from "@/models/Admin";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import { resetPasswordTemplate } from "../templates/resetEmailTemplate";
-import { asyncHandler } from "../middlewares/asyncHandler";
+import { resetPasswordTemplate } from "@/templates/resetEmailTemplate";
+import { asyncHandler } from "@/middlewares/asyncHandler";
 import { Request, Response } from "express";
 import {
   generateAccessToken,
   generateRefreshToken,
-} from "../utils/generateToken";
+} from "@/utils/generateToken";
 import { Types } from "mongoose";
 
 export const signUp = asyncHandler(async (req: Request, res: Response) => {

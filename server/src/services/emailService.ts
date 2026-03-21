@@ -1,4 +1,4 @@
-import { resend } from "../config/mail";
+import { resend } from "@/config/mail";
 
 interface SendEmailOptions {
   to: string;

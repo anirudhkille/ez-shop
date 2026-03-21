@@ -10,9 +10,9 @@ import {
   updateProfile,
   googleLogin,
   verifySignupOTP,
-} from "../controllers/userController";
-import { protect } from "../middlewares/authMiddleware";
-import passport from "../config/passport";
+} from "@/controllers/userController";
+import { protect } from "@/middlewares/authMiddleware";
+import passport from "@/config/passport";
 
 const router = express.Router();
 router.get(

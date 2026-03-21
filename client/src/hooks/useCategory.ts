@@ -7,5 +7,6 @@ export const useCategorys = () => {
     queryFn: getCategorys,
     queryKey: ["category"],
     placeholderData: keepPreviousData,
+    select: (res) => res.data,
   });
 };

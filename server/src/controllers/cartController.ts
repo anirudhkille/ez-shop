@@ -1,7 +1,7 @@
 import { Response } from "express";
-import Cart from "../models/Cart";
-import Product from "../models/Product";
-import { asyncHandler } from "../middlewares/asyncHandler";
+import Cart from "@/models/Cart";
+import Product from "@/models/Product";
+import { asyncHandler } from "@/middlewares/asyncHandler";
 
 const findVariantSize = (product: any, variantId?: string, size?: string) => {
   if (!variantId || !size) return null;

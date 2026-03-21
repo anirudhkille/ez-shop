@@ -4,9 +4,9 @@ import {
   getOrders,
   getOrderBySessionId,
   getOrderById,
-} from "../controllers/orderController";
+} from "@/controllers/orderController";
 import express from "express";
-import { protect } from "../middlewares/authMiddleware";
+import { protect } from "@/middlewares/authMiddleware";
 
 const router = express.Router();
 

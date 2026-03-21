@@ -50,16 +50,16 @@ app.get("/", (req, res) => {
   res.send("Api is running");
 });
 
-app.use("/address", addressRoutes);
-app.use("/admin", adminRoutes);
-app.use("/cart", cartRoutes);
-app.use("/category", categoryRoutes);
-app.use("/order", orderRoutes);
-app.use("/payment", paymentRoutes);
-app.use("/product", productRoutes);
-app.use("/review", reviewRoutes);
-app.use("/user", userRoutes);
-app.use("/wishlist", wishlistRoutes);
+app.use("/api/address", addressRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/category", categoryRoutes);
+app.use("/api/order", orderRoutes);
+app.use("/api/payment", paymentRoutes);
+app.use("/api/product", productRoutes);
+app.use("/api/review", reviewRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });

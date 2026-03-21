@@ -1,72 +1,114 @@
 import { Link } from "react-router";
 
-import { Github, Linkedin } from "lucide-react";
+import { Github, Instagram, Linkedin, Mail } from "lucide-react";
 
-const menus = [
-  { href: "/products/?new-featured", name: "New & Featured" },
-  { href: "/products/?gender=men", name: "Men" },
-  { href: "/products/?gender=women", name: "Women" },
-  { href: "sale", name: "Sale" },
-];
-
-const help = [
-  { href: "order-status", name: "Order Status" },
-  { href: "cart", name: "Cart" },
-  { href: "login", name: "Login" },
-  { href: "signup", name: "Signup" },
-];
+const footerLinks = {
+  Company: [
+    { label: "About Us", href: "/about" },
+    { label: "Careers", href: "/about" },
+    { label: "Press", href: "/about" },
+    { label: "Investors", href: "/about" },
+  ],
+  Support: [
+    { label: "Help Center", href: "/contact" },
+    { label: "Contact Us", href: "/contact" },
+    { label: "Size Guide", href: "/products" },
+    { label: "Store Finder", href: "/contact" },
+  ],
+  Orders: [
+    { label: "Shipping Info", href: "/contact" },
+    { label: "Returns", href: "/contact" },
+    { label: "Track Order", href: "/contact" },
+    { label: "Gift Cards", href: "/products" },
+  ],
+  Legal: [
+    { label: "Privacy Policy", href: "/" },
+    { label: "Terms of Use", href: "/" },
+    { label: "Cookie Policy", href: "/" },
+    { label: "Accessibility", href: "/" },
+  ],
+};
 
 const socials = [
-  { icon: Github, href: "https://github.com/anirudhkille" },
-  { icon: Linkedin, href: "https://www.linkedin.com/in/anirudh-kille" },
+  {
+    icon: Github,
+    label: "YouTube",
+    href: "https://www.github.com/anirudhkille",
+  },
+  {
+    icon: Linkedin,
+    label: "Linkedin",
+    href: "https://www.linkedin.com/in/anirudh-kille",
+  },
+  {
+    icon: Instagram,
+    label: "Instagram",
+    href: "https://www.instagram.com/anirudh_kille",
+  },
+  { icon: Mail, label: "Email", href: "mailto:anirudhkille@gmail.com" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="bg-background text-primary">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div>
-            <Link to="/" className="flex items-center gap-3">
-              <img src="/logo.png" alt="logo" height={35} width={35} />
-              <span className="text-xl font-bold">EZ Shop</span>
+    <footer className="bg-card border-brand-border border-t">
+      <div className="mx-auto max-w-350 px-6 lg:px-10">
+        <div className="grid grid-cols-2 gap-10 py-16 md:grid-cols-3 lg:grid-cols-5">
+          <div className="col-span-2 md:col-span-3 lg:col-span-1">
+            <Link to="/" className="mb-4 flex items-center gap-2">
+              <div className="bg-gradient-orange flex h-8 w-auto items-center justify-center rounded-sm px-2">
+                <span className="text-primary-foreground font-display text-sm leading-none font-black tracking-tight">
+                  EZ
+                </span>
+              </div>
+              <span className="font-display text-foreground text-2xl font-bold tracking-wider">
+                EZ Shop
+              </span>
             </Link>
-
-            <div className="mt-3 flex items-center gap-3">
-              {socials.map((s, idx) => (
-                <Link key={idx} target="_blank" to={s.href}>
-                  <s.icon />
-                </Link>
+            <p className="font-body text-muted-foreground max-w-xs text-sm leading-relaxed">
+              Premium footwear & apparel. Engineered for performance, designed
+              for everyday life.
+            </p>
+            <div className="mt-6 flex gap-3">
+              {socials.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  aria-label={s.label}
+                  className="border-brand-border text-muted-foreground hover:text-brand-orange hover:border-brand-orange/40 flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-200"
+                >
+                  <s.icon size={15} />
+                </a>
               ))}
             </div>
           </div>
 
-          <div>
-            <h3 className="mb-4 text-sm font-medium uppercase">Get Help</h3>
-            <ul className="text-muted-foreground space-y-3 text-sm font-medium">
-              {help.map((m) => (
-                <li key={m.name}>
-                  <Link to={m.href}>{m.name}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="mb-4 text-sm font-medium uppercase">Quick Links</h3>
-            <ul className="text-muted-foreground space-y-3 text-sm font-medium">
-              {menus.map((m) => (
-                <li key={m.name}>
-                  <Link to={m.href}>{m.name}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {Object.entries(footerLinks).map(([section, links]) => (
+            <div key={section}>
+              <h4 className="font-display text-foreground mb-4 text-sm font-bold tracking-widest uppercase">
+                {section}
+              </h4>
+              <ul className="space-y-2.5">
+                {links.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      to={link.href}
+                      className="font-body text-muted-foreground hover:text-foreground text-sm transition-colors duration-200"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <div className="border-t pt-8">
-          <p className="text-muted-foreground text-center text-sm">
-            © 2025 EZ Shop, Inc. All Rights Reserved.
+        <div className="border-brand-border border-t py-6 text-center">
+          <p className="font-body text-muted-foreground text-sm">
+            © 2025 EZ Shop. All rights reserved. Powered by{" "}
+            <a target="_blank" href="https://anirudhkille.com">
+              Anirudh Kille
+            </a>
           </p>
         </div>
       </div>

@@ -1,5 +1,5 @@
-import { asyncHandler } from "../middlewares/asyncHandler";
-import Review from "../models/Review";
+import { asyncHandler } from "@/middlewares/asyncHandler";
+import Review from "@/models/Review";
 import { Request, Response } from "express";
 
 export const postReview = asyncHandler(async (req: Request, res: Response) => {
