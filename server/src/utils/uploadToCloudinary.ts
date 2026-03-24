@@ -1,11 +1,11 @@
 import cloudinary from '@/config/cloudinary';
 
-export const uploadToCloudinary = async (fileBuffer: Buffer) => {
+export const uploadToCloudinary = async (folder:string,fileBuffer: Buffer) => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader
       .upload_stream(
         {
-          folder: 'ez-shop/categories',
+          folder: `ez-shop/${folder}`,
           format: 'avif', // convert to avif
         },
         (error, result) => {

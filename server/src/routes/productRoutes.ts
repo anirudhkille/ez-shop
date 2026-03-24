@@ -4,18 +4,32 @@ import {
   getSearchProduct,
   postProduct,
   getProducts,
-  getProductBySlug,
+  getProductById,
   updateProduct,
-  deleteProduct,getFilteredProducts
+  deleteProduct,
+  getFilteredProducts,
+  getFeaturedProducts,
 } from "@/controllers/productController";
+import { authorize } from "@/middlewares/authorize";
+import { upload } from "@/middlewares/upload";
 
 const router = express.Router();
 
+router.get("/featured", getFeaturedProducts);
 router.get("/filter", getFilteredProducts);
 router.get("/search", getSearchProduct);
-router.get("/:slug", getProductBySlug);
+router.get("/:slug/:id", getProductById);
 router.get("/", getProducts);
-router.post("/", protect, postProduct);
+router.post(
+  "/",
+  protect,
+  authorize(["Admin"]),
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "variantImages", maxCount: 50 },
+  ]),
+  postProduct,
+);
 router.patch("/:id", protect, updateProduct);
 router.delete("/:id", protect, deleteProduct);
 

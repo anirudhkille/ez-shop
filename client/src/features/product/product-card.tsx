@@ -4,10 +4,14 @@ import { Link } from "react-router";
 
 import { Heart, ShoppingCart, Star } from "lucide-react";
 
-import { type Product, tagColors } from "@/data/products";
+import type { TProduct } from "@/types/product";
+
+import { formatPrice } from "@/lib/formatprice";
+
+import { tagColors } from "@/data/products";
 
 interface ProductCardProps {
-  product: Product;
+  product: TProduct;
   delay?: number;
   className?: string;
 }
@@ -27,15 +31,15 @@ export default function ProductCard({
 
   return (
     <Link
-      to={`/product/${product.id}`}
+      to={`/${product?.slug}/${product?._id}`}
       className={`group bg-card border-brand-border card-hover block overflow-hidden rounded-2xl border ${className}`}
     >
       {/* Image container */}
       <div className="bg-brand-surface-raised relative aspect-square overflow-hidden p-6">
         <span
-          className={`font-body absolute top-3 left-3 z-10 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase ${tagColors[product.tag]}`}
+          className={`font-body absolute top-3 left-3 z-10 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase ${tagColors[product?.tag]}`}
         >
-          {product.tag}
+          {product?.tag}
         </span>
         <button
           onClick={(e) => {
@@ -52,12 +56,12 @@ export default function ProductCard({
           />
         </button>
         <img
-          src={product.image}
-          alt={product.name}
+          src={product?.image}
+          alt={product?.name}
           className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute bottom-3 left-3 flex gap-1.5">
-          {product.colors.map((c, i) => (
+          {product?.colors?.map((c, i) => (
             <div
               key={i}
               className="border-brand-border/60 h-3 w-3 rounded-full border"
@@ -72,19 +76,19 @@ export default function ProductCard({
         <div className="flex items-start justify-between gap-2">
           <div>
             <span className="font-body text-muted-foreground text-[11px] tracking-widest uppercase">
-              {product.category}
+              {product?.category?.name}
             </span>
             <h3 className="font-display text-foreground mt-0.5 text-lg leading-tight font-bold">
-              {product.name}
+              {product?.name}
             </h3>
           </div>
           <div className="shrink-0 text-right">
             <div className="font-display text-brand-orange text-xl font-bold">
-              {product.price}
+              {formatPrice(product?.price)}
             </div>
-            {product.originalPrice && (
+            {product?.discountPrice && (
               <div className="font-body text-muted-foreground text-xs line-through">
-                {product.originalPrice}
+                {formatPrice(product?.discountPrice)}
               </div>
             )}
           </div>
@@ -97,7 +101,7 @@ export default function ProductCard({
                 key={i}
                 size={11}
                 className={
-                  i < Math.floor(product.rating)
+                  i < Math.floor(product?.rating)
                     ? "fill-amber-400 text-amber-400"
                     : "text-muted-foreground/30"
                 }
@@ -105,7 +109,7 @@ export default function ProductCard({
             ))}
           </div>
           <span className="font-body text-muted-foreground text-xs">
-            {product.rating} ({product.reviews})
+            {product?.rating} ({product?.reviewsCount})
           </span>
         </div>
 

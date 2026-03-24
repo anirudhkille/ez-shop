@@ -3,6 +3,7 @@ import Category from '@/models/Category';
 import { Request, Response } from 'express';
 import { uploadToCloudinary } from '@/utils/uploadToCloudinary';
 import cloudinary from '@/config/cloudinary';
+import { redis } from '@/config/redis';
 
 export const postCategory = asyncHandler(
   async (req: Request, res: Response) => {
@@ -10,7 +11,7 @@ export const postCategory = asyncHandler(
     const { name, slug } = req.body;
 
     if (req.file) {
-      const result: any = await uploadToCloudinary(req.file.buffer);
+      const result: any = await uploadToCloudinary("categories",req.file.buffer);
       imageUrl = result.secure_url;
     }
 
@@ -29,12 +30,26 @@ export const postCategory = asyncHandler(
 );
 
 export const getCategory = asyncHandler(async (req: Request, res: Response) => {
-  const category = await Category.find().lean();
+  const cacheKey = 'categories';
+
+  const cache = await redis.get(cacheKey);
+
+  if (cache && typeof cache === 'string') {
+    return res.status(200).json({
+      success: true,
+      message: 'Category fetched from cache',
+      data: JSON.parse(cache),
+    });
+  }
+
+  const categories = await Category.find().lean();
+
+  await redis.set(cacheKey, JSON.stringify(categories), { ex: 300 }); // 5 min
 
   return res.status(200).json({
     success: true,
-    message: 'Category fetched successfully',
-    data: category,
+    message: 'Category fetched from DB',
+    data: categories,
   });
 });
 
@@ -61,7 +76,7 @@ export const updateCategory = asyncHandler(
       }
 
       // upload new image
-      const result: any = await uploadToCloudinary(req.file.buffer);
+      const result: any = await uploadToCloudinary("categories",req.file.buffer);
       imageUrl = result.secure_url;
     }
 

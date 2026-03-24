@@ -5,12 +5,17 @@ export const getProducts = async (params?: any) => {
   return res.data;
 };
 
-export const getProduct = async (slug: string) => {
-  const res = await axiosInstance.get(`/product/${slug}`);
+export const getProductBySlug = async (slug: string, id: string) => {
+  const res = await axiosInstance.get(`/product/${slug}/${id}`);
   return res.data;
 };
 
 export const getFilteredProducts = async (params: Record<string, any>) => {
   const response = await axiosInstance.get("/product/filter", { params });
   return response.data;
+};
+
+export const getFeaturedProducts = async () => {
+  const res = await axiosInstance.get(`/product/featured`);
+  return res.data;
 };

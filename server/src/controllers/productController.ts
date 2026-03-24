@@ -1,10 +1,51 @@
 import { asyncHandler } from "@/middlewares/asyncHandler";
 import Product from "@/models/Product";
 import { Request, Response } from "express";
+import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
+import slugify from "slugify";
 
 export const postProduct = asyncHandler(async (req: Request, res: Response) => {
-  const product = new Product(req.body);
-  product.save();
+  const body: any = req.body;
+
+  if (typeof body.variants === "string") {
+    body.variants = JSON.parse(body.variants);
+  }
+
+  if (typeof body.variantImageMap === "string") {
+    body.variantImageMap = JSON.parse(body.variantImageMap);
+  }
+
+  if (req.files && (req.files as any).image) {
+    const file = (req.files as any).image[0];
+    const result: any = await uploadToCloudinary("products", file.buffer);
+    body.image = result.secure_url;
+  }
+
+  if (req.files && (req.files as any).variantImages) {
+    const files = (req.files as any).variantImages;
+
+    let fileIndex = 0;
+
+    for (const map of body.variantImageMap) {
+      const { variantIndex, count } = map;
+
+      body.variants[variantIndex].images = [];
+
+      for (let i = 0; i < count; i++) {
+        const result: any = await uploadToCloudinary(
+          "products/variants",
+          files[fileIndex].buffer,
+        );
+
+        body.variants[variantIndex].images.push(result.secure_url);
+        fileIndex++;
+      }
+    }
+  }
+
+  body.slug = slugify(body.name, { lower: true, strict: true });
+
+  const product = await Product.create(body);
 
   return res.status(201).json({
     success: true,
@@ -51,11 +92,11 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-export const getProductBySlug = asyncHandler(
+export const getProductById = asyncHandler(
   async (req: Request, res: Response) => {
-    const product = await Product.findOne({ slug: req.params.slug }).populate(
-      "category"
-    );
+    const { slug, id } = req.params;
+
+    const product = await Product.findById(id).populate("category");
 
     if (!product) {
       return res.status(404).json({
@@ -64,52 +105,93 @@ export const getProductBySlug = asyncHandler(
       });
     }
 
+    if (product.slug !== slug) {
+      return res.status(200).json({
+        success: true,
+        redirectUrl: `/${product.slug}/${product._id}`,
+        data: product,
+      });
+    }
+
     return res.status(200).json({
       success: true,
       message: "Product fetched successfully",
       data: product,
     });
-  }
+  },
 );
 
 export const updateProduct = asyncHandler(
   async (req: Request, res: Response) => {
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
-      { ...req.body },
-      { new: true }
-    );
+    const body: any = req.body;
 
-    if (!product)
+    if (typeof body.variants === "string") {
+      body.variants = JSON.parse(body.variants);
+    }
+
+    if (req.files && (req.files as any).image) {
+      const file = (req.files as any).image[0];
+      const result: any = await uploadToCloudinary("products", file.buffer);
+      body.image = result.secure_url;
+    }
+
+    if (req.files && (req.files as any).variantImages) {
+      const variantFiles = (req.files as any).variantImages;
+
+      for (let i = 0; i < variantFiles.length; i++) {
+        const result: any = await uploadToCloudinary(
+          "products/variants",
+          variantFiles[i].buffer,
+        );
+
+        if (body.variants && body.variants[i]) {
+          body.variants[i].images = [result.secure_url];
+        }
+      }
+    }
+
+    if (body.name) {
+      body.slug = slugify(body.name, { lower: true, strict: true });
+    }
+
+    const product = await Product.findByIdAndUpdate(req.params.id, body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!product) {
       return res.status(404).json({
         success: false,
         message: "Product not found",
       });
+    }
 
     return res.status(200).json({
       success: true,
       message: "Product updated successfully",
       data: product,
     });
-  }
+  },
 );
 
 export const deleteProduct = asyncHandler(
   async (req: Request, res: Response) => {
-    const product = Product.findByIdAndDelete(req.params.id);
+    const product = await Product.findById(req.params.id);
 
-    if (!product)
+    if (!product) {
       return res.status(404).json({
         success: false,
         message: "Product not found",
       });
+    }
+
+    await product.deleteOne();
 
     return res.status(200).json({
       success: true,
       message: "Product deleted successfully",
-      data: product,
     });
-  }
+  },
 );
 
 export const getSearchProduct = asyncHandler(
@@ -126,7 +208,7 @@ export const getSearchProduct = asyncHandler(
       message: "Search results fetched successfully",
       data: products,
     });
-  }
+  },
 );
 
 export const getFilteredProducts = asyncHandler(async (req: any, res: any) => {
@@ -222,3 +304,35 @@ export const getFilteredProducts = asyncHandler(async (req: any, res: any) => {
     },
   });
 });
+
+export const getFeaturedProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const products = await Product.find({ publish: true, isFeatured: true })
+      .select(
+        "name slug image reviewsCount rating tag category price discountPrice",
+      )
+      .populate({ path: "category", select: "name" })
+      .limit(8)
+      .lean();
+
+    res.json({
+      success: true,
+      messge: "Featured product fetched successfully",
+      data: products,
+    });
+  },
+);
+
+export const getBestSeller = asyncHandler(
+  async (req: Request, res: Response) => {
+    const products = await Product.find({ publish: true, isFeatured: true })
+      .limit(8)
+      .lean();
+
+    res.json({
+      success: true,
+      messge: "Featured product fetched successfully",
+      data: products,
+    });
+  },
+);
