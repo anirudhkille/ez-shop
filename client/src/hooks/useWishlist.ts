@@ -1,54 +1,64 @@
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import {
-  addToWishlist,
-  getWishlists,
-  removeFromWishlist,
-} from "@/api/wishlist";
+import { getWishlists, toggleWishlist } from "@/api/wishlist";
 
 export const useWishlists = () => {
   return useQuery({
     queryFn: getWishlists,
     queryKey: ["wishlist"],
-    placeholderData: keepPreviousData,
+    select: (res) => res.data,
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 60,
   });
 };
 
-export const useAddToWishlist = () => {
+export const useToggleWishlist = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (productId: string) => addToWishlist(productId),
-    onSuccess: () => {
-      toast.success("Added to wishlist");
-      queryClient.invalidateQueries({ queryKey: ["wishlist"] });
-    },
-    onError: (error: any) => {
-      toast.error(
-        error.response.data.message || "An error occurred while adding wishlist"
-      );
-    },
-  });
-};
+    mutationFn: (productId: string) => toggleWishlist(productId),
 
-export const useRemoveFromWishlist = () => {
-  const queryClient = useQueryClient();
+    onMutate: async (productId: string) => {
+      await queryClient.cancelQueries({ queryKey: ["wishlist"] });
 
-  return useMutation({
-    mutationFn: (productId: string) => removeFromWishlist(productId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["wishlist"] });
-      toast.success("Remove from wishlist");
+      const prev = queryClient.getQueryData<any>(["wishlist"]);
+
+      queryClient.setQueryData(["wishlist"], (old: any) => {
+        if (!old) {
+          return { products: [productId] };
+        }
+
+        const products = old.products || [];
+
+        const exists = products.includes(productId);
+
+        return {
+          ...old,
+          products: exists
+            ? products.filter((id: string) => id !== productId)
+            : [...products, productId],
+        };
+      });
+
+      return { prev };
     },
-    onError: (error: any) => {
-      console.error("remove failed", error);
+
+    onError: (_err, _vars, context) => {
+      if (context?.prev) {
+        queryClient.setQueryData(["wishlist"], context.prev);
+      }
+      console.log(_err);
+      toast.error("Something went wrong");
+    },
+
+    onSuccess: (res) => {
+      toast.success(res.message);
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["wishlist"] });
     },
   });
 };

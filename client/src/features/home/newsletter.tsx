@@ -10,7 +10,7 @@ import { useSubscribeNewsletter } from "@/hooks/useNewsletter";
 
 import Fade from "@/components/shared/fade";
 import { Button } from "@/components/ui/button";
-import { FormInput } from "@/components/ui/form";
+import { FormInputWithIcon } from "@/components/ui/form";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -106,11 +106,11 @@ function NewsletterForm() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-3"
         >
-          <FormInput
+          <FormInputWithIcon
             control={form.control}
             name="email"
             placeholder="Enter your email"
-            prefix={<Mail size={16} />}
+            icon={<Mail size={16} />}
           />
 
           <Button type="submit">

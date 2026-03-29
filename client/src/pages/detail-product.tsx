@@ -17,9 +17,10 @@ import {
 
 import type { TProduct } from "@/types/product";
 
-import { formatPrice } from "@/lib/formatprice";
+import { formatPrice } from "@/lib/formatPrice";
 
-import { useFeaturedProducts, useProduct } from "@/hooks/useProduct";
+import { useProduct, useSimilarProducts } from "@/hooks/useProduct";
+import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
 
 import { tagColors } from "@/data/products";
 import ProductCard from "@/features/product/product-card";
@@ -27,13 +28,23 @@ import ProductCard from "@/features/product/product-card";
 export default function ProductDetail() {
   const { slug, id } = useParams();
   const { data: product } = useProduct(slug ?? "", id ?? "");
-  const { data: related } = useFeaturedProducts();
+  const { data: related } = useSimilarProducts(id ?? "");
+  const { data: wishlist } = useWishlists();
+  const { mutate: toggleWishlist } = useToggleWishlist();
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [selectedColorIdx, setSelectedColorIdx] = useState(0);
   const [selectedImageIdx, setSelectedImageIdx] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [liked, setLiked] = useState(false);
+
+  const wishlistSet = new Set(wishlist?.products || []);
+  const liked = wishlistSet.has(id);
+
   const [addedToCart, setAddedToCart] = useState(false);
+
+  const handleWishlist = (e) => {
+    e.preventDefault();
+    toggleWishlist(product?._id);
+  };
 
   if (!product) {
     return (
@@ -279,8 +290,8 @@ export default function ProductDetail() {
             </button>
 
             <button
-              onClick={() => setLiked(!liked)}
               className={`flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 ${liked ? "border-red-500/40 bg-red-500/10" : "border-brand-border hover:border-brand-orange/40"}`}
+              onClick={handleWishlist}
             >
               <Heart
                 size={16}

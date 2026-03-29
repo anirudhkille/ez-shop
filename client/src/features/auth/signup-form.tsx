@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Lock, Mail } from "lucide-react";
 
-import { useLogin } from "@/hooks/useUser";
+import {  useSignup } from "@/hooks/useUser";
 
 import { Button } from "@/components/ui/button";
 import { FormInputWithIcon, FormLabel } from "@/components/ui/form";
@@ -22,8 +22,8 @@ const formSchema = z.object({
   }),
 });
 
-export default function LoginForm() {
-  const { mutate, isPending } = useLogin();
+export default function SignupForm() {
+  const { mutate, isPending } = useSignup();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,7 +34,6 @@ export default function LoginForm() {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-   
     mutate(data);
   };
 

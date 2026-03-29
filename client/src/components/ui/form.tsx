@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import {
   type Control,
@@ -6,6 +6,8 @@ import {
   type FieldValues,
   type Path,
 } from "react-hook-form";
+
+import { cn } from "@/lib/utils";
 
 import { Field, FieldError, FieldLabel } from "./field";
 import { Input } from "./input";
@@ -28,14 +30,13 @@ function FormInput<T extends FieldValues>({
   control,
   label,
   placeholder,
-  prefix,
+  ...props
 }: {
   name: Path<T>;
   control: Control<T>;
-  label?: String;
+  label?: string;
   placeholder?: string;
-  prefix?: ReactNode;
-}) {
+} & React.ComponentProps<typeof Input>) {
   return (
     <Controller
       control={control}
@@ -43,20 +44,14 @@ function FormInput<T extends FieldValues>({
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
           {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
-          <div className="relative">
-            {prefix && (
-              <div className="text-muted-foreground pointer-events-none absolute top-5 right-0 left-5">
-                {prefix}
-              </div>
-            )}
-            <Input
-              id={name}
-              aria-invalid={fieldState.invalid}
-              placeholder={placeholder}
-              className={prefix ? "pl-11" : ""}
-              {...field}
-            />{" "}
-          </div>
+
+          <Input
+            id={name}
+            aria-invalid={fieldState.invalid}
+            placeholder={placeholder}
+            {...field}
+            {...props}
+          />
 
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>
@@ -146,4 +141,66 @@ function FormSelect<T extends FieldValues>({
   );
 }
 
-export { FormInput, FormTextarea, FormSelect };
+function FormInputWithIcon<T extends FieldValues>({
+  name,
+  control,
+  icon,
+  position = "left",
+  ...props
+}: {
+  name: Path<T>;
+  control: Control<T>;
+  placeholder?: string;
+  icon: ReactNode;
+  position?: "left" | "right";
+} & React.ComponentProps<typeof FormInput<T>>) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <Field data-invalid={fieldState.invalid}>
+          <div className="relative">
+            <div
+              className={cn(
+                "text-muted-foreground absolute top-1/2 -translate-y-1/2",
+                position === "left" ? "left-4" : "right-4"
+              )}
+            >
+              {icon}
+            </div>
+
+            <Input
+              {...field}
+              {...props}
+              className={cn(
+                position === "left" ? "pr-5 pl-11" : "pr-11",
+                props.className
+              )}
+            />
+          </div>
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
+      )}
+    />
+  );
+}
+
+function FormLabel({
+  htmlFor,
+  children,
+}: {
+  htmlFor: string;
+  children: ReactNode;
+}) {
+  return (
+    <FieldLabel
+      className="font-body text-muted-foreground text-xs font-semibold tracking-wider uppercase"
+      htmlFor={htmlFor}
+    >
+      {children}
+    </FieldLabel>
+  );
+}
+
+export { FormInput, FormTextarea, FormSelect, FormInputWithIcon, FormLabel };

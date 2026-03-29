@@ -12,28 +12,52 @@ import {
   postSignup,
   resetPassword,
   updateProfile,
+  verifySignupOTP,
 } from "@/api/user";
 
 import useAuthStore from "@/store/userStore";
 
 export const useSignup = () => {
-  const { setUser } = useAuthStore();
   const navigate = useNavigate();
+
   return useMutation({
     mutationFn: (formData: TSignup) => postSignup(formData),
+
+    onSuccess: (res, variables) => {
+      toast.success(res.message || "OTP sent to your mail");
+
+      navigate("/verify-email", {
+        state: { email: variables.email },
+      });
+    },
+
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Signup failed");
+    },
+  });
+};
+
+export const useVerifySignupOTP = () => {
+  const { setUser } = useAuthStore();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: (data: { email: string; otp: string }) => verifySignupOTP(data),
+
     onSuccess: (res) => {
-      toast.success("User created successfully");
+      toast.success("Account verified");
+
       setUser({
         name: res.data.name,
         email: res.data.email,
         token: res.data.token,
       });
+
       navigate("/");
     },
+
     onError: (error: any) => {
-      toast.error(
-        error.response.data.message || "An error occurred while creating user."
-      );
+      toast.error(error.response?.data?.message || "Invalid OTP");
     },
   });
 };

@@ -9,22 +9,22 @@ import useUserStore from "@/store/userStore";
 import SearchModal from "@/features/product/search-modal";
 
 const navLinks = [
-  { label: "Men", href: "/category/men" },
-  { label: "Women", href: "/category/women" },
-  { label: "Kids", href: "/category/kids" },
-  { label: "Shoes", href: "/products" },
-  { label: "Clothing", href: "/products" },
-  { label: "Accessories", href: "/products" },
+  { label: "Men", href: "/products?category=men" },
+  { label: "Women", href: "/products?category=women" },
+  { label: "Kids", href: "/products?category=kids" },
+  { label: "Shoes", href: "/products?category=shoes" },
+  { label: "Clothing", href: "/products?category=clothing" },
+  { label: "Accessories", href: "/products?category=accessories" },
 ];
 
-export default function Navbar() {
+export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useUserStore();
+  const { name, email, logout } = useUserStore();
 
   const isHomePage = location.pathname === "/";
 
@@ -47,10 +47,9 @@ export default function Navbar() {
     navigate("/");
   };
 
-  const avatarInitial = user
-    ? (user.displayName?.[0] ?? user.email[0]).toUpperCase()
-    : "";
+  const avatarInitial = name?.[0] ?? email?.[0]?? "";
 
+  
   return (
     <header
       className={`fixed top-0 right-0 left-0 z-50 transition-all duration-500 ${
@@ -110,11 +109,11 @@ export default function Navbar() {
 
           {/* Profile / auth */}
           <div className="relative hidden md:block">
-            {user ? (
+            {email ? (
               <>
                 <button
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                  className="bg-brand-orange/10 border-brand-orange/30 font-display text-brand-orange hover:bg-brand-orange/20 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-black transition-all duration-200"
+                  className="bg-brand-orange/10 border-brand-orange/30 font-display text-brand-orange hover:bg-brand-orange/20 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-black transition-all duration-200 uppercase"
                 >
                   {avatarInitial}
                 </button>
@@ -128,10 +127,10 @@ export default function Navbar() {
                     <div className="bg-card border-brand-border absolute top-12 right-0 z-50 w-52 overflow-hidden rounded-2xl border shadow-[0_20px_60px_-10px_hsl(0_0%_0%/0.8)]">
                       <div className="border-brand-border border-b px-4 py-3">
                         <p className="font-body text-foreground truncate text-sm font-semibold">
-                          {user.displayName}
+                          {name}
                         </p>
                         <p className="font-body text-muted-foreground truncate text-xs">
-                          {user.email}
+                          {email}
                         </p>
                       </div>
                       <div className="py-1.5">
@@ -162,7 +161,7 @@ export default function Navbar() {
               </>
             ) : (
               <Link
-                to="/auth/login"
+                to="/login"
                 className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200"
               >
                 <User size={18} />
@@ -183,7 +182,7 @@ export default function Navbar() {
       {/* Mobile Menu */}
       <div
         className={`overflow-hidden transition-all duration-300 md:hidden ${
-          mobileOpen ? "max-h-[480px] opacity-100" : "max-h-0 opacity-0"
+          mobileOpen ? "max-h-120 opacity-100" : "max-h-0 opacity-0"
         } bg-card border-brand-border border-b`}
       >
         <nav className="flex flex-col gap-1 px-6 py-4">
@@ -213,14 +212,14 @@ export default function Navbar() {
           >
             Cart (3)
           </Link>
-          {user ? (
+          {name ? (
             <>
               <Link
                 to="/profile"
                 className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
-                My Profile ({user.displayName})
+                My Profile ({name})
               </Link>
               <button
                 onClick={() => {

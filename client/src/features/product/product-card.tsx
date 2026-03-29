@@ -1,12 +1,12 @@
-import { useState } from "react";
-
 import { Link } from "react-router";
 
-import { Heart, ShoppingCart, Star } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 
 import type { TProduct } from "@/types/product";
 
-import { formatPrice } from "@/lib/formatprice";
+import { formatPrice } from "@/lib/formatPrice";
+
+import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
 
 import { tagColors } from "@/data/products";
 
@@ -20,13 +20,15 @@ export default function ProductCard({
   product,
   className = "",
 }: ProductCardProps) {
-  const [liked, setLiked] = useState(false);
-  const [addedToCart, setAddedToCart] = useState(false);
+  const { data: wishlist } = useWishlists();
+  const { mutate } = useToggleWishlist();
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const wishlistSet = new Set(wishlist?.products || []);
+  const liked = wishlistSet.has(product._id);
+
+  const handleWishlist = (e) => {
     e.preventDefault();
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 1500);
+    mutate(product?._id);
   };
 
   return (
@@ -34,7 +36,6 @@ export default function ProductCard({
       to={`/${product?.slug}/${product?._id}`}
       className={`group bg-card border-brand-border card-hover block overflow-hidden rounded-2xl border ${className}`}
     >
-      {/* Image container */}
       <div className="bg-brand-surface-raised relative aspect-square overflow-hidden p-6">
         <span
           className={`font-body absolute top-3 left-3 z-10 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase ${tagColors[product?.tag]}`}
@@ -42,10 +43,7 @@ export default function ProductCard({
           {product?.tag}
         </span>
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            setLiked(!liked);
-          }}
+          onClick={handleWishlist}
           className="bg-background/80 absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur transition-all duration-200 hover:scale-110"
         >
           <Heart
@@ -71,7 +69,6 @@ export default function ProductCard({
         </div>
       </div>
 
-      {/* Info */}
       <div className="p-4">
         <div className="flex items-start justify-between gap-2">
           <div>
@@ -84,11 +81,11 @@ export default function ProductCard({
           </div>
           <div className="shrink-0 text-right">
             <div className="font-display text-brand-orange text-xl font-bold">
-              {formatPrice(product?.price)}
+              {formatPrice(product?.discountPrice || product?.price)}
             </div>
             {product?.discountPrice && (
               <div className="font-body text-muted-foreground text-xs line-through">
-                {formatPrice(product?.discountPrice)}
+                {formatPrice(product?.price)}
               </div>
             )}
           </div>
@@ -112,18 +109,6 @@ export default function ProductCard({
             {product?.rating} ({product?.reviewsCount})
           </span>
         </div>
-
-        <button
-          onClick={handleAddToCart}
-          className={`font-body mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold tracking-wider uppercase transition-all duration-300 ${
-            addedToCart
-              ? "border border-green-500/30 bg-green-500/20 text-green-400"
-              : "bg-brand-orange/10 border-brand-orange/30 text-brand-orange hover:bg-brand-orange hover:text-primary-foreground hover:border-brand-orange border"
-          }`}
-        >
-          <ShoppingCart size={15} />
-          {addedToCart ? "Added!" : "Add to Cart"}
-        </button>
       </div>
     </Link>
   );

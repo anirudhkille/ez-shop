@@ -105,7 +105,7 @@ export default function Footer() {
 
         <div className="border-brand-border border-t py-6 text-center">
           <p className="font-body text-muted-foreground text-sm">
-            © 2025 EZ Shop. All rights reserved. Powered by{" "}
+            © 2026 EZ Shop. All rights reserved. Powered by{" "}
             <a target="_blank" href="https://anirudhkille.com">
               Anirudh Kille
             </a>

@@ -51,7 +51,7 @@ export default function HeroSection() {
           <motion.div variants={item}>
             <span className="bg-brand-orange/10 border-brand-orange/30 text-brand-orange font-body mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold tracking-widest uppercase">
               <span className="bg-brand-orange h-1.5 w-1.5 animate-pulse rounded-full" />
-              New Collection 2025
+              New Collection 2026
             </span>
           </motion.div>
 
@@ -174,7 +174,7 @@ export default function HeroSection() {
               Starting at
             </div>
             <div className="font-display text-primary-foreground text-xl font-bold">
-              $189
+              ₹15,782
             </div>
           </motion.div>
         </div>

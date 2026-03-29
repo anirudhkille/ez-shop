@@ -12,13 +12,21 @@ export default function Login() {
         description="Access your account on EZ Shop. Enter your email and password to login securely. If you don't have an account, you can sign up for one."
       />
       <AuthLayout
-        title="Login to your account"
-        description="Enter your email and password to login"
+        title="Welcome back"
+        description="Log in to your EZ Shop account"
         redirect="/signup"
-        redirectText="Don't have an account? Sign Up"
+        question="Don't have an account?"
+        redirectText="Create account"
       >
-        <LoginForm />
         <GoogleLogin />
+        <div className="my-6 flex items-center gap-3">
+          <div className="bg-brand-border h-px flex-1" />
+          <span className="font-body text-muted-foreground text-xs tracking-widest uppercase">
+            or
+          </span>
+          <div className="bg-brand-border h-px flex-1" />
+        </div>
+        <LoginForm />
       </AuthLayout>
     </>
   );

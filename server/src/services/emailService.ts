@@ -18,6 +18,8 @@ export const sendEmail = async ({
       subject,
       html,
     });
+    console.log(to)
+    console.log(process.env.EMAIL_FROM)
 
     if (error) {
       console.error("Resend Error:", error);

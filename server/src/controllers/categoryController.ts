@@ -1,17 +1,20 @@
-import { asyncHandler } from '@/middlewares/asyncHandler';
-import Category from '@/models/Category';
-import { Request, Response } from 'express';
-import { uploadToCloudinary } from '@/utils/uploadToCloudinary';
-import cloudinary from '@/config/cloudinary';
-import { redis } from '@/config/redis';
+import { asyncHandler } from "@/middlewares/asyncHandler";
+import Category from "@/models/Category";
+import { Request, Response } from "express";
+import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
+import cloudinary from "@/config/cloudinary";
+import { redis } from "@/config/redis";
 
 export const postCategory = asyncHandler(
   async (req: Request, res: Response) => {
-    let imageUrl = '';
+    let imageUrl = "";
     const { name, slug } = req.body;
 
     if (req.file) {
-      const result: any = await uploadToCloudinary("categories",req.file.buffer);
+      const result: any = await uploadToCloudinary(
+        "categories",
+        req.file.buffer,
+      );
       imageUrl = result.secure_url;
     }
 
@@ -23,32 +26,32 @@ export const postCategory = asyncHandler(
 
     return res.status(201).json({
       success: true,
-      message: 'Category created successfully',
+      message: "Category created successfully",
       data: category,
     });
   },
 );
 
 export const getCategory = asyncHandler(async (req: Request, res: Response) => {
-  const cacheKey = 'categories';
+  const cacheKey = "categories";
 
   const cache = await redis.get(cacheKey);
 
-  if (cache && typeof cache === 'string') {
+  if (cache) {
     return res.status(200).json({
       success: true,
-      message: 'Category fetched from cache',
-      data: JSON.parse(cache),
+      message: "Category fetched from cache",
+      data: cache,
     });
   }
 
   const categories = await Category.find().lean();
 
-  await redis.set(cacheKey, JSON.stringify(categories), { ex: 300 }); // 5 min
+  await redis.set(cacheKey, categories, { ex: 300 }); // 5 min
 
   return res.status(200).json({
     success: true,
-    message: 'Category fetched from DB',
+    message: "Category fetched from DB",
     data: categories,
   });
 });
@@ -60,7 +63,7 @@ export const updateCategory = asyncHandler(
     if (!category) {
       return res.status(404).json({
         success: false,
-        message: 'Category not found',
+        message: "Category not found",
       });
     }
 
@@ -69,14 +72,17 @@ export const updateCategory = asyncHandler(
     if (req.file) {
       // delete old image
       if (category.image) {
-        const publicId = category.image.split('/').pop()?.split('.')[0];
+        const publicId = category.image.split("/").pop()?.split(".")[0];
         if (publicId) {
           await cloudinary.uploader.destroy(`ez-shop/categories/${publicId}`);
         }
       }
 
       // upload new image
-      const result: any = await uploadToCloudinary("categories",req.file.buffer);
+      const result: any = await uploadToCloudinary(
+        "categories",
+        req.file.buffer,
+      );
       imageUrl = result.secure_url;
     }
 
@@ -88,7 +94,7 @@ export const updateCategory = asyncHandler(
 
     return res.status(200).json({
       success: true,
-      message: 'Category updated successfully',
+      message: "Category updated successfully",
       data: updated,
     });
   },
@@ -101,13 +107,13 @@ export const deleteCategory = asyncHandler(
     if (!category) {
       return res.status(404).json({
         success: false,
-        message: 'Category not found',
+        message: "Category not found",
       });
     }
 
     // delete image from cloudinary
     if (category.image) {
-      const publicId = category.image.split('/').pop()?.split('.')[0];
+      const publicId = category.image.split("/").pop()?.split(".")[0];
       if (publicId) {
         await cloudinary.uploader.destroy(`ez-shop/categories/${publicId}`);
       }
@@ -117,7 +123,7 @@ export const deleteCategory = asyncHandler(
 
     return res.status(200).json({
       success: true,
-      message: 'Category deleted successfully',
+      message: "Category deleted successfully",
     });
   },
 );

@@ -7,15 +7,15 @@ import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "font-body flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-semibold tracking-wider uppercase transition-all duration-300 hover:scale-105 cursor-pointer",
+  "font-body flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-semibold tracking-wider transition-all duration-300 cursor-pointer",
   {
     variants: {
       variant: {
-        default: "bg-gradient-orange text-primary-foreground btn-primary-glow",
+        default: "bg-gradient-orange text-primary-foreground btn-primary-glow hover:scale-105 uppercase",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 lowercase",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "bg-card border border-brand-border text-foreground hover:bg-muted hover:border-brand-border/80",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",

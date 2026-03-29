@@ -1,21 +1,12 @@
 import { type ReactNode } from "react";
 
-import { useNavigate } from "react-router";
-
-import Logo from "@/components/shared/logo";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Link } from "react-router";
 
 type AuthLayoutProps = {
   title: string;
   description: string;
   children: ReactNode;
+  question: string;
   redirect: string;
   redirectText: string;
 };
@@ -24,32 +15,35 @@ export default function AuthLayout({
   title,
   description,
   children,
+  question,
   redirect,
   redirectText,
 }: AuthLayoutProps) {
-  const navigate = useNavigate();
-
   return (
     <div className="flex h-screen items-center justify-center px-3">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <div className="mb-5 flex w-full items-center justify-center">
-            <Logo />
-          </div>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </CardHeader>
-        <CardContent>{children}</CardContent>
+      <div className="bg-card w-full max-w-md rounded-2xl border p-8">
         <div className="text-center">
-          <Button
-            variant="link"
-            className="mx-auto"
-            onClick={() => navigate(redirect)}
-          >
-            {redirectText}
-          </Button>
+          <h1 className="font-display text-foreground text-4xl font-black uppercase">
+            {title}
+          </h1>
+          <p className="font-body text-muted-foreground mt-2 text-sm">
+            {description}
+          </p>
         </div>
-      </Card>
+        <div>{children}</div>
+        <div className="text-center">
+          <p className="font-body text-muted-foreground mt-6 text-center text-sm">
+            {question}
+            {"  "}
+            <Link
+              to={redirect}
+              className="text-brand-orange hover:text-brand-orange/80 font-semibold transition-colors"
+            >
+              {redirectText}
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

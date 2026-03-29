@@ -15,6 +15,7 @@ const Checkout = lazy(() => import("./pages/checkout"));
 
 const Login = lazy(() => import("./pages/auth/login"));
 const Signup = lazy(() => import("./pages/auth/signup"));
+const VerifyEmail = lazy(() => import("./pages/auth/verify-email"));
 const ForgotPassword = lazy(() => import("./pages/auth/forgot-password"));
 const ResetPassword = lazy(() => import("./pages/auth/reset-password"));
 
@@ -37,6 +38,7 @@ export default function App() {
         <Route element={<RedirectIfAuthenticated />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
         </Route>

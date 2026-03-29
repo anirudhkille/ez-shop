@@ -1,7 +1,11 @@
 export type TSignup = {
-  name: string;
   email: string;
   password: string;
+};
+
+export type TVerifyEmail = {
+  email: string;
+  otp: string;
 };
 
 export type TLogin = {

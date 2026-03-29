@@ -91,7 +91,7 @@ axiosInstance.interceptors.response.use(
           isRefreshing = true;
 
           axiosInstance
-            .get<RefreshResponse>(`/user/refresh`)
+            .get<RefreshResponse>(`/api/user/refresh`)
             .then((res) => {
               const { token: newAccessToken } = res.data;
 

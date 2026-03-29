@@ -1,239 +1,278 @@
 import { useState } from "react";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Star, X } from "lucide-react";
 
-import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 
-const genders = ["Men", "Women", "Unisex"];
+import { useCategorys } from "@/hooks/useCategory";
 
-const types = ["New", "Featured", "Sale"];
+export interface FilterState {
+  categories: string[];
+  priceRange: [number, number];
+  sizes: string[];
+  colors: string[];
+  minRating: number;
+}
 
-const priceRanges = [
-  "Under ₹5,000",
-  "₹5,000 - ₹10,000",
-  "₹10,000 - ₹15,000",
-  "Above ₹15,000",
+export const defaultFilters: FilterState = {
+  categories: [],
+  priceRange: [0, 20000],
+  sizes: [],
+  colors: [],
+  minRating: 0,
+};
+
+interface FilterSidebarProps {
+  filters: FilterState;
+  onChange: (filters: FilterState) => void;
+  onClear: () => void;
+  activeCount: number;
+  className?: string;
+}
+
+const ALL_SIZES = ["XS", "S", "M", "L", "XL", "7", "8", "9", "10", "11", "12"];
+const ALL_COLORS = [
+  { label: "Black", hex: "#111111" },
+  { label: "White", hex: "#f5f5f5" },
+  { label: "Orange", hex: "#ff6600" },
+  { label: "Navy", hex: "#1a237e" },
+  { label: "Blue", hex: "#3ab4f2" },
+  { label: "Red", hex: "#cc1111" },
 ];
 
-const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
+function CollapsibleSection({
+  title,
+  children,
+  defaultOpen = true,
+}: {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-brand-border border-b">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between py-4 text-left"
+      >
+        <span className="font-display text-foreground text-sm font-bold tracking-widest uppercase">
+          {title}
+        </span>
+        <ChevronDown
+          size={14}
+          className={cn(
+            "text-muted-foreground transition-transform duration-200",
+            open && "rotate-180"
+          )}
+        />
+      </button>
+      <div
+        className={cn(
+          "overflow-hidden transition-all duration-200",
+          open ? "max-h-96 pb-4 opacity-100" : "max-h-0 opacity-0"
+        )}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
-const colors = [
-  { name: "Black", value: "#000000" },
-  { name: "White", value: "#FFFFFF" },
-  { name: "Red", value: "#EF4444" },
-  { name: "Blue", value: "#3B82F6" },
-  { name: "Green", value: "#22C55E" },
-  { name: "Yellow", value: "#EAB308" },
-  { name: "Pink", value: "#EC4899" },
-  { name: "Orange", value: "#F97316" },
-  { name: "Navy", value: "#1E3A5F" },
-  { name: "Gray", value: "#6B7280" },
-];
-
-const categories = ["shoes", "clothing"];
-
-export default function FilterSidebar() {
-  const [openSections, setOpenSections] = useState({
-    categories: true,
-    gender: true,
-    type: true,
-    price: true,
-    size: true,
-    color: true,
-  });
-
-  const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
+export default function FilterSidebar({
+  filters,
+  onChange,
+  onClear,
+  activeCount,
+  className,
+}: FilterSidebarProps) {
+  const { data: categories } = useCategorys();
+  const toggle = <T,>(arr: T[], val: T): T[] =>
+    arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val];
 
   return (
-    <aside className="w-64 overflow-y-auto border-r border-gray-200 bg-white p-6">
-      <div>
-        {/* Categories */}
-        <div className="border-b border-gray-200">
-          <button
-            onClick={() => toggleSection("categories")}
-            className="mb-4 flex w-full items-center justify-between py-2"
-          >
-            <h3 className="text-sm font-semibold text-gray-900">Categories</h3>
-            <ChevronDown
-              size={18}
-              className={`text-gray-600 transition-transform ${
-                openSections.categories ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-          {openSections.categories && (
-            <div className="space-y-3 pb-4">
-              {categories.map((category) => (
-                <label
-                  key={category}
-                  className="flex cursor-pointer items-center gap-3"
-                >
-                  <Checkbox id={category} className="h-4 w-4" />
-                  <span className="text-sm text-gray-700">{category}</span>
-                </label>
-              ))}
-            </div>
+    <aside className={cn("w-64 shrink-0", className)}>
+      {/* Header */}
+      <div className="border-brand-border flex items-center justify-between border-b pb-4">
+        <span className="font-display text-foreground text-base font-bold tracking-widest uppercase">
+          Filters
+          {activeCount > 0 && (
+            <span className="bg-brand-orange ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white">
+              {activeCount}
+            </span>
           )}
-        </div>
-
-        {/* Gender */}
-        <div className="border-b border-gray-200">
+        </span>
+        {activeCount > 0 && (
           <button
-            onClick={() => toggleSection("gender")}
-            className="mb-4 flex w-full items-center justify-between py-2"
+            onClick={onClear}
+            className="font-body text-muted-foreground hover:text-brand-orange flex items-center gap-1 text-xs transition-colors"
           >
-            <h3 className="text-sm font-semibold text-gray-900">Gender</h3>
-            <ChevronDown
-              size={18}
-              className={`text-gray-600 transition-transform ${
-                openSections.gender ? "rotate-180" : ""
-              }`}
-            />
+            <X size={12} /> Clear all
           </button>
-          {openSections.gender && (
-            <div className="space-y-3 pb-4">
-              {genders.map((gender) => (
-                <label
-                  key={gender}
-                  className="flex cursor-pointer items-center gap-3"
-                >
-                  <Checkbox id={gender} className="h-4 w-4" />
-                  <span className="text-sm text-gray-700">{gender}</span>
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Type (New, Featured, Sale) */}
-        <div className="border-b border-gray-200">
-          <button
-            onClick={() => toggleSection("type")}
-            className="mb-4 flex w-full items-center justify-between py-2"
-          >
-            <h3 className="text-sm font-semibold text-gray-900">Type</h3>
-            <ChevronDown
-              size={18}
-              className={`text-gray-600 transition-transform ${
-                openSections.type ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-          {openSections.type && (
-            <div className="space-y-3 pb-4">
-              {types.map((type) => (
-                <label
-                  key={type}
-                  className="flex cursor-pointer items-center gap-3"
-                >
-                  <Checkbox id={type} className="h-4 w-4" />
-                  <span className="text-sm text-gray-700">
-                    {type}
-                    {type === "Sale" && (
-                      <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-600">
-                        Hot
-                      </span>
-                    )}
-                  </span>
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Price */}
-        <div className="border-b border-gray-200">
-          <button
-            onClick={() => toggleSection("price")}
-            className="mb-4 flex w-full items-center justify-between py-2"
-          >
-            <h3 className="text-sm font-semibold text-gray-900">Price</h3>
-            <ChevronDown
-              size={18}
-              className={`text-gray-600 transition-transform ${
-                openSections.price ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-          {openSections.price && (
-            <div className="space-y-3 pb-4">
-              {priceRanges.map((range) => (
-                <label
-                  key={range}
-                  className="flex cursor-pointer items-center gap-3"
-                >
-                  <Checkbox id={range} className="h-4 w-4" />
-                  <span className="text-sm text-gray-700">{range}</span>
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Size */}
-        <div className="border-b border-gray-200">
-          <button
-            onClick={() => toggleSection("size")}
-            className="mb-4 flex w-full items-center justify-between py-2"
-          >
-            <h3 className="text-sm font-semibold text-gray-900">Size</h3>
-            <ChevronDown
-              size={18}
-              className={`text-gray-600 transition-transform ${
-                openSections.size ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-          {openSections.size && (
-            <div className="space-y-3 pb-4">
-              {sizes.map((size) => (
-                <label
-                  key={size}
-                  className="flex cursor-pointer items-center gap-3"
-                >
-                  <Checkbox id={size} className="h-4 w-4" />
-                  <span className="text-sm text-gray-700">{size}</span>
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Color */}
-        <div>
-          <button
-            onClick={() => toggleSection("color")}
-            className="mb-4 flex w-full items-center justify-between py-2"
-          >
-            <h3 className="text-sm font-semibold text-gray-900">Color</h3>
-            <ChevronDown
-              size={18}
-              className={`text-gray-600 transition-transform ${
-                openSections.color ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-          {openSections.color && (
-            <div className="grid grid-cols-5 gap-2 pb-4">
-              {colors.map((color) => (
-                <button
-                  key={color.name}
-                  title={color.name}
-                  className="group relative h-8 w-8 rounded-full border-2 border-gray-200 transition-all hover:scale-110 hover:border-gray-400 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:outline-none"
-                  style={{ backgroundColor: color.value }}
-                >
-                  <span className="sr-only">{color.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        )}
       </div>
+
+      {/* Category */}
+      <CollapsibleSection title="Category">
+        <div className="space-y-1">
+          {categories?.map((cat: any) => {
+            const active = filters.categories.includes(cat._id);
+
+            return (
+              <button
+                key={cat._id}
+                onClick={() =>
+                  onChange({
+                    ...filters,
+                    categories: toggle(filters.categories, cat._id),
+                  })
+                }
+                className={cn(
+                  "font-body flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-all duration-150 capitalize",
+                  active
+                    ? "bg-brand-orange/10 text-brand-orange"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                {cat.name}
+                {active && (
+                  <div className="bg-brand-orange h-1.5 w-1.5 rounded-full" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Price Range">
+        <div className="space-y-3 px-1">
+          <div className="font-body flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">
+              ₹{filters.priceRange[0]}
+            </span>
+            <span className="text-foreground font-semibold">
+              ₹{filters.priceRange[1]}
+            </span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={20000}
+            step={500}
+            value={filters.priceRange[1]}
+            onChange={(e) =>
+              onChange({
+                ...filters,
+                priceRange: [filters.priceRange[0], Number(e.target.value)],
+              })
+            }
+            className="accent-brand-orange w-full cursor-pointer"
+          />
+        </div>
+      </CollapsibleSection>
+
+      {/* Size */}
+      <CollapsibleSection title="Size" defaultOpen={false}>
+        <div className="flex flex-wrap gap-1.5">
+          {ALL_SIZES.map((size) => {
+            const active = filters.sizes.includes(size);
+            return (
+              <button
+                key={size}
+                onClick={() =>
+                  onChange({ ...filters, sizes: toggle(filters.sizes, size) })
+                }
+                className={cn(
+                  "font-body rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all duration-150",
+                  active
+                    ? "border-brand-orange bg-brand-orange/10 text-brand-orange"
+                    : "border-brand-border text-muted-foreground hover:border-brand-orange/50 hover:text-foreground"
+                )}
+              >
+                {size}
+              </button>
+            );
+          })}
+        </div>
+      </CollapsibleSection>
+
+      {/* Color */}
+      <CollapsibleSection title="Color" defaultOpen={false}>
+        <div className="flex flex-wrap gap-3 px-1">
+          {ALL_COLORS.map(({ label, hex }) => {
+            const active = filters.colors.includes(label);
+            return (
+              <button
+                key={label}
+                onClick={() =>
+                  onChange({
+                    ...filters,
+                    colors: toggle(filters.colors, label),
+                  })
+                }
+                title={label}
+                className="group flex flex-col items-center gap-1.5"
+              >
+                <div
+                  className={cn(
+                    "h-7 w-7 rounded-full border-2 transition-all duration-150",
+                    active
+                      ? "border-brand-orange scale-110 shadow-[0_0_0_2px_hsl(var(--brand-orange)/0.3)]"
+                      : "border-brand-border group-hover:border-brand-orange/50 group-hover:scale-105"
+                  )}
+                  style={{ backgroundColor: hex }}
+                />
+                <span
+                  className={cn(
+                    "font-body text-[10px]",
+                    active ? "text-brand-orange" : "text-muted-foreground"
+                  )}
+                >
+                  {label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </CollapsibleSection>
+
+      {/* Rating */}
+      <CollapsibleSection title="Min Rating" defaultOpen={false}>
+        <div className="space-y-1">
+          {[4, 3, 2, 1].map((r) => (
+            <button
+              key={r}
+              onClick={() =>
+                onChange({
+                  ...filters,
+                  minRating: filters.minRating === r ? 0 : r,
+                })
+              }
+              className={cn(
+                "font-body flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all",
+                filters.minRating === r
+                  ? "bg-brand-orange/10 text-brand-orange"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              <div className="flex gap-0.5">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    size={12}
+                    className={
+                      i < r
+                        ? "fill-amber-400 text-amber-400"
+                        : "fill-muted text-muted"
+                    }
+                  />
+                ))}
+              </div>
+              <span>& up</span>
+            </button>
+          ))}
+        </div>
+      </CollapsibleSection>
     </aside>
   );
 }

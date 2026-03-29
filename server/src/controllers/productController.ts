@@ -3,6 +3,7 @@ import Product from "@/models/Product";
 import { Request, Response } from "express";
 import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
 import slugify from "slugify";
+import mongoose from "mongoose";
 
 export const postProduct = asyncHandler(async (req: Request, res: Response) => {
   const body: any = req.body;
@@ -221,11 +222,14 @@ export const getFilteredProducts = asyncHandler(async (req: any, res: any) => {
     size,
     color,
     sort,
+    minRating,
     page = 1,
     limit = 20,
   } = req.query;
 
-  const query: any = { publish: true };
+  const query: any = {
+    publish: true,
+  };
 
   if (search) {
     query.$or = [
@@ -235,45 +239,61 @@ export const getFilteredProducts = asyncHandler(async (req: any, res: any) => {
   }
 
   if (category) {
-    query.category = category;
+    const categories = category
+      .split(",")
+      .map((id: string) => new mongoose.Types.ObjectId(id));
+
+    query.category = { $in: categories };
   }
 
   if (gender) {
-    query.gender = gender.toLowerCase();
+    const genders = gender.split(",");
+    query.gender = { $in: genders.map((g: string) => g.toLowerCase()) };
   }
 
   if (type) {
-    if (type === "New") query.isNewArrival = true;
-    if (type === "Featured") query.isFeatured = true;
-    if (type === "Sale") query.discountPrice = { $gt: 0 };
+    const types = type.split(",");
+
+    if (types.includes("New")) query.tag = "New";
+    if (types.includes("Featured")) query.isFeatured = true;
+    if (types.includes("Sale")) query.discountPrice = { $gt: 0 };
   }
 
   if (price) {
-    const [min, max] = price.split("-");
-    query.$and = [
-      { discountPrice: { $gte: Number(min) } },
-      { discountPrice: { $lte: Number(max) } },
-    ];
+    const [min, max] = price.split("-").map(Number);
+
+    query.$and = query.$and || [];
+
+    query.$and.push({
+      $or: [
+        { discountPrice: { $gte: min, $lte: max } },
+        { price: { $gte: min, $lte: max } },
+      ],
+    });
   }
 
   if (size) {
-    query["variants.sizes.size"] = size;
+    const sizes = size.split(",");
+    query["variants.sizes.size"] = { $in: sizes };
   }
 
   if (color) {
-    query["variants.color"] = color;
+    const colors = color.split(",");
+    query["variants.color"] = { $in: colors };
   }
 
-  const skip = (Number(page) - 1) * Number(limit);
+  if (minRating) {
+    query.rating = { $gte: Number(minRating) };
+  }
 
-  let sortOption: any = {};
+  let sortOption: any = { createdAt: -1 };
 
   switch (sort) {
     case "price-low":
-      sortOption = { discountPrice: 1 };
+      sortOption = { discountPrice: 1, price: 1 };
       break;
     case "price-high":
-      sortOption = { discountPrice: -1 };
+      sortOption = { discountPrice: -1, price: -1 };
       break;
     case "newest":
       sortOption = { createdAt: -1 };
@@ -281,26 +301,30 @@ export const getFilteredProducts = asyncHandler(async (req: any, res: any) => {
     case "featured":
       sortOption = { isFeatured: -1 };
       break;
-    default:
-      sortOption = { createdAt: -1 };
+    case "rating":
+      sortOption = { rating: -1 };
+      break;
   }
 
-  const products = await Product.find(query)
-    .sort(sortOption)
-    .skip(skip)
-    .limit(Number(limit));
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+  const skip = (pageNumber - 1) * limitNumber;
 
-  const total = await Product.countDocuments(query);
+  const [products, total] = await Promise.all([
+    Product.find(query).sort(sortOption).skip(skip).limit(limitNumber).lean(),
 
-  res.json({
+    Product.countDocuments(query),
+  ]);
+
+  return res.status(200).json({
     success: true,
-    message: "Products fetched successfully",
+    message: "Filtered products fetched successfully",
     data: products,
     pagination: {
       total,
-      page: Number(page),
-      limit: Number(limit),
-      totalPages: Math.ceil(total / Number(limit)),
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
     },
   });
 });
@@ -323,16 +347,47 @@ export const getFeaturedProducts = asyncHandler(
   },
 );
 
-export const getBestSeller = asyncHandler(
+export const getBestSellers = asyncHandler(
   async (req: Request, res: Response) => {
-    const products = await Product.find({ publish: true, isFeatured: true })
-      .limit(8)
+    const products = await Product.find({ publish: true, isBestSellers: true })
+      .select("name slug image rating price discountPrice")
+      .limit(6)
       .lean();
 
     res.json({
       success: true,
       messge: "Featured product fetched successfully",
       data: products,
+    });
+  },
+);
+
+export const getSimilarProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const product = await Product.findById(id).select("category").lean();
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    const similarProducts = await Product.find({
+      _id: { $ne: id },
+      category: product.category,
+      publish: true,
+    })
+      .select("name slug image price discountPrice rating")
+      .limit(4)
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      message: "Similar products fetched successfully",
+      data: similarProducts,
     });
   },
 );

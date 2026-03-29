@@ -1,17 +1,16 @@
 import { Link } from "react-router";
 
+import type { TProduct } from "@/types/product";
+
 import { useFeaturedProducts } from "@/hooks/useProduct";
 
 import Fade from "@/components/shared/fade";
-
-import { products } from "@/data/products";
 
 import ProductCard from "../product/product-card";
 
 export default function FeaturedProducts() {
   const { data } = useFeaturedProducts();
 
-  console.log(data)
   return (
     <section id="featured" className="bg-card/40 py-24">
       <div className="mx-auto max-w-350 px-6 lg:px-10">
@@ -36,8 +35,8 @@ export default function FeaturedProducts() {
         </Fade>
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
-          {data?.map((product, i: number) => (
-            <Fade delay={i * 0.1} key={product.id}>
+          {data?.map((product: TProduct, i: number) => (
+            <Fade delay={i * 0.1} key={product._id}>
               <ProductCard product={product} />
             </Fade>
           ))}

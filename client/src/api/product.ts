@@ -19,3 +19,13 @@ export const getFeaturedProducts = async () => {
   const res = await axiosInstance.get(`/product/featured`);
   return res.data;
 };
+
+export const getBestSellersProducts = async () => {
+  const res = await axiosInstance.get(`/product/best-sellers`);
+  return res.data;
+};
+
+export const getSimilarProducts = async (id: string) => {
+  const res = await axiosInstance.get(`/product/similar/${id}`);
+  return res.data;
+};

@@ -9,13 +9,17 @@ import {
   deleteProduct,
   getFilteredProducts,
   getFeaturedProducts,
+  getBestSellers,
+  getSimilarProducts,
 } from "@/controllers/productController";
 import { authorize } from "@/middlewares/authorize";
 import { upload } from "@/middlewares/upload";
 
 const router = express.Router();
 
+router.get("/similar/:id", getSimilarProducts);
 router.get("/featured", getFeaturedProducts);
+router.get("/best-sellers", getBestSellers);
 router.get("/filter", getFilteredProducts);
 router.get("/search", getSearchProduct);
 router.get("/:slug/:id", getProductById);

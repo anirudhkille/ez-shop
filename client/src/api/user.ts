@@ -1,9 +1,17 @@
-import type { TLogin, TSignup, TUser } from "@/types/user";
+import type { TLogin, TSignup, TUser, TVerifyEmail } from "@/types/user";
 
 import axiosInstance from "@/lib/axiosInstance";
 
 export const postSignup = async (formData: TSignup) => {
   const res = await axiosInstance.post("/user/signup", {
+    ...formData,
+  });
+
+  return res.data;
+};
+
+export const verifySignupOTP = async (formData: TVerifyEmail) => {
+  const res = await axiosInstance.post("/user/verify-signup-otp", {
     ...formData,
   });
 
