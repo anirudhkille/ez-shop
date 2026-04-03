@@ -6,6 +6,8 @@ import { LogOut, Menu, Search, ShoppingCart, User, X } from "lucide-react";
 
 import useUserStore from "@/store/userStore";
 
+import { useGetCartCount } from "@/hooks/useCart";
+
 import SearchModal from "@/features/product/search-modal";
 
 const navLinks = [
@@ -18,6 +20,8 @@ const navLinks = [
 ];
 
 export default function Header() {
+  const { data: cartCount } = useGetCartCount();
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -47,9 +51,8 @@ export default function Header() {
     navigate("/");
   };
 
-  const avatarInitial = name?.[0] ?? email?.[0]?? "";
+  const avatarInitial = name?.[0] ?? email?.[0] ?? "";
 
-  
   return (
     <header
       className={`fixed top-0 right-0 left-0 z-50 transition-all duration-500 ${
@@ -59,19 +62,19 @@ export default function Header() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-350 items-center justify-between px-6 lg:px-10">
-        {/* Logo */}
         <Link to="/" className="group flex items-center gap-2">
-          <div className="bg-gradient-orange flex h-8 w-auto items-center justify-center rounded-sm px-2">
-            <span className="text-primary-foreground font-display text-sm leading-none font-black tracking-tight">
-              EZ
-            </span>
+          <div className="">
+            <img
+              src="/logo.svg"
+              loading="eager"
+              className="size-6 object-contain"
+            />
           </div>
           <span className="font-display text-foreground text-2xl font-bold tracking-wider">
             EZ Shop
           </span>
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
             <Link
@@ -85,9 +88,7 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* Icons */}
         <div className="flex items-center gap-3">
-          {/* Search */}
           <button
             onClick={() => setSearchOpen(true)}
             className="text-muted-foreground hover:text-foreground hover:bg-muted hidden h-9 w-9 items-center justify-center rounded-full transition-all duration-200 md:flex"
@@ -96,24 +97,24 @@ export default function Header() {
             <Search size={18} />
           </button>
 
-          {/* Cart */}
           <Link
             to="/cart"
             className="text-muted-foreground hover:text-foreground hover:bg-muted relative flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200"
           >
             <ShoppingCart size={18} />
-            <span className="bg-brand-orange text-primary-foreground absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold">
-              3
-            </span>
+            {cartCount > 0 && (
+              <span className="bg-brand-orange text-primary-foreground absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold">
+                {cartCount}
+              </span>
+            )}
           </Link>
 
-          {/* Profile / auth */}
           <div className="relative hidden md:block">
             {email ? (
               <>
                 <button
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                  className="bg-brand-orange/10 border-brand-orange/30 font-display text-brand-orange hover:bg-brand-orange/20 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-black transition-all duration-200 uppercase"
+                  className="bg-brand-orange/10 border-brand-orange/30 font-display text-brand-orange hover:bg-brand-orange/20 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-black uppercase transition-all duration-200"
                 >
                   {avatarInitial}
                 </button>
@@ -169,7 +170,6 @@ export default function Header() {
             )}
           </div>
 
-          {/* Mobile hamburger */}
           <button
             className="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-full transition-all md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -179,7 +179,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <div
         className={`overflow-hidden transition-all duration-300 md:hidden ${
           mobileOpen ? "max-h-120 opacity-100" : "max-h-0 opacity-0"
@@ -252,7 +251,6 @@ export default function Header() {
         </nav>
       </div>
 
-      {/* Search Modal */}
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );

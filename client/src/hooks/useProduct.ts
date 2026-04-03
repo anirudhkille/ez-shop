@@ -60,8 +60,6 @@ export const useFilteredProducts = (filters: Record<string, any>) => {
       return page < totalPages ? page + 1 : undefined;
     },
 
-    staleTime: 1000 * 60 * 5,
-    keepPreviousData: true,
   });
 };
 
@@ -70,7 +68,6 @@ export const useFeaturedProducts = () => {
     queryFn: getFeaturedProducts,
     queryKey: ["featured-product"],
     select: (res) => res?.data,
-    staleTime: 5 * 60 * 100,
   });
 };
 
@@ -79,7 +76,6 @@ export const useBestSellers = () => {
     queryFn: getBestSellersProducts,
     queryKey: ["best-sellers"],
     select: (res) => res?.data,
-    staleTime: 5 * 60 * 100,
   });
 };
 
@@ -88,7 +84,6 @@ export const useSimilarProducts = (id: string) => {
     queryFn: () => getSimilarProducts(id),
     queryKey: ["similar", id],
     select: (res) => res?.data,
-    staleTime: 5 * 60 * 100,
     enabled: !!id,
   });
 };

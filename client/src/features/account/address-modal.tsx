@@ -19,8 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-import { FormInput, FormSelect } from "../ui/form";
+import { FormInput, FormSelect } from "@/components/ui/form";
 
 type AddressModalProps = {
   isOpen: boolean;

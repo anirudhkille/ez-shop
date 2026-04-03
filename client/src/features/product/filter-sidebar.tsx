@@ -92,7 +92,6 @@ export default function FilterSidebar({
 
   return (
     <aside className={cn("w-64 shrink-0", className)}>
-      {/* Header */}
       <div className="border-brand-border flex items-center justify-between border-b pb-4">
         <span className="font-display text-foreground text-base font-bold tracking-widest uppercase">
           Filters
@@ -112,7 +111,6 @@ export default function FilterSidebar({
         )}
       </div>
 
-      {/* Category */}
       <CollapsibleSection title="Category">
         <div className="space-y-1">
           {categories?.map((cat: any) => {
@@ -128,7 +126,7 @@ export default function FilterSidebar({
                   })
                 }
                 className={cn(
-                  "font-body flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-all duration-150 capitalize",
+                  "font-body flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm capitalize transition-all duration-150",
                   active
                     ? "bg-brand-orange/10 text-brand-orange"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -171,7 +169,6 @@ export default function FilterSidebar({
         </div>
       </CollapsibleSection>
 
-      {/* Size */}
       <CollapsibleSection title="Size" defaultOpen={false}>
         <div className="flex flex-wrap gap-1.5">
           {ALL_SIZES.map((size) => {
@@ -196,7 +193,6 @@ export default function FilterSidebar({
         </div>
       </CollapsibleSection>
 
-      {/* Color */}
       <CollapsibleSection title="Color" defaultOpen={false}>
         <div className="flex flex-wrap gap-3 px-1">
           {ALL_COLORS.map(({ label, hex }) => {
@@ -236,7 +232,6 @@ export default function FilterSidebar({
         </div>
       </CollapsibleSection>
 
-      {/* Rating */}
       <CollapsibleSection title="Min Rating" defaultOpen={false}>
         <div className="space-y-1">
           {[4, 3, 2, 1].map((r) => (

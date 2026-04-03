@@ -11,6 +11,7 @@ export const useWishlists = () => {
     select: (res) => res.data,
     staleTime: Infinity,
     gcTime: 1000 * 60 * 60,
+  
   });
 };
 

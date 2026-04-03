@@ -19,6 +19,7 @@ import type { TProduct } from "@/types/product";
 
 import { formatPrice } from "@/lib/formatPrice";
 
+import { useAddToCart } from "@/hooks/useCart";
 import { useProduct, useSimilarProducts } from "@/hooks/useProduct";
 import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
 
@@ -31,6 +32,7 @@ export default function ProductDetail() {
   const { data: related } = useSimilarProducts(id ?? "");
   const { data: wishlist } = useWishlists();
   const { mutate: toggleWishlist } = useToggleWishlist();
+  const { mutate: addToCart } = useAddToCart();
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [selectedColorIdx, setSelectedColorIdx] = useState(0);
   const [selectedImageIdx, setSelectedImageIdx] = useState(0);
@@ -39,11 +41,14 @@ export default function ProductDetail() {
   const wishlistSet = new Set(wishlist?.products || []);
   const liked = wishlistSet.has(id);
 
-  const [addedToCart, setAddedToCart] = useState(false);
-
-  const handleWishlist = (e) => {
-    e.preventDefault();
+  const handleWishlist = () => {
     toggleWishlist(product?._id);
+  };
+
+  
+  const handleAddToCart = () => {
+    if (!selectedSize) return;
+    addToCart({ productId: product?._id, size: selectedSize, quantity });
   };
 
   if (!product) {
@@ -74,11 +79,6 @@ export default function ProductDetail() {
     setSelectedImageIdx(0);
   };
 
-  const handleAddToCart = () => {
-    if (!selectedSize) return;
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
-  };
 
   return (
     <main className="pt-20">
@@ -278,15 +278,13 @@ export default function ProductDetail() {
               onClick={handleAddToCart}
               disabled={!selectedSize}
               className={`font-body flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold tracking-wider uppercase transition-all duration-300 ${
-                addedToCart
-                  ? "border border-green-500/30 bg-green-500/20 text-green-400"
-                  : selectedSize
-                    ? "bg-gradient-orange text-primary-foreground btn-primary-glow hover:opacity-90"
-                    : "bg-muted text-muted-foreground cursor-not-allowed"
+                selectedSize
+                  ? "bg-gradient-orange text-primary-foreground btn-primary-glow hover:opacity-90"
+                  : "bg-muted text-muted-foreground cursor-not-allowed"
               }`}
             >
               <ShoppingCart size={16} />
-              {addedToCart ? "Added to Cart!" : "Add to Cart"}
+              Add to Cart
             </button>
 
             <button

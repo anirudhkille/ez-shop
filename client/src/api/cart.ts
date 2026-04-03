@@ -5,6 +5,11 @@ export const getCart = async () => {
   return res.data;
 };
 
+export const getCartCount = async () => {
+  const res = await axiosInstance.get("/cart/count");
+  return res.data;
+};
+
 export const addToCart = async (payload: {
   productId: string;
   variantId?: string;
@@ -32,3 +37,4 @@ export const clearCart = async () => {
   const res = await axiosInstance.delete("/cart/clear");
   return res.data;
 };
+

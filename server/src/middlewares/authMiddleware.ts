@@ -29,9 +29,9 @@ export const protect = asyncHandler(
       let user;
 
       if (decoded.role === "User") {
-        user = await User.findById(decoded.id).select("-password");
+        user = await User.findById(decoded._id).select("-password");
       } else if (decoded.role === "Admin") {
-        user = await Admin.findById(decoded.id).select("-password");
+        user = await Admin.findById(decoded._id).select("-password");
       }
 
       if (!user) {

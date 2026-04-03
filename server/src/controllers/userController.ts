@@ -196,6 +196,13 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
   user.password = newPassword;
   await user.save();
 
@@ -207,8 +214,15 @@ export const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
-export const completeProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user.id);
+export const completeProfile = asyncHandler(async (req: any, res: Response) => {
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
 
   user.phone = req.body.phone;
   user.name = req.body.name;
@@ -282,7 +296,7 @@ export const refreshToken = asyncHandler(
       });
     }
 
-    const storedToken = await redis.get(`refresh:${decoded.id}`);
+    const storedToken = await redis.get(`refresh:${decoded._id}`);
 
     if (!storedToken || storedToken !== token) {
       return res.status(403).json({
@@ -295,7 +309,7 @@ export const refreshToken = asyncHandler(
     const newRefreshToken = generateRefreshToken(decoded);
     const newAccessToken = generateAccessToken(decoded);
 
-    await redis.set(`refresh:${decoded.id}`, newRefreshToken, {
+    await redis.set(`refresh:${decoded._id}`, newRefreshToken, {
       ex: 7 * 24 * 60 * 60,
     });
 

@@ -1,3 +1,5 @@
+import type { TCategory } from "@/types/category";
+
 import { useCategorys } from "@/hooks/useCategory";
 
 import Fade from "@/components/shared/fade";
@@ -29,7 +31,7 @@ export default function CategoriesSection() {
         </Fade>
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:gap-6">
-          {categories?.map((cat, i) => (
+          {categories?.map((cat: TCategory, i: number) => (
             <Fade
               key={cat.name}
               delay={i * 0.1}
@@ -50,9 +52,6 @@ export default function CategoriesSection() {
 
                 <div className="absolute inset-0 flex flex-col justify-end p-5">
                   <div>
-                    <span className="font-body text-muted-foreground text-xs tracking-widest uppercase">
-                      {cat.count}
-                    </span>
                     <h3 className="font-display text-foreground group-hover:text-brand-orange mt-0.5 text-3xl font-black uppercase transition-colors duration-300 lg:text-4xl">
                       {cat.name}
                     </h3>

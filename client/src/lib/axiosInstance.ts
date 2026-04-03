@@ -91,10 +91,10 @@ axiosInstance.interceptors.response.use(
           isRefreshing = true;
 
           axiosInstance
-            .get<RefreshResponse>(`/api/user/refresh`)
+            .get<RefreshResponse>(`/user/refresh`)
             .then((res) => {
               const { token: newAccessToken } = res.data;
-
+console.log("Token refreshed successfully");
               authStore.setUser({
                 token: newAccessToken,
               });

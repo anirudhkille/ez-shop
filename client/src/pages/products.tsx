@@ -214,7 +214,7 @@ export default function Products() {
       </div>
       <div className="flex items-start gap-8">
         <Activity mode={showFilter ? "visible" : "hidden"}>
-          <div className="scrollbar-hide sticky top-24 hidden max-h-[calc(100vh-7rem)] self-start overflow-y-auto lg:block">
+          <div className=" sticky top-24 hidden max-h-[calc(100vh-7rem)] self-start overflow-y-auto lg:block">
             <FilterSidebar
               filters={filters}
               onChange={setFilters}
