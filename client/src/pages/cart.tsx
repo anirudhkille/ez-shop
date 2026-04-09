@@ -9,6 +9,7 @@ import type { TProduct } from "@/types/product";
 import { useCart } from "@/hooks/useCart";
 
 import CartProductCard from "@/features/cart/cart-product-card";
+import { formatPrice } from "@/lib/formatPrice";
 
 export default function Cart() {
   const { data: cartItems } = useCart();
@@ -90,12 +91,12 @@ export default function Cart() {
               <div className="space-y-3">
                 <div className="font-body flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span className="text-foreground">{subtotal}</span>
+                  <span className="text-foreground">{formatPrice(subtotal)}</span>
                 </div>
                 {discount > 0 && (
                   <div className="font-body flex justify-between text-sm">
                     <span className="text-green-400">Discount</span>
-                    <span className="text-green-400">-{discount}</span>
+                    <span className="text-green-400">-{formatPrice(discount)}</span>
                   </div>
                 )}
                 <div className="font-body flex justify-between text-sm">
@@ -118,7 +119,7 @@ export default function Cart() {
                     Total
                   </span>
                   <span className="font-display text-brand-orange text-2xl font-bold">
-                    {total}
+                    {formatPrice(total)}
                   </span>
                 </div>
               </div>

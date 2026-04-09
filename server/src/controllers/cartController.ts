@@ -3,12 +3,11 @@ import Cart from "@/models/Cart";
 import Product from "@/models/Product";
 import { asyncHandler } from "@/middlewares/asyncHandler";
 
-
 const findVariantSize = (product: any, variantId?: string, size?: string) => {
   if (!variantId || !size) return null;
 
   const variant = product.variants.find(
-    (v: any) => v._id.toString() === variantId
+    (v: any) => v._id.toString() === variantId,
   );
   if (!variant) return null;
 
@@ -20,7 +19,7 @@ export const getCart = asyncHandler(async (req: any, res: Response) => {
 
   const cart = await Cart.findOne({ user: userId }).populate(
     "products.product",
-    "name image price discountPrice variants publish slug"
+    "name image price discountPrice variants publish slug",
   );
 
   if (!cart) {
@@ -40,8 +39,7 @@ export const getCart = asyncHandler(async (req: any, res: Response) => {
     if (!prod || !prod.publish) continue;
 
     const price = item.priceAtPurchase ?? prod.price;
-    const discountPrice =
-      item.discountPriceAtPurchase ?? prod.discountPrice;
+    const discountPrice = item.discountPriceAtPurchase ?? prod.discountPrice;
 
     subtotal += price * item.quantity;
 
@@ -63,7 +61,6 @@ export const getCart = asyncHandler(async (req: any, res: Response) => {
     },
   });
 });
-
 
 export const addToCart = asyncHandler(async (req: any, res: Response) => {
   const userId = req.user._id;
@@ -101,9 +98,7 @@ export const addToCart = asyncHandler(async (req: any, res: Response) => {
   }
 
   if (sizeStock <= 0) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Out of stock" });
+    return res.status(400).json({ success: false, message: "Out of stock" });
   }
 
   let cart = await Cart.findOne({ user: userId });
@@ -113,16 +108,14 @@ export const addToCart = asyncHandler(async (req: any, res: Response) => {
     (p: any) =>
       p.product.toString() === productId &&
       p.variantId?.toString() === variantId &&
-      p.size === size
+      p.size === size,
   );
 
   const addQty = quantity || 1;
 
   if (existing) {
     if (existing.quantity + addQty > sizeStock) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Exceeds stock" });
+      return res.status(400).json({ success: false, message: "Exceeds stock" });
     }
 
     existing.quantity += addQty;
@@ -146,26 +139,21 @@ export const addToCart = asyncHandler(async (req: any, res: Response) => {
   });
 });
 
-
 export const updateQuantity = asyncHandler(async (req: any, res: Response) => {
   const userId = req.user._id;
   const { cartItemId, quantity } = req.body;
 
   const cart = await Cart.findOne({ user: userId }).populate(
-    "products.product"
+    "products.product",
   );
 
   if (!cart) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Cart not found" });
+    return res.status(404).json({ success: false, message: "Cart not found" });
   }
 
   const item = cart.products.id(String(cartItemId));
   if (!item) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Item not found" });
+    return res.status(404).json({ success: false, message: "Item not found" });
   }
 
   const product = item.product as any;
@@ -173,7 +161,7 @@ export const updateQuantity = asyncHandler(async (req: any, res: Response) => {
   const sizeObj = findVariantSize(
     product,
     item.variantId ? String(item.variantId) : undefined,
-    item.size
+    item.size,
   );
 
   const maxStock = sizeObj ? sizeObj.stock : product.stock;
@@ -195,47 +183,37 @@ export const updateQuantity = asyncHandler(async (req: any, res: Response) => {
   });
 });
 
+export const removeFromCart = asyncHandler(async (req: any, res: Response) => {
+  const userId = req.user._id;
+  const { cartItemId } = req.params;
 
-export const removeFromCart = asyncHandler(
-  async (req: any, res: Response) => {
-    const userId = req.user._id;
-    const { cartItemId } = req.params;
+  const cart = await Cart.findOne({ user: userId });
 
-    const cart = await Cart.findOne({ user: userId });
-
-    if (!cart) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Cart not found" });
-    }
-
-    cart.products = cart.products.filter(
-      (p: any) => String(p._id) !== String(cartItemId)
-    );
-
-    await cart.save();
-
-    return res.json({
-      success: true,
-      message: "Item removed",
-      data: cart,
-    });
+  if (!cart) {
+    return res.status(404).json({ success: false, message: "Cart not found" });
   }
-);
 
+  cart.products = cart.products.filter(
+    (p: any) => String(p._id) !== String(cartItemId),
+  );
+
+  await cart.save();
+
+  return res.json({
+    success: true,
+    message: "Item removed",
+    data: cart,
+  });
+});
 
 export const clearCart = asyncHandler(async (req: any, res: Response) => {
-  await Cart.findOneAndUpdate(
-    { user: req.user._id },
-    { products: [] }
-  );
+  await Cart.findOneAndUpdate({ user: req.user._id }, { products: [] });
 
   res.status(200).json({
     success: true,
     message: "Cart cleared",
   });
 });
-
 
 export const getCartItemCount = asyncHandler(
   async (req: any, res: Response) => {
@@ -247,5 +225,5 @@ export const getCartItemCount = asyncHandler(
       success: true,
       data: { count },
     });
-  }
+  },
 );

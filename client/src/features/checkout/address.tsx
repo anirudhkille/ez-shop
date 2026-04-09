@@ -64,7 +64,6 @@ export default function Address({ goToNextStep }: ShippingAddressProps) {
           </Button>
         </div>
 
-        {/* Address Selection Mode */}
         {
           <div className="space-y-3">
             {addresses?.length === 0 ? (

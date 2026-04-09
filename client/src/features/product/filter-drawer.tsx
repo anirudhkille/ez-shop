@@ -67,9 +67,15 @@ export default function FilterDrawer({
   activeCount,
 }: FilterDrawerProps) {
   const { data: categories } = useCategorys();
-  
+
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<FilterState>(filters);
+  const draftActiveCount =
+    draft.categories.length +
+    draft.sizes.length +
+    draft.colors.length +
+    (draft.minRating > 0 ? 1 : 0) +
+    (draft.priceRange[1] < 20000 ? 1 : 0);
 
   const toggle = <T,>(arr: T[], val: T): T[] =>
     arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val];
@@ -143,15 +149,15 @@ export default function FilterDrawer({
           <Section title="Category">
             <div className="flex flex-wrap gap-2">
               {categories?.map((cat: any) => {
-                const active = filters.categories.includes(cat._id);
+                const active = draft.categories.includes(cat._id);
 
                 return (
                   <button
                     key={cat._id}
                     onClick={() =>
-                      onChange({
-                        ...filters,
-                        categories: toggle(filters.categories, cat._id),
+                      setDraft({
+                        ...draft,
+                        categories: toggle(draft.categories, cat._id),
                       })
                     }
                     className={cn(
@@ -315,7 +321,7 @@ export default function FilterDrawer({
             onClick={handleApply}
             className="bg-brand-orange font-body flex-2 rounded-xl py-3 text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-[0.98]"
           >
-            Apply Filters
+            Apply Filters{draftActiveCount > 0 ? ` (${draftActiveCount})` : ""}
           </button>
         </div>
       </div>

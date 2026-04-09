@@ -80,7 +80,7 @@ export default function AddressModal({
   useEffect(() => {
     if (address) form.reset(address);
     else form.reset();
-  }, [open]);
+  }, [address, form, isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -101,7 +101,7 @@ export default function AddressModal({
               options={[
                 { label: "Home", value: "Home" },
                 { label: "Work", value: "Work" },
-                { label: "Others", value: "Others" },
+                { label: "Other", value: "Other" },
               ]}
             />
             <div className="grid gap-x-5 sm:grid-cols-2">

@@ -45,7 +45,6 @@ export default function Products() {
   const [sortOpen, setSortOpen] = useState(false);
   const [showFilter, setShowFilter] = useState(true);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
-  const [page, setPage] = useState(1);
 
   const categoryMap = useMemo(() => {
     const map: Record<string, string> = {};
@@ -58,10 +57,9 @@ export default function Products() {
   const queryParams = useMemo(
     () => ({
       ...buildFilterParams(filters, sortBy),
-      page,
       limit: 12,
     }),
-    [filters, sortBy, page]
+    [filters, sortBy]
   );
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useFilteredProducts(queryParams);
@@ -71,6 +69,19 @@ export default function Products() {
   const activeFilterCount = countActiveFilters(filters);
 
   const activeSort = SORT_OPTIONS.find((o) => o.value === sortBy)!;
+
+  const selectedCategoryLabel = useMemo(() => {
+    if (!category) return "All";
+
+    const matchedCategory = categories?.find(
+      (cat: any) =>
+        cat._id === category ||
+        cat.slug === category ||
+        cat.name.toLowerCase() === category.toLowerCase()
+    );
+
+    return matchedCategory?.name ?? category;
+  }, [categories, category]);
 
   const handleClearFilters = () => {
     setFilters(defaultFilters);
@@ -134,19 +145,38 @@ export default function Products() {
   }, [hasNextPage, fetchNextPage]);
 
   useEffect(() => {
-    if (category) {
-      setFilters((prev) => ({
-        ...prev,
-        categories: [category],
-      }));
+    if (!categories) return;
+
+    if (!category) {
+      setFilters((prev) =>
+        prev.categories.length === 0
+          ? prev
+          : {
+              ...prev,
+              categories: [],
+            }
+      );
+      return;
     }
-  }, [category]);
+
+    const matchedCategory = categories.find(
+      (cat: any) =>
+        cat._id === category ||
+        cat.slug === category ||
+        cat.name.toLowerCase() === category.toLowerCase()
+    );
+
+    setFilters((prev) => ({
+      ...prev,
+      categories: matchedCategory?._id ? [matchedCategory._id] : [],
+    }));
+  }, [categories, category]);
 
   return (
     <main className="mx-auto mt-16 max-w-360 border px-4 py-10 sm:px-6 lg:px-10">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <span className="text-foreground font-body text-lg font-semibold uppercase md:text-xl">
-          {category ?? "All"} Styles ({data?.pages[0]?.pagination?.total})
+          {selectedCategoryLabel} Styles ({data?.pages[0]?.pagination?.total})
         </span>{" "}
         <div className="lg:hidden">
           <FilterDrawer

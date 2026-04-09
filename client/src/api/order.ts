@@ -19,6 +19,6 @@ export const getOrderBySessionId = async (sessionId: string) => {
 };
 
 export const getOrderById = async (id: string) => {
-  const res = await axiosInstance.get(`/order/session-id/${id}`);
+  const res = await axiosInstance.get(`/order/order-id/${id}`);
   return res.data;
 };

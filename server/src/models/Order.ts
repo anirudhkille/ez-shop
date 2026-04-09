@@ -5,8 +5,10 @@ const orderSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
+    name: String,
+    email: String,
+    phone: String,
     products: [
       {
         product: {
@@ -54,7 +56,7 @@ const orderSchema = new mongoose.Schema(
       default: "processing",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Order", orderSchema);

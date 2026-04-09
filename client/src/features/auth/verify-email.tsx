@@ -110,7 +110,6 @@ export default function VerifyEmailForm() {
       }}
       className="mt-10 space-y-6"
     >
-      {/* OTP Inputs */}
       <div className="flex justify-between gap-2" onPaste={handlePaste}>
         {code.map((digit, i) => (
           <input
@@ -133,14 +132,12 @@ export default function VerifyEmailForm() {
         ))}
       </div>
 
-      {/* Error */}
       {form.formState.errors.otp && (
         <p className="text-center text-sm text-red-500">
           {form.formState.errors.otp.message}
         </p>
       )}
 
-      {/* Submit */}
       <Button
         className="w-full rounded-md hover:scale-100"
         type="submit"

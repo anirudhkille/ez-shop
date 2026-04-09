@@ -1,63 +1,62 @@
 import type { TAddress } from "@/types/address";
 
+import { formatPrice } from "@/lib/formatPrice";
+
 type OrderProduct = {
-  product: { _id?: string; name?: string; image?: string };
+  product: {
+    _id: string | undefined;
+    name: string | undefined;
+    image: string | undefined;
+  };
   quantity: number;
   price: number;
-  _id?: string;
+  _id: string | undefined;
 };
 
 export type Order = {
   _id: string;
-  user?: string;
+  user: string | undefined;
+  email: string | undefined;
   products: OrderProduct[];
   address: TAddress;
-  deliveryMethod?: string;
+  deliveryMethod: string | undefined;
   subtotal: number;
   deliveryCharge: number;
   totalAmount: number;
   paymentStatus: string;
   paymentType: string;
-  paymentIntentId?: string;
-  sessionId?: string;
-  orderStatus?: string;
-  createdAt?: string | number;
-  updatedAt?: string | number;
+  paymentIntentId: string | undefined;
+  sessionId: string | undefined;
+  orderStatus: string | undefined;
+  createdAt: string | number | undefined;
+  updatedAt: string | number | undefined;
 };
 
-function formatINR(amount: number) {
-  return `₹${amount.toLocaleString("en-IN")}.00`;
-}
-
-function maskPhone(phone?: string) {
+function maskPhone(phone: string | undefined) {
   if (!phone) return "";
 
   const digits = phone.replace(/\D/g, "");
   if (digits.length >= 10) {
     const last4 = digits.slice(-4);
-    return `+${
-      digits.length > 10 ? digits.slice(0, digits.length - 10) + " " : ""
-    }••••${last4}`;
+    const prefix = digits.length > 10 ? digits.slice(0, digits.length - 10) + " " : "";
+    return `+${prefix}xxxx${last4}`;
   }
-  return phone.replace(/.(?=.{2})/g, "•");
+
+  return phone.replace(/.(?=.{2})/g, "x");
 }
 
-function maskEmail(email?: string) {
+function maskEmail(email: string | undefined) {
   if (!email) return "";
   const [name, domain] = email.split("@");
-  const maskedName =
-    name.length > 1 ? `${name[0]}***${name.slice(-1)}` : `${name[0]}***`;
+  const maskedName = name.length > 1 ? `${name[0]}***${name.slice(-1)}` : `${name[0]}***`;
   const domainParts = domain?.split(".");
   if (!domainParts) return `${maskedName}@***`;
-  const maskedDomain = `${domainParts[0][0]}***.${domainParts
-    .slice(1)
-    .join(".")}`;
-  return `${maskedName}@${maskedDomain}`;
+  return `${maskedName}@${domainParts[0][0]}***.${domainParts.slice(1).join(".")}`;
 }
 
-function shortDate(d?: string | number) {
-  if (!d) return "";
-  const date = typeof d === "string" ? new Date(d) : new Date(Number(d));
+function shortDate(value: string | number | undefined) {
+  if (!value) return "";
+  const date = typeof value === "string" ? new Date(value) : new Date(Number(value));
   return date.toLocaleString("en-IN", {
     dateStyle: "medium",
     timeStyle: "short",
@@ -70,171 +69,126 @@ export default function OrderSuccess({
   allowShowFull = false,
 }: {
   order: Order;
-  email?: string;
-  allowShowFull?: boolean;
+  email: string | undefined;
+  allowShowFull: boolean | undefined;
 }) {
-  const displayId = `EZ-ORD-${order?._id.slice(-6).toUpperCase()}`;
-
-  const shipping = order?.address || {};
-  const maskedPhone = allowShowFull
-    ? shipping.phone
-    : maskPhone(shipping.phone);
-  const maskedEmail = allowShowFull ? (email ?? "") : maskEmail(email ?? "");
+  const displayId = `EZ-ORD-${order._id.slice(-6).toUpperCase()}`;
+  const shipping = order.address || ({} as TAddress);
+  const visibleEmail = email || order.email || "";
+  const maskedEmail = allowShowFull ? visibleEmail : maskEmail(visibleEmail);
+  const maskedPhone = allowShowFull ? shipping.phone : maskPhone(shipping.phone);
+  const paymentTail = order.paymentIntentId
+    ? order.paymentIntentId.slice(-4)
+    : (order.sessionId || "").slice(-4);
 
   return (
-    <main className="mx-auto max-w-4xl p-6">
-      <section className="py-8 text-center">
-        <div className="mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-slate-900 to-gray-700 text-white">
-          ✓
+    <main className="mx-auto max-w-6xl px-6 pt-24 pb-20 lg:px-10">
+      <section className="mb-10 text-center">
+        <div className="bg-brand-orange/12 text-brand-orange mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full text-xs font-black tracking-[0.22em] uppercase">
+          Paid
         </div>
-        <h1 className="text-3xl font-semibold">
-          Thank you — Your order is confirmed
+        <h1 className="font-display text-foreground text-4xl font-black uppercase lg:text-5xl">
+          Your Order Is Confirmed
         </h1>
-        <p className="text-mute-foreground mt-2 text-sm">
-          We've received your order and sent a confirmation to{" "}
-          <strong>{maskedEmail || "your email"}</strong>
+        <p className="text-muted-foreground mx-auto mt-3 max-w-2xl text-sm leading-6">
+          We&apos;ve received your order and sent a confirmation to
+          <strong> {maskedEmail || "your email"}</strong>.
         </p>
-        <p className="mt-3 text-xs text-slate-400">
-          Order reference:{" "}
-          <span className="font-medium text-slate-700">{displayId}</span>
+        <p className="text-muted-foreground mt-3 text-xs tracking-[0.18em] uppercase">
+          Order reference: <span className="text-foreground font-semibold">{displayId}</span>
         </p>
       </section>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {/* LEFT: Order summary */}
-        <div className="rounded-xl bg-white p-6 shadow md:col-span-2">
-          <h2 className="mb-4 text-lg font-medium">Order summary</h2>
+        <div className="bg-card border-brand-border rounded-[1.75rem] border p-6 md:col-span-2 lg:p-8">
+          <h2 className="font-display text-foreground mb-6 text-3xl font-black uppercase">
+            Order Summary
+          </h2>
 
-          <div className="divide-y">
-            {order?.products.map((it) => (
-              <div key={it._id} className="flex items-center py-4">
-                <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded bg-gray-100">
+          <div className="divide-y divide-[var(--color-brand-border)]">
+            {order.products.map((item) => (
+              <div key={item._id || item.product._id} className="flex items-center gap-4 py-4">
+                <div className="bg-brand-surface-raised flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl">
                   <img
-                    src={it.product.image ?? "/placeholder.png"}
-                    alt={it.product.name}
+                    src={item.product.image || "/placeholder.png"}
+                    alt={item.product.name || "Order product"}
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <div className="ml-4">
-                  <div className="font-medium">{it.product.name}</div>
-                  <div className="text-mute-foreground text-sm">
-                    Qty: {it.quantity}
-                  </div>
+                <div>
+                  <div className="text-foreground font-medium">{item.product.name}</div>
+                  <div className="text-muted-foreground text-sm">Qty: {item.quantity}</div>
                 </div>
-                <div className="ml-auto font-medium">
-                  {formatINR(it.price * it.quantity)}
+                <div className="text-brand-orange ml-auto font-semibold">
+                  {formatPrice(item.price * item.quantity)}
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 border-t pt-4">
-            <div className="text-mute-foreground flex justify-between text-sm">
+          <div className="border-brand-border mt-6 border-t pt-4">
+            <div className="text-muted-foreground flex justify-between text-sm">
               <div>Subtotal</div>
-              <div>{formatINR(order.subtotal)}</div>
+              <div>{formatPrice(order.subtotal)}</div>
             </div>
-            <div className="text-mute-foreground mt-2 flex justify-between text-sm">
+            <div className="text-muted-foreground mt-2 flex justify-between text-sm">
               <div>Delivery</div>
-              <div>{formatINR(order.deliveryCharge)}</div>
+              <div>{order.deliveryCharge === 0 ? "Free" : formatPrice(order.deliveryCharge)}</div>
             </div>
-            <div className="mt-4 flex justify-between text-lg font-semibold">
+            <div className="text-foreground mt-4 flex justify-between text-lg font-semibold">
               <div>Total</div>
-              <div>{formatINR(order.totalAmount)}</div>
+              <div>{formatPrice(order.totalAmount)}</div>
             </div>
           </div>
 
           <div className="mt-6 flex gap-3">
-            <a
-              href={`/orders/${order._id}`}
-              className="inline-block rounded bg-slate-900 px-4 py-2 text-white shadow hover:opacity-95"
-            >
-              View order
+            <a href="/" className="bg-gradient-orange text-primary-foreground font-body inline-flex rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase">
+              Continue Shopping
             </a>
-            <a
-              href="/"
-              className="inline-block rounded border px-4 py-2 text-slate-900 hover:bg-slate-50"
-            >
-              Continue shopping
+            <a href="/products" className="border-brand-border text-muted-foreground font-body inline-flex rounded-full border px-6 py-3 text-sm tracking-wider uppercase">
+              Shop More
             </a>
-            {/* <a
-              href={`/invoice/${order._id}`}
-              className="ml-auto text-sm underline text-mute-foreground"
-            >
-              Download invoice
-            </a> */}
           </div>
         </div>
 
-        <aside className="space-y-4 rounded-xl bg-white p-6 shadow">
+        <aside className="bg-card border-brand-border space-y-5 rounded-[1.75rem] border p-6 lg:p-8">
           <div>
-            <h3 className="text-mute-foreground text-sm">Payment</h3>
+            <h3 className="text-muted-foreground text-xs font-semibold tracking-[0.18em] uppercase">Payment</h3>
             <div className="mt-2 flex items-center justify-between">
               <div>
-                <div className="font-medium">
-                  {order.paymentType === "card"
-                    ? `Card ••••${
-                        order.paymentIntentId
-                          ? order.paymentIntentId.slice(-4)
-                          : (order.sessionId?.slice(-4) ?? "")
-                      }`
-                    : order.paymentType?.toUpperCase()}
+                <div className="text-foreground font-medium">
+                  {order.paymentType === "card" ? `Card ****${paymentTail}` : order.paymentType.toUpperCase()}
                 </div>
-                <div className="text-mute-foreground text-xs">
-                  Status:{" "}
-                  <span className="font-medium">{order.paymentStatus}</span>
-                </div>
+                <div className="text-muted-foreground text-xs">Status: <span className="font-medium">{order.paymentStatus}</span></div>
               </div>
-              <div className="text-sm font-semibold">
-                {formatINR(order.totalAmount)}
-              </div>
+              <div className="text-sm font-semibold">{formatPrice(order.totalAmount)}</div>
             </div>
           </div>
 
           <div>
-            <h3 className="text-mute-foreground text-sm">Shipping</h3>
-            <div className="mt-2 text-sm text-slate-700">
-              <div className="font-medium">
-                {allowShowFull ? shipping.name : shipping.name?.split(" ")[0]}
-              </div>
-              <div className="text-mute-foreground">
+            <h3 className="text-muted-foreground text-xs font-semibold tracking-[0.18em] uppercase">Shipping</h3>
+            <div className="text-foreground mt-2 text-sm">
+              <div className="font-medium">{allowShowFull ? shipping.name : shipping.name?.split(" ")[0]}</div>
+              <div className="text-muted-foreground">
                 {allowShowFull
-                  ? `${shipping.addressLine1}${
-                      shipping.addressLine2 ? ", " + shipping.addressLine2 : ""
-                    }, ${shipping.city}, ${shipping.state} - ${
-                      shipping.zipCode
-                    }`
-                  : `${shipping.city}, ${shipping.state} •••${String(
-                      shipping.zipCode || ""
-                    ).slice(-2)}`}
+                  ? `${shipping.addressLine1}${shipping.addressLine2 ? ", " + shipping.addressLine2 : ""}, ${shipping.city}, ${shipping.state} - ${shipping.zipCode}`
+                  : `${shipping.city}, ${shipping.state} xxx${String(shipping.zipCode || "").slice(-2)}`}
               </div>
-              <div className="text-mute-foreground mt-1">{maskedPhone}</div>
+              <div className="text-muted-foreground mt-1">{maskedPhone}</div>
             </div>
           </div>
 
           <div>
-            <h3 className="text-mute-foreground text-sm">Order details</h3>
-            <div className="text-mute-foreground mt-2 text-xs">
-              <div>
-                Order ID: <span className="font-medium">{order._id}</span>
-              </div>
-              <div>
-                Placed:{" "}
-                <span className="font-medium">
-                  {shortDate(order.createdAt)}
-                </span>
-              </div>
-              <div>
-                Order status:{" "}
-                <span className="font-medium">{order.orderStatus}</span>
-              </div>
+            <h3 className="text-muted-foreground text-xs font-semibold tracking-[0.18em] uppercase">Order Details</h3>
+            <div className="text-muted-foreground mt-2 space-y-1 text-xs">
+              <div>Order ID: <span className="font-medium">{order._id}</span></div>
+              <div>Placed: <span className="font-medium">{shortDate(order.createdAt)}</span></div>
+              <div>Order status: <span className="font-medium">{order.orderStatus}</span></div>
             </div>
           </div>
 
-          <div className="text-mute-foreground pt-2 text-xs">
-            Need help?{" "}
-            <a href="mailto:anirudhkille@gmail.com" className="underline">
-              anirudhkille@gmail.com
-            </a>
+          <div className="text-muted-foreground border-brand-border border-t pt-4 text-xs">
+            Need help? <a href="mailto:anirudhkille@gmail.com" className="underline">anirudhkille@gmail.com</a>
           </div>
         </aside>
       </div>

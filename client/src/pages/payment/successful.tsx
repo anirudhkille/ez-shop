@@ -11,7 +11,7 @@ export default function SuccessPage() {
   const orderId = q.get("orderId");
   const sessionId = q.get("session_id");
 
-  const { token } = useUserStore();
+  const { token, email } = useUserStore();
 
   // Fetch COD order by orderId
   const { data: orderById, isLoading: loadingId } = useOrderById(orderId ?? "");
@@ -28,21 +28,21 @@ export default function SuccessPage() {
   // COD path
   if (orderId && orderById) {
     return (
-      <OrderSuccess
-        order={orderById.data}
-        email={orderById?.data?.userEmail}
-        allowShowFull={!!token}
-      />
+        <OrderSuccess
+          order={orderById.data}
+          email={orderById?.data?.email || email || ""}
+          allowShowFull={!!token}
+        />
     );
   }
 
   if (sessionId && orderBySession) {
     return (
-      <OrderSuccess
-        order={orderBySession.data}
-        email={orderBySession?.data?.userEmail}
-        allowShowFull={!!token}
-      />
+        <OrderSuccess
+          order={orderBySession.data}
+          email={orderBySession?.data?.email || email || ""}
+          allowShowFull={!!token}
+        />
     );
   }
 
