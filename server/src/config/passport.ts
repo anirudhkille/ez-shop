@@ -25,7 +25,7 @@ passport.use(
           });
         }
 
-        return done(null, user); 
+        return done(null, user as any);
       } catch (err) {
         done(err);
       }
@@ -40,18 +40,10 @@ passport.serializeUser((user: any, done) => {
 passport.deserializeUser(async (_id: string, done) => {
   try {
     const user = await User.findById(_id);
-    done(null, user);
+    done(null, user as any);
   } catch (err) {
     done(err, null);
   }
-});
-
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-
-passport.deserializeUser((user: Express.User, done) => {
-  done(null, user);
 });
 
 export default passport;
