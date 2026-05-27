@@ -193,9 +193,7 @@ export const removeFromCart = asyncHandler(async (req: any, res: Response) => {
     return res.status(404).json({ success: false, message: "Cart not found" });
   }
 
-  cart.products = cart.products.filter(
-    (p: any) => String(p._id) !== String(cartItemId),
-  );
+  cart.products.pull(cartItemId);
 
   await cart.save();
 
