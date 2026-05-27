@@ -1,43 +1,58 @@
 import { Link } from "react-router";
 
-import { Github, Instagram, Linkedin, Mail } from "lucide-react";
+import {
+  Github,
+  Instagram,
+  Linkedin,
+  Mail,
+  ShoppingBag,
+  Heart,
+  Truck,
+  ShieldCheck,
+} from "lucide-react";
 
 const footerLinks = {
-  Company: [
-    { label: "About Us", href: "/about" },
-    { label: "Careers", href: "/about" },
-    { label: "Press", href: "/about" },
-    { label: "Investors", href: "/about" },
+  Shop: [
+    { label: "All Products", href: "/products" },
+    { label: "Wishlist", href: "/wishlist" },
+    { label: "Cart", href: "/cart" },
+    { label: "Profile", href: "/profile" },
   ],
-  Support: [
-    { label: "Help Center", href: "/contact" },
-    { label: "Contact Us", href: "/contact" },
-    { label: "Size Guide", href: "/products" },
-    { label: "Store Finder", href: "/contact" },
+
+  Account: [
+    { label: "Account Details", href: "/account/account-details" },
+    {
+      label: "Delivery Addresses",
+      href: "/account/delivery-addresses",
+    },
+    {
+      label: "Update Password",
+      href: "/account/update-password",
+    },
   ],
+
   Orders: [
-    { label: "Shipping Info", href: "/contact" },
-    { label: "Returns", href: "/contact" },
-    { label: "Track Order", href: "/contact" },
-    { label: "Gift Cards", href: "/products" },
+    { label: "Track Order", href: "/track-order" },
+    { label: "Returns", href: "/returns" },
+    { label: "Shipping Info", href: "/shipping-info" },
   ],
+
   Legal: [
-    { label: "Privacy Policy", href: "/" },
-    { label: "Terms of Use", href: "/" },
-    { label: "Cookie Policy", href: "/" },
-    { label: "Accessibility", href: "/" },
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms of Use", href: "/terms" },
+    { label: "Cookie Policy", href: "/cookie-policy" },
   ],
 };
 
 const socials = [
   {
     icon: Github,
-    label: "YouTube",
-    href: "https://www.github.com/anirudhkille",
+    label: "Github",
+    href: "https://github.com/anirudhkille",
   },
   {
     icon: Linkedin,
-    label: "Linkedin",
+    label: "LinkedIn",
     href: "https://www.linkedin.com/in/anirudh-kille",
   },
   {
@@ -45,38 +60,61 @@ const socials = [
     label: "Instagram",
     href: "https://www.instagram.com/anirudh_kille",
   },
-  { icon: Mail, label: "Email", href: "mailto:anirudhkille@gmail.com" },
+  {
+    icon: Mail,
+    label: "Email",
+    href: "mailto:anirudhkille@gmail.com",
+  },
+];
+
+const features = [
+  {
+    icon: ShoppingBag,
+    title: "Premium Products",
+  },
+  {
+    icon: Truck,
+    title: "Fast Delivery",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Secure Checkout",
+  },
+  {
+    icon: Heart,
+    title: "Built for Learning",
+  },
 ];
 
 export default function Footer() {
   return (
-    <footer className="bg-card border-brand-border border-t">
+    <footer className="border-brand-border bg-card border-t">
       <div className="mx-auto max-w-350 px-6 lg:px-10">
         <div className="grid grid-cols-2 gap-10 py-16 md:grid-cols-3 lg:grid-cols-5">
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <Link to="/" className="mb-4 flex items-center gap-2">
-              <div className="bg-gradient-orange flex h-8 w-auto items-center justify-center rounded-sm px-2">
-                <span className="text-primary-foreground font-display text-sm leading-none font-black tracking-tight">
-                  EZ
-                </span>
-              </div>
-              <span className="font-display text-foreground text-2xl font-bold tracking-wider">
-                EZ Shop
-              </span>
+                <img src="/logo.svg"  className="size-6 object-contain"/>
+            
+<span className="font-display text-foreground text-2xl font-bold tracking-wider">
+            EZ Shop
+          </span>
             </Link>
+
             <p className="font-body text-muted-foreground max-w-xs text-sm leading-relaxed">
-              Premium footwear & apparel. Engineered for performance, designed
-              for everyday life.
+           Premium footwear & apparel. Engineered for performance, designed for everyday life.
             </p>
+
             <div className="mt-6 flex gap-3">
-              {socials.map((s) => (
+              {socials.map((social) => (
                 <a
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
                   className="border-brand-border text-muted-foreground hover:text-brand-orange hover:border-brand-orange/40 flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-200"
                 >
-                  <s.icon size={15} />
+                  <social.icon size={15} />
                 </a>
               ))}
             </div>
@@ -103,7 +141,7 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="border-brand-border border-t py-6 text-center">
+<div className="border-brand-border border-t py-6 text-center">
           <p className="font-body text-muted-foreground text-sm">
             © 2026 EZ Shop. All rights reserved. Powered by{" "}
             <a target="_blank" href="https://anirudhkille.com">

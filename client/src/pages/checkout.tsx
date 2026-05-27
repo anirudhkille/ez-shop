@@ -8,9 +8,13 @@ import {
   CheckCircle2,
   CreditCard,
   Lock,
+  Mail,
   MapPin,
   PackageCheck,
+  Phone,
   Plus,
+  ShoppingCart,
+  User,
   Truck,
 } from "lucide-react";
 
@@ -20,10 +24,11 @@ import type { TDeliveryMethod } from "@/types/order";
 import AddressModal from "@/features/account/address-modal";
 import { useAddresss } from "@/hooks/useAddress";
 import { useCart } from "@/hooks/useCart";
-import { usePlaceCodOrder } from "@/hooks/useOrder";
+import { usePlaceCodOrder, usePlaceGuestCODOrder, useGuestPayment } from "@/hooks/useOrder";
 import { usePayment } from "@/hooks/usePayment";
 import { formatPrice } from "@/lib/formatPrice";
 import useUserStore from "@/store/userStore";
+import { useCartStore } from "@/store/cartStore";
 
 type CheckoutStep = 1 | 2 | 3;
 type PaymentMethod = "card" | "cod";
@@ -93,6 +98,8 @@ export default function Checkout() {
   const { mutate: startStripeCheckout, isPending: isStripePending } =
     usePayment();
   const { mutate: placeCodOrder, isPending: isCodPending } = usePlaceCodOrder();
+  const { mutate: placeGuestCOD, isPending: isGuestCodPending } = usePlaceGuestCODOrder();
+  const { mutate: startGuestStripe, isPending: isGuestStripePending } = useGuestPayment();
 
   const [step, setStep] = useState<CheckoutStep>(1);
   const [selectedAddressId, setSelectedAddressId] = useState("");
@@ -102,8 +109,20 @@ export default function Checkout() {
     useState<PaymentMethod>("card");
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
+  const [guestName, setGuestName] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
+  const [guestAddressLine1, setGuestAddressLine1] = useState("");
+  const [guestAddressLine2, setGuestAddressLine2] = useState("");
+  const [guestCity, setGuestCity] = useState("");
+  const [guestState, setGuestState] = useState("");
+  const [guestZip, setGuestZip] = useState("");
+  const [guestCountry, setGuestCountry] = useState("India");
+
   const cartProducts = (cart?.products ?? []) as CartProduct[];
   const addresses = (addressResponse?.data ?? []) as TAddress[];
+  const clearGuestCart = useCartStore((s) => s.clearCart);
+  const guestCartItems = useCartStore((s) => s.cartItems);
 
   useEffect(() => {
     if (!addresses.length) return;
@@ -127,11 +146,46 @@ export default function Checkout() {
   const subtotal = cart?.subtotal ?? 0;
   const discount = cart?.discountTotal ?? 0;
   const total = subtotal - discount + deliveryCharge;
-  const isSubmitting = isStripePending || isCodPending;
+  const isSubmitting = isStripePending || isCodPending || isGuestCodPending || isGuestStripePending;
   const isBusy = cartLoading || addressLoading;
 
   const handlePlaceOrder = () => {
-    if (!selectedAddressId || isSubmitting) return;
+    if (isSubmitting) return;
+
+    if (!token) {
+      const guestPayload = {
+        products: guestCartItems.map((item) => ({
+          productId: item.product._id,
+          quantity: item.quantity,
+          size: item.size,
+          variantId: item.variantId,
+        })),
+        address: {
+          name: guestName,
+          addressLine1: guestAddressLine1,
+          addressLine2: guestAddressLine2,
+          city: guestCity,
+          state: guestState,
+          zipCode: guestZip,
+          country: guestCountry,
+          phone: guestPhone,
+        },
+        deliveryMethod: selectedDeliveryMethod,
+        name: guestName,
+        email: guestEmail,
+        phone: guestPhone,
+      };
+
+      if (selectedPaymentMethod === "cod") {
+        placeGuestCOD(guestPayload);
+        return;
+      }
+
+      startGuestStripe(guestPayload);
+      return;
+    }
+
+    if (!selectedAddressId) return;
 
     const payload = {
       addressId: selectedAddressId,
@@ -161,81 +215,30 @@ export default function Checkout() {
     </div>
   );
 
-  if (!token) {
+  if (!token && !guestCartItems.length) {
     return (
       <main className="pt-24 pb-20">
         <div className="mx-auto max-w-5xl px-6 lg:px-10">
           {hero}
-          <section className="bg-card border-brand-border overflow-hidden rounded-4xl border">
-            <div className="grid lg:grid-cols-[1.15fr_0.85fr]">
-              <div className="p-8 lg:p-10">
-                <div className="bg-brand-orange/10 text-brand-orange mb-6 inline-flex rounded-full px-4 py-2 text-xs font-semibold tracking-[0.2em] uppercase">
-                  Sign in required
-                </div>
-                <h2 className="font-display text-foreground text-3xl font-black uppercase">
-                  Log in to access your cart and saved addresses
-                </h2>
-                <p className="font-body text-muted-foreground mt-4 max-w-xl text-sm leading-6">
-                  Checkout is connected to your account, cart, and address book.
-                  Sign in first, then we&apos;ll bring you right back here.
-                </p>
-                <div className="mt-8 flex flex-wrap gap-3">
-                  <Link
-                    to="/login"
-                    className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow inline-flex items-center gap-2 rounded-full px-7 py-4 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90"
-                  >
-                    Sign In <ArrowRight size={16} />
-                  </Link>
-                  <Link
-                    to="/cart"
-                    className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-7 py-4 text-sm tracking-wider uppercase transition-all"
-                  >
-                    <ArrowLeft size={16} />
-                    Back to Cart
-                  </Link>
-                </div>
-              </div>
-
-              <div className="border-brand-border from-brand-orange/12 via-brand-orange/5 to-background border-t p-8 lg:border-t-0 lg:border-l lg:p-10">
-                <div className="space-y-5">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="text-brand-orange mt-1 h-5 w-5" />
-                    <div>
-                      <p className="font-body text-foreground text-sm font-semibold uppercase tracking-wider">
-                        Saved addresses
-                      </p>
-                      <p className="font-body text-muted-foreground mt-1 text-sm">
-                        Pick an existing delivery address or add a new one.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Truck className="text-brand-orange mt-1 h-5 w-5" />
-                    <div>
-                      <p className="font-body text-foreground text-sm font-semibold uppercase tracking-wider">
-                        Delivery choices
-                      </p>
-                      <p className="font-body text-muted-foreground mt-1 text-sm">
-                        Standard, express, and same day delivery are supported.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Lock className="text-brand-orange mt-1 h-5 w-5" />
-                    <div>
-                      <p className="font-body text-foreground text-sm font-semibold uppercase tracking-wider">
-                        Stripe payments
-                      </p>
-                      <p className="font-body text-muted-foreground mt-1 text-sm">
-                        Card payments redirect to Stripe Checkout for secure
-                        payment processing.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="bg-card border-brand-border rounded-4xl border p-8 text-center lg:p-14">
+            <div className="bg-brand-orange/10 mx-auto flex h-18 w-18 items-center justify-center rounded-full">
+              <ShoppingCart className="text-brand-orange h-9 w-9" />
             </div>
-          </section>
+            <h2 className="font-display text-foreground mt-6 text-3xl font-black uppercase">
+              Your cart is empty
+            </h2>
+            <p className="font-body text-muted-foreground mx-auto mt-3 max-w-lg text-sm leading-6">
+              Add products to your cart first, then come back to checkout.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link
+                to="/products"
+                className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow inline-flex items-center gap-2 rounded-full px-7 py-4 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90"
+              >
+                Browse Products <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
         </div>
       </main>
     );
@@ -331,101 +334,231 @@ export default function Checkout() {
                     Step 1
                   </p>
                   <h2 className="font-display text-foreground mt-1 text-3xl font-black uppercase">
-                    Delivery Address
+                    {token ? "Delivery Address" : "Contact & Address"}
                   </h2>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setIsAddressModalOpen(true)}
-                  className="border-brand-border text-muted-foreground hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold tracking-[0.18em] uppercase transition-all"
-                >
-                  <Plus size={14} />
-                  Add Address
-                </button>
-              </div>
-
-              <div className="mb-6 rounded-2xl border border-dashed border-brand-border bg-brand-surface-raised/40 p-4">
-                <p className="font-body text-foreground text-sm font-semibold">
-                  Signed in as {name || "EZ Shop customer"}
-                </p>
-                <p className="font-body text-muted-foreground mt-1 text-sm">
-                  {email || "Email unavailable"}
-                </p>
-              </div>
-
-              {addresses.length === 0 ? (
-                <div className="border-brand-border bg-brand-surface-raised/30 rounded-2xl border border-dashed p-8 text-center">
-                  <MapPin className="text-brand-orange mx-auto h-9 w-9" />
-                  <h3 className="font-display text-foreground mt-4 text-2xl font-black uppercase">
-                    Add an address to continue
-                  </h3>
-                  <p className="font-body text-muted-foreground mx-auto mt-2 max-w-md text-sm leading-6">
-                    Checkout needs a delivery address before we can calculate
-                    shipping and payment options.
-                  </p>
+                {token && (
                   <button
                     type="button"
                     onClick={() => setIsAddressModalOpen(true)}
-                    className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90"
+                    className="border-brand-border text-muted-foreground hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold tracking-[0.18em] uppercase transition-all"
                   >
                     <Plus size={14} />
                     Add Address
                   </button>
-                </div>
+                )}
+              </div>
+
+              {token ? (
+                <>
+                  <div className="mb-6 rounded-2xl border border-dashed border-brand-border bg-brand-surface-raised/40 p-4">
+                    <p className="font-body text-foreground text-sm font-semibold">
+                      Signed in as {name || "EZ Shop customer"}
+                    </p>
+                    <p className="font-body text-muted-foreground mt-1 text-sm">
+                      {email || "Email unavailable"}
+                    </p>
+                  </div>
+
+                  {addresses.length === 0 ? (
+                    <div className="border-brand-border bg-brand-surface-raised/30 rounded-2xl border border-dashed p-8 text-center">
+                      <MapPin className="text-brand-orange mx-auto h-9 w-9" />
+                      <h3 className="font-display text-foreground mt-4 text-2xl font-black uppercase">
+                        Add an address to continue
+                      </h3>
+                      <p className="font-body text-muted-foreground mx-auto mt-2 max-w-md text-sm leading-6">
+                        Checkout needs a delivery address before we can calculate
+                        shipping and payment options.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setIsAddressModalOpen(true)}
+                        className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90"
+                      >
+                        <Plus size={14} />
+                        Add Address
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {addresses.map((address) => {
+                        const isSelected = address._id === selectedAddressId;
+
+                        return (
+                          <label
+                            key={address._id}
+                            className={`block cursor-pointer rounded-3xl border p-5 transition-all ${
+                              isSelected
+                                ? "border-brand-orange bg-brand-orange/8 shadow-[0_18px_50px_-35px_rgba(255,122,24,0.8)]"
+                                : "border-brand-border hover:border-brand-orange/35 hover:bg-brand-surface-raised/40"
+                            }`}
+                          >
+                            <div className="flex items-start gap-4">
+                              <input
+                                type="radio"
+                                name="address"
+                                checked={isSelected}
+                                onChange={() => setSelectedAddressId(address._id ?? "")}
+                                className="accent-brand-orange mt-1 h-4 w-4"
+                              />
+                              <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <p className="font-body text-foreground text-sm font-semibold tracking-[0.18em] uppercase">
+                                    {address.label}
+                                  </p>
+                                  {address.isDefault && (
+                                    <span className="bg-brand-orange text-primary-foreground rounded-full px-2.5 py-1 text-[10px] font-semibold tracking-[0.18em] uppercase">
+                                      Default
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="font-body text-foreground mt-3 text-base font-semibold">
+                                  {address.name}
+                                </p>
+                                <p className="font-body text-muted-foreground mt-2 text-sm leading-6">
+                                  {address.addressLine1}
+                                  {address.addressLine2
+                                    ? `, ${address.addressLine2}`
+                                    : ""}
+                                  <br />
+                                  {address.city}, {address.state} {address.zipCode}
+                                  <br />
+                                  {address.country}
+                                </p>
+                                <p className="font-body text-muted-foreground mt-2 text-sm">
+                                  {address.phone}
+                                </p>
+                              </div>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="space-y-4">
-                  {addresses.map((address) => {
-                    const isSelected = address._id === selectedAddressId;
+                  <div>
+                    <label className="font-body text-foreground mb-1.5 block text-xs font-semibold tracking-[0.18em] uppercase">
+                      Full Name <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <User size={14} className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2" />
+                      <input
+                        value={guestName}
+                        onChange={(e) => setGuestName(e.target.value)}
+                        placeholder="John Doe"
+                        className="bg-background border-brand-border font-body text-foreground placeholder:text-muted-foreground focus:border-brand-orange w-full rounded-xl border py-3 pr-4 pl-9 text-sm transition-colors focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-body text-foreground mb-1.5 block text-xs font-semibold tracking-[0.18em] uppercase">
+                      Email <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Mail size={14} className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2" />
+                      <input
+                        type="email"
+                        value={guestEmail}
+                        onChange={(e) => setGuestEmail(e.target.value)}
+                        placeholder="john@example.com"
+                        className="bg-background border-brand-border font-body text-foreground placeholder:text-muted-foreground focus:border-brand-orange w-full rounded-xl border py-3 pr-4 pl-9 text-sm transition-colors focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-body text-foreground mb-1.5 block text-xs font-semibold tracking-[0.18em] uppercase">
+                      Phone <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Phone size={14} className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2" />
+                      <input
+                        value={guestPhone}
+                        onChange={(e) => setGuestPhone(e.target.value)}
+                        placeholder="+91 98765 43210"
+                        className="bg-background border-brand-border font-body text-foreground placeholder:text-muted-foreground focus:border-brand-orange w-full rounded-xl border py-3 pr-4 pl-9 text-sm transition-colors focus:outline-none"
+                      />
+                    </div>
+                  </div>
 
-                    return (
-                      <label
-                        key={address._id}
-                        className={`block cursor-pointer rounded-3xl border p-5 transition-all ${
-                          isSelected
-                            ? "border-brand-orange bg-brand-orange/8 shadow-[0_18px_50px_-35px_rgba(255,122,24,0.8)]"
-                            : "border-brand-border hover:border-brand-orange/35 hover:bg-brand-surface-raised/40"
-                        }`}
-                      >
-                        <div className="flex items-start gap-4">
+                  <div className="border-brand-border pt-4">
+                    <p className="font-body text-muted-foreground mb-4 text-xs font-semibold tracking-[0.18em] uppercase">
+                      Delivery Address
+                    </p>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="font-body text-foreground mb-1.5 block text-xs font-semibold tracking-[0.18em] uppercase">
+                          Address Line 1 <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          value={guestAddressLine1}
+                          onChange={(e) => setGuestAddressLine1(e.target.value)}
+                          placeholder="123 Main Street"
+                          className="bg-background border-brand-border font-body text-foreground placeholder:text-muted-foreground focus:border-brand-orange w-full rounded-xl border py-3 px-4 text-sm transition-colors focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="font-body text-foreground mb-1.5 block text-xs font-semibold tracking-[0.18em] uppercase">
+                          Address Line 2
+                        </label>
+                        <input
+                          value={guestAddressLine2}
+                          onChange={(e) => setGuestAddressLine2(e.target.value)}
+                          placeholder="Apartment, suite, etc."
+                          className="bg-background border-brand-border font-body text-foreground placeholder:text-muted-foreground focus:border-brand-orange w-full rounded-xl border py-3 px-4 text-sm transition-colors focus:outline-none"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="font-body text-foreground mb-1.5 block text-xs font-semibold tracking-[0.18em] uppercase">
+                            City <span className="text-red-500">*</span>
+                          </label>
                           <input
-                            type="radio"
-                            name="address"
-                            checked={isSelected}
-                            onChange={() => setSelectedAddressId(address._id ?? "")}
-                            className="accent-brand-orange mt-1 h-4 w-4"
+                            value={guestCity}
+                            onChange={(e) => setGuestCity(e.target.value)}
+                            placeholder="Mumbai"
+                            className="bg-background border-brand-border font-body text-foreground placeholder:text-muted-foreground focus:border-brand-orange w-full rounded-xl border py-3 px-4 text-sm transition-colors focus:outline-none"
                           />
-                          <div className="min-w-0 flex-1">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <p className="font-body text-foreground text-sm font-semibold tracking-[0.18em] uppercase">
-                                {address.label}
-                              </p>
-                              {address.isDefault && (
-                                <span className="bg-brand-orange text-primary-foreground rounded-full px-2.5 py-1 text-[10px] font-semibold tracking-[0.18em] uppercase">
-                                  Default
-                                </span>
-                              )}
-                            </div>
-                            <p className="font-body text-foreground mt-3 text-base font-semibold">
-                              {address.name}
-                            </p>
-                            <p className="font-body text-muted-foreground mt-2 text-sm leading-6">
-                              {address.addressLine1}
-                              {address.addressLine2
-                                ? `, ${address.addressLine2}`
-                                : ""}
-                              <br />
-                              {address.city}, {address.state} {address.zipCode}
-                              <br />
-                              {address.country}
-                            </p>
-                            <p className="font-body text-muted-foreground mt-2 text-sm">
-                              {address.phone}
-                            </p>
-                          </div>
                         </div>
-                      </label>
-                    );
-                  })}
+                        <div>
+                          <label className="font-body text-foreground mb-1.5 block text-xs font-semibold tracking-[0.18em] uppercase">
+                            State <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            value={guestState}
+                            onChange={(e) => setGuestState(e.target.value)}
+                            placeholder="Maharashtra"
+                            className="bg-background border-brand-border font-body text-foreground placeholder:text-muted-foreground focus:border-brand-orange w-full rounded-xl border py-3 px-4 text-sm transition-colors focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="font-body text-foreground mb-1.5 block text-xs font-semibold tracking-[0.18em] uppercase">
+                            ZIP Code <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            value={guestZip}
+                            onChange={(e) => setGuestZip(e.target.value)}
+                            placeholder="400001"
+                            className="bg-background border-brand-border font-body text-foreground placeholder:text-muted-foreground focus:border-brand-orange w-full rounded-xl border py-3 px-4 text-sm transition-colors focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="font-body text-foreground mb-1.5 block text-xs font-semibold tracking-[0.18em] uppercase">
+                            Country <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            value={guestCountry}
+                            onChange={(e) => setGuestCountry(e.target.value)}
+                            placeholder="India"
+                            className="bg-background border-brand-border font-body text-foreground placeholder:text-muted-foreground focus:border-brand-orange w-full rounded-xl border py-3 px-4 text-sm transition-colors focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -440,7 +573,7 @@ export default function Checkout() {
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  disabled={!selectedAddressId}
+                  disabled={token ? !selectedAddressId : !guestName || !guestEmail || !guestPhone || !guestAddressLine1 || !guestCity || !guestState || !guestZip || !guestCountry}
                   className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Continue to Delivery
@@ -507,19 +640,27 @@ export default function Checkout() {
                 })}
               </div>
 
-              {selectedAddress && (
+              {(selectedAddress || (!token && guestAddressLine1)) && (
                 <div className="bg-brand-surface-raised/40 border-brand-border mt-6 rounded-2xl border p-4">
                   <p className="font-body text-foreground text-xs font-semibold tracking-[0.18em] uppercase">
                     Delivering to
                   </p>
-                  <p className="font-body text-muted-foreground mt-2 text-sm leading-6">
-                    {selectedAddress.name}, {selectedAddress.addressLine1}
-                    {selectedAddress.addressLine2
-                      ? `, ${selectedAddress.addressLine2}`
-                      : ""}
-                    , {selectedAddress.city}, {selectedAddress.state}{" "}
-                    {selectedAddress.zipCode}
-                  </p>
+                  {token && selectedAddress ? (
+                    <p className="font-body text-muted-foreground mt-2 text-sm leading-6">
+                      {selectedAddress.name}, {selectedAddress.addressLine1}
+                      {selectedAddress.addressLine2
+                        ? `, ${selectedAddress.addressLine2}`
+                        : ""}
+                      , {selectedAddress.city}, {selectedAddress.state}{" "}
+                      {selectedAddress.zipCode}
+                    </p>
+                  ) : (
+                    <p className="font-body text-muted-foreground mt-2 text-sm leading-6">
+                      {guestName}, {guestAddressLine1}
+                      {guestAddressLine2 ? `, ${guestAddressLine2}` : ""}
+                      , {guestCity}, {guestState} {guestZip}
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -535,7 +676,7 @@ export default function Checkout() {
                 <button
                   type="button"
                   onClick={() => setStep(3)}
-                  disabled={!selectedAddressId}
+                  disabled={token ? !selectedAddressId : !guestAddressLine1}
                   className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Continue to Payment
@@ -639,13 +780,13 @@ export default function Checkout() {
                 <button
                   type="button"
                   onClick={handlePlaceOrder}
-                  disabled={!selectedAddressId || isSubmitting}
+                  disabled={token ? (!selectedAddressId || isSubmitting) : isSubmitting}
                   className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Lock size={16} />
                   {isSubmitting
                     ? "Processing..."
-                    : `${selectedPaymentMethod === "card" ? "Pay" : "Place Order"} � ${formatPrice(total)}`}
+                    : `${selectedPaymentMethod === "card" ? "Pay" : "Place Order"} ${formatPrice(total)}`}
                 </button>
               </div>
             </div>
@@ -739,22 +880,33 @@ export default function Checkout() {
                 </div>
               </div>
 
-              {selectedAddress && (
+              {(selectedAddress || (!token && guestAddressLine1)) && (
                 <div className="bg-brand-surface-raised/40 border-brand-border mt-6 rounded-2xl border p-4">
                   <p className="font-body text-foreground text-xs font-semibold tracking-[0.2em] uppercase">
                     Shipping To
                   </p>
-                  <p className="font-body text-muted-foreground mt-2 text-sm leading-6">
-                    {selectedAddress.name}
-                    <br />
-                    {selectedAddress.addressLine1}
-                    {selectedAddress.addressLine2
-                      ? `, ${selectedAddress.addressLine2}`
-                      : ""}
-                    <br />
-                    {selectedAddress.city}, {selectedAddress.state}{" "}
-                    {selectedAddress.zipCode}
-                  </p>
+                  {token && selectedAddress ? (
+                    <p className="font-body text-muted-foreground mt-2 text-sm leading-6">
+                      {selectedAddress.name}
+                      <br />
+                      {selectedAddress.addressLine1}
+                      {selectedAddress.addressLine2
+                        ? `, ${selectedAddress.addressLine2}`
+                        : ""}
+                      <br />
+                      {selectedAddress.city}, {selectedAddress.state}{" "}
+                      {selectedAddress.zipCode}
+                    </p>
+                  ) : (
+                    <p className="font-body text-muted-foreground mt-2 text-sm leading-6">
+                      {guestName}
+                      <br />
+                      {guestAddressLine1}
+                      {guestAddressLine2 ? `, ${guestAddressLine2}` : ""}
+                      <br />
+                      {guestCity}, {guestState} {guestZip}
+                    </p>
+                  )}
                 </div>
               )}
             </div>

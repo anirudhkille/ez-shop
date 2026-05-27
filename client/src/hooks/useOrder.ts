@@ -4,7 +4,9 @@ import { toast } from "sonner";
 
 import type { TOrder } from "@/types/order";
 
-import { getOrderById, getOrderBySessionId, placeCodOrder } from "@/api/order";
+import { getMyOrders, getOrderById, getOrderBySessionId, placeCodOrder } from "@/api/order";
+import { createGuestCheckoutSession, placeGuestCODOrder, type TGuestOrderPayload } from "@/api/guest-order";
+import { useCartStore } from "@/store/cartStore";
 import useUserStore from "@/store/userStore";
 
 export const usePlaceCodOrder = () => {
@@ -24,19 +26,58 @@ export const usePlaceCodOrder = () => {
 };
 
 export const useOrderById = (id: string) => {
-  const { token } = useUserStore();
   return useQuery({
     queryFn: () => getOrderById(id),
     queryKey: ["order", id],
-    enabled: !!id && !!token,
+    enabled: !!id,
   });
 };
 
 export const useOrderBySessionId = (sessionId: string) => {
-  const { token } = useUserStore();
   return useQuery({
     queryFn: () => getOrderBySessionId(sessionId),
     queryKey: ["order", "session", sessionId],
-    enabled: !!sessionId && !!token,
+    enabled: !!sessionId,
+  });
+};
+
+export const usePlaceGuestCODOrder = () => {
+  const clearCart = useCartStore((s) => s.clearCart);
+
+  return useMutation({
+    mutationFn: (payload: TGuestOrderPayload) => placeGuestCODOrder(payload),
+    onSuccess: (data) => {
+      clearCart();
+      window.location.href = data.redirectUrl;
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message || "An error occurred while creating order"
+      );
+    },
+  });
+};
+
+export const useGuestPayment = () => {
+  return useMutation({
+    mutationFn: (payload: TGuestOrderPayload) => createGuestCheckoutSession(payload),
+    onSuccess: (data) => {
+      window.location.href = data.url;
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message || "An error occurred while creating payment"
+      );
+    },
+  });
+};
+
+export const useMyOrders = () => {
+  const { token } = useUserStore();
+  return useQuery({
+    queryFn: getMyOrders,
+    queryKey: ["my-orders"],
+    select: (data) => data.data,
+    enabled: !!token,
   });
 };

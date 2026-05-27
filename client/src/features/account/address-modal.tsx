@@ -105,37 +105,37 @@ export default function AddressModal({
               ]}
             />
             <div className="grid gap-x-5 sm:grid-cols-2">
-              <FormInput name="name" label="Name" control={form.control} />
+              <FormInput name="name" label="Name"  className="rounded-md py-3" control={form.control} />
               <FormInput
                 name="phone"
                 label="Phone Number"
-                control={form.control}
+                 className="rounded-md py-3" control={form.control}
               />
             </div>
             <FormInput
               name="addressLine1"
               label="Address Line 1"
-              control={form.control}
+               className="rounded-md py-3" control={form.control}
             />
             <FormInput
               name="addressLine2"
               label="Address Line 2"
-              control={form.control}
+               className="rounded-md py-3" control={form.control}
             />
             <div className="grid gap-x-5 sm:grid-cols-2">
-              <FormInput name="city" label="City" control={form.control} />
-              <FormInput name="state" label="State" control={form.control} />
+              <FormInput name="city" label="City"  className="rounded-md py-3" control={form.control} />
+              <FormInput name="state" label="State"  className="rounded-md py-3" control={form.control} />
             </div>
             <div className="grid gap-x-5 sm:grid-cols-2">
               <FormInput
                 name="zipCode"
                 label="Zip Code"
-                control={form.control}
+                 className="rounded-md py-3" control={form.control}
               />
               <FormInput
                 name="country"
                 label="Country"
-                control={form.control}
+                 className="rounded-md py-3" control={form.control}
               />
             </div>
           </div>

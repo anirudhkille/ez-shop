@@ -31,7 +31,7 @@ const app = express();
 app.use(compression());
 app.use(cors(corsOptions));
 app.use(compression({ filter: shouldCompress, level: 6 }));
-app.use(stripeWebhook);
+app.use("/api",stripeWebhook);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import type { TLogin, TSignup, TUser } from "@/types/user";
 
 import {
+  changePassword,
   forgotPassword,
   postLogin,
   postSignup,
@@ -108,6 +109,23 @@ export const useResetPassword = () => {
     onError: (error: any) => {
       toast.error(
         error.response.data.message || "An error occurred while creating user."
+      );
+    },
+  });
+};
+
+export const useUpdatePassword = () => {
+  return useMutation({
+    mutationFn: (formData: {
+      currentPassword: string;
+      newPassword: string;
+    }) => changePassword(formData),
+    onSuccess: () => {
+      toast.success("Password updated successfully");
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || "Failed to update password"
       );
     },
   });

@@ -2,11 +2,15 @@ import { Link } from "react-router";
 
 import { Heart, Star } from "lucide-react";
 
+import { toast } from "sonner";
+
 import type { TProduct } from "@/types/product";
 
 import { formatPrice } from "@/lib/formatPrice";
 
 import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
+
+import useUserStore from "@/store/userStore";
 
 import { tagColors } from "@/data/products";
 
@@ -20,6 +24,7 @@ export default function ProductCard({
   product,
   className = "",
 }: ProductCardProps) {
+  const { token } = useUserStore();
   const { data: wishlist } = useWishlists();
   const { mutate } = useToggleWishlist();
 
@@ -28,6 +33,10 @@ export default function ProductCard({
 
   const handleWishlist = (e) => {
     e.preventDefault();
+    if (!token) {
+      toast.error("Login to save wishlist");
+      return;
+    }
     mutate(product?._id);
   };
 

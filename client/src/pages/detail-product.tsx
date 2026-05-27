@@ -19,14 +19,18 @@ import type { TProduct } from "@/types/product";
 
 import { formatPrice } from "@/lib/formatPrice";
 
+import { toast } from "sonner";
+
 import { useAddToCart } from "@/hooks/useCart";
 import { useProduct, useSimilarProducts } from "@/hooks/useProduct";
 import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
+import useUserStore from "@/store/userStore";
 
 import { tagColors } from "@/data/products";
 import ProductCard from "@/features/product/product-card";
 
 export default function ProductDetail() {
+  const { token } = useUserStore();
   const { slug, id } = useParams();
   const { data: product } = useProduct(slug ?? "", id ?? "");
   const { data: related } = useSimilarProducts(id ?? "");
@@ -42,13 +46,27 @@ export default function ProductDetail() {
   const liked = wishlistSet.has(id);
 
   const handleWishlist = () => {
+    if (!token) {
+      toast.error("Login to save wishlist");
+      return;
+    }
     toggleWishlist(product?._id);
   };
 
   
   const handleAddToCart = () => {
     if (!selectedSize) return;
-    addToCart({ productId: product?._id, size: selectedSize, quantity });
+    addToCart({
+      productId: product?._id,
+      size: selectedSize,
+      quantity,
+      name: product?.name,
+      image: product?.image,
+      price: product?.discountPrice || product?.price,
+      discountPrice: product?.discountPrice,
+      slug: product?.slug,
+      category: typeof product?.category === "string" ? product?.category : product?.category?.name,
+    });
   };
 
   if (!product) {

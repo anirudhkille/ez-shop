@@ -1,76 +1,169 @@
-import { useForm } from "react-hook-form";
+import { useState } from "react";
 
-import z from "zod";
+import { ArrowLeft, Eye, EyeOff, Lock } from "lucide-react";
+import { Link } from "react-router";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { useUpdateProfile } from "@/hooks/useUser";
+import { useUpdatePassword } from "@/hooks/useUser";
 
 import { Button } from "@/components/ui/button";
-import { FormInput } from "@/components/ui/form";
-
-const formSchema = z
-  .object({
-    currentPassword: z
-      .string()
-      .min(6, "Password must be minimum of 6 character"),
-    newPassword: z
-      .string()
-      .min(6, "New password must be minimum of 6 character"),
-    confirmPassword: z
-      .string()
-      .min(6, "Confirm password must be minimum of 6 character"),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "New password and confirm password must match",
-    path: ["confirmPassword"],
-  })
-  .refine((data) => data.newPassword !== data.currentPassword, {
-    message: "New password cannot be the same as the current password",
-    path: ["newPassword"],
-  });
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import Container from "@/layout/container";
+import Head from "@/layout/head";
 
 export default function UpdatePassword() {
-  const { mutate, isPending } = useUpdateProfile();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    },
-  });
+  const { mutate: updatePassword, isPending } = useUpdatePassword();
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    mutate({ password: data.confirmPassword });
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      return;
+    }
+
+    updatePassword({ currentPassword, newPassword });
   };
 
-  return (
-    <div className="max-w-sm space-y-6">
-      <h1 className="text-lg font-semibold sm:text-xl md:text-2xl">
-        Edit Password
-      </h1>
+  const isValid =
+    currentPassword.trim() &&
+    newPassword.trim() &&
+    confirmPassword.trim() &&
+    newPassword === confirmPassword;
 
-      <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormInput
-          name="currentPassword"
-          label="Current Password"
-          control={form.control}
-        />
-        <FormInput
-          name="newPassword"
-          label="New Password"
-          control={form.control}
-        />
-        <FormInput
-          name="confirmPassword"
-          label="Confirm Password"
-          control={form.control}
-        />
-        <Button disabled={isPending} className="w-full">
-          Save
-        </Button>
-      </form>
-    </div>
+  return (
+    <>
+      <Head title="Update Password | EZ Shop" />
+      <Container className="max-w-2xl px-5 py-16 sm:px-8 md:px-10">
+        <div className="mb-8">
+          <Link
+            to="/profile"
+            className="font-body text-sm text-brand-orange hover:text-brand-orange/80 mb-4 inline-flex items-center gap-1 transition-colors"
+          >
+            <ArrowLeft size={14} /> Back to Profile
+          </Link>
+        </div>
+
+        <Card className="bg-card border-brand-border">
+          <CardHeader>
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/20">
+              <Lock className="text-brand-orange h-8 w-8" />
+            </div>
+            <CardTitle className="font-display text-foreground text-center text-2xl font-bold tracking-tight">
+              Update Password
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label
+                  htmlFor="currentPassword"
+                  className="text-foreground mb-2 block text-sm font-medium"
+                >
+                  Current Password
+                </label>
+                <div className="relative">
+                  <Input
+                    id="currentPassword"
+                    type={showCurrent ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter your current password"
+                    className="w-full bg-background pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrent(!showCurrent)}
+                    className="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="newPassword"
+                  className="text-foreground mb-2 block text-sm font-medium"
+                >
+                  New Password
+                </label>
+                <div className="relative">
+                  <Input
+                    id="newPassword"
+                    type={showNew ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter your new password"
+                    className="w-full bg-background pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNew(!showNew)}
+                    className="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="text-foreground mb-2 block text-sm font-medium"
+                >
+                  Confirm New Password
+                </label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirm ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm your new password"
+                    className={`w-full bg-background pr-10 ${
+                      confirmPassword && newPassword !== confirmPassword
+                        ? "border-red-500"
+                        : ""
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    className="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {confirmPassword && newPassword !== confirmPassword && (
+                  <p className="text-destructive mt-1 text-xs">
+                    Passwords do not match
+                  </p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                disabled={!isValid || isPending}
+                className="w-full bg-brand-orange text-white hover:bg-brand-orange/90"
+              >
+                {isPending ? "Updating..." : "Update Password"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </Container>
+    </>
   );
 }

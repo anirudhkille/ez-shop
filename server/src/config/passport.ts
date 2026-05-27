@@ -13,21 +13,19 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Step 1: Find user
         let user = await User.findOne({ email: profile.emails?.[0].value });
 
-        // Step 2: Create if not exists
         if (!user) {
           user = await User.create({
             googleId: profile.id,
             name: profile.displayName,
             email: profile.emails?.[0].value,
             avatar: profile.photos?.[0].value,
-            password: null, // Since Google users have no password
+            password: null,
           });
         }
 
-        return done(null, user); // <- THIS IS NOW A MONGOOSE USER
+        return done(null, user); 
       } catch (err) {
         done(err);
       }

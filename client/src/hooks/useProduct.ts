@@ -13,6 +13,7 @@ import {
   getProductBySlug,
   getProducts,
   getSimilarProducts,
+  searchProducts,
 } from "@/api/product";
 
 export const useProducts = (filters?: any) => {
@@ -85,5 +86,14 @@ export const useSimilarProducts = (id: string) => {
     queryKey: ["similar", id],
     select: (res) => res?.data,
     enabled: !!id,
+  });
+};
+
+export const useSearchProducts = (query: string) => {
+  return useQuery({
+    queryFn: () => searchProducts(query),
+    queryKey: ["search", query],
+    select: (res) => res?.data,
+    enabled: query.trim().length > 0,
   });
 };

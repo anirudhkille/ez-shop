@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-import { Edit2, Trash2 } from "lucide-react";
+import { ArrowLeft, Edit2, MapPin, Plus, Trash2 } from "lucide-react";
+import { Link } from "react-router";
 
 import type { TAddress } from "@/types/address";
 
@@ -10,119 +11,151 @@ import {
   useUpdateAddress,
 } from "@/hooks/useAddress";
 
-import AddressModal from "@/components/account/address-modal";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import AddressModal from "@/features/account/address-modal";
+import Container from "@/layout/container";
+import Head from "@/layout/head";
 
 export default function DeliveryAddresses() {
   const { data } = useAddresss();
-  const [selectedAddress, setSelectedAddress] = useState<TAddress | null>(null);
-  const [open, setOpen] = useState<"none" | "new" | "view">("none");
   const { mutate: deleteAddress } = useDeleteAddress();
   const { mutate: updateAddress } = useUpdateAddress();
 
-  const handleSetDefault = (id: string) => {
-    updateAddress({ formData: { isDefault: true }, id });
+  const addresses: TAddress[] = data?.data ?? [];
+
+  const [open, setOpen] = useState<"none" | "new" | "edit">("none");
+  const [selectedAddress, setSelectedAddress] = useState<TAddress | null>(null);
+
+  const handleEdit = (a: TAddress) => {
+    setSelectedAddress(a);
+    setOpen("edit");
   };
 
   const handleDelete = (id: string) => {
     deleteAddress(id);
   };
 
-  const handleEdit = (a: TAddress) => {
-    setSelectedAddress(a);
-    setOpen("view");
+  const handleSetDefault = (id: string) => {
+    updateAddress({ formData: { isDefault: true }, id });
   };
 
-  const addresses = data?.data;
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-lg font-semibold sm:text-xl md:text-2xl">
-          Saved Delivery Addresses
-        </h1>
-        <p className="text-muted-foreground max-w-sm text-sm">
-          Manage your saved delivery addresses for faster checkout.
-        </p>
-      </div>
+    <>
+      <Head title="Delivery Addresses | EZ Shop" />
+      <Container className="max-w-4xl px-5 py-16 sm:px-8 md:px-10">
+        <div className="mb-8">
+          <Link
+            to="/profile"
+            className="font-body text-sm text-brand-orange hover:text-brand-orange/80 mb-4 inline-flex items-center gap-1 transition-colors"
+          >
+            <ArrowLeft size={14} /> Back to Profile
+          </Link>
+          <div className="mt-2 flex items-center justify-between">
+            <h1 className="font-display text-foreground text-3xl font-bold tracking-tight">
+              Delivery Addresses
+            </h1>
+            <Button
+              onClick={() => {
+                setSelectedAddress(null);
+                setOpen("new");
+              }}
+              className="bg-brand-orange text-white hover:bg-brand-orange/90 gap-2"
+            >
+              <Plus size={16} /> Add New
+            </Button>
+          </div>
+        </div>
 
-      {addresses?.length > 0 ? (
-        <div className="space-y-4">
-          {addresses?.map((a: TAddress) => (
-            <Card key={a._id}>
-              <CardContent className="p-4">
+        {addresses.length === 0 ? (
+          <div className="bg-card border-brand-border rounded-2xl border p-16 text-center">
+            <MapPin className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+            <p className="font-body text-muted-foreground mb-4">
+              No saved addresses yet
+            </p>
+            <Button
+              onClick={() => setOpen("new")}
+              variant="outline"
+              className="gap-2"
+            >
+              <Plus size={16} /> Add Address
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {addresses.map((a) => (
+              <div
+                key={a._id}
+                className="bg-card border-brand-border rounded-2xl border p-6"
+              >
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-base font-semibold">
-                        {a.label} Address
-                      </p>
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className="font-body text-muted-foreground rounded-md bg-gray-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider dark:bg-gray-800">
+                        {a.label}
+                      </span>
                       {a.isDefault && (
-                        <span className="bg-primary rounded px-2 py-0.5 text-xs text-white">
+                        <span className="bg-brand-orange/10 text-brand-orange rounded-md px-3 py-1 text-xs font-semibold uppercase tracking-wider">
                           Default
                         </span>
                       )}
                     </div>
-                    <p className="mt-3 text-sm">
+                    <p className="font-body text-foreground text-base font-semibold">
                       {a.name} — {a.phone}
                     </p>
-                    <p className="text-sm">
-                      {a?.addressLine1}, {a?.addressLine2}
+                    <p className="font-body text-muted-foreground mt-1 text-sm">
+                      {a.addressLine1}
+                      {a.addressLine2 ? `, ${a.addressLine2}` : ""}
                     </p>
-                    <p className="text-sm">
-                      {a?.city}, {a?.state} - {a?.zipCode}
+                    <p className="font-body text-muted-foreground text-sm">
+                      {a.city}, {a.state} - {a.zipCode}
                     </p>
-                    <p className="text-sm">{a?.country}</p>
+                    <p className="font-body text-muted-foreground text-sm">
+                      {a.country}
+                    </p>
                   </div>
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => handleEdit(a)}
                       variant="outline"
                       size="sm"
-                      className="border-border"
+                      onClick={() => handleEdit(a)}
+                      className="border-brand-border"
                     >
                       <Edit2 size={16} />
                     </Button>
                     {!a.isDefault && (
                       <Button
-                        onClick={() => handleSetDefault(a._id ?? "")}
                         variant="outline"
                         size="sm"
-                        className="border-border"
+                        onClick={() => handleSetDefault(a._id ?? "")}
+                        className="border-brand-border text-xs"
                       >
                         Set Default
                       </Button>
                     )}
                     <Button
-                      onClick={() => handleDelete(a._id ?? "")}
                       variant="outline"
                       size="sm"
-                      className="border-border text-destructive hover:bg-destructive/10"
+                      onClick={() => handleDelete(a._id ?? "")}
+                      className="border-brand-border text-destructive hover:bg-destructive/10"
                     >
                       <Trash2 size={16} />
                     </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <p className="text-muted-foreground text-sm">
-          You currently don't have any saved delivery addresses. Add one to be
-          pre-filled during checkout.
-        </p>
-      )}
-
-      <Button onClick={() => setOpen("new")} className="w-full">
-        Add Address
-      </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </Container>
 
       <AddressModal
-        isOpen={open === "new" || open === "view"}
-        onClose={() => setOpen("none")}
+        isOpen={open === "new" || open === "edit"}
+        onClose={() => {
+          setOpen("none");
+          setSelectedAddress(null);
+        }}
         address={selectedAddress}
       />
-    </div>
+    </>
   );
 }

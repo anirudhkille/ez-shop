@@ -7,6 +7,7 @@ import {
   refreshToken,
   resetPassword,
   signUp,
+  updatePassword,
   updateProfile,
   googleLogin,
   verifySignupOTP,
@@ -34,5 +35,6 @@ router.post("/logout", protect, logout);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
 router.patch("/", protect, updateProfile);
+router.put("/password", protect, updatePassword);
 
 export default router;

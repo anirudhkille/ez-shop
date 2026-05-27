@@ -1,0 +1,140 @@
+import { useState } from "react";
+
+import { PackageSearch } from "lucide-react";
+
+import { useOrderById } from "@/hooks/useOrder";
+
+import Container from "@/layout/container";
+import Head from "@/layout/head";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { formatPrice } from "@/lib/formatPrice";
+
+export default function TrackOrder() {
+  const [orderInput, setOrderInput] = useState("");
+  const [searchedId, setSearchedId] = useState("");
+
+  const { data: orderData, isLoading, isError } = useOrderById(searchedId);
+
+  const order = orderData?.data;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (orderInput.trim()) {
+      setSearchedId(orderInput.trim());
+    }
+  };
+
+  return (
+    <>
+      <Head title="Track Order | EZ Shop" />
+      <Container className="max-w-4xl px-5 py-16 sm:px-8 md:px-10">
+        <div className="mb-10 text-center">
+          <div className="bg-brand-orange/10 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
+            <PackageSearch className="text-brand-orange h-10 w-10" />
+          </div>
+          <h1 className="font-display text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
+            Track Your Order
+          </h1>
+          <p className="font-body text-muted-foreground mt-4 text-lg">
+            Enter your Order ID to check the current status of your shipment.
+          </p>
+        </div>
+
+        <div className="mx-auto max-w-2xl">
+          <Card className="bg-card border-brand-border">
+            <CardHeader>
+              <CardTitle className="font-display text-foreground text-xl tracking-wide">
+                Tracking Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div>
+                  <label
+                    htmlFor="order-id"
+                    className="text-foreground block text-sm font-medium mb-2"
+                  >
+                    Order ID
+                  </label>
+                  <Input
+                    id="order-id"
+                    type="text"
+                    value={orderInput}
+                    onChange={(e) => setOrderInput(e.target.value)}
+                    placeholder="Paste your Order ID here"
+                    className="w-full bg-background"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={!orderInput.trim() || isLoading}
+                  className="w-full mt-4 bg-brand-orange text-white hover:bg-brand-orange/90"
+                >
+                  {isLoading ? "Searching..." : "Track Package"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          {isError && (
+            <Card className="bg-card border-brand-border mt-6">
+              <CardContent className="p-6 text-center">
+                <p className="font-body text-muted-foreground">
+                  Order not found. Please check the Order ID and try again.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {order && (
+            <Card className="bg-card border-brand-border mt-6">
+              <CardHeader>
+                <CardTitle className="font-display text-foreground text-xl tracking-wide">
+                  Order #{order._id?.slice(-6).toUpperCase()}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="font-body text-sm text-muted-foreground">Status</span>
+                    <span className="font-body text-sm font-semibold text-foreground capitalize">{order.orderStatus}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-body text-sm text-muted-foreground">Payment</span>
+                    <span className="font-body text-sm font-semibold text-foreground capitalize">{order.paymentStatus}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-body text-sm text-muted-foreground">Total</span>
+                    <span className="font-display text-lg font-bold text-brand-orange">{formatPrice(order.totalAmount)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-body text-sm text-muted-foreground">Items</span>
+                    <span className="font-body text-sm text-foreground">{order.products?.length ?? 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-body text-sm text-muted-foreground">Delivery</span>
+                    <span className="font-body text-sm text-foreground capitalize">{order.deliveryMethod}</span>
+                  </div>
+                  {order.address && (
+                    <div className="border-t border-brand-border pt-4 mt-4">
+                      <p className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-2">Shipping Address</p>
+                      <p className="font-body text-sm text-foreground">
+                        {order.address.addressLine1}
+                        {order.address.addressLine2 ? `, ${order.address.addressLine2}` : ""}
+                        <br />
+                        {order.address.city}, {order.address.state} {order.address.zipCode}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </Container>
+    </>
+  );
+}

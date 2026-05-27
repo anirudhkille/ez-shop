@@ -47,3 +47,12 @@ export const updateProfile = async (formData: Partial<TUser>) => {
 
   return res.data;
 };
+
+export const changePassword = async (formData: {
+  currentPassword: string;
+  newPassword: string;
+}) => {
+  const res = await axiosInstance.put(`/user/password`, formData);
+
+  return res.data;
+};

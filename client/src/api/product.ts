@@ -5,6 +5,13 @@ export const getProducts = async (params?: any) => {
   return res.data;
 };
 
+export const searchProducts = async (name: string, limit = 20) => {
+  const res = await axiosInstance.get(`/product/search`, {
+    params: { name, limit },
+  });
+  return res.data;
+};
+
 export const getProductBySlug = async (slug: string, id: string) => {
   const res = await axiosInstance.get(`/product/${slug}/${id}`);
   return res.data;

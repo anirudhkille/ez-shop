@@ -33,7 +33,9 @@ router.post(
       order.paymentStatus = "paid";
       order.paymentIntentId = session.payment_intent;
       order.orderStatus = "processing";
-      await Cart.updateOne({ user: order.user }, { $set: { products: [] } });
+      if (order.user) {
+        await Cart.updateOne({ user: order.user }, { $set: { products: [] } });
+      }
 
       await order.save();
     }

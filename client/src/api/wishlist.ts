@@ -10,3 +10,8 @@ export const getWishlists = async () => {
   const res = await axiosInstance.get(`/wishlist`);
   return res.data;
 };
+
+export const getWishlistDetails = async () => {
+  const res = await axiosInstance.get("/wishlist/details");
+  return res.data;
+};

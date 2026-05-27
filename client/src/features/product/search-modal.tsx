@@ -2,21 +2,12 @@ import { useEffect, useRef, useState } from "react";
 
 import { Link } from "react-router";
 
-import { ArrowRight, Search, Star, Tag, X } from "lucide-react";
+import { ArrowRight, Loader2, Search, Star, Tag, X } from "lucide-react";
 
-import { products, tagColors } from "@/data/products";
+import type { TProduct } from "@/types/product";
 
-const categories = [
-  "All",
-  "Running",
-  "Basketball",
-  "Casual",
-  "Training",
-  "Lifestyle",
-  "Retro",
-  "Track",
-  "Women's",
-];
+import { useSearchProducts } from "@/hooks/useProduct";
+import { formatPrice } from "@/lib/formatPrice";
 
 interface SearchModalProps {
   open: boolean;
@@ -25,19 +16,26 @@ interface SearchModalProps {
 
 export default function SearchModal({ open, onClose }: SearchModalProps) {
   const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus input when modal opens
+  const { data: products, isLoading } = useSearchProducts(debouncedQuery);
+
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 80);
       setQuery("");
-      setActiveCategory("All");
+      setDebouncedQuery("");
     }
   }, [open]);
 
-  // Close on Escape
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query.trim());
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [query]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -46,7 +44,6 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  // Prevent body scroll when open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -54,32 +51,20 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
     };
   }, [open]);
 
-  const filtered = products.filter((p) => {
-    const matchesCategory =
-      activeCategory === "All" || p.category === activeCategory;
-    const q = query.toLowerCase().trim();
-    const matchesQuery =
-      !q ||
-      p.name.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q);
-    return matchesCategory && matchesQuery;
-  });
+  const displayProducts = products ?? [];
 
-  const hasQuery = query.trim().length > 0;
+  const hasQuery = debouncedQuery.length > 0;
 
   if (!open) return null;
 
   return (
     <div
-      className="fixed inset-0 z-100 flex flex-col"
+      className="fixed inset-0 z-100 flex flex-col h-dvh"
       style={{ background: "hsl(var(--background) / 0.97)" }}
     >
-      {/* Backdrop blur layer */}
       <div className="absolute inset-0 backdrop-blur-xl" />
 
       <div className="relative z-10 mx-auto flex h-full w-full max-w-4xl flex-col px-5 sm:px-10">
-        {/* Header */}
         <div className="border-brand-border flex items-center gap-4 border-b pt-6 pb-5">
           <Search size={22} className="text-brand-orange shrink-0" />
           <input
@@ -109,33 +94,19 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
           </button>
         </div>
 
-        {/* Category chips */}
-        <div className="scrollbar-none border-brand-border/40 flex shrink-0 items-center gap-2 overflow-x-auto border-b py-4">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`font-body shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-wider whitespace-nowrap uppercase transition-all duration-200 ${
-                activeCategory === cat
-                  ? "bg-brand-orange text-primary-foreground"
-                  : "border-brand-border text-muted-foreground hover:border-brand-orange/50 hover:text-foreground border"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
         {/* Results */}
         <div className="flex-1 overflow-y-auto py-6">
-          {/* Results count */}
           <p className="font-body text-muted-foreground/60 mb-5 text-xs tracking-widest uppercase">
             {hasQuery
-              ? `${filtered.length} result${filtered.length !== 1 ? "s" : ""} for "${query}"`
-              : `${filtered.length} products`}
+              ? `${displayProducts.length} result${displayProducts.length !== 1 ? "s" : ""} for "${debouncedQuery}"`
+              : `All products`}
           </p>
 
-          {filtered.length === 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 size={32} className="text-muted-foreground/40 animate-spin" />
+            </div>
+          ) : displayProducts.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-4 py-20">
               <Search size={40} className="text-muted-foreground/20" />
               <p className="font-display text-muted-foreground/30 text-2xl font-bold tracking-wider uppercase">
@@ -154,14 +125,13 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((product) => (
+              {displayProducts.map((product: TProduct) => (
                 <Link
-                  key={product.id}
-                  to={`/product/${product.id}`}
+                  key={product._id}
+                  to={`/${product.slug}/${product._id}`}
                   onClick={onClose}
                   className="group border-brand-border hover:border-brand-orange/40 bg-card hover:bg-card/80 flex items-center gap-4 rounded-2xl border p-3 transition-all duration-200"
                 >
-                  {/* Product image */}
                   <div className="bg-muted/20 flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl sm:h-20 sm:w-20">
                     <img
                       src={product.image}
@@ -170,37 +140,36 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
                     />
                   </div>
 
-                  {/* Info */}
                   <div className="min-w-0 flex-1">
                     <div className="mb-1 flex items-start justify-between gap-2">
                       <h3 className="font-display text-foreground group-hover:text-brand-orange truncate text-sm font-bold transition-colors">
                         {product.name}
                       </h3>
-                      <span
-                        className={`shrink-0 rounded px-1.5 py-0.5 text-[9px] font-bold tracking-wider uppercase ${tagColors[product.tag]}`}
-                      >
-                        {product.tag}
-                      </span>
+                      {product.tag && (
+                        <span className="bg-brand-orange text-primary-foreground shrink-0 rounded px-1.5 py-0.5 text-[9px] font-bold tracking-wider uppercase">
+                          {product.tag}
+                        </span>
+                      )}
                     </div>
                     <p className="font-body text-muted-foreground mb-2 flex items-center gap-1 text-xs">
                       <Tag size={10} />
-                      {product.category}
+                      {typeof product.category === "string" ? product.category : product.category?.name ?? ""}
                     </p>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
                         <span className="font-display text-foreground text-sm font-bold">
-                          ${product.price}
+                          {formatPrice(product.discountPrice || product.price)}
                         </span>
-                        {product.originalPrice && (
+                        {product.discountPrice && (
                           <span className="font-body text-muted-foreground/50 text-xs line-through">
-                            ${product.originalPrice}
+                            {formatPrice(product.price)}
                           </span>
                         )}
                       </div>
                       <div className="flex items-center gap-1 text-amber-400">
                         <Star size={10} fill="currentColor" />
                         <span className="font-body text-muted-foreground text-xs">
-                          {product.rating}
+                          {product.rating ?? 0}
                         </span>
                       </div>
                     </div>
@@ -216,7 +185,6 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
           )}
         </div>
 
-        {/* Footer hint */}
         <div className="border-brand-border/40 flex shrink-0 items-center justify-between border-t py-4">
           <p className="font-body text-muted-foreground/40 text-xs">
             Press{" "}

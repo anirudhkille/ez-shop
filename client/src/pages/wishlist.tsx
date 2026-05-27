@@ -4,7 +4,7 @@ import { Heart } from "lucide-react";
 
 import type { TProduct } from "@/types/product";
 
-import { useRemoveFromWishlist, useWishlists } from "@/hooks/useWishlist";
+import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
 
 import Container from "@/layout/container";
 import Head from "@/layout/head";
@@ -14,7 +14,7 @@ import Image from "@/components/ui/img";
 export default function wishlist() {
   const { data } = useWishlists();
 
-  const { mutate } = useRemoveFromWishlist();
+  const { mutate } = useToggleWishlist();
   return (
     <>
       <Head title="Wishlist | EZ Shop" />

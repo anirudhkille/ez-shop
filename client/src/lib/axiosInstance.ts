@@ -100,8 +100,7 @@ console.log("Token refreshed successfully");
               });
 
               processQueue(newAccessToken);
-
-              // Resolve the currently handled promise with the successful result of the retried request
+          
               return axiosInstance({
                 ...originalRequest,
                 headers: {

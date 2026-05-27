@@ -252,6 +252,48 @@ export const getProfile = asyncHandler(async (req: any, res: Response) => {
   });
 });
 
+export const updatePassword = asyncHandler(async (req: any, res: Response) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({
+      success: false,
+      message: "Current password and new password are required",
+    });
+  }
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  if (!user.password) {
+    return res.status(400).json({
+      success: false,
+      message: "Cannot change password for OAuth accounts",
+    });
+  }
+
+  const isMatch = await user.matchPassword(currentPassword);
+  if (!isMatch) {
+    return res.status(400).json({
+      success: false,
+      message: "Current password is incorrect",
+    });
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Password updated successfully",
+  });
+});
+
 export const updateProfile = asyncHandler(async (req: any, res: Response) => {
   const { _id } = req.user;
   const updates = req.body;

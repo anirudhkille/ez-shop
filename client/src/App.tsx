@@ -1,11 +1,13 @@
 import { lazy, Suspense } from "react";
 
 import { Route, Routes } from "react-router";
+import { ScrollToTop } from "./components/shared/scroll-to-top";
 
 const Layout = lazy(() => import("./layout/layout"));
 const RedirectIfAuthenticated = lazy(
   () => import("./layout/redirect-if-authenticated")
 );
+const ProtectedRoute = lazy(() => import("./layout/protected-route"));
 
 const Home = lazy(() => import("./pages/home"));
 const Products = lazy(() => import("./pages/products"));
@@ -21,19 +23,25 @@ const ResetPassword = lazy(() => import("./pages/auth/reset-password"));
 
 const Wishlist = lazy(() => import("./pages/wishlist"));
 
-const AccountLayout = lazy(() => import("./layout/account-layout"));
-const AccountDetails = lazy(() => import("./pages/account/account-details"));
-const DeliveryAddresses = lazy(
-  () => import("./pages/account/delivery-addresses")
-);
-const UpdatePassword = lazy(() => import("./pages/account/update-password"));
-
 const Successful = lazy(() => import("./pages/payment/successful"));
 const Failure = lazy(() => import("./pages/payment/failure"));
 
+const NotFound = lazy(() => import("./pages/not-found"));
+const Profile = lazy(() => import("./pages/profile/profile"));
+const DeliveryAddresses = lazy(() => import("./pages/account/delivery-addresses"));
+const UpdatePassword = lazy(() => import("./pages/account/update-password"));
+const TrackOrder = lazy(() => import("./pages/orders/track-order"));
+const Returns = lazy(() => import("./pages/orders/returns"));
+const ShippingInfo = lazy(() => import("./pages/orders/shipping-info"));
+const CookiePolicy = lazy(() => import("./pages/legal/cookie-policy"));
+const TermsOfUse = lazy(() => import("./pages/legal/terms"));
+const PrivacyPolicy = lazy(() => import("./pages/legal/privacy"));
+
 export default function App() {
   return (
-    <Suspense fallback={<div className="min-h-screen" />}>
+    <>
+      <Suspense fallback={<div className="min-h-screen" />}>
+      <ScrollToTop />
       <Routes>
         <Route element={<RedirectIfAuthenticated />}>
           <Route path="/login" element={<Login />} />
@@ -48,27 +56,28 @@ export default function App() {
           <Route path="/:slug/:id" element={<DetailProduct />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/wishlist" element={<Wishlist />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/account/delivery-addresses" element={<DeliveryAddresses />} />
+            <Route path="/account/update-password" element={<UpdatePassword />} />
+          </Route>
           <Route path="/success" element={<Successful />} />
           <Route path="/failure" element={<Failure />} />
 
-          <Route element={<AccountLayout />}>
-            <Route
-              index
-              path="/account/account-details"
-              element={<AccountDetails />}
-            />
-            <Route
-              path="/account/delivery-addresses"
-              element={<DeliveryAddresses />}
-            />
-            <Route
-              path="/account/update-password"
-              element={<UpdatePassword />}
-            />
-          </Route>
+          <Route path="/profile" element={<Profile />} />
+
+          <Route path="/track-order" element={<TrackOrder />} />
+          <Route path="/returns" element={<Returns />} />
+          <Route path="/shipping-info" element={<ShippingInfo />} />
+
+          <Route path="/cookie-policy" element={<CookiePolicy />} />
+          <Route path="/terms" element={<TermsOfUse />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </Suspense>
+    </>
   );
 }
