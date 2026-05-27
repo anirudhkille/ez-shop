@@ -4,7 +4,7 @@ import type { TProduct } from "@/types/product";
 
 import Container from "@/layout/container";
 
-import ProductCard from "../product/product-card";
+import ProductCard from "../../features/product/product-card";
 import Heading from "../ui/heading";
 
 export default function ProductsSlider({

@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
-import User from "../models/User";
-import Admin from "../models/Admin";
+import { Response, NextFunction } from "express";
+import User from "@/models/User";
+import Admin from "@/models/Admin";
 import { asyncHandler } from "./asyncHandler";
 
 interface ITokenPayload extends JwtPayload {
@@ -29,9 +29,9 @@ export const protect = asyncHandler(
       let user;
 
       if (decoded.role === "User") {
-        user = await User.findById(decoded.id).select("-password");
+        user = await User.findById(decoded._id).select("-password");
       } else if (decoded.role === "Admin") {
-        user = await Admin.findById(decoded.id).select("-password");
+        user = await Admin.findById(decoded._id).select("-password");
       }
 
       if (!user) {

@@ -1,7 +1,7 @@
 import axiosInstance from "@/lib/axiosInstance";
 
-export const addToWishlist = async (productId: string) => {
-  const res = await axiosInstance.post("/wishlist", { productId: productId });
+export const toggleWishlist = async (productId: string) => {
+  const res = await axiosInstance.post("/wishlist/toggle", { productId: productId });
 
   return res.data;
 };
@@ -11,7 +11,7 @@ export const getWishlists = async () => {
   return res.data;
 };
 
-export const removeFromWishlist = async (productId: string) => {
-  const res = await axiosInstance.delete(`/wishlist/${productId}`);
+export const getWishlistDetails = async () => {
+  const res = await axiosInstance.get("/wishlist/details");
   return res.data;
 };

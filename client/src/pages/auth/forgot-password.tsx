@@ -1,37 +1,9 @@
-import { useForm } from "react-hook-form";
-
-import z from "zod";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { useForgotPassword } from "@/hooks/useUser";
-
 import AuthLayout from "@/layout/auth-layout";
 import Head from "@/layout/head";
 
-import { Button } from "@/components/ui/button";
-import { FormInput } from "@/components/ui/form";
-
-const formSchema = z.object({
-  email: z.string().email({
-    message: "Invalid email address",
-  }),
-});
+import ForgotPasswordForm from "@/features/auth/forgot-password-form";
 
 export default function ForgotPassword() {
-  const { mutate, isPending } = useForgotPassword();
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-    },
-  });
-
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    mutate(data.email);
-  };
-
   return (
     <>
       <Head
@@ -42,21 +14,11 @@ export default function ForgotPassword() {
       <AuthLayout
         title="Forgot password"
         description="Enter your email address below and we'll send you otp to reset your password"
+        question="Remember your password? "
+        redirectText="Login"
         redirect="/login"
-        redirectText=" Remember your password? Login"
       >
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormInput
-            control={form.control}
-            name="email"
-            label="Email"
-            placeholder="Enter your email"
-          />
-
-          <Button className="w-full" type="submit" disabled={isPending}>
-            Reset password
-          </Button>
-        </form>
+        <ForgotPasswordForm />
       </AuthLayout>
     </>
   );

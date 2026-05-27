@@ -6,7 +6,7 @@ export const generateAccessToken = (user: {
   role: string;
 }) =>
   jwt.sign(
-    { id: user._id.toString(), role: user.role },
+    { _id: user._id.toString(), role: user.role },
     process.env.JWT_ACCESS_SECRET!,
     { expiresIn: "15m" }
   );
@@ -16,7 +16,7 @@ export const generateRefreshToken = (user: {
   role: string;
 }) =>
   jwt.sign(
-    { id: user._id.toString(), role: user.role },
+    { _id: user._id.toString(), role: user.role },
     process.env.JWT_REFRESH_SECRET!,
     { expiresIn: "7d" }
   );

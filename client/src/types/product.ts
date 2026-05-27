@@ -9,6 +9,7 @@ export type TVariant = {
     stock: number;
     sku: string;
     price: number;
+
     discountPrice: number;
   }[];
 };
@@ -23,8 +24,12 @@ export type TProduct = {
   discountPrice: number;
   image: string;
   variants: TVariant[];
+  gender: "men" | "women" | "unisex";
   stock: number;
   isFeatured: boolean;
   isNewArrival: boolean;
+  rating: number;
+  reviewsCount: number;
+  tag: string;
   publish: boolean;
 };

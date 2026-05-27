@@ -1,7 +1,7 @@
 import Stripe from "stripe";
-import Order from "../models/Order";
+import Order from "@/models/Order";
 import express from "express";
-import Cart from "../models/Cart";
+import Cart from "@/models/Cart";
 
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -33,7 +33,9 @@ router.post(
       order.paymentStatus = "paid";
       order.paymentIntentId = session.payment_intent;
       order.orderStatus = "processing";
-      await Cart.updateOne({ user: order.user }, { $set: { products: [] } });
+      if (order.user) {
+        await Cart.updateOne({ user: order.user }, { $set: { products: [] } });
+      }
 
       await order.save();
     }

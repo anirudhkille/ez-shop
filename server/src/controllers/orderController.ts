@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "../middlewares/asyncHandler";
-import Cart from "../models/Cart";
-import Order from "../models/Order";
-import Address from "../models/Address";
+import { asyncHandler } from "@/middlewares/asyncHandler";
+import Cart from "@/models/Cart";
+import Order from "@/models/Order";
+import Address from "@/models/Address";
+import Product from "@/models/Product";
 
 export const placeCODOrder = asyncHandler(async (req: any, res) => {
   const userId = req.user._id;
@@ -29,7 +30,6 @@ export const placeCODOrder = asyncHandler(async (req: any, res) => {
 
   const totalAmount = subtotal + deliveryCharge;
 
-  // Create order
   const newOrder = await Order.create({
     user: userId,
     paymentType: "cod",
@@ -126,7 +126,10 @@ export const getMyOrder = asyncHandler(async (req: any, res: Response) => {
 
 export const getOrderById = asyncHandler(
   async (req: Request, res: Response) => {
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id).populate(
+      "products.product",
+      "name image price slug"
+    );
 
     if (!order)
       return res.status(404).json({
@@ -142,9 +145,83 @@ export const getOrderById = asyncHandler(
   }
 );
 
+export const placeGuestCODOrder = asyncHandler(async (req: Request, res: Response) => {
+  const { products, address, deliveryMethod, name, email, phone } = req.body;
+
+  if (!products || products.length === 0)
+    return res.status(400).json({ message: "Cart is empty" });
+
+  if (!address)
+    return res.status(400).json({ message: "Address is required" });
+
+  const productIds = products.map((p: any) => p.productId);
+  const dbProducts = await Product.find({ _id: { $in: productIds } });
+
+  const productMap = new Map(dbProducts.map((p: any) => [p._id.toString(), p]));
+
+  let subtotal = 0;
+  const orderProducts: any[] = [];
+
+  for (const item of products) {
+    const prod = productMap.get(item.productId);
+    if (!prod || !prod.publish)
+      return res.status(400).json({ message: `Product ${item.productId} not found or unavailable` });
+
+    const price = prod.discountPrice || prod.price;
+    subtotal += price * item.quantity;
+
+    orderProducts.push({
+      product: item.productId,
+      quantity: item.quantity,
+      price,
+    });
+  }
+
+  let deliveryCharge = 0;
+  if (deliveryMethod === "express") deliveryCharge = 120;
+  if (deliveryMethod === "same-day") deliveryCharge = 199;
+
+  const totalAmount = subtotal + deliveryCharge;
+
+  const newOrder = await Order.create({
+    user: null,
+    name,
+    email,
+    phone,
+    paymentType: "cod",
+    paymentStatus: "pending",
+    orderStatus: "processing",
+    deliveryMethod,
+    subtotal,
+    deliveryCharge,
+    totalAmount,
+    products: orderProducts,
+    address: {
+      name: address.name,
+      addressLine1: address.addressLine1,
+      addressLine2: address.addressLine2,
+      city: address.city,
+      state: address.state,
+      zipCode: address.zipCode,
+      country: address.country,
+      phone: address.phone,
+    },
+  });
+
+  res.json({
+    success: true,
+    message: "Order placed with Cash on Delivery",
+    orderId: newOrder._id,
+    redirectUrl: `${process.env.CLIENT_URL}/success?orderId=${newOrder._id}`,
+  });
+});
+
 export const getOrderBySessionId = asyncHandler(
   async (req: Request, res: Response) => {
-    const order = await Order.findOne({ sessionId: req.params.sessionId });
+    const order = await Order.findOne({ sessionId: req.params.sessionId }).populate(
+      "products.product",
+      "name image price slug"
+    );
 
     if (!order)
       return res

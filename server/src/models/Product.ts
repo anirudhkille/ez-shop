@@ -26,7 +26,10 @@ export interface IProduct extends Document {
   gender: "men" | "women" | "unisex";
   stock: number;
   isFeatured: boolean;
-  isNewArrival: boolean;
+  isBestSellers: boolean;
+  rating: number;
+  reviewsCount: number;
+  tag: string;
   publish: boolean;
 }
 
@@ -73,7 +76,6 @@ const productSchema = new mongoose.Schema<IProduct>(
     slug: {
       type: String,
       required: true,
-      unique: true,
     },
     description: {
       type: String,
@@ -107,16 +109,29 @@ const productSchema = new mongoose.Schema<IProduct>(
       type: Boolean,
       default: false,
     },
-    isNewArrival: {
+    isBestSellers: {
       type: Boolean,
       default: false,
+    },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    reviewsCount: {
+      type: Number,
+      default: 0,
+    },
+    tag: {
+      type: String,
+      enum: ["Best Seller", "Trending", "Limited", "New", "Hot","Sale" ,null],
+      default: "New",
     },
     publish: {
       type: Boolean,
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Product = mongoose.model("Product", productSchema);

@@ -1,5 +1,5 @@
-import { asyncHandler } from "../middlewares/asyncHandler";
-import Address from "../models/Address";
+import { asyncHandler } from "@/middlewares/asyncHandler";
+import Address from "@/models/Address";
 import { Request, Response } from "express";
 
 export const postAddress = asyncHandler(async (req: any, res: Response) => {

@@ -1,11 +1,11 @@
 import express from "express";
-import { protect } from "../middlewares/authMiddleware";
+import { protect } from "@/middlewares/authMiddleware";
 import {
   getAddressByUser,
   postAddress,
   updateAddress,
   deleteAddress,
-} from "../controllers/addressController";
+} from "@/controllers/addressController";
 
 const router = express.Router();
 

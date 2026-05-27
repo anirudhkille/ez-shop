@@ -7,11 +7,13 @@ import {
   refreshToken,
   resetPassword,
   signUp,
+  updatePassword,
   updateProfile,
   googleLogin,
-} from "../controllers/userController";
-import { protect } from "../middlewares/authMiddleware";
-import passport from "../config/passport";
+  verifySignupOTP,
+} from "@/controllers/userController";
+import { protect } from "@/middlewares/authMiddleware";
+import passport from "@/config/passport";
 
 const router = express.Router();
 router.get(
@@ -27,11 +29,12 @@ router.get("/login-failed", (req, res) => res.send("Google login failed"));
 router.get("/refresh", refreshToken);
 router.get("/profile", protect, getProfile);
 router.post("/signup", signUp);
+router.post("/verify-signup-otp",verifySignupOTP)
 router.post("/login", login);
-
 router.post("/logout", protect, logout);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
 router.patch("/", protect, updateProfile);
+router.put("/password", protect, updatePassword);
 
 export default router;

@@ -94,14 +94,13 @@ axiosInstance.interceptors.response.use(
             .get<RefreshResponse>(`/user/refresh`)
             .then((res) => {
               const { token: newAccessToken } = res.data;
-
+console.log("Token refreshed successfully");
               authStore.setUser({
                 token: newAccessToken,
               });
 
               processQueue(newAccessToken);
-
-              // Resolve the currently handled promise with the successful result of the retried request
+          
               return axiosInstance({
                 ...originalRequest,
                 headers: {

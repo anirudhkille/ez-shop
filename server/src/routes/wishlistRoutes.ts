@@ -1,15 +1,15 @@
 import express from "express";
-import { protect } from "../middlewares/authMiddleware";
+import { protect } from "@/middlewares/authMiddleware";
 import {
-  addToWishlist,
+  toggleWishlist,
   getWishlistByUser,
-  removeFromWishlist,
-} from "../controllers/wishlistController";
+  getWishlistDetails,
+} from "@/controllers/wishlistController";
 
 const router = express.Router();
 
 router.get("/", protect, getWishlistByUser);
-router.post("/", protect, addToWishlist);
-router.delete("/:productId", protect, removeFromWishlist);
+router.get("/details", protect, getWishlistDetails);
+router.post("/toggle", protect, toggleWishlist);
 
 export default router;

@@ -1,4 +1,4 @@
-export type TDeliveryMethod = "standard" | "express" | "one-day";
+export type TDeliveryMethod = "standard" | "express" | "same-day";
 
 export type TOrder = {
   addressId: string;

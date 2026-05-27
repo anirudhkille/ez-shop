@@ -1,17 +1,24 @@
+import { useEffect } from "react";
+
 import { useSearchParams } from "react-router";
 
+import { useQueryClient } from "@tanstack/react-query";
+
 import useUserStore from "@/store/userStore";
+import { useCartStore } from "@/store/cartStore";
 
 import { useOrderById, useOrderBySessionId } from "@/hooks/useOrder";
 
-import OrderSuccess from "@/components/payment/order-success";
+import OrderSuccess from "@/features/payment/order-success";
 
 export default function SuccessPage() {
   const [q] = useSearchParams();
   const orderId = q.get("orderId");
   const sessionId = q.get("session_id");
 
-  const { token } = useUserStore();
+  const { token, email } = useUserStore();
+  const clearGuestCart = useCartStore((s) => s.clearCart);
+  const queryClient = useQueryClient();
 
   // Fetch COD order by orderId
   const { data: orderById, isLoading: loadingId } = useOrderById(orderId ?? "");
@@ -19,6 +26,19 @@ export default function SuccessPage() {
   // Fetch Card order by Stripe sessionId
   const { data: orderBySession, isLoading: loadingSession } =
     useOrderBySessionId(sessionId ?? "");
+
+  const order = orderById?.data || orderBySession?.data;
+
+  useEffect(() => {
+    if (!order) return;
+
+    if (token) {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      queryClient.invalidateQueries({ queryKey: ["cartCount"] });
+    } else {
+      clearGuestCart();
+    }
+  }, [order?._id]);
 
   // Loading state
   if ((orderId && loadingId) || (sessionId && loadingSession)) {
@@ -28,21 +48,21 @@ export default function SuccessPage() {
   // COD path
   if (orderId && orderById) {
     return (
-      <OrderSuccess
-        order={orderById.data}
-        email={orderById?.data?.userEmail}
-        allowShowFull={!!token}
-      />
+        <OrderSuccess
+          order={orderById.data}
+          email={orderById?.data?.email || email || ""}
+          allowShowFull={!!token}
+        />
     );
   }
 
   if (sessionId && orderBySession) {
     return (
-      <OrderSuccess
-        order={orderBySession.data}
-        email={orderBySession?.data?.userEmail}
-        allowShowFull={!!token}
-      />
+        <OrderSuccess
+          order={orderBySession.data}
+          email={orderBySession?.data?.email || email || ""}
+          allowShowFull={!!token}
+        />
     );
   }
 

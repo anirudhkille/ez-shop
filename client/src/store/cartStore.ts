@@ -2,20 +2,31 @@ import { create } from "zustand";
 
 import { persist } from "zustand/middleware";
 
-type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  image?: string;
+export type GuestCartItem = {
+  _id: string;
+  product: {
+    _id: string;
+    name: string;
+    image: string;
+    price: number;
+    discountPrice?: number;
+    slug: string;
+    category?: string;
+  };
   quantity: number;
+  size?: string;
+  variantId?: string;
+  priceAtPurchase?: number;
+  discountPriceAtPurchase?: number;
 };
 
 type CartState = {
-  cartItems: CartItem[];
+  cartItems: GuestCartItem[];
 
-  addToCart: (item: Omit<CartItem, "quantity">) => void;
-  removeFromCart: (id: string) => void;
-  clearFromCart: (id: string) => void;
+  addToGuestCart: (item: GuestCartItem) => void;
+  removeFromGuestCart: (id: string) => void;
+  updateGuestCartQty: (id: string, quantity: number) => void;
+  clearFromGuestCart: (id: string) => void;
   clearCart: () => void;
 
   cartTotal: () => number;
@@ -27,50 +38,62 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       cartItems: [],
 
-      addToCart: (item) =>
+      addToGuestCart: (item) =>
         set((state) => {
-          const existingItem = state.cartItems.find((i) => i.id === item.id);
+          const existingItem = state.cartItems.find(
+            (i) => i.product._id === item.product._id && i.size === item.size
+          );
           if (existingItem) {
             return {
               cartItems: state.cartItems.map((i) =>
-                i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+                i._id === existingItem._id
+                  ? { ...i, quantity: i.quantity + item.quantity }
+                  : i
               ),
             };
           }
           return {
-            cartItems: [...state.cartItems, { ...item, quantity: 1 }],
+            cartItems: [...state.cartItems, item],
           };
         }),
 
-      removeFromCart: (id) =>
+      removeFromGuestCart: (id) =>
         set((state) => {
-          const existingItem = state.cartItems.find((i) => i.id === id);
+          const existingItem = state.cartItems.find((i) => i._id === id);
           if (!existingItem) return state;
 
           if (existingItem.quantity > 1) {
             return {
               cartItems: state.cartItems.map((i) =>
-                i.id === id ? { ...i, quantity: i.quantity - 1 } : i
+                i._id === id ? { ...i, quantity: i.quantity - 1 } : i
               ),
             };
           }
 
-          // If quantity <= 1, remove item
           return {
-            cartItems: state.cartItems.filter((i) => i.id !== id),
+            cartItems: state.cartItems.filter((i) => i._id !== id),
           };
         }),
 
-      clearFromCart: (id) =>
+      updateGuestCartQty: (id, quantity) =>
         set((state) => ({
-          cartItems: state.cartItems.filter((i) => i.id !== id),
+          cartItems: state.cartItems.map((i) =>
+            i._id === id ? { ...i, quantity } : i
+          ),
+        })),
+
+      clearFromGuestCart: (id) =>
+        set((state) => ({
+          cartItems: state.cartItems.filter((i) => i._id !== id),
         })),
 
       clearCart: () => set({ cartItems: [] }),
 
       cartTotal: () =>
         get().cartItems.reduce(
-          (total, item) => total + item.price * item.quantity,
+          (total, item) =>
+            total +
+            (item.product.discountPrice ?? item.product.price) * item.quantity,
           0
         ),
 

@@ -1,13 +1,13 @@
 import { Response } from "express";
-import Cart from "../models/Cart";
-import Product from "../models/Product";
-import { asyncHandler } from "../middlewares/asyncHandler";
+import Cart from "@/models/Cart";
+import Product from "@/models/Product";
+import { asyncHandler } from "@/middlewares/asyncHandler";
 
 const findVariantSize = (product: any, variantId?: string, size?: string) => {
   if (!variantId || !size) return null;
 
   const variant = product.variants.find(
-    (v: any) => v._id.toString() === variantId
+    (v: any) => v._id.toString() === variantId,
   );
   if (!variant) return null;
 
@@ -19,7 +19,7 @@ export const getCart = asyncHandler(async (req: any, res: Response) => {
 
   const cart = await Cart.findOne({ user: userId }).populate(
     "products.product",
-    "name image price discountPrice variants publish"
+    "name image price discountPrice variants publish slug",
   );
 
   if (!cart) {
@@ -36,10 +36,10 @@ export const getCart = asyncHandler(async (req: any, res: Response) => {
   for (const item of cart.products) {
     const prod = item.product as any;
 
-    if (!prod.publish) continue;
+    if (!prod || !prod.publish) continue;
 
-    let price = item.priceAtPurchase || prod.price;
-    let discountPrice = item.discountPriceAtPurchase || prod.discountPrice;
+    const price = item.priceAtPurchase ?? prod.price;
+    const discountPrice = item.discountPriceAtPurchase ?? prod.discountPrice;
 
     subtotal += price * item.quantity;
 
@@ -50,14 +50,11 @@ export const getCart = asyncHandler(async (req: any, res: Response) => {
     validItems.push(item);
   }
 
-  cart.products.splice(0, cart.products.length, ...validItems);
-
-  await cart.save();
-
   return res.status(200).json({
     success: true,
     data: {
       ...cart.toObject(),
+      products: validItems,
       subtotal,
       discountTotal,
       total: subtotal - discountTotal,
@@ -70,52 +67,56 @@ export const addToCart = asyncHandler(async (req: any, res: Response) => {
   const { productId, variantId, size, quantity } = req.body;
 
   const product = await Product.findById(productId);
-  if (!product)
+  if (!product) {
     return res
       .status(404)
       .json({ success: false, message: "Product not found" });
+  }
 
-  if (!product.publish)
+  if (!product.publish) {
     return res
       .status(400)
-      .json({ success: false, message: "Product is not available" });
+      .json({ success: false, message: "Product not available" });
+  }
 
   let selectedPrice = product.price;
   let selectedDiscount = product.discountPrice;
   let sizeStock = product.stock;
 
   const sizeObj = findVariantSize(product, variantId, size);
+
   if (variantId && size) {
-    if (!sizeObj)
+    if (!sizeObj) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid variant or size" });
+        .json({ success: false, message: "Invalid variant/size" });
+    }
 
     sizeStock = sizeObj.stock;
-    selectedPrice = sizeObj.price || selectedPrice;
-    selectedDiscount = sizeObj.discountPrice || selectedDiscount;
+    selectedPrice = sizeObj.price ?? selectedPrice;
+    selectedDiscount = sizeObj.discountPrice ?? selectedDiscount;
   }
 
-  if (sizeStock <= 0)
+  if (sizeStock <= 0) {
     return res.status(400).json({ success: false, message: "Out of stock" });
+  }
 
   let cart = await Cart.findOne({ user: userId });
   if (!cart) cart = await Cart.create({ user: userId, products: [] });
 
   const existing = cart.products.find(
-    (p) =>
+    (p: any) =>
       p.product.toString() === productId &&
       p.variantId?.toString() === variantId &&
-      p.size === size
+      p.size === size,
   );
 
   const addQty = quantity || 1;
 
   if (existing) {
-    if (existing.quantity + addQty > sizeStock)
-      return res
-        .status(400)
-        .json({ success: false, message: "Exceeds available stock" });
+    if (existing.quantity + addQty > sizeStock) {
+      return res.status(400).json({ success: false, message: "Exceeds stock" });
+    }
 
     existing.quantity += addQty;
   } else {
@@ -131,7 +132,11 @@ export const addToCart = asyncHandler(async (req: any, res: Response) => {
 
   await cart.save();
 
-  return res.json({ success: true, message: "Added to cart", cart });
+  return res.json({
+    success: true,
+    message: "Added to cart",
+    data: cart,
+  });
 });
 
 export const updateQuantity = asyncHandler(async (req: any, res: Response) => {
@@ -139,35 +144,43 @@ export const updateQuantity = asyncHandler(async (req: any, res: Response) => {
   const { cartItemId, quantity } = req.body;
 
   const cart = await Cart.findOne({ user: userId }).populate(
-    "products.product"
+    "products.product",
   );
 
-  if (!cart)
+  if (!cart) {
     return res.status(404).json({ success: false, message: "Cart not found" });
+  }
 
   const item = cart.products.id(String(cartItemId));
-  if (!item)
+  if (!item) {
     return res.status(404).json({ success: false, message: "Item not found" });
+  }
 
   const product = item.product as any;
 
   const sizeObj = findVariantSize(
     product,
     item.variantId ? String(item.variantId) : undefined,
-    item.size
+    item.size,
   );
+
   const maxStock = sizeObj ? sizeObj.stock : product.stock;
 
-  if (quantity > maxStock)
+  if (quantity > maxStock) {
     return res
       .status(400)
       .json({ success: false, message: "Exceeds stock limit" });
+  }
 
   item.quantity = quantity;
 
   await cart.save();
 
-  return res.json({ success: true, message: "Quantity updated", cart });
+  return res.json({
+    success: true,
+    message: "Quantity updated",
+    data: cart,
+  });
 });
 
 export const removeFromCart = asyncHandler(async (req: any, res: Response) => {
@@ -175,22 +188,42 @@ export const removeFromCart = asyncHandler(async (req: any, res: Response) => {
   const { cartItemId } = req.params;
 
   const cart = await Cart.findOne({ user: userId });
-  if (!cart)
+
+  if (!cart) {
     return res.status(404).json({ success: false, message: "Cart not found" });
+  }
 
-  const filtered = cart.products.filter(
-    (p: any) => String(p._id) !== String(cartItemId)
+  cart.products = cart.products.filter(
+    (p: any) => String(p._id) !== String(cartItemId),
   );
-
-  cart.products.splice(0, cart.products.length, ...filtered);
 
   await cart.save();
 
-  return res.json({ success: true, message: "Item removed", data: cart });
+  return res.json({
+    success: true,
+    message: "Item removed",
+    data: cart,
+  });
 });
 
 export const clearCart = asyncHandler(async (req: any, res: Response) => {
   await Cart.findOneAndUpdate({ user: req.user._id }, { products: [] });
 
-  res.status(200).json({ success: true, message: "Cart cleared" });
+  res.status(200).json({
+    success: true,
+    message: "Cart cleared",
+  });
 });
+
+export const getCartItemCount = asyncHandler(
+  async (req: any, res: Response) => {
+    const cart = await Cart.findOne({ user: req.user._id });
+
+    const count = cart?.products.length || 0;
+
+    return res.json({
+      success: true,
+      data: { count },
+    });
+  },
+);

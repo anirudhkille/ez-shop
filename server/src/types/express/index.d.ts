@@ -1,10 +1,10 @@
-import "express";
-import { Types, Document } from "mongoose";
+import 'express';
+import { Types, Document } from 'mongoose';
 
 declare global {
   namespace Express {
     interface User extends Document {
-      _id: Types.ObjectId; 
+      _id: Types.ObjectId;
       name: string;
       email: string;
       role: string;
@@ -13,7 +13,8 @@ declare global {
     }
 
     interface Request {
-      user?: User; // what protect middleware sets
+      file?: Express.Multer.File;
+      user?: User;
     }
   }
 }
