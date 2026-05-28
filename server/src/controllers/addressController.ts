@@ -5,7 +5,6 @@ import { Request, Response } from "express";
 export const postAddress = asyncHandler(async (req: any, res: Response) => {
   const { id } = req.user;
   const address = await Address.create({ ...req.body, user: id });
-  address.save();
 
   return res.status(201).json({
     success: true,

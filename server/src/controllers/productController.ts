@@ -16,14 +16,15 @@ export const postProduct = asyncHandler(async (req: Request, res: Response) => {
     body.variantImageMap = JSON.parse(body.variantImageMap);
   }
 
-  if (req.files && (req.files as any).image) {
-    const file = (req.files as any).image[0];
+  const files = (req as any).files;
+  if (files && files.image) {
+    const file = files.image[0];
     const result: any = await uploadToCloudinary("products", file.buffer);
     body.image = result.secure_url;
   }
 
-  if (req.files && (req.files as any).variantImages) {
-    const files = (req.files as any).variantImages;
+  if (files && files.variantImages) {
+    const variantFiles = files.variantImages;
 
     let fileIndex = 0;
 
@@ -35,7 +36,7 @@ export const postProduct = asyncHandler(async (req: Request, res: Response) => {
       for (let i = 0; i < count; i++) {
         const result: any = await uploadToCloudinary(
           "products/variants",
-          files[fileIndex].buffer,
+          variantFiles[fileIndex].buffer,
         );
 
         body.variants[variantIndex].images.push(result.secure_url);
@@ -130,14 +131,15 @@ export const updateProduct = asyncHandler(
       body.variants = JSON.parse(body.variants);
     }
 
-    if (req.files && (req.files as any).image) {
-      const file = (req.files as any).image[0];
+    const files = (req as any).files;
+    if (files && files.image) {
+      const file = files.image[0];
       const result: any = await uploadToCloudinary("products", file.buffer);
       body.image = result.secure_url;
     }
 
-    if (req.files && (req.files as any).variantImages) {
-      const variantFiles = (req.files as any).variantImages;
+    if (files && files.variantImages) {
+      const variantFiles = files.variantImages;
 
       for (let i = 0; i < variantFiles.length; i++) {
         const result: any = await uploadToCloudinary(
@@ -198,7 +200,7 @@ export const deleteProduct = asyncHandler(
 export const getSearchProduct = asyncHandler(
   async (req: Request, res: Response) => {
     const limit = Number(req.query.limit) || 10;
-    const keyword = req.query.name || "";
+    const keyword = (req.query.name as string) || "";
 
     const products = await Product.find({
       name: { $regex: keyword, $options: "i" },

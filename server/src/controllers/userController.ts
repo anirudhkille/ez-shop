@@ -89,8 +89,8 @@ export const verifySignupOTP = asyncHandler(
 
     await redis.del(`signup:${email}`);
 
-    const accessToken = generateAccessToken(newUser);
-    const refreshToken = generateRefreshToken(newUser);
+    const accessToken = generateAccessToken({ _id: String(newUser._id), role: newUser.role });
+    const refreshToken = generateRefreshToken({ _id: String(newUser._id), role: newUser.role });
 
     await redis.set(`refresh:${newUser._id}`, refreshToken, {
       ex: 7 * 24 * 60 * 60,
@@ -128,8 +128,8 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
       .json({ success: false, message: "Invalid credentials" });
   }
 
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
+  const accessToken = generateAccessToken({ _id: String(user._id), role: user.role });
+  const refreshToken = generateRefreshToken({ _id: String(user._id), role: user.role });
 
   await redis.set(`refresh:${user._id}`, refreshToken, {
     ex: 7 * 24 * 60 * 60,
@@ -172,7 +172,7 @@ export const forgotPassword = asyncHandler(
     await sendEmail({
       to: email,
       subject: "Reset Password - EZ Shop",
-      html: resetPasswordTemplate(user.name, otp),
+      html: resetPasswordTemplate(user.name||"User", otp),
     });
 
     res.status(200).json({
@@ -412,8 +412,8 @@ export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
+  const accessToken = generateAccessToken({ _id: String(user._id), role: user.role });
+  const refreshToken = generateRefreshToken({ _id: String(user._id), role: user.role });
 
   await redis.set(`refresh:${user._id}`, refreshToken, {
     ex: 7 * 24 * 60 * 60,

@@ -41,7 +41,7 @@ export const placeCODOrder = asyncHandler(async (req: any, res) => {
     totalAmount,
 
     products: cart.products.map((item) => ({
-      product: item.product._id,
+      product: (item.product as any)._id,
       quantity: item.quantity,
       price: item.discountPriceAtPurchase ?? item.priceAtPurchase,
     })),

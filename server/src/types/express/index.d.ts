@@ -13,7 +13,6 @@ declare global {
     }
 
     interface Request {
-      file?: Express.Multer.File;
       user?: User;
     }
   }

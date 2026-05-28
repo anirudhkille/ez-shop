@@ -8,7 +8,6 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "@/utils/generateToken";
-import { Types } from "mongoose";
 
 export const signUp = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -29,11 +28,11 @@ export const signUp = asyncHandler(async (req: Request, res: Response) => {
   const newUser = await Admin.create({ name, email, password });
 
   const accessToken = generateAccessToken({
-    _id: newUser._id as Types.ObjectId,
+    _id: String(newUser._id),
     role: newUser.role,
   });
   const refreshToken = generateRefreshToken({
-    _id: newUser._id as Types.ObjectId,
+    _id: String(newUser._id),
     role: newUser.role,
   });
 
@@ -78,11 +77,11 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const accessToken = generateAccessToken({
-    _id: user._id as Types.ObjectId,
+    _id: String(user._id),
     role: user.role,
   });
   const refreshToken = generateRefreshToken({
-    _id: user._id as Types.ObjectId,
+    _id: String(user._id),
     role: user.role,
   });
 
@@ -174,11 +173,11 @@ export const resetPassword = asyncHandler(
     user.resetPasswordExpires = undefined;
 
     const accessToken = generateAccessToken({
-      _id: user._id as Types.ObjectId,
+      _id: String(user._id),
       role: user.role,
     });
     const refreshToken = generateRefreshToken({
-      _id: user._id as Types.ObjectId,
+      _id: String(user._id),
       role: user.role,
     });
     user.refreshToken = refreshToken;
