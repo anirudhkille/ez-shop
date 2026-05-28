@@ -1,5 +1,5 @@
-import 'express';
-import { Types, Document } from 'mongoose';
+import "express";
+import { Types, Document } from "mongoose";
 
 declare global {
   namespace Express {

@@ -18,7 +18,7 @@ router.post(
       event = stripe.webhooks.constructEvent(
         req.body,
         sig!,
-        process.env.STRIPE_WEBHOOK_SECRET!
+        process.env.STRIPE_WEBHOOK_SECRET!,
       );
     } catch (err: any) {
       return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -41,7 +41,7 @@ router.post(
     }
 
     res.status(200).send("OK");
-  }
+  },
 );
 
 export default router;

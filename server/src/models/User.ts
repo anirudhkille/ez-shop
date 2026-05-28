@@ -6,8 +6,8 @@ export interface IUser extends Document {
   email: string;
   phone?: string;
   password: string | null;
-  googleId?: string;        // ← add
-  avatar?: string;          // ← add
+  googleId?: string;
+  avatar?: string;
   isEmailVerified: boolean;
   isProfileCompleted: boolean;
   role: string;
@@ -20,8 +20,8 @@ const userSchema = new mongoose.Schema<IUser>(
     email: { type: String, required: true, unique: true },
     phone: { type: String },
     password: { type: String },
-    googleId: { type: String },   // ← add
-    avatar: { type: String },     // ← add
+    googleId: { type: String },
+    avatar: { type: String },
     role: { type: String, default: "User" },
     isEmailVerified: { type: Boolean, default: false },
     isProfileCompleted: { type: Boolean, default: false },

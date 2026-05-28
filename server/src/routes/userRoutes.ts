@@ -18,18 +18,18 @@ import passport from "@/config/passport";
 const router = express.Router();
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", { scope: ["profile", "email"] }),
 );
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/auth/login-failed" }),
-  googleLogin
+  googleLogin,
 );
 router.get("/login-failed", (req, res) => res.send("Google login failed"));
 router.get("/refresh", refreshToken);
 router.get("/profile", protect, getProfile);
 router.post("/signup", signUp);
-router.post("/verify-signup-otp",verifySignupOTP)
+router.post("/verify-signup-otp", verifySignupOTP);
 router.post("/login", login);
 router.post("/logout", protect, logout);
 router.post("/forgot-password", forgotPassword);

@@ -146,7 +146,7 @@ export const forgotPassword = asyncHandler(
       success: true,
       message: "Password reset link sent to email",
     });
-  }
+  },
 );
 
 export const resetPassword = asyncHandler(
@@ -203,7 +203,7 @@ export const resetPassword = asyncHandler(
           role: user.role,
         },
       });
-  }
+  },
 );
 
 export const editProfile = asyncHandler(async (req: any, res: Response) => {

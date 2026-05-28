@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 interface INewsletter {
   email: string;
@@ -14,5 +14,5 @@ const newsletterSchema = new mongoose.Schema<INewsletter>({
   },
 });
 
-const Newsletter = mongoose.model('Newsletter', newsletterSchema);
+const Newsletter = mongoose.model("Newsletter", newsletterSchema);
 export default Newsletter;

@@ -23,7 +23,7 @@ export const getAddressByUser = asyncHandler(
       message: "Address fetched successfully",
       data: address,
     });
-  }
+  },
 );
 
 export const updateAddress = asyncHandler(
@@ -31,7 +31,7 @@ export const updateAddress = asyncHandler(
     const address = await Address.findByIdAndUpdate(
       req.params.id,
       { ...req.body },
-      { new: true }
+      { new: true },
     );
 
     if (!address)
@@ -45,7 +45,7 @@ export const updateAddress = asyncHandler(
       message: "Address updated successfully",
       data: address,
     });
-  }
+  },
 );
 
 export const deleteAddress = asyncHandler(
@@ -63,5 +63,5 @@ export const deleteAddress = asyncHandler(
       message: "Address deleted successfully",
       data: address,
     });
-  }
+  },
 );

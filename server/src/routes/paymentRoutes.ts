@@ -1,5 +1,8 @@
 import express from "express";
-import { createCheckoutSession, createGuestCheckoutSession } from "@/controllers/paymentController";
+import {
+  createCheckoutSession,
+  createGuestCheckoutSession,
+} from "@/controllers/paymentController";
 import { protect } from "@/middlewares/authMiddleware";
 
 const router = express.Router();

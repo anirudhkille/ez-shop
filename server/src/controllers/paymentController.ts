@@ -14,7 +14,7 @@ export const createCheckoutSession = asyncHandler(
     const { addressId, deliveryMethod } = req.body;
 
     const cart = await Cart.findOne({ user: userId }).populate(
-      "products.product"
+      "products.product",
     );
 
     if (!cart || cart.products.length === 0)
@@ -129,7 +129,7 @@ export const createCheckoutSession = asyncHandler(
       type: "card",
       url: session.url,
     });
-  }
+  },
 );
 
 export const createGuestCheckoutSession = asyncHandler(
@@ -145,7 +145,9 @@ export const createGuestCheckoutSession = asyncHandler(
     const productIds = products.map((p: any) => p.productId);
     const dbProducts = await Product.find({ _id: { $in: productIds } });
 
-    const productMap = new Map(dbProducts.map((p: any) => [p._id.toString(), p]));
+    const productMap = new Map(
+      dbProducts.map((p: any) => [p._id.toString(), p]),
+    );
 
     let subtotal = 0;
     const orderProducts: any[] = [];
@@ -154,7 +156,11 @@ export const createGuestCheckoutSession = asyncHandler(
     for (const item of products) {
       const prod = productMap.get(item.productId);
       if (!prod || !prod.publish)
-        return res.status(400).json({ message: `Product ${item.productId} not found or unavailable` });
+        return res
+          .status(400)
+          .json({
+            message: `Product ${item.productId} not found or unavailable`,
+          });
 
       const price = prod.discountPrice || prod.price;
       subtotal += price * item.quantity;
@@ -251,5 +257,5 @@ export const createGuestCheckoutSession = asyncHandler(
       type: "card",
       url: session.url,
     });
-  }
+  },
 );

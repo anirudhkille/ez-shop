@@ -35,7 +35,7 @@ export const getReviewByProduct = asyncHandler(
         totalPages: Math.ceil(total / limit),
       },
     });
-  }
+  },
 );
 
 export const getReviewById = asyncHandler(
@@ -47,7 +47,7 @@ export const getReviewById = asyncHandler(
       message: "Review fetched successfully",
       data: review,
     });
-  }
+  },
 );
 
 export const updateReview = asyncHandler(
@@ -55,7 +55,7 @@ export const updateReview = asyncHandler(
     const review = await Review.findByIdAndUpdate(
       req.params.id,
       { ...req.body },
-      { new: true }
+      { new: true },
     );
 
     if (!review)
@@ -69,7 +69,7 @@ export const updateReview = asyncHandler(
       message: "Review updated successfully",
       data: review,
     });
-  }
+  },
 );
 
 export const deleteReview = asyncHandler(
@@ -87,5 +87,5 @@ export const deleteReview = asyncHandler(
       message: "Review deleted successfully",
       data: review,
     });
-  }
+  },
 );

@@ -1,6 +1,6 @@
-import mongoose, { Document } from 'mongoose';
-import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
+import mongoose, { Document } from "mongoose";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 export interface IAdmin extends Document {
   name: string;
@@ -35,7 +35,7 @@ const adminSchema = new mongoose.Schema<IAdmin>(
     },
     role: {
       type: String,
-      default: 'User',
+      default: "User",
     },
     refreshToken: { type: String },
     resetPasswordToken: String,
@@ -44,8 +44,8 @@ const adminSchema = new mongoose.Schema<IAdmin>(
   { timestamps: true },
 );
 
-adminSchema.pre('save', async function () {
-  if (!this.isModified('password')) {
+adminSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
     return;
   }
 
@@ -58,17 +58,17 @@ adminSchema.methods.matchPassword = async function (enteredPassword: string) {
 };
 
 adminSchema.methods.generateResetToken = function () {
-  const token = crypto.randomBytes(20).toString('hex');
+  const token = crypto.randomBytes(20).toString("hex");
 
   this.resetPasswordToken = crypto
-    .createHash('sha256')
+    .createHash("sha256")
     .update(token)
-    .digest('hex');
+    .digest("hex");
 
   this.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
 
   return token;
 };
 
-const Admin = mongoose.model<IAdmin>('Admin', adminSchema);
+const Admin = mongoose.model<IAdmin>("Admin", adminSchema);
 export default Admin;

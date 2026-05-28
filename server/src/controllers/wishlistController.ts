@@ -49,8 +49,7 @@ export const getWishlistByUser = asyncHandler(
   async (req: any, res: Response) => {
     const { _id } = req.user;
 
-    const wishlist = await Wishlist.findOne({ user: _id })
-      .lean();
+    const wishlist = await Wishlist.findOne({ user: _id }).lean();
 
     res.status(200).json({
       success: true,
@@ -73,5 +72,5 @@ export const getWishlistDetails = asyncHandler(
       message: "Wishlist details fetched successfully",
       data: wishlist,
     });
-  }
+  },
 );

@@ -123,7 +123,7 @@ const productSchema = new mongoose.Schema<IProduct>(
     },
     tag: {
       type: String,
-      enum: ["Best Seller", "Trending", "Limited", "New", "Hot","Sale" ,null],
+      enum: ["Best Seller", "Trending", "Limited", "New", "Hot", "Sale", null],
       default: "New",
     },
     publish: {

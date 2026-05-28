@@ -23,7 +23,7 @@ export const protect = asyncHandler(
     try {
       const decoded = jwt.verify(
         token,
-        process.env.JWT_ACCESS_SECRET as string
+        process.env.JWT_ACCESS_SECRET as string,
       ) as ITokenPayload;
 
       let user;
@@ -47,5 +47,5 @@ export const protect = asyncHandler(
         .status(403)
         .json({ success: false, message: "Invalid or expired token" });
     }
-  }
+  },
 );

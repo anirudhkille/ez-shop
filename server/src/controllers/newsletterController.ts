@@ -1,6 +1,6 @@
-import { asyncHandler } from '@/middlewares/asyncHandler';
-import Newsletter from '@/models/Newsletter';
-import { Request, Response } from 'express';
+import { asyncHandler } from "@/middlewares/asyncHandler";
+import Newsletter from "@/models/Newsletter";
+import { Request, Response } from "express";
 
 export const subscribeNewsletter = asyncHandler(
   async (req: Request, res: Response) => {
@@ -11,7 +11,7 @@ export const subscribeNewsletter = asyncHandler(
     if (alerdySubscribed) {
       return res.status(401).json({
         success: true,
-        message: 'Email already subscribed for newsletter',
+        message: "Email already subscribed for newsletter",
       });
     }
 
@@ -21,7 +21,7 @@ export const subscribeNewsletter = asyncHandler(
 
     return res.status(201).json({
       success: true,
-      message: 'Newsletter subscribed successfully',
+      message: "Newsletter subscribed successfully",
       data: newsletter,
     });
   },
@@ -41,7 +41,7 @@ export const getNewsletterSubscribers = asyncHandler(
 
     return res.status(200).json({
       success: true,
-      message: 'Newsletter subscribers fetched successfully',
+      message: "Newsletter subscribers fetched successfully",
       data: subscribers,
       pagintion: {
         total,
