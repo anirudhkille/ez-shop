@@ -36,7 +36,9 @@ export default function ShippingInfo() {
               </p>
               <ul className="list-disc space-y-2 pl-6">
                 <li>
-                  <strong className="text-foreground">Standard Delivery:</strong>{" "}
+                  <strong className="text-foreground">
+                    Standard Delivery:
+                  </strong>{" "}
                   3-5 business days. Free on orders above ₹1,500.
                 </li>
                 <li>

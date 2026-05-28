@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Lock, Mail } from "lucide-react";
 
-import {  useSignup } from "@/hooks/useUser";
+import { useSignup } from "@/hooks/useUser";
 
 import { Button } from "@/components/ui/button";
 import { FormInputWithIcon, FormLabel } from "@/components/ui/form";

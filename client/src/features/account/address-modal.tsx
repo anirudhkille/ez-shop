@@ -105,37 +105,57 @@ export default function AddressModal({
               ]}
             />
             <div className="grid gap-x-5 sm:grid-cols-2">
-              <FormInput name="name" label="Name"  className="rounded-md py-3" control={form.control} />
+              <FormInput
+                name="name"
+                label="Name"
+                className="rounded-md py-3"
+                control={form.control}
+              />
               <FormInput
                 name="phone"
                 label="Phone Number"
-                 className="rounded-md py-3" control={form.control}
+                className="rounded-md py-3"
+                control={form.control}
               />
             </div>
             <FormInput
               name="addressLine1"
               label="Address Line 1"
-               className="rounded-md py-3" control={form.control}
+              className="rounded-md py-3"
+              control={form.control}
             />
             <FormInput
               name="addressLine2"
               label="Address Line 2"
-               className="rounded-md py-3" control={form.control}
+              className="rounded-md py-3"
+              control={form.control}
             />
             <div className="grid gap-x-5 sm:grid-cols-2">
-              <FormInput name="city" label="City"  className="rounded-md py-3" control={form.control} />
-              <FormInput name="state" label="State"  className="rounded-md py-3" control={form.control} />
+              <FormInput
+                name="city"
+                label="City"
+                className="rounded-md py-3"
+                control={form.control}
+              />
+              <FormInput
+                name="state"
+                label="State"
+                className="rounded-md py-3"
+                control={form.control}
+              />
             </div>
             <div className="grid gap-x-5 sm:grid-cols-2">
               <FormInput
                 name="zipCode"
                 label="Zip Code"
-                 className="rounded-md py-3" control={form.control}
+                className="rounded-md py-3"
+                control={form.control}
               />
               <FormInput
                 name="country"
                 label="Country"
-                 className="rounded-md py-3" control={form.control}
+                className="rounded-md py-3"
+                control={form.control}
               />
             </div>
           </div>

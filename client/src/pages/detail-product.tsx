@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import { Link, useParams } from "react-router";
 
+import { toast } from "sonner";
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -15,16 +17,15 @@ import {
   Truck,
 } from "lucide-react";
 
-import type { TProduct } from "@/types/product";
+import type { TProduct, TVariant } from "@/types/product";
 
 import { formatPrice } from "@/lib/formatPrice";
 
-import { toast } from "sonner";
+import useUserStore from "@/store/userStore";
 
 import { useAddToCart } from "@/hooks/useCart";
 import { useProduct, useSimilarProducts } from "@/hooks/useProduct";
 import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
-import useUserStore from "@/store/userStore";
 
 import { tagColors } from "@/data/products";
 import ProductCard from "@/features/product/product-card";
@@ -37,7 +38,7 @@ export default function ProductDetail() {
   const { data: wishlist } = useWishlists();
   const { mutate: toggleWishlist } = useToggleWishlist();
   const { mutate: addToCart } = useAddToCart();
-  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColorIdx, setSelectedColorIdx] = useState(0);
   const [selectedImageIdx, setSelectedImageIdx] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -53,19 +54,21 @@ export default function ProductDetail() {
     toggleWishlist(product?._id);
   };
 
-  
   const handleAddToCart = () => {
     if (!selectedSize) return;
     addToCart({
       productId: product?._id,
-      size: selectedSize,
+      size: selectedSize ?? undefined,
       quantity,
       name: product?.name,
       image: product?.image,
       price: product?.discountPrice || product?.price,
       discountPrice: product?.discountPrice,
       slug: product?.slug,
-      category: typeof product?.category === "string" ? product?.category : product?.category?.name,
+      category:
+        typeof product?.category === "string"
+          ? product?.category
+          : product?.category?.name,
     });
   };
 
@@ -96,7 +99,6 @@ export default function ProductDetail() {
     setSelectedColorIdx(idx);
     setSelectedImageIdx(0);
   };
-
 
   return (
     <main className="pt-20">
@@ -227,7 +229,7 @@ export default function ProductDetail() {
               </span>
             </div>
             <div className="flex flex-wrap gap-2">
-              {product?.variants?.map((v, i) => (
+              {product?.variants?.map((v: TVariant, i: number) => (
                 <button
                   key={i}
                   onClick={() => handleColorChange(i)}
@@ -252,12 +254,12 @@ export default function ProductDetail() {
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {sizes.map((s) => (
+              {sizes.map((s: { size: string; stock: number }) => (
                 <button
                   key={s.size}
-                  onClick={() => setSelectedSize(Number(s.size))}
+                  onClick={() => setSelectedSize(s.size)}
                   className={`font-body h-10 w-12 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    selectedSize === Number(s.size)
+                    selectedSize === s.size
                       ? "bg-brand-orange text-primary-foreground"
                       : "border-brand-border text-muted-foreground hover:border-brand-orange/50 hover:text-foreground border"
                   }`}

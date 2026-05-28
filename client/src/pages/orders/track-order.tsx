@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import { PackageSearch } from "lucide-react";
 
+import { formatPrice } from "@/lib/formatPrice";
+
 import { useOrderById } from "@/hooks/useOrder";
 
 import Container from "@/layout/container";
@@ -10,7 +12,6 @@ import Head from "@/layout/head";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { formatPrice } from "@/lib/formatPrice";
 
 export default function TrackOrder() {
   const [orderInput, setOrderInput] = useState("");
@@ -55,7 +56,7 @@ export default function TrackOrder() {
                 <div>
                   <label
                     htmlFor="order-id"
-                    className="text-foreground block text-sm font-medium mb-2"
+                    className="text-foreground mb-2 block text-sm font-medium"
                   >
                     Order ID
                   </label>
@@ -65,13 +66,13 @@ export default function TrackOrder() {
                     value={orderInput}
                     onChange={(e) => setOrderInput(e.target.value)}
                     placeholder="Paste your Order ID here"
-                    className="w-full bg-background"
+                    className="bg-background w-full"
                   />
                 </div>
                 <Button
                   type="submit"
                   disabled={!orderInput.trim() || isLoading}
-                  className="w-full mt-4 bg-brand-orange text-white hover:bg-brand-orange/90"
+                  className="bg-brand-orange hover:bg-brand-orange/90 mt-4 w-full text-white"
                 >
                   {isLoading ? "Searching..." : "Track Package"}
                 </Button>
@@ -98,34 +99,59 @@ export default function TrackOrder() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-body text-sm text-muted-foreground">Status</span>
-                    <span className="font-body text-sm font-semibold text-foreground capitalize">{order.orderStatus}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="font-body text-muted-foreground text-sm">
+                      Status
+                    </span>
+                    <span className="font-body text-foreground text-sm font-semibold capitalize">
+                      {order.orderStatus}
+                    </span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-body text-sm text-muted-foreground">Payment</span>
-                    <span className="font-body text-sm font-semibold text-foreground capitalize">{order.paymentStatus}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="font-body text-muted-foreground text-sm">
+                      Payment
+                    </span>
+                    <span className="font-body text-foreground text-sm font-semibold capitalize">
+                      {order.paymentStatus}
+                    </span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-body text-sm text-muted-foreground">Total</span>
-                    <span className="font-display text-lg font-bold text-brand-orange">{formatPrice(order.totalAmount)}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="font-body text-muted-foreground text-sm">
+                      Total
+                    </span>
+                    <span className="font-display text-brand-orange text-lg font-bold">
+                      {formatPrice(order.totalAmount)}
+                    </span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-body text-sm text-muted-foreground">Items</span>
-                    <span className="font-body text-sm text-foreground">{order.products?.length ?? 0}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="font-body text-muted-foreground text-sm">
+                      Items
+                    </span>
+                    <span className="font-body text-foreground text-sm">
+                      {order.products?.length ?? 0}
+                    </span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-body text-sm text-muted-foreground">Delivery</span>
-                    <span className="font-body text-sm text-foreground capitalize">{order.deliveryMethod}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="font-body text-muted-foreground text-sm">
+                      Delivery
+                    </span>
+                    <span className="font-body text-foreground text-sm capitalize">
+                      {order.deliveryMethod}
+                    </span>
                   </div>
                   {order.address && (
-                    <div className="border-t border-brand-border pt-4 mt-4">
-                      <p className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-2">Shipping Address</p>
-                      <p className="font-body text-sm text-foreground">
+                    <div className="border-brand-border mt-4 border-t pt-4">
+                      <p className="font-body text-muted-foreground mb-2 text-xs tracking-wider uppercase">
+                        Shipping Address
+                      </p>
+                      <p className="font-body text-foreground text-sm">
                         {order.address.addressLine1}
-                        {order.address.addressLine2 ? `, ${order.address.addressLine2}` : ""}
+                        {order.address.addressLine2
+                          ? `, ${order.address.addressLine2}`
+                          : ""}
                         <br />
-                        {order.address.city}, {order.address.state} {order.address.zipCode}
+                        {order.address.city}, {order.address.state}{" "}
+                        {order.address.zipCode}
                       </p>
                     </div>
                   )}

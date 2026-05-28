@@ -161,7 +161,7 @@ export default function FilterDrawer({
                       })
                     }
                     className={cn(
-                      "font-body flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-all duration-150 capitalize",
+                      "font-body flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm capitalize transition-all duration-150",
                       active
                         ? "bg-brand-orange/10 text-brand-orange"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"

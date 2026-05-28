@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-import { ArrowLeft, Edit2, MapPin, Plus, Trash2 } from "lucide-react";
 import { Link } from "react-router";
+
+import { ArrowLeft, Edit2, MapPin, Plus, Trash2 } from "lucide-react";
 
 import type { TAddress } from "@/types/address";
 
@@ -11,10 +12,12 @@ import {
   useUpdateAddress,
 } from "@/hooks/useAddress";
 
-import { Button } from "@/components/ui/button";
-import AddressModal from "@/features/account/address-modal";
 import Container from "@/layout/container";
 import Head from "@/layout/head";
+
+import { Button } from "@/components/ui/button";
+
+import AddressModal from "@/features/account/address-modal";
 
 export default function DeliveryAddresses() {
   const { data } = useAddresss();
@@ -46,7 +49,7 @@ export default function DeliveryAddresses() {
         <div className="mb-8">
           <Link
             to="/profile"
-            className="font-body text-sm text-brand-orange hover:text-brand-orange/80 mb-4 inline-flex items-center gap-1 transition-colors"
+            className="font-body text-brand-orange hover:text-brand-orange/80 mb-4 inline-flex items-center gap-1 text-sm transition-colors"
           >
             <ArrowLeft size={14} /> Back to Profile
           </Link>
@@ -59,7 +62,7 @@ export default function DeliveryAddresses() {
                 setSelectedAddress(null);
                 setOpen("new");
               }}
-              className="bg-brand-orange text-white hover:bg-brand-orange/90 gap-2"
+              className="bg-brand-orange hover:bg-brand-orange/90 gap-2 text-white"
             >
               <Plus size={16} /> Add New
             </Button>
@@ -90,11 +93,11 @@ export default function DeliveryAddresses() {
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="mb-3 flex items-center gap-2">
-                      <span className="font-body text-muted-foreground rounded-md bg-gray-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider dark:bg-gray-800">
+                      <span className="font-body text-muted-foreground rounded-md bg-gray-100 px-3 py-1 text-xs font-semibold tracking-wider uppercase dark:bg-gray-800">
                         {a.label}
                       </span>
                       {a.isDefault && (
-                        <span className="bg-brand-orange/10 text-brand-orange rounded-md px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+                        <span className="bg-brand-orange/10 text-brand-orange rounded-md px-3 py-1 text-xs font-semibold tracking-wider uppercase">
                           Default
                         </span>
                       )}

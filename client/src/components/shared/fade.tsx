@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 
 type FadeProps = {
   children: React.ReactNode;
-  as?: ElementType; 
+  as?: ElementType;
   direction?: "up" | "left" | "right";
   delay?: number;
   duration?: number;
@@ -27,7 +27,6 @@ export default function Fade({
   ease = [0.22, 1, 0.36, 1],
   className = "",
 }: FadeProps) {
- 
   const getInitial = () => {
     switch (direction) {
       case "left":

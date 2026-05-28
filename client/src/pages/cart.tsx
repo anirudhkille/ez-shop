@@ -4,12 +4,13 @@ import { Link } from "react-router";
 
 import { ArrowRight, ShoppingBag, Tag } from "lucide-react";
 
-import type { TProduct } from "@/types/product";
+import { formatPrice } from "@/lib/formatPrice";
 
 import { useCart } from "@/hooks/useCart";
 
-import CartProductCard from "@/features/cart/cart-product-card";
-import { formatPrice } from "@/lib/formatPrice";
+import CartProductCard, {
+  type CartItem,
+} from "@/features/cart/cart-product-card";
 
 export default function Cart() {
   const { data: cartItems } = useCart();
@@ -48,7 +49,7 @@ export default function Cart() {
       ) : (
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="space-y-4 lg:col-span-2">
-            {cartItems?.products?.map((item: TProduct) => (
+            {cartItems?.products?.map((item: CartItem) => (
               <CartProductCard key={item?._id} item={item} />
             ))}
           </div>
@@ -91,12 +92,16 @@ export default function Cart() {
               <div className="space-y-3">
                 <div className="font-body flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span className="text-foreground">{formatPrice(subtotal)}</span>
+                  <span className="text-foreground">
+                    {formatPrice(subtotal)}
+                  </span>
                 </div>
                 {discount > 0 && (
                   <div className="font-body flex justify-between text-sm">
                     <span className="text-green-400">Discount</span>
-                    <span className="text-green-400">-{formatPrice(discount)}</span>
+                    <span className="text-green-400">
+                      -{formatPrice(discount)}
+                    </span>
                   </div>
                 )}
                 <div className="font-body flex justify-between text-sm">

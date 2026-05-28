@@ -35,7 +35,8 @@ export const products: Product[] = [
     tag: "New",
     colors: ["#fff", "#f60"],
     sizes: [7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 12],
-    description: "Engineered for elite performance, the Stride Pro X1 combines quantum-foam cushioning with an ultra-light carbon fiber plate. Perfect for long-distance runs and daily training.",
+    description:
+      "Engineered for elite performance, the Stride Pro X1 combines quantum-foam cushioning with an ultra-light carbon fiber plate. Perfect for long-distance runs and daily training.",
   },
   {
     id: 2,
@@ -49,7 +50,8 @@ export const products: Product[] = [
     tag: "Hot",
     colors: ["#111", "#f60"],
     sizes: [8, 8.5, 9, 9.5, 10, 10.5, 11, 12, 13],
-    description: "Dominate the court with the Air Phantom HT. Superior ankle support and responsive cushioning for explosive lateral movements.",
+    description:
+      "Dominate the court with the Air Phantom HT. Superior ankle support and responsive cushioning for explosive lateral movements.",
   },
   {
     id: 3,
@@ -63,7 +65,8 @@ export const products: Product[] = [
     tag: "Sale",
     colors: ["#888", "#c00"],
     sizes: [7, 7.5, 8, 8.5, 9, 9.5, 10, 11],
-    description: "A sleek low-top silhouette built for everyday wear. The Velocity Low fuses street style with premium comfort.",
+    description:
+      "A sleek low-top silhouette built for everyday wear. The Velocity Low fuses street style with premium comfort.",
   },
   {
     id: 4,
@@ -77,7 +80,8 @@ export const products: Product[] = [
     tag: "New",
     colors: ["#3af", "#fff"],
     sizes: [7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 12],
-    description: "Versatile training shoe with CloudRift technology. Multi-directional grip and breathable mesh upper for intense gym sessions.",
+    description:
+      "Versatile training shoe with CloudRift technology. Multi-directional grip and breathable mesh upper for intense gym sessions.",
   },
   {
     id: 5,
@@ -91,7 +95,8 @@ export const products: Product[] = [
     tag: "Limited",
     colors: ["#111", "#c90"],
     sizes: [8, 9, 10, 11, 12],
-    description: "The Noir Edition is a statement piece. Limited production, all-black premium leather upper with gold accents. For those who stand apart.",
+    description:
+      "The Noir Edition is a statement piece. Limited production, all-black premium leather upper with gold accents. For those who stand apart.",
   },
   {
     id: 6,
@@ -105,7 +110,8 @@ export const products: Product[] = [
     tag: "Sale",
     colors: ["#fff", "#2a2"],
     sizes: [7, 7.5, 8, 8.5, 9, 9.5, 10, 11, 12],
-    description: "Classic retro runner inspired by the 1980s racing circuit. Updated with modern comfort tech while maintaining the iconic silhouette.",
+    description:
+      "Classic retro runner inspired by the 1980s racing circuit. Updated with modern comfort tech while maintaining the iconic silhouette.",
   },
   {
     id: 7,
@@ -119,7 +125,8 @@ export const products: Product[] = [
     tag: "New",
     colors: ["#fc0", "#222"],
     sizes: [7, 7.5, 8, 8.5, 9, 9.5, 10],
-    description: "Built for the track, the Speed Sprint features a razor-thin outsole and sprint spike compatibility. Your fastest lap starts here.",
+    description:
+      "Built for the track, the Speed Sprint features a razor-thin outsole and sprint spike compatibility. Your fastest lap starts here.",
   },
   {
     id: 8,
@@ -133,7 +140,8 @@ export const products: Product[] = [
     tag: "Sale",
     colors: ["#f9a", "#fff"],
     sizes: [5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 10],
-    description: "Designed for the modern woman on the move. The Rose Velocity combines feminine aesthetics with high-performance running tech.",
+    description:
+      "Designed for the modern woman on the move. The Rose Velocity combines feminine aesthetics with high-performance running tech.",
   },
 ];
 

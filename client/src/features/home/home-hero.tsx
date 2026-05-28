@@ -134,8 +134,7 @@ export default function HeroSection() {
             style={{
               filter: "drop-shadow(0 30px 60px hsl(22 100% 52% / 0.25))",
             }}
-
-              initial={{ y: 0 }}
+            initial={{ y: 0 }}
             animate={{ y: 10 }}
             transition={{
               duration: 1,

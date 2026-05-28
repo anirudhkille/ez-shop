@@ -2,7 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import { getWishlistDetails, getWishlists, toggleWishlist } from "@/api/wishlist";
+import {
+  getWishlistDetails,
+  getWishlists,
+  toggleWishlist,
+} from "@/api/wishlist";
 
 import useUserStore from "@/store/userStore";
 

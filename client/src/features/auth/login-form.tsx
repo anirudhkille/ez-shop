@@ -34,7 +34,6 @@ export default function LoginForm() {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-   
     mutate(data);
   };
 

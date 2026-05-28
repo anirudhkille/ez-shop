@@ -6,8 +6,9 @@ import { ArrowRight, Loader2, Search, Star, Tag, X } from "lucide-react";
 
 import type { TProduct } from "@/types/product";
 
-import { useSearchProducts } from "@/hooks/useProduct";
 import { formatPrice } from "@/lib/formatPrice";
+
+import { useSearchProducts } from "@/hooks/useProduct";
 
 interface SearchModalProps {
   open: boolean;
@@ -59,7 +60,7 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-100 flex flex-col h-dvh"
+      className="fixed inset-0 z-100 flex h-dvh flex-col"
       style={{ background: "hsl(var(--background) / 0.97)" }}
     >
       <div className="absolute inset-0 backdrop-blur-xl" />
@@ -104,7 +105,10 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 size={32} className="text-muted-foreground/40 animate-spin" />
+              <Loader2
+                size={32}
+                className="text-muted-foreground/40 animate-spin"
+              />
             </div>
           ) : displayProducts.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-4 py-20">
@@ -153,7 +157,9 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
                     </div>
                     <p className="font-body text-muted-foreground mb-2 flex items-center gap-1 text-xs">
                       <Tag size={10} />
-                      {typeof product.category === "string" ? product.category : product.category?.name ?? ""}
+                      {typeof product.category === "string"
+                        ? product.category
+                        : (product.category?.name ?? "")}
                     </p>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">

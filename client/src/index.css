@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap') layer(base);
-@import 'tailwindcss';
-
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap")
+layer(base);
+@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -68,19 +68,24 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  --background-image-gradient-hero: linear-gradient(135deg,
-      hsl(0 0% 3%),
-      hsl(0 0% 8%));
-  --background-image-gradient-orange: linear-gradient(135deg,
-      hsl(var(--brand-orange)),
-      hsl(var(--brand-orange-glow)));
-  --background-image-gradient-radial-dark: radial-gradient(ellipse at center,
-      hsl(0 0% 10%) 0%,
-      hsl(0 0% 4%) 70%);
+  --background-image-gradient-hero: linear-gradient(
+    135deg,
+    hsl(0 0% 3%),
+    hsl(0 0% 8%)
+  );
+  --background-image-gradient-orange: linear-gradient(
+    135deg,
+    hsl(var(--brand-orange)),
+    hsl(var(--brand-orange-glow))
+  );
+  --background-image-gradient-radial-dark: radial-gradient(
+    ellipse at center,
+    hsl(0 0% 10%) 0%,
+    hsl(0 0% 4%) 70%
+  );
 }
 
 @layer base {
-
   *,
   ::after,
   ::before,
@@ -115,7 +120,6 @@
     box-shadow: var(--shadow-orange);
   }
 }
-
 
 @layer base {
   :root {
@@ -159,13 +163,21 @@
     --brand-border: 0 0% 18%;
 
     /* Typography */
-    --font-display: 'Barlow Condensed', sans-serif;
-    --font-body: 'Outfit', sans-serif;
+    --font-display: "Barlow Condensed", sans-serif;
+    --font-body: "Outfit", sans-serif;
 
     /* Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(0 0% 3%), hsl(0 0% 8%));
-    --gradient-orange: linear-gradient(135deg, hsl(var(--brand-orange)), hsl(var(--brand-orange-glow)));
-    --gradient-card-hover: linear-gradient(180deg, transparent 0%, hsl(var(--brand-orange) / 0.08) 100%);
+    --gradient-orange: linear-gradient(
+      135deg,
+      hsl(var(--brand-orange)),
+      hsl(var(--brand-orange-glow))
+    );
+    --gradient-card-hover: linear-gradient(
+      180deg,
+      transparent 0%,
+      hsl(var(--brand-orange) / 0.08) 100%
+    );
 
     /* Shadows */
     --shadow-product: 0 20px 60px -15px hsl(0 0% 0% / 0.8);
@@ -212,11 +224,10 @@
 
 .scrollbar-hide {
   overflow: auto; /* or scroll */
-  -ms-overflow-style: none;  /* IE & Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Edge */
 }
-

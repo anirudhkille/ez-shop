@@ -1,7 +1,9 @@
 import axiosInstance from "@/lib/axiosInstance";
 
 export const toggleWishlist = async (productId: string) => {
-  const res = await axiosInstance.post("/wishlist/toggle", { productId: productId });
+  const res = await axiosInstance.post("/wishlist/toggle", {
+    productId: productId,
+  });
 
   return res.data;
 };

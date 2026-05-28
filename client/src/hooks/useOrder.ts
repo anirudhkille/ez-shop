@@ -4,8 +4,18 @@ import { toast } from "sonner";
 
 import type { TOrder } from "@/types/order";
 
-import { getMyOrders, getOrderById, getOrderBySessionId, placeCodOrder } from "@/api/order";
-import { createGuestCheckoutSession, placeGuestCODOrder, type TGuestOrderPayload } from "@/api/guest-order";
+import {
+  createGuestCheckoutSession,
+  placeGuestCODOrder,
+  type TGuestOrderPayload,
+} from "@/api/guest-order";
+import {
+  getMyOrders,
+  getOrderById,
+  getOrderBySessionId,
+  placeCodOrder,
+} from "@/api/order";
+
 import { useCartStore } from "@/store/cartStore";
 import useUserStore from "@/store/userStore";
 
@@ -52,7 +62,8 @@ export const usePlaceGuestCODOrder = () => {
     },
     onError: (error: any) => {
       toast.error(
-        error?.response?.data?.message || "An error occurred while creating order"
+        error?.response?.data?.message ||
+          "An error occurred while creating order"
       );
     },
   });
@@ -60,13 +71,15 @@ export const usePlaceGuestCODOrder = () => {
 
 export const useGuestPayment = () => {
   return useMutation({
-    mutationFn: (payload: TGuestOrderPayload) => createGuestCheckoutSession(payload),
+    mutationFn: (payload: TGuestOrderPayload) =>
+      createGuestCheckoutSession(payload),
     onSuccess: (data) => {
       window.location.href = data.url;
     },
     onError: (error: any) => {
       toast.error(
-        error?.response?.data?.message || "An error occurred while creating payment"
+        error?.response?.data?.message ||
+          "An error occurred while creating payment"
       );
     },
   });

@@ -53,18 +53,24 @@ export default function CookiePolicy() {
               </p>
               <ul className="list-disc space-y-2 pl-6">
                 <li>
-                  <strong className="text-foreground">Essential Cookies:</strong>{" "}
+                  <strong className="text-foreground">
+                    Essential Cookies:
+                  </strong>{" "}
                   Necessary for the website to function properly, such as
                   authenticating users and preventing fraudulent use of user
                   accounts.
                 </li>
                 <li>
-                  <strong className="text-foreground">Analytics Cookies:</strong>{" "}
+                  <strong className="text-foreground">
+                    Analytics Cookies:
+                  </strong>{" "}
                   Allow us to understand how visitors interact with the website
                   by collecting and reporting information anonymously.
                 </li>
                 <li>
-                  <strong className="text-foreground">Preference Cookies:</strong>{" "}
+                  <strong className="text-foreground">
+                    Preference Cookies:
+                  </strong>{" "}
                   Enable a website to remember information that changes the way
                   the website behaves or looks, like your preferred language.
                 </li>

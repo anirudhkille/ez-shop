@@ -44,8 +44,9 @@ export const useProduct = (slug: string, id: string) => {
 export const useFilteredProducts = (filters: Record<string, any>) => {
   return useInfiniteQuery({
     queryKey: ["infinite-products", filters],
+    initialPageParam: 1,
 
-    queryFn: async ({ pageParam = 1 }) => {
+    queryFn: async ({ pageParam }) => {
       const res = await getFilteredProducts({
         ...filters,
         page: pageParam,
@@ -55,12 +56,11 @@ export const useFilteredProducts = (filters: Record<string, any>) => {
       return res;
     },
 
-    getNextPageParam: (lastPage) => {
+    getNextPageParam: (lastPage: any) => {
       const { page, totalPages } = lastPage.pagination;
 
       return page < totalPages ? page + 1 : undefined;
     },
-
   });
 };
 

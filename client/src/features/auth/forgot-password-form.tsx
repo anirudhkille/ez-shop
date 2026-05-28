@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Mail } from "lucide-react";  
+import { Mail } from "lucide-react";
 
 import { useForgotPassword } from "@/hooks/useUser";
 
@@ -32,7 +32,7 @@ export default function ForgotPasswordForm() {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-10">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="mt-10 space-y-4">
       <div className="space-y-1">
         <FormLabel htmlFor="email">Email</FormLabel>
         <FormInputWithIcon

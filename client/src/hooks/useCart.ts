@@ -11,8 +11,8 @@ import {
   updateCartQuantity,
 } from "@/api/cart";
 
+import { type GuestCartItem, useCartStore } from "@/store/cartStore";
 import useUserStore from "@/store/userStore";
-import { useCartStore, type GuestCartItem } from "@/store/cartStore";
 
 let guestIdCounter = 0;
 const nextGuestId = () => `guest_${Date.now()}_${++guestIdCounter}`;
@@ -25,8 +25,8 @@ const computeGuestCartData = (cartItems: GuestCartItem[]) => {
   const discountTotal = cartItems.reduce(
     (sum, i) =>
       sum +
-      ((i.product.price - (i.product.discountPrice ?? i.product.price)) *
-        i.quantity),
+      (i.product.price - (i.product.discountPrice ?? i.product.price)) *
+        i.quantity,
     0
   );
   return {
@@ -38,7 +38,9 @@ const computeGuestCartData = (cartItems: GuestCartItem[]) => {
   };
 };
 
-const syncGuestCartToCache = (queryClient: ReturnType<typeof useQueryClient>) => {
+const syncGuestCartToCache = (
+  queryClient: ReturnType<typeof useQueryClient>
+) => {
   const { cartItems } = useCartStore.getState();
   const data = computeGuestCartData(cartItems);
   queryClient.setQueryData(["cart"], { data });
@@ -107,7 +109,7 @@ export const useAddToCart = () => {
       return addToCart(payload);
     },
 
-    onMutate: async (newItem) => {
+    onMutate: async () => {
       if (!token) return;
       await queryClient.cancelQueries({ queryKey: ["cart"] });
 
@@ -127,7 +129,7 @@ export const useAddToCart = () => {
       return { previousCart };
     },
 
-    onError: (err, _, context) => {
+    onError: (_, __, context) => {
       if (!token) {
         toast.error("Failed to add to cart");
         return;

@@ -1,9 +1,10 @@
 import { lazy, Suspense } from "react";
 
 import { Route, Routes } from "react-router";
+
 import { ScrollToTop } from "./components/shared/scroll-to-top";
 
-const Layout = lazy(() => import("./layout/layout"));
+const Layout = lazy(() => import("./layout/Layout"));
 const RedirectIfAuthenticated = lazy(
   () => import("./layout/redirect-if-authenticated")
 );
@@ -28,7 +29,9 @@ const Failure = lazy(() => import("./pages/payment/failure"));
 
 const NotFound = lazy(() => import("./pages/not-found"));
 const Profile = lazy(() => import("./pages/profile/profile"));
-const DeliveryAddresses = lazy(() => import("./pages/account/delivery-addresses"));
+const DeliveryAddresses = lazy(
+  () => import("./pages/account/delivery-addresses")
+);
 const UpdatePassword = lazy(() => import("./pages/account/update-password"));
 const TrackOrder = lazy(() => import("./pages/orders/track-order"));
 const Returns = lazy(() => import("./pages/orders/returns"));
@@ -41,43 +44,49 @@ export default function App() {
   return (
     <>
       <Suspense fallback={<div className="min-h-screen" />}>
-      <ScrollToTop />
-      <Routes>
-        <Route element={<RedirectIfAuthenticated />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-        </Route>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/:slug/:id" element={<DetailProduct />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/account/delivery-addresses" element={<DeliveryAddresses />} />
-            <Route path="/account/update-password" element={<UpdatePassword />} />
+        <ScrollToTop />
+        <Routes>
+          <Route element={<RedirectIfAuthenticated />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
           </Route>
-          <Route path="/success" element={<Successful />} />
-          <Route path="/failure" element={<Failure />} />
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/:slug/:id" element={<DetailProduct />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route
+                path="/account/delivery-addresses"
+                element={<DeliveryAddresses />}
+              />
+              <Route
+                path="/account/update-password"
+                element={<UpdatePassword />}
+              />
+            </Route>
+            <Route path="/success" element={<Successful />} />
+            <Route path="/failure" element={<Failure />} />
 
-          <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<Profile />} />
 
-          <Route path="/track-order" element={<TrackOrder />} />
-          <Route path="/returns" element={<Returns />} />
-          <Route path="/shipping-info" element={<ShippingInfo />} />
+            <Route path="/track-order" element={<TrackOrder />} />
+            <Route path="/returns" element={<Returns />} />
+            <Route path="/shipping-info" element={<ShippingInfo />} />
 
-          <Route path="/cookie-policy" element={<CookiePolicy />} />
-          <Route path="/terms" element={<TermsOfUse />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
+            <Route path="/terms" element={<TermsOfUse />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
 
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
-    </Suspense>
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </>
   );
 }

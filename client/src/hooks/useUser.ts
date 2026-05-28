@@ -116,17 +116,13 @@ export const useResetPassword = () => {
 
 export const useUpdatePassword = () => {
   return useMutation({
-    mutationFn: (formData: {
-      currentPassword: string;
-      newPassword: string;
-    }) => changePassword(formData),
+    mutationFn: (formData: { currentPassword: string; newPassword: string }) =>
+      changePassword(formData),
     onSuccess: () => {
       toast.success("Password updated successfully");
     },
     onError: (error: any) => {
-      toast.error(
-        error.response?.data?.message || "Failed to update password"
-      );
+      toast.error(error.response?.data?.message || "Failed to update password");
     },
   });
 };

@@ -64,7 +64,7 @@ export default function Products() {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useFilteredProducts(queryParams);
 
-  const products = data?.pages.flatMap((page) => page.data) ?? [];
+  const products = data?.pages.flatMap((page: any) => page.data) ?? [];
 
   const activeFilterCount = countActiveFilters(filters);
 
@@ -176,7 +176,8 @@ export default function Products() {
     <main className="mx-auto mt-16 max-w-360 border px-4 py-10 sm:px-6 lg:px-10">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <span className="text-foreground font-body text-lg font-semibold uppercase md:text-xl">
-          {selectedCategoryLabel} Styles ({data?.pages[0]?.pagination?.total})
+          {selectedCategoryLabel} Styles (
+          {(data?.pages[0] as any)?.pagination?.total ?? 0})
         </span>{" "}
         <div className="lg:hidden">
           <FilterDrawer
@@ -244,7 +245,7 @@ export default function Products() {
       </div>
       <div className="flex items-start gap-8">
         <Activity mode={showFilter ? "visible" : "hidden"}>
-          <div className=" sticky top-24 hidden max-h-[calc(100vh-7rem)] self-start overflow-y-auto lg:block">
+          <div className="sticky top-24 hidden max-h-[calc(100vh-7rem)] self-start overflow-y-auto lg:block">
             <FilterSidebar
               filters={filters}
               onChange={setFilters}

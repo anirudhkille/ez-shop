@@ -1,15 +1,17 @@
 import { useState } from "react";
 
-import { ArrowLeft, Eye, EyeOff, Lock } from "lucide-react";
 import { Link } from "react-router";
 
+import { ArrowLeft, Eye, EyeOff, Lock } from "lucide-react";
+
 import { useUpdatePassword } from "@/hooks/useUser";
+
+import Container from "@/layout/container";
+import Head from "@/layout/head";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import Container from "@/layout/container";
-import Head from "@/layout/head";
 
 export default function UpdatePassword() {
   const { mutate: updatePassword, isPending } = useUpdatePassword();
@@ -49,7 +51,7 @@ export default function UpdatePassword() {
         <div className="mb-8">
           <Link
             to="/profile"
-            className="font-body text-sm text-brand-orange hover:text-brand-orange/80 mb-4 inline-flex items-center gap-1 transition-colors"
+            className="font-body text-brand-orange hover:text-brand-orange/80 mb-4 inline-flex items-center gap-1 text-sm transition-colors"
           >
             <ArrowLeft size={14} /> Back to Profile
           </Link>
@@ -80,12 +82,12 @@ export default function UpdatePassword() {
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     placeholder="Enter your current password"
-                    className="w-full bg-background pr-10"
+                    className="bg-background w-full pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowCurrent(!showCurrent)}
-                    className="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2"
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
                   >
                     {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -106,12 +108,12 @@ export default function UpdatePassword() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Enter your new password"
-                    className="w-full bg-background pr-10"
+                    className="bg-background w-full pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowNew(!showNew)}
-                    className="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2"
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
                   >
                     {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -132,7 +134,7 @@ export default function UpdatePassword() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm your new password"
-                    className={`w-full bg-background pr-10 ${
+                    className={`bg-background w-full pr-10 ${
                       confirmPassword && newPassword !== confirmPassword
                         ? "border-red-500"
                         : ""
@@ -141,7 +143,7 @@ export default function UpdatePassword() {
                   <button
                     type="button"
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2"
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
                   >
                     {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -156,7 +158,7 @@ export default function UpdatePassword() {
               <Button
                 type="submit"
                 disabled={!isValid || isPending}
-                className="w-full bg-brand-orange text-white hover:bg-brand-orange/90"
+                className="bg-brand-orange hover:bg-brand-orange/90 w-full text-white"
               >
                 {isPending ? "Updating..." : "Update Password"}
               </Button>

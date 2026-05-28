@@ -4,8 +4,8 @@ import { useSearchParams } from "react-router";
 
 import { useQueryClient } from "@tanstack/react-query";
 
-import useUserStore from "@/store/userStore";
 import { useCartStore } from "@/store/cartStore";
+import useUserStore from "@/store/userStore";
 
 import { useOrderById, useOrderBySessionId } from "@/hooks/useOrder";
 
@@ -48,21 +48,21 @@ export default function SuccessPage() {
   // COD path
   if (orderId && orderById) {
     return (
-        <OrderSuccess
-          order={orderById.data}
-          email={orderById?.data?.email || email || ""}
-          allowShowFull={!!token}
-        />
+      <OrderSuccess
+        order={orderById.data}
+        email={orderById?.data?.email || email || ""}
+        allowShowFull={!!token}
+      />
     );
   }
 
   if (sessionId && orderBySession) {
     return (
-        <OrderSuccess
-          order={orderBySession.data}
-          email={orderBySession?.data?.email || email || ""}
-          allowShowFull={!!token}
-        />
+      <OrderSuccess
+        order={orderBySession.data}
+        email={orderBySession?.data?.email || email || ""}
+        allowShowFull={!!token}
+      />
     );
   }
 

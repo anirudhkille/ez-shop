@@ -30,7 +30,12 @@ export const placeGuestCODOrder = async (payload: TGuestOrderPayload) => {
   return res.data;
 };
 
-export const createGuestCheckoutSession = async (payload: TGuestOrderPayload) => {
-  const res = await axiosInstance.post("/payment/create-guest-session", payload);
+export const createGuestCheckoutSession = async (
+  payload: TGuestOrderPayload
+) => {
+  const res = await axiosInstance.post(
+    "/payment/create-guest-session",
+    payload
+  );
   return res.data;
 };

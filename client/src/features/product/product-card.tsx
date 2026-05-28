@@ -1,16 +1,16 @@
 import { Link } from "react-router";
 
-import { Heart, Star } from "lucide-react";
-
 import { toast } from "sonner";
+
+import { Heart, Star } from "lucide-react";
 
 import type { TProduct } from "@/types/product";
 
 import { formatPrice } from "@/lib/formatPrice";
 
-import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
-
 import useUserStore from "@/store/userStore";
+
+import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
 
 import { tagColors } from "@/data/products";
 
@@ -31,7 +31,7 @@ export default function ProductCard({
   const wishlistSet = new Set(wishlist?.products || []);
   const liked = wishlistSet.has(product._id);
 
-  const handleWishlist = (e) => {
+  const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!token) {
       toast.error("Login to save wishlist");
@@ -68,11 +68,11 @@ export default function ProductCard({
           className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute bottom-3 left-3 flex gap-1.5">
-          {product?.colors?.map((c, i) => (
+          {product?.variants?.map((v, i) => (
             <div
               key={i}
               className="border-brand-border/60 h-3 w-3 rounded-full border"
-              style={{ backgroundColor: c }}
+              style={{ backgroundColor: v.colorCode }}
             />
           ))}
         </div>

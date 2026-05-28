@@ -1,10 +1,28 @@
 import { Link } from "react-router";
+
 import { Minus, Plus, X } from "lucide-react";
 
 import { formatPrice } from "@/lib/formatPrice";
+
 import { useRemoveCartItem, useUpdateCartQty } from "@/hooks/useCart";
 
-export default function CartProductCard({ item }) {
+export type CartItem = {
+  _id: string;
+  product: {
+    _id: string;
+    slug: string;
+    name: string;
+    image: string;
+    price: number;
+    discountPrice?: number;
+    category?: string;
+  };
+  quantity: number;
+  size?: string;
+  variantId?: string;
+};
+
+export default function CartProductCard({ item }: { item: CartItem }) {
   const { mutate: removeCartItem } = useRemoveCartItem();
   const { mutate: updateCartQty } = useUpdateCartQty();
 
@@ -45,9 +63,7 @@ export default function CartProductCard({ item }) {
               {item.product.category}
             </span>
 
-            <Link
-              to={`/${item.product.slug}/${item.product._id}`}
-            >
+            <Link to={`/${item.product.slug}/${item.product._id}`}>
               <h3 className="font-display text-foreground hover:text-brand-orange text-lg font-bold transition-colors">
                 {item.product.name}
               </h3>

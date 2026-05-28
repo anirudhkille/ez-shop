@@ -1,15 +1,6 @@
 import { Link } from "react-router";
 
-import {
-  Github,
-  Instagram,
-  Linkedin,
-  Mail,
-  ShoppingBag,
-  Heart,
-  Truck,
-  ShieldCheck,
-} from "lucide-react";
+import { Github, Instagram, Linkedin, Mail } from "lucide-react";
 
 const footerLinks = {
   Shop: [
@@ -67,25 +58,6 @@ const socials = [
   },
 ];
 
-const features = [
-  {
-    icon: ShoppingBag,
-    title: "Premium Products",
-  },
-  {
-    icon: Truck,
-    title: "Fast Delivery",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Secure Checkout",
-  },
-  {
-    icon: Heart,
-    title: "Built for Learning",
-  },
-];
-
 export default function Footer() {
   return (
     <footer className="border-brand-border bg-card border-t">
@@ -93,15 +65,16 @@ export default function Footer() {
         <div className="grid grid-cols-2 gap-10 py-16 md:grid-cols-3 lg:grid-cols-5">
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <Link to="/" className="mb-4 flex items-center gap-2">
-                <img src="/logo.svg"  className="size-6 object-contain"/>
-            
-<span className="font-display text-foreground text-2xl font-bold tracking-wider">
-            EZ Shop
-          </span>
+              <img src="/logo.svg" className="size-6 object-contain" />
+
+              <span className="font-display text-foreground text-2xl font-bold tracking-wider">
+                EZ Shop
+              </span>
             </Link>
 
             <p className="font-body text-muted-foreground max-w-xs text-sm leading-relaxed">
-           Premium footwear & apparel. Engineered for performance, designed for everyday life.
+              Premium footwear & apparel. Engineered for performance, designed
+              for everyday life.
             </p>
 
             <div className="mt-6 flex gap-3">
@@ -141,7 +114,7 @@ export default function Footer() {
           ))}
         </div>
 
-<div className="border-brand-border border-t py-6 text-center">
+        <div className="border-brand-border border-t py-6 text-center">
           <p className="font-body text-muted-foreground text-sm">
             © 2026 EZ Shop. All rights reserved. Powered by{" "}
             <a target="_blank" href="https://anirudhkille.com">

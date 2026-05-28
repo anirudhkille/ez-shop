@@ -37,4 +37,3 @@ export const clearCart = async () => {
   const res = await axiosInstance.delete("/cart/clear");
   return res.data;
 };
-

@@ -1,5 +1,6 @@
-import promoBanner from "@/assets/promo-banner.jpg";
 import Fade from "@/components/shared/fade";
+
+import promoBanner from "@/assets/promo-banner.jpg";
 
 export default function PromoBanner() {
   return (
