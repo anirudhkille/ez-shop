@@ -3,7 +3,7 @@ import Category from "@/models/Category";
 import { Request, Response } from "express";
 import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
 import cloudinary from "@/config/cloudinary";
-import { redis } from "@/config/redis";
+import { safeGet, safeSet } from "@/config/redis";
 
 export const postCategory = asyncHandler(
   async (req: Request, res: Response) => {
@@ -35,7 +35,7 @@ export const postCategory = asyncHandler(
 export const getCategory = asyncHandler(async (req: Request, res: Response) => {
   const cacheKey = "categories";
 
-  const cache = await redis.get(cacheKey);
+  const cache = await safeGet(cacheKey);
 
   if (cache) {
     return res.status(200).json({
@@ -47,7 +47,7 @@ export const getCategory = asyncHandler(async (req: Request, res: Response) => {
 
   const categories = await Category.find().lean();
 
-  await redis.set(cacheKey, categories, { ex: 300 }); // 5 min
+  await safeSet(cacheKey, categories, { ex: 300 });
 
   return res.status(200).json({
     success: true,

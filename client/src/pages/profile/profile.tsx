@@ -65,24 +65,6 @@ export default function Profile() {
 
   const [settingsSection, setSettingsSection] = useState<string | null>(null);
 
-  if (!email) {
-    return (
-      <div className="bg-background flex min-h-screen items-center justify-center">
-        <div className="space-y-4 text-center">
-          <p className="font-display text-foreground text-3xl font-black uppercase">
-            Sign in required
-          </p>
-          <Link
-            to="/auth/login"
-            className="bg-gradient-orange text-primary-foreground font-body inline-flex items-center gap-2 rounded-full px-8 py-3 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90"
-          >
-            Sign In
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   const handleSave = () => {
     updateProfile({ name: form.displayName });
     setEditing(false);
@@ -95,7 +77,7 @@ export default function Profile() {
     navigate("/");
   };
 
-  const avatarInitial = (displayName[0] ?? email[0]).toUpperCase();
+  const avatarInitial = (displayName[0] ?? email?.[0] ?? "?").toUpperCase();
 
   return (
     <div className="text-foreground">

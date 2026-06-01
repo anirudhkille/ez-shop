@@ -209,7 +209,7 @@ export default function Header() {
             className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors"
             onClick={() => setMobileOpen(false)}
           >
-            Cart (3)
+            Cart {cartCount}
           </Link>
           {name ? (
             <>
@@ -233,14 +233,14 @@ export default function Header() {
           ) : (
             <>
               <Link
-                to="/auth/login"
+                to="/login"
                 className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Sign in
               </Link>
               <Link
-                to="/auth/signup"
+                to="/signup"
                 className="font-body text-brand-orange hover:text-brand-orange/80 py-2.5 text-sm font-medium transition-colors"
                 onClick={() => setMobileOpen(false)}
               >

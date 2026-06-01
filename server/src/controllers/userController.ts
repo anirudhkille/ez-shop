@@ -8,7 +8,7 @@ import {
 import { Request, Response } from "express";
 import { resetPasswordTemplate } from "@/templates/resetEmailTemplate";
 import { refreshCookieOptions } from "@/utils/cookies";
-import { redis } from "@/config/redis";
+import { safeSet, safeGet, safeDel } from "@/config/redis";
 import { generateOtp } from "@/utils/generateOtp";
 import { sendEmail } from "@/services/emailService";
 import { verifyEmailTemplate } from "@/templates/verifyEmailTemplate";
@@ -33,7 +33,7 @@ export const signUp = asyncHandler(async (req: Request, res: Response) => {
   const hashedPassword = await bcrypt.hash(password, 12);
   const otp = generateOtp();
 
-  await redis.set(
+  await safeSet(
     `signup:${email}`,
     JSON.stringify({
       email,
@@ -61,7 +61,7 @@ export const verifySignupOTP = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, otp } = req.body;
 
-    const data = (await redis.get(`signup:${email}`)) as {
+    const data = (await safeGet(`signup:${email}`)) as {
       email: string;
       otp: string;
       password: string;
@@ -87,7 +87,7 @@ export const verifySignupOTP = asyncHandler(
       isEmailVerified: true,
     });
 
-    await redis.del(`signup:${email}`);
+    await safeDel(`signup:${email}`);
 
     const accessToken = generateAccessToken({
       _id: String(newUser._id),
@@ -98,7 +98,7 @@ export const verifySignupOTP = asyncHandler(
       role: newUser.role,
     });
 
-    await redis.set(`refresh:${newUser._id}`, refreshToken, {
+    await safeSet(`refresh:${newUser._id}`, refreshToken, {
       ex: 7 * 24 * 60 * 60,
     });
 
@@ -143,7 +143,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     role: user.role,
   });
 
-  await redis.set(`refresh:${user._id}`, refreshToken, {
+  await safeSet(`refresh:${user._id}`, refreshToken, {
     ex: 7 * 24 * 60 * 60,
   });
 
@@ -177,7 +177,7 @@ export const forgotPassword = asyncHandler(
 
     const otp = generateOtp();
 
-    await redis.set(`reset:${email}`, otp, {
+    await safeSet(`reset:${email}`, otp, {
       ex: 600,
     });
 
@@ -197,7 +197,7 @@ export const forgotPassword = asyncHandler(
 export const resetPassword = asyncHandler(async (req, res) => {
   const { email, otp, newPassword } = req.body;
 
-  const storedOTP = await redis.get(`reset:${email}`);
+  const storedOTP = await safeGet(`reset:${email}`);
 
   if (!storedOTP || storedOTP !== otp) {
     return res.status(400).json({
@@ -218,7 +218,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
   user.password = newPassword;
   await user.save();
 
-  await redis.del(`reset:${email}`);
+  await safeDel(`reset:${email}`);
 
   res.status(200).json({
     success: true,
@@ -350,7 +350,7 @@ export const refreshToken = asyncHandler(
       });
     }
 
-    const storedToken = await redis.get(`refresh:${decoded._id}`);
+    const storedToken = await safeGet(`refresh:${decoded._id}`);
 
     if (!storedToken || storedToken !== token) {
       return res.status(403).json({
@@ -363,7 +363,7 @@ export const refreshToken = asyncHandler(
     const newRefreshToken = generateRefreshToken(decoded);
     const newAccessToken = generateAccessToken(decoded);
 
-    await redis.set(`refresh:${decoded._id}`, newRefreshToken, {
+    await safeSet(`refresh:${decoded._id}`, newRefreshToken, {
       ex: 7 * 24 * 60 * 60,
     });
 
@@ -384,7 +384,7 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     try {
       const decoded: any = jwt.verify(token, process.env.JWT_REFRESH_SECRET!);
 
-      await redis.del(`refresh:${decoded.id}`);
+      await safeDel(`refresh:${decoded.id}`);
     } catch {
       // ignore
     }
@@ -433,22 +433,14 @@ export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
     role: user.role,
   });
 
-  await redis.set(`refresh:${user._id}`, refreshToken, {
+  await safeSet(`refresh:${user._id}`, refreshToken, {
     ex: 7 * 24 * 60 * 60,
   });
 
+  const frontendURL = process.env.FRONTEND_URL || "http://localhost:5173";
+  const redirectURL = `${frontendURL}/auth/google-callback?token=${encodeURIComponent(accessToken)}&name=${encodeURIComponent(user.name || "")}&email=${encodeURIComponent(user.email || "")}`;
+
   return res
     .cookie("refreshToken", refreshToken, refreshCookieOptions())
-    .status(200)
-    .json({
-      success: true,
-      message: "Google login successful",
-      data: {
-        id: user._id,
-        token: accessToken,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
+    .redirect(redirectURL);
 });

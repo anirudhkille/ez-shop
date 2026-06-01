@@ -204,7 +204,7 @@ export const getSearchProduct = asyncHandler(
 
     const products = await Product.find({
       name: { $regex: keyword, $options: "i" },
-    }).limit(limit);
+    }).populate("category","name").limit(limit);
 
     return res.status(200).json({
       success: true,
@@ -382,7 +382,7 @@ export const getSimilarProducts = asyncHandler(
       category: product.category,
       publish: true,
     })
-      .select("name slug image price discountPrice rating")
+      .select("name slug image reviewsCount rating tag category price discountPrice",)
       .limit(4)
       .lean();
 

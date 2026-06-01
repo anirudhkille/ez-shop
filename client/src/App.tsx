@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router";
 
 import { ScrollToTop } from "./components/shared/scroll-to-top";
 
-const Layout = lazy(() => import("./layout/Layout"));
+const Layout = lazy(() => import("./layout/layout"));
 const RedirectIfAuthenticated = lazy(
   () => import("./layout/redirect-if-authenticated")
 );
@@ -21,6 +21,7 @@ const Signup = lazy(() => import("./pages/auth/signup"));
 const VerifyEmail = lazy(() => import("./pages/auth/verify-email"));
 const ForgotPassword = lazy(() => import("./pages/auth/forgot-password"));
 const ResetPassword = lazy(() => import("./pages/auth/reset-password"));
+const GoogleCallback = lazy(() => import("./pages/auth/google-callback"));
 
 const Wishlist = lazy(() => import("./pages/wishlist"));
 
@@ -46,6 +47,7 @@ export default function App() {
       <Suspense fallback={<div className="min-h-screen" />}>
         <ScrollToTop />
         <Routes>
+          <Route path="/auth/google-callback" element={<GoogleCallback />} />
           <Route element={<RedirectIfAuthenticated />}>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
@@ -60,6 +62,7 @@ export default function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route element={<ProtectedRoute />}>
+              <Route path="/profile" element={<Profile />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route
                 path="/account/delivery-addresses"
@@ -73,7 +76,6 @@ export default function App() {
             <Route path="/success" element={<Successful />} />
             <Route path="/failure" element={<Failure />} />
 
-            <Route path="/profile" element={<Profile />} />
 
             <Route path="/track-order" element={<TrackOrder />} />
             <Route path="/returns" element={<Returns />} />

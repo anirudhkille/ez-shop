@@ -7,20 +7,19 @@ const footerLinks = {
     { label: "All Products", href: "/products" },
     { label: "Wishlist", href: "/wishlist" },
     { label: "Cart", href: "/cart" },
-    { label: "Profile", href: "/profile" },
   ],
 
   Account: [
-    { label: "Account Details", href: "/account/account-details" },
-    {
-      label: "Delivery Addresses",
-      href: "/account/delivery-addresses",
-    },
-    {
-      label: "Update Password",
-      href: "/account/update-password",
-    },
-  ],
+  { label: "Profile", href: "/profile" },
+  {
+    label: "Delivery Addresses",
+    href: "/account/delivery-addresses",
+  },
+  {
+    label: "Update Password",
+    href: "/account/update-password",
+  },
+],
 
   Orders: [
     { label: "Track Order", href: "/track-order" },

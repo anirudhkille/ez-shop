@@ -30,10 +30,61 @@ import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
 import { tagColors } from "@/data/products";
 import ProductCard from "@/features/product/product-card";
 
+function ProductDetailSkeleton() {
+  return (
+    <main className="pt-20">
+      <div className="mx-auto grid max-w-350 grid-cols-1 gap-12 px-6 pb-20 lg:grid-cols-2 lg:gap-20 lg:px-10">
+        {/* Image skeleton */}
+        <div className="flex flex-col gap-4">
+          <div className="bg-brand-surface-raised animate-pulse aspect-square rounded-3xl" />
+          <div className="flex gap-3">
+            {[...Array(3)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-brand-surface-raised animate-pulse h-20 w-20 shrink-0 rounded-xl"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Info skeleton */}
+        <div className="flex flex-col justify-center gap-4">
+          <div className="bg-brand-surface-raised animate-pulse h-3 w-24 rounded-full" />
+          <div className="bg-brand-surface-raised animate-pulse h-12 w-3/4 rounded-xl" />
+          <div className="bg-brand-surface-raised animate-pulse h-4 w-32 rounded-full" />
+          <div className="bg-brand-surface-raised animate-pulse h-10 w-40 rounded-xl" />
+          <div className="space-y-2">
+            <div className="bg-brand-surface-raised animate-pulse h-3 w-full rounded-full" />
+            <div className="bg-brand-surface-raised animate-pulse h-3 w-5/6 rounded-full" />
+            <div className="bg-brand-surface-raised animate-pulse h-3 w-4/6 rounded-full" />
+          </div>
+          <div className="mt-4 flex gap-2">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-brand-surface-raised animate-pulse h-9 w-9 rounded-full"
+              />
+            ))}
+          </div>
+          <div className="flex gap-2 mt-2">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-brand-surface-raised animate-pulse h-10 w-12 rounded-lg"
+              />
+            ))}
+          </div>
+          <div className="bg-brand-surface-raised animate-pulse mt-4 h-12 w-full rounded-xl" />
+        </div>
+      </div>
+    </main>
+  );
+}
+
 export default function ProductDetail() {
   const { token } = useUserStore();
   const { slug, id } = useParams();
-  const { data: product } = useProduct(slug ?? "", id ?? "");
+  const { data: product, isLoading } = useProduct(slug ?? "", id ?? "");
   const { data: related } = useSimilarProducts(id ?? "");
   const { data: wishlist } = useWishlists();
   const { mutate: toggleWishlist } = useToggleWishlist();
@@ -72,6 +123,10 @@ export default function ProductDetail() {
     });
   };
 
+  if (isLoading) {
+    return <ProductDetailSkeleton />;
+  }
+
   if (!product) {
     return (
       <div className="bg-background flex min-h-screen items-center justify-center">
@@ -103,6 +158,7 @@ export default function ProductDetail() {
   return (
     <main className="pt-20">
       <div className="mx-auto grid max-w-350 grid-cols-1 gap-12 px-6 pb-20 lg:grid-cols-2 lg:gap-20 lg:px-10">
+        {/* Image Panel */}
         <div className="flex flex-col gap-4">
           <div className="bg-brand-surface-raised relative flex aspect-square items-center justify-center overflow-hidden rounded-3xl p-12">
             <div className="bg-gradient-radial-dark absolute inset-0 opacity-60" />
@@ -172,6 +228,7 @@ export default function ProductDetail() {
           )}
         </div>
 
+        {/* Info Panel */}
         <div className="flex flex-col justify-center">
           <span className="font-body text-brand-orange text-xs font-semibold tracking-widest uppercase">
             {product.category?.name}
@@ -219,6 +276,7 @@ export default function ProductDetail() {
             {product.description}
           </p>
 
+          {/* Color */}
           <div className="mt-8">
             <div className="mb-3 flex items-center justify-between">
               <span className="font-body text-foreground text-sm font-semibold">
@@ -233,7 +291,7 @@ export default function ProductDetail() {
                 <button
                   key={i}
                   onClick={() => handleColorChange(i)}
-                  className={`h-9 w-9 rounded-full border-2 ${
+                  className={`h-9 w-9 rounded-full border-2 transition-all duration-200 ${
                     selectedColorIdx === i
                       ? "border-brand-orange scale-110"
                       : "border-brand-border"
@@ -244,6 +302,7 @@ export default function ProductDetail() {
             </div>
           </div>
 
+          {/* Size */}
           <div className="mt-6">
             <div className="mb-3 flex items-center justify-between">
               <span className="font-body text-foreground text-sm font-semibold">
@@ -275,7 +334,8 @@ export default function ProductDetail() {
             )}
           </div>
 
-          <div className="mt-8 flex items-center gap-4">
+          {/* Actions — desktop only */}
+          <div className="mt-8 hidden items-center gap-4 lg:flex">
             <div className="border-brand-border flex items-center overflow-hidden rounded-xl border">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -320,18 +380,11 @@ export default function ProductDetail() {
             </button>
           </div>
 
+          {/* Badges */}
           <div className="border-brand-border mt-8 grid grid-cols-3 gap-3 border-t pt-8">
             {[
-              {
-                icon: Truck,
-                label: "Free shipping",
-                sub: "Orders over ₹8,000",
-              },
-              {
-                icon: RotateCcw,
-                label: "Easy returns",
-                sub: "30-day policy",
-              },
+              { icon: Truck, label: "Free shipping", sub: "Orders over ₹8,000" },
+              { icon: RotateCcw, label: "Easy returns", sub: "30-day policy" },
               { icon: Shield, label: "Authentic", sub: "100% genuine" },
             ].map((badge) => (
               <div
@@ -353,7 +406,61 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      <div className="bg-card/40 py-20">
+      {/* Mobile sticky action bar */}
+      <div className="bg-background/95 border-brand-border fixed bottom-0 left-0 right-0 z-50 border-t px-4 py-3 backdrop-blur-md lg:hidden">
+        <div className="flex items-center gap-3">
+          {/* Quantity */}
+          <div className="border-brand-border flex items-center overflow-hidden rounded-xl border">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="text-muted-foreground hover:text-foreground flex h-11 w-9 items-center justify-center transition-colors"
+            >
+              <Minus size={13} />
+            </button>
+            <span className="font-body text-foreground w-8 text-center text-sm font-semibold">
+              {quantity}
+            </span>
+            <button
+              onClick={() => setQuantity(quantity + 1)}
+              className="text-muted-foreground hover:text-foreground flex h-11 w-9 items-center justify-center transition-colors"
+            >
+              <Plus size={13} />
+            </button>
+          </div>
+
+          {/* Add to cart */}
+          <button
+            onClick={handleAddToCart}
+            disabled={!selectedSize}
+            className={`font-body flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold tracking-wider uppercase transition-all duration-300 ${
+              selectedSize
+                ? "bg-gradient-orange text-primary-foreground btn-primary-glow hover:opacity-90"
+                : "bg-muted text-muted-foreground cursor-not-allowed"
+            }`}
+          >
+            <ShoppingCart size={15} />
+            {selectedSize ? "Add to Cart" : "Select Size"}
+          </button>
+
+          {/* Wishlist */}
+          <button
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 ${
+              liked
+                ? "border-red-500/40 bg-red-500/10"
+                : "border-brand-border hover:border-brand-orange/40"
+            }`}
+            onClick={handleWishlist}
+          >
+            <Heart
+              size={16}
+              className={liked ? "fill-red-500 text-red-500" : "text-muted-foreground"}
+            />
+          </button>
+        </div>
+      </div>
+
+      {/* Related Products */}
+      <div className="bg-card/40 py-20 pb-32 lg:pb-20">
         <div className="mx-auto max-w-350 px-6 lg:px-10">
           <div className="mb-10">
             <span className="font-body text-brand-orange text-xs font-semibold tracking-widest uppercase">

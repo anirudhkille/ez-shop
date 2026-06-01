@@ -3,6 +3,7 @@ import type { TCategory } from "@/types/category";
 import { useCategorys } from "@/hooks/useCategory";
 
 import Fade from "@/components/shared/fade";
+import {Link} from "react-router"
 
 export default function CategoriesSection() {
   const { data: categories } = useCategorys();
@@ -19,15 +20,15 @@ export default function CategoriesSection() {
               Shop by <span className="text-gradient-orange">Category</span>
             </h2>
           </div>
-          <a
-            href="#"
+          <Link
+to="/products"
             className="font-body text-muted-foreground hover:text-brand-orange group hidden items-center gap-2 text-sm font-medium transition-colors sm:inline-flex"
           >
             View All
             <span className="transition-transform duration-200 group-hover:translate-x-1">
               →
             </span>
-          </a>
+          </Link>
         </Fade>
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:gap-6">
@@ -35,11 +36,11 @@ export default function CategoriesSection() {
             <Fade
               key={cat.name}
               delay={i * 0.1}
-              className={`group relative h-120 cursor-pointer overflow-hidden rounded-2xl ${
+              className={`group relative h-48 md:h-120 cursor-pointer overflow-hidden rounded-2xl ${
                 i === 3 ? "md:col-span-1" : ""
               }`}
             >
-              <a href="#" style={{ aspectRatio: "3/4" }}>
+              <Link to={`/products?category=${cat.slug}`} style={{ aspectRatio: "3/4" }}>
                 <img
                   src={cat.image}
                   alt={cat.name}
@@ -70,7 +71,7 @@ export default function CategoriesSection() {
                     ↗
                   </span>
                 </div>
-              </a>
+              </Link>
             </Fade>
           ))}
         </div>

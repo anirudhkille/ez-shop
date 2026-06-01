@@ -1,4 +1,4 @@
-import { Cookie } from "lucide-react";
+
 
 import Container from "@/layout/container";
 import Head from "@/layout/head";
@@ -10,10 +10,8 @@ export default function CookiePolicy() {
     <>
       <Head title="Cookie Policy | EZ Shop" />
       <Container className="max-w-4xl px-5 py-16 sm:px-8 md:px-10">
-        <div className="mb-10 text-center">
-          <div className="bg-brand-orange/10 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
-            <Cookie className="text-brand-orange h-10 w-10" />
-          </div>
+        <div className="my-10 text-center">
+      
           <h1 className="font-display text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
             Cookie Policy
           </h1>
