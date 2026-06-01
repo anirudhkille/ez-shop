@@ -1,26 +1,17 @@
 import jwt from "jsonwebtoken";
-import { compare } from "bcryptjs";
 import { connect } from "@/dbConfig/dbConfig";
 import Admin, { IAdmin } from "@/models/Admin";
-import { setCookie } from "cookies-next";
+import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
-  if (req.method !== "POST") {
-    return Response.json({
-      success: false,
-      message: "Method not allowed",
-    });
-  }
-
   try {
-    const reqBody = await req.json();
-    const { email, password } = reqBody;
+    const { email, password } = await req.json();
 
     if (!email || !password) {
-      return Response.json({
-        success: false,
-        message: "All fields are required",
-      });
+      return Response.json(
+        { success: false, message: "All fields are required" },
+        { status: 400 }
+      );
     }
 
     await connect();
@@ -29,33 +20,30 @@ export async function POST(req: Request) {
 
     if (!admin) {
       return Response.json(
-        {
-          success: false,
-          message: "Invalid email or password",
-        },
+        { success: false, message: "Invalid email or password" },
         { status: 401 }
       );
     }
 
-    const isMatch = await compare(password, admin.password);
+    const isMatch = await admin.matchPassword(password);
 
     if (!isMatch) {
       return Response.json(
-        {
-          success: false,
-          message: "Invalid email or password",
-        },
-        { status: 404 }
+        { success: false, message: "Invalid email or password" },
+        { status: 401 }
       );
     }
 
     const token = generateToken(admin as IAdmin);
     const refreshToken = generateRefreshToken(admin as IAdmin);
 
-    // Set refresh token in cookies
-    setCookie("refreshToken", refreshToken, {
+    const cookieStore = await cookies();
+    cookieStore.set("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60,
+      path: "/",
     });
 
     return Response.json(
@@ -66,7 +54,6 @@ export async function POST(req: Request) {
           name: admin.name,
           email: admin.email,
           token,
-          refreshToken,
         },
       },
       { status: 200 }
@@ -74,24 +61,24 @@ export async function POST(req: Request) {
   } catch (error: unknown) {
     const errMessage = error instanceof Error ? error.message : "Unknown error";
     return Response.json(
-      {
-        success: false,
-        message: "Internal server error",
-        error: errMessage,
-      },
+      { success: false, message: "Internal server error", error: errMessage },
       { status: 500 }
     );
   }
 }
 
 function generateToken(admin: IAdmin) {
-  return jwt.sign({ id: admin._id, role: "admin" }, process.env.JWT_SECRET!, {
-    expiresIn: "1h",
-  });
+  return jwt.sign(
+    { id: admin._id, role: "admin" },
+    process.env.JWT_ACCESS_SECRET!,
+    { expiresIn: "1h" }
+  );
 }
 
 function generateRefreshToken(admin: IAdmin) {
-  return jwt.sign({ id: admin._id, role: "admin" }, process.env.JWT_SECRET!, {
-    expiresIn: "7d",
-  });
+  return jwt.sign(
+    { id: admin._id, role: "admin" },
+    process.env.JWT_REFRESH_SECRET!,
+    { expiresIn: "7d" }
+  );
 }

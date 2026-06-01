@@ -23,10 +23,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ICategory } from "@/models/Category";
+import { IProduct } from "@/models/Product";
 import { columns } from "./ProductColumn";
 
-export default function CategoryTable({ data }: { data: ICategory[] }) {
+export function ProductTable({ data }: { data: IProduct[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

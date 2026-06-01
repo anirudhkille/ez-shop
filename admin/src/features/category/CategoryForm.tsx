@@ -113,8 +113,8 @@ export default function CategoryForm({ data }: CategoryFormProps) {
             <FormItem>
               <FormControl>
                 <ImageUpload
-                  initialImage={field.value}
-                  onUploadSuccess={(url) => field.onChange(url)}
+                  initialImages={field.value ? [field.value] : []}
+                  onUploadSuccess={(urls) => field.onChange(urls[0] || "")}
                 />
               </FormControl>
               <FormMessage />

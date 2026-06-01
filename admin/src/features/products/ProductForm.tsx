@@ -28,18 +28,20 @@ interface ProductFormProps {
 const formSchema = z.object({
   title: z.string().nonempty({ message: "Please enter a title" }),
   description: z.string().nonempty({ message: "Please enter a description" }),
-  price: z.coerce.number().positive("Price must be a positive number"),
-  discountPrice: z.coerce.number().optional(),
-  stock: z.coerce.number().int().min(0, "Stock must be 0 or more"),
+  price: z.number().positive("Price must be a positive number"),
+  discountPrice: z.number().optional(),
+  stock: z.number().int().min(0, "Stock must be 0 or more"),
   image: z
     .array(z.string())
     .nonempty({ message: "Please upload at least one image" }),
   publish: z.boolean(),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 export default function ProductForm({ data }: ProductFormProps) {
   const router = useRouter();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: data?.title || "",
@@ -52,7 +54,7 @@ export default function ProductForm({ data }: ProductFormProps) {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: FormValues) => {
     try {
       const response = await fetch(
         data ? `/api/product/${data.slug}` : "/api/product",
@@ -114,7 +116,7 @@ export default function ProductForm({ data }: ProductFormProps) {
             <FormItem>
               <FormLabel>Price</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter price" {...field} />
+                <Input type="number" placeholder="Enter price" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -132,6 +134,7 @@ export default function ProductForm({ data }: ProductFormProps) {
                   type="number"
                   placeholder="Enter discount price"
                   {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
               <FormMessage />
@@ -150,6 +153,7 @@ export default function ProductForm({ data }: ProductFormProps) {
                   type="number"
                   placeholder="Enter stock quantity"
                   {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
               <FormMessage />

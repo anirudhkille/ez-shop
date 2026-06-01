@@ -5,9 +5,9 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const reqBody = await req.json();
-    const { title, image, publish } = reqBody;
+    const { title, description, price, discountPrice, stock, image, publish } = reqBody;
 
-    if (!image || !title || publish == null) {
+    if (!title || !description || !image || image.length === 0 || price == null || stock == null || publish == null) {
       return Response.json(
         {
           success: false,
@@ -19,12 +19,21 @@ export async function POST(req: Request) {
 
     await connect();
 
-    const newProduct = new Product({ title, image, publish });
+    const newProduct = new Product({
+      title,
+      description,
+      price,
+      discountPrice,
+      stock,
+      image,
+      publish,
+    });
     await newProduct.save();
 
     return Response.json(
       {
         success: true,
+        message: "Product created successfully",
         data: newProduct,
       },
       { status: 201 }
@@ -46,10 +55,11 @@ export async function GET() {
   try {
     await connect();
 
-    const categories = await Product.find({});
+    const products = await Product.find({}).populate("category", "title");
     return Response.json({
       success: true,
-      data: categories,
+      message: "Products fetched successfully",
+      data: products,
     });
   } catch (error: unknown) {
     const errMessage = error instanceof Error ? error.message : "Unknown error";

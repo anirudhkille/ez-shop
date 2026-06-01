@@ -1,6 +1,6 @@
 import { PageHeading } from "@/components/shared/PageHeading";
 import { Separator } from "@/components/ui/separator";
-import CategoryTable from "@/features/category/CategoryTable";
+import { ProductTable } from "@/features/products/ProductTable";
 import React from "react";
 
 export const metadata = {
@@ -22,7 +22,7 @@ export default async function Page() {
       />
 
       <Separator />
-      <CategoryTable data={posts.data || []} />
+      <ProductTable data={posts.data || []} />
     </div>
   );
 }

@@ -81,7 +81,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <div className="flex items-centerjustify-center">
+        <div className="flex items-center justify-center">
           <div className="flex gap-2 py-2 text-sidebar-accent-foreground ">
             <div className="flex items-center justify-center rounded-lg aspect-square size-8 bg-sidebar-primary text-sidebar-primary-foreground">
               <Logo />

@@ -1,5 +1,5 @@
 import { connect } from "@/dbConfig/dbConfig";
-import Category from "@/models/Category";
+import Product from "@/models/Product";
 
 export async function GET(
   request: Request,
@@ -10,21 +10,21 @@ export async function GET(
 
     await connect();
 
-    const categories = await Category.findOne({ slug: slug });
+    const product = await Product.findOne({ slug }).populate("category", "title");
 
-    if (!categories) {
+    if (!product) {
       return Response.json(
         {
           success: false,
-          message: "Category not found",
+          message: "Product not found",
         },
         { status: 404 }
       );
     }
     return Response.json({
       success: true,
-      message: "Category fetched successfully",
-      data: categories,
+      message: "Product fetched successfully",
+      data: product,
     });
   } catch (error: unknown) {
     const errMessage = error instanceof Error ? error.message : "Unknown error";
@@ -48,25 +48,25 @@ export async function PATCH(
     const reqBody = await request.json();
     await connect();
 
-    const categories = await Category.findOneAndUpdate(
-      { slug: slug },
+    const product = await Product.findOneAndUpdate(
+      { slug },
       { ...reqBody },
       { new: true }
     );
 
-    if (!categories) {
+    if (!product) {
       return Response.json(
         {
           success: false,
-          message: "Category not found",
+          message: "Product not found",
         },
         { status: 404 }
       );
     }
     return Response.json({
       success: true,
-      message: "Category updated successfully",
-      data: categories,
+      message: "Product updated successfully",
+      data: product,
     });
   } catch (error: unknown) {
     const errMessage = error instanceof Error ? error.message : "Unknown error";
@@ -89,13 +89,13 @@ export async function DELETE(
     const slug = (await params).slug;
     await connect();
 
-    const categories = await Category.findOneAndDelete({ slug: slug });
+    const product = await Product.findOneAndDelete({ slug });
 
-    if (!categories) {
+    if (!product) {
       return Response.json(
         {
           success: false,
-          message: "Category not found",
+          message: "Product not found",
         },
         { status: 404 }
       );
@@ -103,7 +103,7 @@ export async function DELETE(
 
     return Response.json({
       success: true,
-      message: "Category deleted successfully",
+      message: "Product deleted successfully",
     });
   } catch (error: unknown) {
     const errMessage = error instanceof Error ? error.message : "Unknown error";

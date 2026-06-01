@@ -1,5 +1,4 @@
 "use client";
-import { SidebarMenuButton, useSidebar } from "../ui/sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,11 +10,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { BadgeCheck, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 export default function AccountMenu() {
   const router = useRouter();
-  const { isMobile } = useSidebar();
 
   const handleLogout = () => {
     router.push("/");
@@ -26,21 +25,18 @@ export default function AccountMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <SidebarMenuButton
-          size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-        >
-          <Avatar className="w-8 h-8 rounded-full">
+        <Button variant="ghost" size="icon" className="rounded-full">
+          <Avatar className="w-8 h-8">
             <AvatarImage alt={name || ""} />
-            <AvatarFallback className="flex items-center justify-center h-full text-center uppercase rounded-full">
+            <AvatarFallback className="uppercase">
               {name?.[0] || ""}
             </AvatarFallback>
           </Avatar>
-        </SidebarMenuButton>
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-        side={isMobile ? "bottom" : "right"}
+        side="bottom"
         align="end"
         sideOffset={4}
       >

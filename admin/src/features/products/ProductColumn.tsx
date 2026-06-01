@@ -10,11 +10,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ICategory } from "@/models/Category";
+import { IProduct } from "@/models/Product";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-export const columns: ColumnDef<ICategory>[] = [
+export const columns: ColumnDef<IProduct>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -40,15 +40,19 @@ export const columns: ColumnDef<ICategory>[] = [
   {
     accessorKey: "image",
     header: "Image",
-    cell: ({ row }) => (
-      <Image
-        height={48}
-        width={48}
-        src={row.getValue("image")}
-        alt="Category"
-        className="object-cover w-12 h-12 rounded-md"
-      />
-    ),
+    cell: ({ row }) => {
+      const images: string[] = row.getValue("image") || [];
+      const src = images[0] || "";
+      return src ? (
+        <Image
+          height={48}
+          width={48}
+          src={src}
+          alt="Product"
+          className="object-cover w-12 h-12 rounded-md"
+        />
+      ) : null;
+    },
   },
   {
     accessorKey: "title",
@@ -58,13 +62,34 @@ export const columns: ColumnDef<ICategory>[] = [
     ),
   },
   {
+    accessorKey: "price",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Price
+        <ArrowUpDown />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const price = row.getValue("price") as number;
+      return <div>${price.toFixed(2)}</div>;
+    },
+  },
+  {
+    accessorKey: "stock",
+    header: "Stock",
+    cell: ({ row }) => <div>{row.getValue("stock") as number}</div>,
+  },
+  {
     accessorKey: "publish",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Publish
+        Status
         <ArrowUpDown />
       </Button>
     ),
@@ -78,21 +103,21 @@ export const columns: ColumnDef<ICategory>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const category = row.original;
-      return <CategoryActions category={category} />;
+      const product = row.original;
+      return <ProductActions product={product} />;
     },
   },
 ];
 
-const CategoryActions = ({ category }: { category: ICategory }) => {
+const ProductActions = ({ product }: { product: IProduct }) => {
   const router = useRouter();
 
   const handleView = () => {
-    router.push(`/dashboard/category/${category.slug}`);
+    router.push(`/dashboard/products/${product.slug}`);
   };
 
   const handleDelete = async () => {
-    const response = await fetch(`/api/category/${category.slug}`, {
+    const response = await fetch(`/api/products/${product.slug}`, {
       method: "DELETE",
     });
     if (response.ok) {
