@@ -13,17 +13,17 @@ import { apiLimiter } from "./config/limiter";
 import passport from "./config/passport";
 import { errorHandler } from "./middlewares/errorHandler";
 
-import addressRoutes from "./routes/addressRoutes";
-import adminRoutes from "./routes/adminRoutes";
-import cartRoutes from "./routes/cartRoutes";
-import categoryRoutes from "./routes/categoryRoutes";
-import newsletterRoutes from "./routes/newsletterRoutes";
-import orderRoutes from "./routes/orderRoutes";
-import paymentRoutes from "./routes/paymentRoutes";
-import productRoutes from "./routes/productRoutes";
-import reviewRoutes from "./routes/reviewRoutes";
-import userRoutes from "./routes/userRoutes";
-import wishlistRoutes from "./routes/wishlistRoutes";
+import addressRoutes from "./modules/address/address.routes";
+import adminRoutes from "./modules/admin/admin.routes";
+import cartRoutes from "./modules/cart/cart.routes";
+import categoryRoutes from "./modules/category/category.routes";
+import newsletterRoutes from "./modules/newsletter/newsletter.routes";
+import orderRoutes from "./modules/order/order.routes";
+import paymentRoutes from "./modules/payment/payment.routes";
+import productRoutes from "./modules/product/product.routes";
+import reviewRoutes from "./modules/review/review.routes";
+import userRoutes from "./modules/user/user.routes";
+import wishlistRoutes from "./modules/wishlist/wishlist.routes";
 import stripeWebhook from "./webhook/stripeWebhook";
 
 const app = express();

@@ -1,7 +1,7 @@
 import Stripe from "stripe";
-import Order from "@/models/Order";
+import Order from "@/modules/order/order.model";
 import express from "express";
-import Cart from "@/models/Cart";
+import Cart from "@/modules/cart/cart.model";
 
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
