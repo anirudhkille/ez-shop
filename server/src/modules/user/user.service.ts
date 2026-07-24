@@ -8,7 +8,7 @@ import { generateOtp } from "@/utils/generateOtp";
 import { sendEmail } from "@/services/emailService";
 import { resetPasswordTemplate } from "@/templates/resetEmailTemplate";
 import { verifyEmailTemplate } from "@/templates/verifyEmailTemplate";
-import Session from "@/models/Session";
+import Session from "./session..model";
 import { AppError } from "@/utils/appError";
 import * as userRepository from "@/modules/user/user.repository";
 
