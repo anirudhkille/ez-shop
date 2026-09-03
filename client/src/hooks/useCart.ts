@@ -19,16 +19,18 @@ const nextGuestId = () => `guest_${Date.now()}_${++guestIdCounter}`;
 
 const computeGuestCartData = (cartItems: GuestCartItem[]) => {
   const subtotal = cartItems.reduce(
-    (sum, i) => sum + (i.product.discountPrice ?? i.product.price) * i.quantity,
+    (sum, i) => sum + (i.product.price ?? 0) * i.quantity,
     0
   );
-  const discountTotal = cartItems.reduce(
-    (sum, i) =>
+  const discountTotal = cartItems.reduce((sum, i) => {
+    const discountPrice = i.product.discountPrice;
+    return (
       sum +
-      (i.product.price - (i.product.discountPrice ?? i.product.price)) *
-        i.quantity,
-    0
-  );
+      (discountPrice && discountPrice > 0
+        ? (i.product.price - discountPrice) * i.quantity
+        : 0)
+    );
+  }, 0);
   return {
     products: cartItems,
     subtotal,
