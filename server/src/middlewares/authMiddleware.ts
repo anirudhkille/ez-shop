@@ -5,7 +5,7 @@ import Admin from "@/modules/admin/admin.model";
 import { asyncHandler } from "../utils/asyncHandler";
 
 interface ITokenPayload extends JwtPayload {
-  id: string;
+  _id: string;
   role: "User" | "Admin";
 }
 

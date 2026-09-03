@@ -266,7 +266,7 @@ export const logout = async (token: string) => {
   if (token) {
     try {
       const decoded: any = jwt.verify(token, process.env.JWT_REFRESH_SECRET!);
-      await Session.findOneAndDelete({ key: `refresh:${decoded.id}` });
+      await Session.findOneAndDelete({ key: `refresh:${decoded._id}` });
     } catch {
       // ignore
     }
