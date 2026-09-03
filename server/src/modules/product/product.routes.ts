@@ -34,7 +34,7 @@ router.post(
   ]),
   postProduct,
 );
-router.patch("/:id", protect, updateProduct);
-router.delete("/:id", protect, deleteProduct);
+router.patch("/:id", protect, authorize(["Admin"]), updateProduct);
+router.delete("/:id", protect, authorize(["Admin"]), deleteProduct);
 
 export default router;

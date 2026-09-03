@@ -15,7 +15,7 @@ export const signUp = async (body: any) => {
     return { status: 409, data: { success: false, message: "Email already registered" } };
   }
 
-  const newUser = await adminRepository.create({ name, email, password });
+  const newUser = await adminRepository.create({ name, email, password, role: "Admin" });
 
   const accessToken = generateAccessToken({
     _id: String(newUser._id),
