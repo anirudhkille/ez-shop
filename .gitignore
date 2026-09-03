@@ -13,6 +13,9 @@ dist
 dist-ssr
 *.local
 
+# Local task list (keep off GitHub)
+todo.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
