@@ -24,8 +24,8 @@ export const getMyOrder = asyncHandler(async (req: any, res: Response) => {
 });
 
 export const getOrderById = asyncHandler(
-  async (req: Request, res: Response) => {
-    const result = await orderService.getOrderById(req.params.id);
+  async (req: any, res: Response) => {
+    const result = await orderService.getOrderById(req.params.id, req.user);
     res.status(result.status || 200).json(result.data);
   },
 );
@@ -38,8 +38,11 @@ export const placeGuestCODOrder = asyncHandler(
 );
 
 export const getOrderBySessionId = asyncHandler(
-  async (req: Request, res: Response) => {
-    const result = await orderService.getOrderBySessionId(req.params.sessionId);
+  async (req: any, res: Response) => {
+    const result = await orderService.getOrderBySessionId(
+      req.params.sessionId,
+      req.user,
+    );
     res.status(result.status || 200).json(result.data);
   },
 );

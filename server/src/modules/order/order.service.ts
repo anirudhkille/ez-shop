@@ -129,11 +129,21 @@ export const getMyOrder = async (userId: string, limit: number, page: number) =>
   };
 };
 
-export const getOrderById = async (id: string) => {
+const isOrderAccessible = (order: any, user?: any): boolean => {
+  if (!user) return true;
+  if (user.role === "Admin") return true;
+  if (!order.user) return false;
+  return String(order.user._id ?? order.user) === String(user._id);
+};
+
+export const getOrderById = async (id: string, user?: any) => {
   const order = await orderRepository.findByIdPopulated(id);
 
   if (!order)
     return { status: 404, data: { success: false, message: "Orders not found" } };
+
+  if (!isOrderAccessible(order, user))
+    return { status: 403, data: { success: false, message: "Access denied" } };
 
   return {
     status: 200,
@@ -230,11 +240,14 @@ export const placeGuestCODOrder = async (body: any) => {
   };
 };
 
-export const getOrderBySessionId = async (sessionId: string) => {
+export const getOrderBySessionId = async (sessionId: string, user?: any) => {
   const order = await orderRepository.findOnePopulated({ sessionId });
 
   if (!order)
     return { status: 404, data: { success: false, message: "Order doesn't exists" } };
+
+  if (!isOrderAccessible(order, user))
+    return { status: 403, data: { success: false, message: "Access denied" } };
 
   return {
     status: 200,
