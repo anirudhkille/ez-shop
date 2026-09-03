@@ -225,7 +225,14 @@ export const updateProfile = async (
   userId: string,
   updates: Record<string, any>,
 ) => {
-  const user = await userRepository.findByIdAndUpdate(userId, updates);
+  const allowedFields = ["name", "phone", "avatar"];
+  const sanitized: Record<string, any> = {};
+
+  for (const field of allowedFields) {
+    if (updates[field] !== undefined) sanitized[field] = updates[field];
+  }
+
+  const user = await userRepository.findByIdAndUpdate(userId, sanitized);
 
   if (!user) {
     throw new AppError("User not found", 404);

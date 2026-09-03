@@ -158,7 +158,14 @@ export const resetPassword = async (token: string, newPassword: string) => {
 };
 
 export const editProfile = async (userId: string, updates: any) => {
-  const user = await adminRepository.findByIdAndUpdate(userId, updates);
+  const allowedFields = ["name", "phone"];
+  const sanitized: any = {};
+
+  for (const field of allowedFields) {
+    if (updates[field] !== undefined) sanitized[field] = updates[field];
+  }
+
+  const user = await adminRepository.findByIdAndUpdate(userId, sanitized);
 
   if (!user) {
     return { status: 404, data: { success: false, message: "Admin not found" } };
