@@ -1,4 +1,3 @@
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import {
   generateAccessToken,
@@ -18,12 +17,11 @@ export const signUp = async (email: string, password: string) => {
     throw new AppError("Email already registered", 409);
   }
 
-  const hashedPassword = await bcrypt.hash(password, 12);
   const otp = generateOtp();
 
   await Session.create({
     key: `signup:${email}`,
-    value: JSON.stringify({ email, password: hashedPassword, otp }),
+    value: JSON.stringify({ email, password, otp }),
     expiresAt: new Date(Date.now() + 10 * 60 * 1000),
   });
 
