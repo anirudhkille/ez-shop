@@ -1,6 +1,7 @@
 import Cart from "@/modules/cart/cart.model";
 import Address from "@/modules/address/address.model";
 import Product from "@/modules/product/product.model";
+import { decrementStock } from "@/modules/product/product.service";
 import * as orderRepository from "@/modules/order/order.repository";
 
 export const placeCODOrder = async (userId: string, body: any) => {
@@ -54,6 +55,15 @@ export const placeCODOrder = async (userId: string, body: any) => {
       phone: address.phone,
     },
   });
+
+  await decrementStock(
+    cart.products.map((item) => ({
+      product: (item.product as any)._id,
+      variantId: item.variantId ? String(item.variantId) : undefined,
+      size: item.size,
+      quantity: item.quantity,
+    })),
+  );
 
   await Cart.updateOne({ user: userId }, { $set: { products: [] } });
 
@@ -199,6 +209,15 @@ export const placeGuestCODOrder = async (body: any) => {
       phone: address.phone,
     },
   });
+
+  await decrementStock(
+    products.map((p: any) => ({
+      product: p.productId,
+      variantId: p.variantId,
+      size: p.size,
+      quantity: p.quantity,
+    })),
+  );
 
   return {
     status: 200,

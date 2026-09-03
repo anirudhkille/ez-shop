@@ -1,7 +1,36 @@
 import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
 import slugify from "slugify";
 import mongoose from "mongoose";
+import Product from "@/modules/product/product.model";
 import * as productRepository from "@/modules/product/product.repository";
+
+export const decrementStock = async (
+  items: { product: string; variantId?: string; size?: string; quantity: number }[],
+) => {
+  for (const item of items) {
+    if (!item.quantity || item.quantity <= 0) continue;
+
+    if (item.variantId && item.size) {
+      const product = await Product.findById(item.product);
+      if (!product) continue;
+
+      const variant = product.variants.find(
+        (v) => (v as any)._id.toString() === item.variantId,
+      );
+      const sizeObj = variant?.sizes.find((s) => s.size === item.size);
+
+      if (sizeObj) {
+        sizeObj.stock = Math.max(0, sizeObj.stock - item.quantity);
+        await product.save();
+      }
+    } else {
+      await Product.updateOne(
+        { _id: item.product },
+        { $inc: { stock: -item.quantity } },
+      );
+    }
+  }
+};
 
 export const postProduct = async (body: any, files: any) => {
   if (typeof body.variants === "string") {

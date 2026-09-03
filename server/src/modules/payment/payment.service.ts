@@ -3,6 +3,7 @@ import Cart from "@/modules/cart/cart.model";
 import Address from "@/modules/address/address.model";
 import Order from "@/modules/order/order.model";
 import Product from "@/modules/product/product.model";
+import { decrementStock } from "@/modules/product/product.service";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -117,6 +118,15 @@ export const createCheckoutSession = async (userId: string, body: any, userEmail
     },
   });
 
+  await decrementStock(
+    cart.products.map((item) => ({
+      product: (item.product as any)._id,
+      variantId: item.variantId ? String(item.variantId) : undefined,
+      size: item.size,
+      quantity: item.quantity,
+    })),
+  );
+
   newOrder.sessionId = session.id;
   await newOrder.save();
 
@@ -161,6 +171,8 @@ export const createGuestCheckoutSession = async (body: any) => {
       product: item.productId,
       quantity: item.quantity,
       price,
+      variantId: item.variantId,
+      size: item.size,
     });
 
     line_items.push({
@@ -240,6 +252,15 @@ export const createGuestCheckoutSession = async (body: any) => {
       orderId: newOrder._id.toString(),
     },
   });
+
+  await decrementStock(
+    orderProducts.map((p) => ({
+      product: p.product,
+      variantId: p.variantId,
+      size: p.size,
+      quantity: p.quantity,
+    })),
+  );
 
   newOrder.sessionId = session.id;
   await newOrder.save();
