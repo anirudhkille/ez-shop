@@ -26,6 +26,8 @@ export default function CartProductCard({ item }: { item: CartItem }) {
   const { mutate: removeCartItem } = useRemoveCartItem();
   const { mutate: updateCartQty } = useUpdateCartQty();
 
+  const unitPrice = item.product.discountPrice ?? item.product.price;
+
   const handleIncrease = () => {
     updateCartQty({
       cartItemId: item._id,
@@ -105,12 +107,12 @@ export default function CartProductCard({ item }: { item: CartItem }) {
 
           <div className="text-right">
             <div className="font-display text-brand-orange text-xl font-bold">
-              {formatPrice(item.product.price * item.quantity)}
+              {formatPrice(unitPrice * item.quantity)}
             </div>
 
             {item.quantity > 1 && (
               <div className="font-body text-muted-foreground text-xs">
-                {formatPrice(item.product.price)} each
+                {formatPrice(unitPrice)} each
               </div>
             )}
           </div>
