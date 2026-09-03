@@ -1,11 +1,10 @@
 {
-  "compilerOptions": {
-    "baseUrl": ".",
+  "compilerOptions": { 
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
 
     "outDir": "dist",
