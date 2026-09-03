@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: ez-shop-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 24.14.1
