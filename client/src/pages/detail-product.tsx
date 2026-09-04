@@ -102,24 +102,26 @@ export default function ProductDetail() {
       toast.error("Login to save wishlist");
       return;
     }
-    toggleWishlist(product?._id);
+    if (!product) return;
+    toggleWishlist(product._id);
   };
 
   const handleAddToCart = () => {
     if (!selectedSize) return;
+    if (!product) return;
     addToCart({
-      productId: product?._id,
+      productId: product._id,
       size: selectedSize ?? undefined,
       quantity,
-      name: product?.name,
-      image: product?.image,
-      price: product?.discountPrice || product?.price,
-      discountPrice: product?.discountPrice,
-      slug: product?.slug,
+      name: product.name,
+      image: product.image,
+      price: product.discountPrice || product.price,
+      discountPrice: product.discountPrice,
+      slug: product.slug,
       category:
-        typeof product?.category === "string"
-          ? product?.category
-          : product?.category?.name,
+        typeof product.category === "string"
+          ? product.category
+          : product.category?.name,
     });
   };
 
@@ -166,7 +168,7 @@ export default function ProductDetail() {
             <img
               key={activeImage}
               src={activeImage}
-              alt={`${product.name} – ${activeVariant?.label ?? ""}`}
+              alt={`${product.name} – ${activeVariant?.color ?? ""}`}
               className="animate-float-subtle relative z-10 h-full w-full object-contain drop-shadow-2xl transition-opacity duration-300"
               style={{
                 filter: "drop-shadow(0 20px 40px hsl(22 100% 52% / 0.2))",

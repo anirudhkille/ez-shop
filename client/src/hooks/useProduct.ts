@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { useNavigate } from "react-router";
 
 import {
@@ -5,6 +7,8 @@ import {
   useInfiniteQuery,
   useQuery,
 } from "@tanstack/react-query";
+
+import type { TProduct } from "@/types/product";
 
 import {
   getBestSellersProducts,
@@ -26,19 +30,23 @@ export const useProducts = (filters?: any) => {
 
 export const useProduct = (slug: string, id: string) => {
   const navigate = useNavigate();
-  return useQuery({
+
+  const query = useQuery({
     queryFn: () => getProductBySlug(slug, id),
     queryKey: ["product", id],
-    select: (res) => {
-      if (res.redirectUrl) {
-        navigate(`/${res.redirectUrl}`, { replace: true });
-        return null;
-      }
-
-      return res.data;
-    },
     enabled: !!id,
   });
+
+  const product: TProduct | null = query.data?.data ?? null;
+  const redirectUrl = query.data?.redirectUrl;
+
+  useEffect(() => {
+    if (redirectUrl) {
+      navigate(`/${redirectUrl}`, { replace: true });
+    }
+  }, [redirectUrl, navigate]);
+
+  return { ...query, data: product };
 };
 
 export const useFilteredProducts = (filters: Record<string, any>) => {
