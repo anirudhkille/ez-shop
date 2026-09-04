@@ -110,16 +110,13 @@ export const getMyOrder = async (userId: string, limit: number, page: number) =>
     orderRepository.countByUser(userId),
   ]);
 
-  if (orders.length === 0)
-    return { status: 404, data: { success: false, message: "Orders not found" } };
-
   return {
     status: 200,
     data: {
       success: true,
       message: "My orders fetched successfully",
       data: orders,
-      pagintion: {
+      pagination: {
         total,
         page,
         limit,
