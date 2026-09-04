@@ -8,10 +8,10 @@ export const findByUser = async (userId: string) => {
   return await Address.find({ user: userId });
 };
 
-export const findByIdAndUpdate = async (id: string, data: any) => {
-  return await Address.findByIdAndUpdate(id, data, { new: true });
+export const findByIdAndUpdate = async (id: string, userId: string, data: any) => {
+  return await Address.findByIdAndUpdate({ _id: id, user: userId }, data, { new: true });
 };
 
-export const findByIdAndDelete = async (id: string) => {
-  return await Address.findByIdAndDelete(id);
+export const findByIdAndDelete = async (id: string, userId: string) => {
+  return await Address.findByIdAndDelete({ _id: id, user: userId });
 };

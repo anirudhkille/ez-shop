@@ -25,8 +25,12 @@ export const getReviewById = asyncHandler(
 );
 
 export const updateReview = asyncHandler(
-  async (req: Request, res: Response) => {
-    const result = await reviewService.updateReview(req.params.id, req.body);
+  async (req: any, res: Response) => {
+    const result = await reviewService.updateReview(
+      req.params.id,
+      req.user._id,
+      req.body,
+    );
 
     if (result.status === 404)
       return res.status(404).json(result.data);
@@ -36,8 +40,11 @@ export const updateReview = asyncHandler(
 );
 
 export const deleteReview = asyncHandler(
-  async (req: Request, res: Response) => {
-    const result = await reviewService.deleteReview(req.params.id);
+  async (req: any, res: Response) => {
+    const result = await reviewService.deleteReview(
+      req.params.id,
+      req.user._id,
+    );
 
     if (result.status === 404)
       return res.status(404).json(result.data);

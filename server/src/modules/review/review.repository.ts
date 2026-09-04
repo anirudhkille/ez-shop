@@ -13,10 +13,10 @@ export const countByProduct = async (productId: string) => {
   return await Review.countDocuments({ product: productId });
 };
 
-export const findByIdAndUpdate = async (id: string, data: any) => {
-  return await Review.findByIdAndUpdate(id, data, { new: true });
+export const findByIdAndUpdate = async (id: string, userId: string, data: any) => {
+  return await Review.findByIdAndUpdate({ _id: id, user: userId }, data, { new: true });
 };
 
-export const findByIdAndDelete = async (id: string) => {
-  return await Review.findByIdAndDelete(id);
+export const findByIdAndDelete = async (id: string, userId: string) => {
+  return await Review.findByIdAndDelete({ _id: id, user: userId });
 };

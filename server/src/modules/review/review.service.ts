@@ -48,8 +48,8 @@ export const getReviewById = async (productId: string) => {
   };
 };
 
-export const updateReview = async (id: string, body: any) => {
-  const review = await reviewRepository.findByIdAndUpdate(id, body);
+export const updateReview = async (id: string, userId: string, body: any) => {
+  const review = await reviewRepository.findByIdAndUpdate(id, userId, body);
 
   if (!review)
     return { status: 404, data: { success: false, message: "Review not found" } };
@@ -63,8 +63,8 @@ export const updateReview = async (id: string, body: any) => {
   };
 };
 
-export const deleteReview = async (id: string) => {
-  const review = await reviewRepository.findByIdAndDelete(id);
+export const deleteReview = async (id: string, userId: string) => {
+  const review = await reviewRepository.findByIdAndDelete(id, userId);
 
   if (!review)
     return { status: 404, data: { success: false, message: "Review not found" } };

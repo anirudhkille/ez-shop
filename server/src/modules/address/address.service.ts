@@ -10,12 +10,12 @@ export const getAddressByUser = async (userId: string) => {
   return { address, message: "Address fetched successfully" };
 };
 
-export const updateAddress = async (id: string, body: any) => {
-  const address = await addressRepository.findByIdAndUpdate(id, body);
+export const updateAddress = async (id: string, userId: string, body: any) => {
+  const address = await addressRepository.findByIdAndUpdate(id, userId, body);
   return { address, message: "Address updated successfully" };
 };
 
-export const deleteAddress = async (id: string) => {
-  const address = await addressRepository.findByIdAndDelete(id);
+export const deleteAddress = async (id: string, userId: string) => {
+  const address = await addressRepository.findByIdAndDelete(id, userId);
   return { address, message: "Address deleted successfully" };
 };
