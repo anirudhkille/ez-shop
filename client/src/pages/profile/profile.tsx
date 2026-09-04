@@ -50,7 +50,6 @@ export default function Profile() {
   const wishlistProducts: TProduct[] = wishlistData?.products ?? [];
 
   const displayName = name || "User";
-  const createdAt = new Date().toISOString();
 
   const [activeTab, setActiveTab] = useState<Tab>("Overview");
   const [editing, setEditing] = useState(false);
@@ -116,13 +115,6 @@ export default function Profile() {
                 </div>
                 <p className="font-body text-muted-foreground mt-1 text-sm">
                   {email}
-                </p>
-                <p className="font-body text-muted-foreground mt-1 text-xs">
-                  Member since{" "}
-                  {new Date(createdAt).toLocaleDateString("en-IN", {
-                    month: "long",
-                    year: "numeric",
-                  })}
                 </p>
               </div>
 
