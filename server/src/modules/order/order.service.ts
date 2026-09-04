@@ -17,9 +17,8 @@ export const placeCODOrder = async (userId: string, body: any) => {
   if (!address) return { status: 400, data: { success: false, message: "Invalid address" } };
 
   const subtotal = cart.products.reduce((sum: number, item: any) => {
-    return (
-      sum + (item.product.discountPrice || item.product.price) * item.quantity
-    );
+    const price = item.discountPriceAtPurchase ?? item.priceAtPurchase;
+    return sum + price * item.quantity;
   }, 0);
 
   let deliveryCharge = 0;
