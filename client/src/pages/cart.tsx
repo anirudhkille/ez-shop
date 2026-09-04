@@ -116,7 +116,8 @@ export default function Cart() {
                 </div>
                 {shipping > 0 && (
                   <p className="font-body text-muted-foreground text-xs">
-                    Add {100 - subtotal} more for free shipping
+                    Add {Math.max(0, 100 - (subtotal ?? 0))} more for free
+                    shipping
                   </p>
                 )}
                 <div className="border-brand-border flex justify-between border-t pt-3">
