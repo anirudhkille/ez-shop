@@ -66,15 +66,16 @@ export default function AddressModal({
 
   const onSubmit = (data: TAddress) => {
     if (address) {
-      update({
-        id: address._id || "",
-        formData: data,
-      });
+      update(
+        {
+          id: address._id || "",
+          formData: data,
+        },
+        { onSuccess: onClose }
+      );
     } else {
-      create(data);
+      create(data, { onSuccess: onClose });
     }
-
-    onClose();
   };
 
   useEffect(() => {
