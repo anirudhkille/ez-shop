@@ -118,7 +118,7 @@ export default function Products() {
     ...(filters.priceRange[1] < 300
       ? [
           {
-            label: `≤$${filters.priceRange[1]}`,
+            label: `≤₹${filters.priceRange[1]}`,
             onRemove: () => setFilters((f) => ({ ...f, priceRange: [0, 300] })),
           },
         ]
