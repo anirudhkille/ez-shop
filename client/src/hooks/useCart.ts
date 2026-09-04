@@ -65,6 +65,14 @@ export const useCart = () => {
       data: computeGuestCartData(cartItems),
       isLoading: false,
       isPending: false,
+      error: null,
+      isError: false,
+      refetch: async () => {
+        const { cartItems } = useCartStore.getState();
+        return {
+          data: computeGuestCartData(cartItems),
+        };
+      },
     } as typeof query;
   }
 
