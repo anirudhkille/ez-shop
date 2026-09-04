@@ -94,29 +94,35 @@ export const createCheckoutSession = async (userId: string, body: any, userEmail
     });
   }
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items,
-    success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.CLIENT_URL}/failure`,
+  let session: Stripe.Checkout.Session;
+  try {
+    session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items,
+      success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL}/failure`,
 
-    billing_address_collection: "required",
+      billing_address_collection: "required",
 
-    shipping_address_collection: {
-      allowed_countries: ["IN"],
-    },
+      shipping_address_collection: {
+        allowed_countries: ["IN"],
+      },
 
-    payment_intent_data: {
-      receipt_email: userEmail,
-    },
+      payment_intent_data: {
+        receipt_email: userEmail,
+      },
 
-    customer_email: userEmail,
+      customer_email: userEmail,
 
-    metadata: {
-      orderId: newOrder._id.toString(),
-      userId: userId.toString(),
-    },
-  });
+      metadata: {
+        orderId: newOrder._id.toString(),
+        userId: userId.toString(),
+      },
+    });
+  } catch (error) {
+    await Order.findByIdAndDelete(newOrder._id);
+    throw error;
+  }
 
   await decrementStock(
     cart.products.map((item) => ({
@@ -235,23 +241,29 @@ export const createGuestCheckoutSession = async (body: any) => {
     },
   });
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items,
-    success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.CLIENT_URL}/failure`,
-    billing_address_collection: "required",
-    shipping_address_collection: {
-      allowed_countries: ["IN"],
-    },
-    payment_intent_data: {
-      receipt_email: email,
-    },
-    customer_email: email,
-    metadata: {
-      orderId: newOrder._id.toString(),
-    },
-  });
+  let session: Stripe.Checkout.Session;
+  try {
+    session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items,
+      success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL}/failure`,
+      billing_address_collection: "required",
+      shipping_address_collection: {
+        allowed_countries: ["IN"],
+      },
+      payment_intent_data: {
+        receipt_email: email,
+      },
+      customer_email: email,
+      metadata: {
+        orderId: newOrder._id.toString(),
+      },
+    });
+  } catch (error) {
+    await Order.findByIdAndDelete(newOrder._id);
+    throw error;
+  }
 
   await decrementStock(
     orderProducts.map((p) => ({
