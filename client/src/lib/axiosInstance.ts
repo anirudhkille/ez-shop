@@ -94,20 +94,11 @@ axiosInstance.interceptors.response.use(
             .get<RefreshResponse>(`/user/refresh`)
             .then((res) => {
               const { token: newAccessToken } = res.data;
-              console.log("Token refreshed successfully");
               authStore.setUser({
                 token: newAccessToken,
               });
 
               processQueue(newAccessToken);
-
-              return axiosInstance({
-                ...originalRequest,
-                headers: {
-                  ...originalRequest.headers,
-                  Authorization: `Bearer ${newAccessToken}`,
-                },
-              });
             })
             .catch((err: AxiosError) => {
               authStore.logout();
