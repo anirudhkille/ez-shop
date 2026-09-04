@@ -28,7 +28,6 @@ import stripeWebhook from "./webhook/stripeWebhook";
 
 const app = express();
 
-app.use(compression());
 app.use(cors(corsOptions));
 app.use(compression({ filter: shouldCompress, level: 6 }));
 app.use("/api", stripeWebhook);
