@@ -23,7 +23,9 @@ export const usePlaceCodOrder = () => {
   return useMutation({
     mutationFn: (formData: TOrder) => placeCodOrder(formData),
     onSuccess: (data) => {
-      window.location.href = data.url || data.redirectUrl;
+      if (data.redirectUrl) {
+        window.location.href = data.redirectUrl;
+      }
     },
 
     onError: (error: any) => {
