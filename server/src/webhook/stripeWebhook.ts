@@ -27,17 +27,23 @@ router.post(
     if (event.type === "checkout.session.completed") {
       const session: any = event.data.object;
 
-      const order = await Order.findById(session.metadata.orderId);
-      if (!order) return res.status(404).send("Order not found");
+      try {
+        const order = await Order.findById(session.metadata.orderId);
+        if (!order) return res.status(200).send("OK");
 
-      order.paymentStatus = "paid";
-      order.paymentIntentId = session.payment_intent;
-      order.orderStatus = "processing";
-      if (order.user) {
-        await Cart.updateOne({ user: order.user }, { $set: { products: [] } });
+        if (order.paymentStatus === "paid") return res.status(200).send("OK");
+
+        order.paymentStatus = "paid";
+        order.paymentIntentId = session.payment_intent;
+        order.orderStatus = "processing";
+        if (order.user) {
+          await Cart.updateOne({ user: order.user }, { $set: { products: [] } });
+        }
+
+        await order.save();
+      } catch (err: any) {
+        return res.status(500).send(`Webhook processing error: ${err.message}`);
       }
-
-      await order.save();
     }
 
     res.status(200).send("OK");
