@@ -79,7 +79,7 @@ export const useLogin = () => {
     },
     onError: (error: any) => {
       toast.error(
-        error.response.data.message || "An error occurred while creating user."
+        error.response?.data?.message || "An error occurred while creating user."
       );
     },
   });
@@ -93,7 +93,7 @@ export const useForgotPassword = () => {
     },
     onError: (error: any) => {
       toast.error(
-        error.response.data.message || "An error occurred while creating user."
+        error.response?.data?.message || "An error occurred while creating user."
       );
     },
   });
@@ -108,7 +108,7 @@ export const useResetPassword = () => {
     },
     onError: (error: any) => {
       toast.error(
-        error.response.data.message || "An error occurred while creating user."
+        error.response?.data?.message || "An error occurred while creating user."
       );
     },
   });
@@ -141,7 +141,7 @@ export const useUpdateProfile = () => {
     },
     onError: (error: any) => {
       toast.error(
-        error.response.data.message ||
+        error.response?.data?.message ||
           "An error occurred while updating profile."
       );
     },

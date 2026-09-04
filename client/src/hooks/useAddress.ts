@@ -39,7 +39,7 @@ export const usePostAddress = () => {
     },
     onError: (error: any) => {
       toast.error(
-        error.response.data.message ||
+        error.response?.data?.message ||
           "An error occurred while creating address"
       );
     },
@@ -63,7 +63,8 @@ export const useUpdateAddress = () => {
     },
     onError: (error: any) => {
       toast.error(
-        error.response.data.message || "An error occurred while updated address"
+        error.response?.data?.message ||
+          "An error occurred while updated address"
       );
     },
   });
