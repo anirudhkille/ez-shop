@@ -38,7 +38,7 @@ export default function SuccessPage() {
     } else {
       clearGuestCart();
     }
-  }, [order?._id]);
+  }, [order?._id, token, clearGuestCart]);
 
   // Loading state
   if ((orderId && loadingId) || (sessionId && loadingSession)) {
