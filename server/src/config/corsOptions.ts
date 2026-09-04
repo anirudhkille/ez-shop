@@ -4,7 +4,7 @@ import { CorsOptions } from "cors";
 dotenv.config();
 
 const allowedOrigins = process.env.CORS_ORIGINS
-  ? process.env.CORS_ORIGINS.split(",")
+  ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
   : [];
 
 export const corsOptions: CorsOptions = {
