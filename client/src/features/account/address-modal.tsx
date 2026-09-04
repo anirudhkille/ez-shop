@@ -32,7 +32,7 @@ const formSchema = z.object({
   name: z.string().min(1, "Name can't be empty"),
   phone: z.string().min(1, "Mobile Number can't be empty"),
   addressLine1: z.string().min(1, "Address Line 1 can't be empty"),
-  addressLine2: z.string().min(1, "Address Line 2 can't be empty"),
+  addressLine2: z.string(),
   zipCode: z.string().min(1, "zip code can't be empty"),
   state: z.string().min(1, ""),
   city: z.string().min(1, ""),
