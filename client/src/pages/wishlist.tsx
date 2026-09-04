@@ -31,7 +31,7 @@ export default function wishlist() {
                 <Heart className="fill-black" />
               </button>
 
-              <Link to={`/${w?.slug}`}>
+              <Link to={`/${w?.slug}/${w?._id}`}>
                 <div className="mx-auto size-[250px] overflow-hidden rounded-xl bg-gray-100 md:size-[280px]">
                   <Image
                     src={w.image}
