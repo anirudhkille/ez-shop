@@ -96,8 +96,6 @@ export default function VerifyEmailForm() {
     inputsRef.current[0]?.focus();
   }, []);
 
-  console.log(isPending);
-
   return (
     <form
       onSubmit={(e) => {
