@@ -121,7 +121,7 @@ export const googleLogin = asyncHandler(
 
     const result = await userService.googleLogin(googleUser);
 
-    const frontendURL = process.env.FRONTEND_URL || "http://localhost:5173";
+    const frontendURL = process.env.CLIENT_URL || "http://localhost:5173";
     const redirectURL = `${frontendURL}/auth/google-callback?token=${encodeURIComponent(result.accessToken)}&name=${encodeURIComponent(result.user.name || "")}&email=${encodeURIComponent(result.user.email || "")}`;
 
     return res
