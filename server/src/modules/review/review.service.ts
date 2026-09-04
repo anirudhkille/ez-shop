@@ -1,7 +1,7 @@
 import * as reviewRepository from "@/modules/review/review.repository";
 
-export const postReview = async (body: any) => {
-  const review = await reviewRepository.create(body);
+export const postReview = async (userId: string, body: any) => {
+  const review = await reviewRepository.create({ ...body, user: userId });
 
   return {
     status: 201,

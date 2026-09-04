@@ -2,8 +2,8 @@ import { asyncHandler } from "@/utils/asyncHandler";
 import { Request, Response } from "express";
 import * as reviewService from "@/modules/review/review.service";
 
-export const postReview = asyncHandler(async (req: Request, res: Response) => {
-  const result = await reviewService.postReview(req.body);
+export const postReview = asyncHandler(async (req: any, res: Response) => {
+  const result = await reviewService.postReview(req.user._id, req.body);
   return res.status(result.status || 200).json(result.data);
 });
 
