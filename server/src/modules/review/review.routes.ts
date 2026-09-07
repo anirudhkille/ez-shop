@@ -9,7 +9,7 @@ import {
 
 const router = express.Router();
 
-router.get("/:productId", protect, getReviewByProduct);
+router.get("/:productId", getReviewByProduct);
 router.post("/", protect, postReview);
 router.patch("/:id", protect, updateReview);
 router.delete("/:id", protect, deleteReview);
