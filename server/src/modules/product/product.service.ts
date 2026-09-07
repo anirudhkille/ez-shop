@@ -32,6 +32,40 @@ export const decrementStock = async (
   }
 };
 
+export const verifyStock = async (
+  items: { product: string; variantId?: string; size?: string; quantity: number }[],
+): Promise<string | null> => {
+  for (const item of items) {
+    if (!item.quantity || item.quantity <= 0) continue;
+
+    const product = await Product.findById(item.product);
+    if (!product || !product.publish) {
+      return "One or more products are no longer available";
+    }
+
+    if (item.variantId && item.size) {
+      const variant = product.variants.find(
+        (v) => (v as any)._id.toString() === item.variantId,
+      );
+      const sizeObj = variant?.sizes.find((s) => s.size === item.size);
+
+      if (!sizeObj) {
+        return "Selected size or variant is unavailable";
+      }
+
+      if (sizeObj.stock < item.quantity) {
+        return `Only ${sizeObj.stock} items available for ${product.name} (size ${item.size})`;
+      }
+    } else {
+      if (product.stock < item.quantity) {
+        return `Only ${product.stock} items available for ${product.name}`;
+      }
+    }
+  }
+
+  return null;
+};
+
 export const postProduct = async (body: any, files: any) => {
   if (typeof body.variants === "string") {
     body.variants = JSON.parse(body.variants);
