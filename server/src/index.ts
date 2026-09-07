@@ -1,6 +1,9 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+import { validateEnv } from "./config/env";
+validateEnv();
+
 import express from "express";
 import cors from "cors";
 import compression from "compression";
@@ -38,7 +41,7 @@ app.use(apiLimiter);
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "fallback-secret",
+    secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
   }),
