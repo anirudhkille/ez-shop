@@ -7,6 +7,7 @@ validateEnv();
 import express from "express";
 import cors from "cors";
 import compression from "compression";
+import helmet from "helmet";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import { shouldCompress } from "./config/compression";
@@ -31,6 +32,7 @@ import stripeWebhook from "./webhook/stripeWebhook";
 
 const app = express();
 
+app.use(helmet());
 app.use(cors(corsOptions));
 app.use(compression({ filter: shouldCompress, level: 6 }));
 app.use("/api", stripeWebhook);
