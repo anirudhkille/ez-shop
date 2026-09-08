@@ -1,8 +1,4 @@
-import dotenv from "dotenv";
-dotenv.config();
-
-import { validateEnv } from "./config/env";
-validateEnv();
+import { env } from "./config/env.config";
 
 import express from "express";
 import cors from "cors";
@@ -43,7 +39,7 @@ app.use(apiLimiter);
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET!,
+    secret: env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
   }),
@@ -76,7 +72,7 @@ app.use(errorHandler);
 const startServer = async () => {
   try {
     await databaseConnection();
-    const port = process.env.PORT;
+    const port = env.PORT;
     app.listen(port, () => {
       console.log(`Server Listening @ ${port}`);
     });
