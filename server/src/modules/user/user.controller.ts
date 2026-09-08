@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "@/utils/asyncHandler";
+import { env } from "@/config/env.config";
 import * as userService from "@/modules/user/user.service";
 import { sendSuccess, sendMessage } from "@/utils/response";
 import { refreshCookieOptions } from "@/utils/cookies";
@@ -121,7 +122,7 @@ export const googleLogin = asyncHandler(
 
     const result = await userService.googleLogin(googleUser);
 
-    const frontendURL = process.env.CLIENT_URL || "http://localhost:5173";
+    const frontendURL = env.CLIENT_URL;
     const redirectURL = `${frontendURL}/auth/google-callback?token=${encodeURIComponent(result.accessToken)}&name=${encodeURIComponent(result.user.name || "")}&email=${encodeURIComponent(result.user.email || "")}`;
 
     return res

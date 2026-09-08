@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { env } from "@/config/env.config";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -248,7 +249,7 @@ export const refreshToken = async (token: string) => {
 
   let decoded: any;
   try {
-    decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!);
+    decoded = jwt.verify(token, env.JWT_REFRESH_SECRET);
   } catch {
     throw new AppError("Invalid refresh token", 403);
   }
@@ -272,7 +273,7 @@ export const refreshToken = async (token: string) => {
 export const logout = async (token: string) => {
   if (token) {
     try {
-      const decoded: any = jwt.verify(token, process.env.JWT_REFRESH_SECRET!);
+      const decoded: any = jwt.verify(token, env.JWT_REFRESH_SECRET);
       await Session.findOneAndDelete({ key: `refresh:${decoded._id}` });
     } catch {
       // ignore

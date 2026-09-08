@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { logger } from "@/config/logger";
 import { AppError } from "@/utils/appError";
 
 export const errorHandler = (
@@ -14,7 +15,7 @@ export const errorHandler = (
     });
   }
 
-  console.error(err.message);
+  logger.error(err.message);
 
   res.status(500).json({
     success: false,

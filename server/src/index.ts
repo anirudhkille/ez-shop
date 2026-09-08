@@ -1,4 +1,5 @@
 import { env } from "./config/env.config";
+import { logger } from "./config/logger";
 
 import express from "express";
 import cors from "cors";
@@ -74,10 +75,10 @@ const startServer = async () => {
     await databaseConnection();
     const port = env.PORT;
     app.listen(port, () => {
-      console.log(`Server Listening @ ${port}`);
+      logger.info(`Server Listening @ ${port}`);
     });
   } catch (error) {
-    console.error("Failed to start server:", error);
+    logger.error(error, "Failed to start server");
     process.exit(1);
   }
 };

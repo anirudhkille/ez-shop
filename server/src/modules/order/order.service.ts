@@ -1,6 +1,7 @@
 import Cart from "@/modules/cart/cart.model";
 import Address from "@/modules/address/address.model";
 import Product from "@/modules/product/product.model";
+import { env } from "@/config/env.config";
 import { decrementStock, verifyStock } from "@/modules/product/product.service";
 import * as orderRepository from "@/modules/order/order.repository";
 
@@ -84,7 +85,7 @@ export const placeCODOrder = async (userId: string, body: any) => {
       success: true,
       message: "Order placed with Cash on Delivery",
       orderId: newOrder._id,
-      redirectUrl: `${process.env.CLIENT_URL}/success?orderId=${newOrder._id}`,
+      redirectUrl: `${env.CLIENT_URL}/success?orderId=${newOrder._id}`,
     },
   };
 };
@@ -255,7 +256,7 @@ export const placeGuestCODOrder = async (body: any) => {
       success: true,
       message: "Order placed with Cash on Delivery",
       orderId: newOrder._id,
-      redirectUrl: `${process.env.CLIENT_URL}/success?orderId=${newOrder._id}`,
+      redirectUrl: `${env.CLIENT_URL}/success?orderId=${newOrder._id}`,
     },
   };
 };

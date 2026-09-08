@@ -2,9 +2,10 @@ import Stripe from "stripe";
 import Order from "@/modules/order/order.model";
 import express from "express";
 import Cart from "@/modules/cart/cart.model";
+import { env } from "@/config/env.config";
 
 const router = express.Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 router.post(
   "/webhook",
@@ -18,7 +19,7 @@ router.post(
       event = stripe.webhooks.constructEvent(
         req.body,
         sig!,
-        process.env.STRIPE_WEBHOOK_SECRET!,
+        env.STRIPE_WEBHOOK_SECRET,
       );
     } catch (err: any) {
       return res.status(400).send(`Webhook Error: ${err.message}`);

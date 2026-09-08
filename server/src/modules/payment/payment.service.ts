@@ -3,9 +3,10 @@ import Cart from "@/modules/cart/cart.model";
 import Address from "@/modules/address/address.model";
 import Order from "@/modules/order/order.model";
 import Product from "@/modules/product/product.model";
+import { env } from "@/config/env.config";
 import { decrementStock, verifyStock } from "@/modules/product/product.service";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 export const createCheckoutSession = async (userId: string, body: any, userEmail: string) => {
   const { addressId, deliveryMethod } = body;
@@ -111,8 +112,8 @@ export const createCheckoutSession = async (userId: string, body: any, userEmail
     session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items,
-      success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/failure`,
+      success_url: `${env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${env.CLIENT_URL}/failure`,
 
       billing_address_collection: "required",
 
@@ -270,8 +271,8 @@ export const createGuestCheckoutSession = async (body: any) => {
     session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items,
-      success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/failure`,
+      success_url: `${env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${env.CLIENT_URL}/failure`,
       billing_address_collection: "required",
       shipping_address_collection: {
         allowed_countries: ["IN"],

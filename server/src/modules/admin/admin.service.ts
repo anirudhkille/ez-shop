@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import { env } from "@/config/env.config";
 import { resetPasswordTemplate } from "@/templates/resetEmailTemplate";
 import {
   generateAccessToken,
@@ -90,13 +91,14 @@ export const forgotPassword = async (email: string) => {
   const resetToken = user.generateResetToken();
   await user.save({ validateBeforeSave: false });
 
-  const resetUrl = `${process.env.ADMIN_URL}/reset-password?token=${resetToken}`;
+  const resetUrl = `${env.ADMIN_URL}/reset-password?token=${resetToken}`;
 
   const transporter = nodemailer.createTransport({
-    service: "Gmail",
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
     auth: {
-      user: process.env.SMTP_EMAIL,
-      pass: process.env.SMTP_PASSWORD,
+      user: env.SMTP_EMAIL,
+      pass: env.SMTP_PASSWORD,
     },
   });
 

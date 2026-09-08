@@ -2,6 +2,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { Response, NextFunction } from "express";
 import User from "@/modules/user/user.model";
 import Admin from "@/modules/admin/admin.model";
+import { env } from "@/config/env.config";
 import { asyncHandler } from "../utils/asyncHandler";
 
 interface ITokenPayload extends JwtPayload {
@@ -20,7 +21,7 @@ const loadUser = async (req: any) => {
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_ACCESS_SECRET as string,
+      env.JWT_ACCESS_SECRET,
     ) as ITokenPayload;
 
     if (decoded.role === "User") {

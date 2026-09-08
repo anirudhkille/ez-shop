@@ -1,4 +1,5 @@
 import { resend } from "@/config/mail";
+import { env } from "@/config/env.config";
 
 interface SendEmailOptions {
   to: string;
@@ -9,7 +10,7 @@ interface SendEmailOptions {
 export const sendEmail = async ({ to, subject, html }: SendEmailOptions) => {
   try {
     const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM as string,
+      from: env.EMAIL_FROM,
       to,
       subject,
       html,

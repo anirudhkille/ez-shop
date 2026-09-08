@@ -1,14 +1,16 @@
 import mongoose from "mongoose";
+import { env } from "@/config/env.config";
+import { logger } from "@/config/logger";
 
 export const databaseConnection = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI!)!;
-    console.log("Database Connected");
+    await mongoose.connect(env.MONGO_URI);
+    logger.info("Database Connected");
   } catch (error) {
-    console.error("Database Connection Error: ", error);
+    logger.error(error, "Database Connection Error");
   }
 };
 
 mongoose.connection.on("error", (error) => {
-  console.error("Mongoose Connection Error: ", error);
+  logger.error(error, "Mongoose Connection Error");
 });
