@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 
 import { Route, Routes } from "react-router";
 
+import ErrorBoundary from "./components/shared/error-boundary";
 import { ScrollToTop } from "./components/shared/scroll-to-top";
 
 const Layout = lazy(() => import("./layout/layout"));
@@ -43,7 +44,7 @@ const PrivacyPolicy = lazy(() => import("./pages/legal/privacy"));
 
 export default function App() {
   return (
-    <>
+    <ErrorBoundary>
       <Suspense fallback={<div className="min-h-screen" />}>
         <ScrollToTop />
         <Routes>
@@ -89,6 +90,6 @@ export default function App() {
           </Route>
         </Routes>
       </Suspense>
-    </>
+    </ErrorBoundary>
   );
 }
