@@ -3,7 +3,7 @@ import Cart from "@/modules/cart/cart.model";
 import Address from "@/modules/address/address.model";
 import Order from "@/modules/order/order.model";
 import Product from "@/modules/product/product.model";
-import { decrementStock } from "@/modules/product/product.service";
+import { decrementStock, verifyStock } from "@/modules/product/product.service";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -20,6 +20,18 @@ export const createCheckoutSession = async (userId: string, body: any, userEmail
   const shippingAddress = await Address.findById(addressId);
   if (!shippingAddress)
     return { status: 400, data: { message: "Invalid address" } };
+
+  const stockError = await verifyStock(
+    cart.products.map((item) => ({
+      product: (item.product as any)._id.toString(),
+      variantId: item.variantId ? String(item.variantId) : undefined,
+      size: item.size,
+      quantity: item.quantity,
+    })),
+  );
+  if (stockError) {
+    return { status: 400, data: { success: false, message: stockError } };
+  }
 
   const subtotal = cart.products.reduce((acc, item) => {
     const price = item.discountPriceAtPurchase ?? item.priceAtPurchase;
@@ -192,6 +204,18 @@ export const createGuestCheckoutSession = async (body: any) => {
       },
       quantity: item.quantity,
     });
+  }
+
+  const stockError = await verifyStock(
+    products.map((p: any) => ({
+      product: p.productId,
+      variantId: p.variantId,
+      size: p.size,
+      quantity: p.quantity,
+    })),
+  );
+  if (stockError) {
+    return { status: 400, data: { success: false, message: stockError } };
   }
 
   let deliveryCharge = 0;
