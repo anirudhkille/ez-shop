@@ -12,6 +12,19 @@ import Session from "./session..model";
 import { AppError } from "@/utils/appError";
 import * as userRepository from "@/modules/user/user.repository";
 
+const REFRESH_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+const saveRefreshSession = async (userId: string, refreshToken: string) => {
+  await Session.findOneAndUpdate(
+    { key: `refresh:${userId}` },
+    {
+      value: refreshToken,
+      expiresAt: new Date(Date.now() + REFRESH_TTL_MS),
+    },
+    { upsert: true, new: true },
+  );
+};
+
 export const signUp = async (email: string, password: string) => {
   const userExists = await userRepository.findByEmail(email);
   if (userExists) {
@@ -69,11 +82,7 @@ export const verifySignupOTP = async (email: string, otp: string) => {
     role: newUser.role,
   });
 
-  await Session.create({
-    key: `refresh:${newUser._id}`,
-    value: refreshToken,
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-  });
+  await saveRefreshSession(String(newUser._id), refreshToken);
 
   return {
     accessToken,
@@ -102,11 +111,7 @@ export const login = async (email: string, password: string) => {
     role: user.role,
   });
 
-  await Session.create({
-    key: `refresh:${user._id}`,
-    value: refreshToken,
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-  });
+  await saveRefreshSession(String(user._id), refreshToken);
 
   return {
     accessToken,
@@ -315,11 +320,7 @@ export const googleLogin = async (
     role: user.role,
   });
 
-  await Session.create({
-    key: `refresh:${user._id}`,
-    value: refreshToken,
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-  });
+  await saveRefreshSession(String(user._id), refreshToken);
 
   return { accessToken, refreshToken, user };
 };
