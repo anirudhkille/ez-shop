@@ -4,12 +4,16 @@ import { Request, Response } from "express";
 import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
 import cloudinary from "@/config/cloudinary";
 import { sendSuccess } from "@/utils/response";
+import { objectIdParamSchema } from "@/modules/product/product.schema";
 
+const formatZodError = (error: any) =>
+  error.errors.map((e: any) => e.message).join(", ");
 
 export const postCategory = asyncHandler(
   async (req: Request, res: Response) => {
-    let imageUrl = "";
     const { name, slug } = req.body;
+
+    let imageUrl = "";
 
     if (req.file) {
       const result: any = await uploadToCloudinary(
@@ -41,7 +45,14 @@ export const getCategory = asyncHandler(async (req: Request, res: Response) => {
 
 export const updateCategory = asyncHandler(
   async (req: Request, res: Response) => {
-    const category = await Category.findById(req.params.id);
+    const paramsParsed = objectIdParamSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+      return res
+        .status(400)
+        .json({ success: false, message: formatZodError(paramsParsed.error) });
+    }
+
+    const category = await Category.findById(paramsParsed.data.id);
 
     if (!category) {
       return res.status(404).json({
@@ -70,7 +81,7 @@ export const updateCategory = asyncHandler(
     }
 
     const updated = await Category.findByIdAndUpdate(
-      req.params.id,
+      paramsParsed.data.id,
       { ...req.body, image: imageUrl },
       { new: true },
     );
@@ -85,7 +96,14 @@ export const updateCategory = asyncHandler(
 
 export const deleteCategory = asyncHandler(
   async (req: Request, res: Response) => {
-    const category = await Category.findById(req.params.id);
+    const paramsParsed = objectIdParamSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+      return res
+        .status(400)
+        .json({ success: false, message: formatZodError(paramsParsed.error) });
+    }
+
+    const category = await Category.findById(paramsParsed.data.id);
 
     if (!category) {
       return res.status(404).json({

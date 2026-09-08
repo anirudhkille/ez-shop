@@ -1,23 +1,9 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "@/utils/asyncHandler";
 import * as orderService from "@/modules/order/order.service";
-import {
-  addressDeliverySchema,
-  guestCheckoutSchema,
-} from "@/validators/checkout.validator";
-
-const formatZodError = (error: any) =>
-  error.errors.map((e: any) => e.message).join(", ");
 
 export const placeCODOrder = asyncHandler(async (req: any, res) => {
-  const parsed = addressDeliverySchema.safeParse(req.body);
-  if (!parsed.success) {
-    return res
-      .status(400)
-      .json({ success: false, message: formatZodError(parsed.error) });
-  }
-
-  const result = await orderService.placeCODOrder(req.user._id, parsed.data);
+  const result = await orderService.placeCODOrder(req.user._id, req.body);
   res.status(result.status || 200).json(result.data);
 });
 
@@ -46,14 +32,7 @@ export const getOrderById = asyncHandler(
 
 export const placeGuestCODOrder = asyncHandler(
   async (req: Request, res: Response) => {
-    const parsed = guestCheckoutSchema.safeParse(req.body);
-    if (!parsed.success) {
-      return res
-        .status(400)
-        .json({ success: false, message: formatZodError(parsed.error) });
-    }
-
-    const result = await orderService.placeGuestCODOrder(parsed.data);
+    const result = await orderService.placeGuestCODOrder(req.body);
     res.status(result.status || 200).json(result.data);
   },
 );

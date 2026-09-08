@@ -6,8 +6,10 @@ import {
   updateCategory,
   deleteCategory,
 } from "@/modules/category/category.controller";
+import { categorySchema } from "@/modules/product/product.schema";
 import { authorize } from "@/middlewares/authorize";
 import { upload } from "@/middlewares/upload";
+import { validate } from "@/middlewares/validate";
 
 const router = express.Router();
 
@@ -17,6 +19,7 @@ router.post(
   protect,
   authorize(["Admin"]),
   upload.single("image"),
+  validate(categorySchema),
   postCategory,
 );
 
@@ -25,6 +28,7 @@ router.patch(
   protect,
   authorize(["Admin"]),
   upload.single("image"),
+  validate(categorySchema),
   updateCategory,
 );
 
