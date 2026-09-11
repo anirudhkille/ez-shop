@@ -1,6 +1,6 @@
 import axiosInstance from "@/lib/axiosInstance";
 
-export type TGuestAddress = {
+type TGuestAddress = {
   name: string;
   addressLine1: string;
   addressLine2?: string;

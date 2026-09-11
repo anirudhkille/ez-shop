@@ -2,28 +2,6 @@ import { asyncHandler } from "@/utils/asyncHandler";
 import { Request, Response } from "express";
 import * as adminService from "@/modules/admin/admin.service";
 
-export const signUp = asyncHandler(async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
-
-  if (!name || !email || !password) {
-    return res
-      .status(400)
-      .json({ success: false, message: "All fields are required" });
-  }
-
-  const result = await adminService.signUp(req.body);
-
-  res
-    .cookie("refreshToken", result.data.refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    })
-    .status(result.status)
-    .json(result.data);
-});
-
 export const login = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
