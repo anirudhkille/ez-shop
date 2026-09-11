@@ -1,4 +1,3 @@
-
 import Container from "@/layout/container";
 import Head from "@/layout/head";
 
@@ -9,7 +8,7 @@ export default function Returns() {
     <>
       <Head title="Returns & Exchanges | EZ Shop" />
       <Container className="max-w-4xl px-5 py-16 sm:px-8 md:px-10">
-        <div className="my-10 text-center">        
+        <div className="my-10 text-center">
           <h1 className="font-display text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
             Returns & Exchanges
           </h1>

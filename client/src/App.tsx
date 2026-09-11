@@ -77,7 +77,6 @@ export default function App() {
             <Route path="/success" element={<Successful />} />
             <Route path="/failure" element={<Failure />} />
 
-
             <Route path="/track-order" element={<TrackOrder />} />
             <Route path="/returns" element={<Returns />} />
             <Route path="/shipping-info" element={<ShippingInfo />} />

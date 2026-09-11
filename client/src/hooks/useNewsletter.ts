@@ -9,7 +9,8 @@ export const useSubscribeNewsletter = () => {
     mutationFn: (email: string) => subscribeNewsletter(email),
     onError: (error: any) => {
       toast.error(
-        error?.response?.data?.message || "Failed to subscribe. Please try again.",
+        error?.response?.data?.message ||
+          "Failed to subscribe. Please try again."
       );
     },
   });

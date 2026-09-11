@@ -1,5 +1,3 @@
-
-
 import Container from "@/layout/container";
 import Head from "@/layout/head";
 

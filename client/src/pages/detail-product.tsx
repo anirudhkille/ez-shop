@@ -36,12 +36,12 @@ function ProductDetailSkeleton() {
       <div className="mx-auto grid max-w-350 grid-cols-1 gap-12 px-6 pb-20 lg:grid-cols-2 lg:gap-20 lg:px-10">
         {/* Image skeleton */}
         <div className="flex flex-col gap-4">
-          <div className="bg-brand-surface-raised animate-pulse aspect-square rounded-3xl" />
+          <div className="bg-brand-surface-raised aspect-square animate-pulse rounded-3xl" />
           <div className="flex gap-3">
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="bg-brand-surface-raised animate-pulse h-20 w-20 shrink-0 rounded-xl"
+                className="bg-brand-surface-raised h-20 w-20 shrink-0 animate-pulse rounded-xl"
               />
             ))}
           </div>
@@ -49,32 +49,32 @@ function ProductDetailSkeleton() {
 
         {/* Info skeleton */}
         <div className="flex flex-col justify-center gap-4">
-          <div className="bg-brand-surface-raised animate-pulse h-3 w-24 rounded-full" />
-          <div className="bg-brand-surface-raised animate-pulse h-12 w-3/4 rounded-xl" />
-          <div className="bg-brand-surface-raised animate-pulse h-4 w-32 rounded-full" />
-          <div className="bg-brand-surface-raised animate-pulse h-10 w-40 rounded-xl" />
+          <div className="bg-brand-surface-raised h-3 w-24 animate-pulse rounded-full" />
+          <div className="bg-brand-surface-raised h-12 w-3/4 animate-pulse rounded-xl" />
+          <div className="bg-brand-surface-raised h-4 w-32 animate-pulse rounded-full" />
+          <div className="bg-brand-surface-raised h-10 w-40 animate-pulse rounded-xl" />
           <div className="space-y-2">
-            <div className="bg-brand-surface-raised animate-pulse h-3 w-full rounded-full" />
-            <div className="bg-brand-surface-raised animate-pulse h-3 w-5/6 rounded-full" />
-            <div className="bg-brand-surface-raised animate-pulse h-3 w-4/6 rounded-full" />
+            <div className="bg-brand-surface-raised h-3 w-full animate-pulse rounded-full" />
+            <div className="bg-brand-surface-raised h-3 w-5/6 animate-pulse rounded-full" />
+            <div className="bg-brand-surface-raised h-3 w-4/6 animate-pulse rounded-full" />
           </div>
           <div className="mt-4 flex gap-2">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="bg-brand-surface-raised animate-pulse h-9 w-9 rounded-full"
+                className="bg-brand-surface-raised h-9 w-9 animate-pulse rounded-full"
               />
             ))}
           </div>
-          <div className="flex gap-2 mt-2">
+          <div className="mt-2 flex gap-2">
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="bg-brand-surface-raised animate-pulse h-10 w-12 rounded-lg"
+                className="bg-brand-surface-raised h-10 w-12 animate-pulse rounded-lg"
               />
             ))}
           </div>
-          <div className="bg-brand-surface-raised animate-pulse mt-4 h-12 w-full rounded-xl" />
+          <div className="bg-brand-surface-raised mt-4 h-12 w-full animate-pulse rounded-xl" />
         </div>
       </div>
     </main>
@@ -385,7 +385,11 @@ export default function ProductDetail() {
           {/* Badges */}
           <div className="border-brand-border mt-8 grid grid-cols-3 gap-3 border-t pt-8">
             {[
-              { icon: Truck, label: "Free shipping", sub: "Orders over ₹8,000" },
+              {
+                icon: Truck,
+                label: "Free shipping",
+                sub: "Orders over ₹8,000",
+              },
               { icon: RotateCcw, label: "Easy returns", sub: "30-day policy" },
               { icon: Shield, label: "Authentic", sub: "100% genuine" },
             ].map((badge) => (
@@ -409,7 +413,7 @@ export default function ProductDetail() {
       </div>
 
       {/* Mobile sticky action bar */}
-      <div className="bg-background/95 border-brand-border fixed bottom-0 left-0 right-0 z-50 border-t px-4 py-3 backdrop-blur-md lg:hidden">
+      <div className="bg-background/95 border-brand-border fixed right-0 bottom-0 left-0 z-50 border-t px-4 py-3 backdrop-blur-md lg:hidden">
         <div className="flex items-center gap-3">
           {/* Quantity */}
           <div className="border-brand-border flex items-center overflow-hidden rounded-xl border">
@@ -455,7 +459,9 @@ export default function ProductDetail() {
           >
             <Heart
               size={16}
-              className={liked ? "fill-red-500 text-red-500" : "text-muted-foreground"}
+              className={
+                liked ? "fill-red-500 text-red-500" : "text-muted-foreground"
+              }
             />
           </button>
         </div>
