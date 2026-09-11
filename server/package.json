@@ -6,11 +6,6 @@
   "version": "1.0.0",
   "license": "ISC",
   "description": "",
-  "knip": {
-    "ignoreDependencies": [
-      "pino-pretty"
-    ]
-  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
