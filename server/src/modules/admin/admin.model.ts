@@ -2,7 +2,7 @@ import mongoose, { Document } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
-export interface IAdmin extends Document {
+interface IAdmin extends Document {
   name: string;
   email: string;
   phone?: string;

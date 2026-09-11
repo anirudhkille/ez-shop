@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
 
-export interface IVariant extends Document {
+interface IVariant extends Document {
   color: string;
   colorCode: string;
   images: string[];
@@ -14,7 +14,7 @@ export interface IVariant extends Document {
   }[];
 }
 
-export interface IProduct extends Document {
+interface IProduct extends Document {
   name: string;
   slug: string;
   description: string;

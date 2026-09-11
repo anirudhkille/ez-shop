@@ -4,10 +4,6 @@ export const findByEmail = async (email: string) => {
   return await Admin.findOne({ email });
 };
 
-export const create = async (data: any) => {
-  return await Admin.create(data);
-};
-
 export const findById = async (id: string, select?: string) => {
   const query = Admin.findById(id);
   if (select) query.select(select);

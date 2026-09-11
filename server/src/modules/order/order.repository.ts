@@ -20,19 +20,11 @@ export const countByUser = async (userId: string) => {
   return await Order.countDocuments({ user: userId });
 };
 
-export const findById = async (id: string) => {
-  return await Order.findById(id);
-};
-
 export const findByIdPopulated = async (id: string) => {
   return await Order.findById(id).populate(
     "products.product",
     "name image price slug",
   );
-};
-
-export const findOne = async (filter: any) => {
-  return await Order.findOne(filter);
 };
 
 export const findOnePopulated = async (filter: any) => {

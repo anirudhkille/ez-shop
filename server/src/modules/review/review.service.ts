@@ -36,18 +36,6 @@ export const getReviewByProduct = async (productId: string, limit: number, page:
   };
 };
 
-export const getReviewById = async (productId: string) => {
-  const review = await reviewRepository.findByProduct(productId, 0, 0);
-
-  return {
-    data: {
-      success: true,
-      message: "Review fetched successfully",
-      data: review,
-    },
-  };
-};
-
 export const updateReview = async (id: string, userId: string, body: any) => {
   const review = await reviewRepository.findByIdAndUpdate(id, userId, body);
 

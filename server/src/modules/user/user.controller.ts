@@ -57,13 +57,6 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response) =>
   sendMessage(res, result.message);
 });
 
-export const completeProfile = asyncHandler(
-  async (req: any, res: Response) => {
-    const result = await userService.completeProfile(req.user._id, req.body);
-    sendMessage(res, result.message);
-  },
-);
-
 export const getProfile = asyncHandler(async (req: any, res: Response) => {
   const result = await userService.getProfile(req.user._id);
   sendSuccess(res, result.user);

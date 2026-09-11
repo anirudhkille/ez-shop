@@ -4,9 +4,13 @@
     "name": "Anirudh Kille"
   },
   "version": "1.0.0",
-  "main": "index.js",
   "license": "ISC",
   "description": "",
+  "knip": {
+    "ignoreDependencies": [
+      "pino-pretty"
+    ]
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
@@ -40,7 +44,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/bcryptjs": "^3.0.0",
     "@types/compression": "^1.8.1",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
@@ -51,11 +54,8 @@
     "@types/node": "^24.10.1",
     "@types/nodemailer": "^7.0.4",
     "@types/passport-google-oauth20": "^2.0.17",
-    "@typescript-eslint/eslint-plugin": "^8.57.1",
-    "@typescript-eslint/parser": "^8.57.1",
     "eslint": "^10.1.0",
     "prettier": "^3.8.1",
-    "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.17",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",

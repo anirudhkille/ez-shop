@@ -173,24 +173,6 @@ export const resetPassword = async (
   return { message: "Password reset successful" };
 };
 
-export const completeProfile = async (
-  userId: string,
-  data: { name: string; phone: string },
-) => {
-  const user = await userRepository.findById(userId);
-
-  if (!user) {
-    throw new AppError("User not found", 404);
-  }
-
-  user.phone = data.phone;
-  user.name = data.name;
-  user.isProfileCompleted = true;
-  await user.save();
-
-  return { message: "Profile completed" };
-};
-
 export const getProfile = async (userId: string) => {
   const user = await userRepository.findById(userId, "-password");
 

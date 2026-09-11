@@ -1,6 +1,6 @@
 import mongoose, { Types } from "mongoose";
 
-export interface IAddress extends Document {
+interface IAddress extends Document {
   user: Types.ObjectId;
   label: "Home" | "Work" | "Other";
   name: string;

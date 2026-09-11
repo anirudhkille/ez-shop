@@ -17,13 +17,6 @@ export const getReviewByProduct = asyncHandler(
   },
 );
 
-export const getReviewById = asyncHandler(
-  async (req: Request, res: Response) => {
-    const result = await reviewService.getReviewById(req.params.productId);
-    return res.status(200).json(result.data);
-  },
-);
-
 export const updateReview = asyncHandler(
   async (req: any, res: Response) => {
     const result = await reviewService.updateReview(

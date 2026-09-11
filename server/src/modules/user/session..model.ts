@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface ISession extends Document {
+interface ISession extends Document {
   key: string;
   value: string;
   expiresAt: Date;

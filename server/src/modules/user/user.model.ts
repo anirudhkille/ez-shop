@@ -1,7 +1,7 @@
 import mongoose, { Document } from "mongoose";
 import bcrypt from "bcryptjs";
 
-export interface IUser extends Document {
+interface IUser extends Document {
   name?: string;
   email: string;
   phone?: string;

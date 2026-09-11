@@ -8,45 +8,6 @@ import {
 } from "@/utils/generateToken";
 import * as adminRepository from "@/modules/admin/admin.repository";
 
-export const signUp = async (body: any) => {
-  const { name, email, password } = body;
-
-  const userExists = await adminRepository.findByEmail(email);
-  if (userExists) {
-    return { status: 409, data: { success: false, message: "Email already registered" } };
-  }
-
-  const newUser = await adminRepository.create({ name, email, password, role: "Admin" });
-
-  const accessToken = generateAccessToken({
-    _id: String(newUser._id),
-    role: newUser.role,
-  });
-  const refreshToken = generateRefreshToken({
-    _id: String(newUser._id),
-    role: newUser.role,
-  });
-
-  newUser.refreshToken = refreshToken;
-  await newUser.save();
-
-  return {
-    status: 201,
-    data: {
-      success: true,
-      message: "User registered successfully",
-      data: {
-        id: newUser._id,
-        token: accessToken,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-      },
-      refreshToken,
-    },
-  };
-};
-
 export const login = async (email: string, password: string) => {
   const user = await adminRepository.findByEmail(email);
   if (!user || !(await user.matchPassword(password))) {
