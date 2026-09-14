@@ -16,6 +16,8 @@ import { useForm } from "react-hook-form";
 import { toast, Toaster } from "sonner";
 import { z } from "zod";
 
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+
 const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
@@ -38,7 +40,7 @@ export default function ForgotPasswordForm() {
     setStatus("loading");
 
     try {
-      const response = await fetch("/api/auth/forgot-password", {
+      const response = await fetch(`${SERVER_URL}/api/admin/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),

@@ -1,6 +1,7 @@
 import { PageHeading } from "@/components/shared/PageHeading";
 import { Separator } from "@/components/ui/separator";
 import { ProductTable } from "@/features/products/ProductTable";
+import { serverFetch } from "@/lib/server-api";
 import React from "react";
 
 export const metadata = {
@@ -8,9 +9,7 @@ export const metadata = {
 };
 
 export default async function Page() {
-  const data = await fetch(`${process.env.NEXT_DOMAIN_NAME}/api/products`, {
-    cache: "no-store",
-  });
+  const data = await serverFetch("/api/product", { cache: "no-store" });
   const posts = await data.json();
 
   return (

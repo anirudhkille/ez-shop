@@ -3,22 +3,24 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProfileForm from "./ProfileForm";
+import { serverFetch } from "@/lib/server-api";
 
 export const metadata = {
   title: "Profile | Dashboard - EZ Shop Admin",
 };
 
 export default async function ProfilePage() {
-  let admin = { name: "", email: "", phoneNumber: "" };
+  let admin = { name: "", email: "", phone: "" };
 
   try {
-    const res = await fetch(
-      `${process.env.NEXT_DOMAIN_NAME}/api/auth/profile`,
-      { cache: "no-store" }
-    );
+    const res = await serverFetch("/api/admin/profile", { cache: "no-store" });
     const data = await res.json();
-    if (data.success) {
-      admin = data.data;
+    if (data.success && data.data) {
+      admin = {
+        name: data.data.name || "",
+        email: data.data.email || "",
+        phone: data.data.phone || "",
+      };
     }
   } catch {
     // silent

@@ -1,9 +1,11 @@
 "use client";
+
 import React from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 import {
   Form,
@@ -15,97 +17,104 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import PublishDropdown from "@/components/shared/PublishDropdown";
 import { ImageUpload } from "@/components/shared/ImageUpload";
-
-import { ICategory } from "@/models/Category";
-import { useRouter } from "next/navigation";
+import { clientFetch } from "@/lib/client-api";
+import { generateSlug } from "@/lib/slug";
+import { ICategory } from "@/types";
 
 interface CategoryFormProps {
   data?: ICategory | null;
 }
 
 const formSchema = z.object({
-  title: z.string().nonempty({ message: "Please enter a title" }),
-  image: z.string().nonempty({ message: "Please upload an image" }),
-  publish: z.boolean(),
+  name: z.string().min(1, { message: "Please enter a category name" }),
+  slug: z.string().min(1, { message: "Slug is required" }),
+  image: z.array(z.string()).min(1, { message: "Please upload an image" }),
 });
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function CategoryForm({ data }: CategoryFormProps) {
   const router = useRouter();
-  const form = useForm<z.infer<typeof formSchema>>({
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: data?.title || "",
-      image: data?.image || "",
-      publish: data?.publish ?? true,
+      name: data?.name || "",
+      slug: data?.slug || "",
+      image: data?.image ? [data.image] : [],
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const watchName = form.watch("name");
+
+  React.useEffect(() => {
+    if (!data && watchName) {
+      form.setValue("slug", generateSlug(watchName));
+    }
+  }, [watchName, data, form]);
+
+  const onSubmit = async (values: FormValues) => {
     try {
-      const response = await fetch(
-        data ? `/api/category/${data.slug}` : "/api/category",
+      const payload = {
+        name: values.name,
+        slug: values.slug,
+        image: values.image[0] || "",
+      };
+
+      const response = await clientFetch(
+        data ? `/api/category/${data._id}` : "/api/category",
         {
           method: data ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(values),
-        }
+          body: JSON.stringify(payload),
+        },
       );
 
       const result = await response.json();
 
-      if (result) {
+      if (result.success) {
         toast.success(result.message);
-        router.back();
+        router.push("/dashboard/category");
       } else {
         toast.error(result.message);
       }
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unknown error occurred");
-      }
+      toast.error(error instanceof Error ? error.message : "An error occurred");
     }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Title Input */}
         <FormField
           control={form.control}
-          name="title"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter category title" {...field} />
+                <Input placeholder="Enter category name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Publish Dropdown */}
         <FormField
           control={form.control}
-          name="publish"
+          name="slug"
           render={({ field }) => (
             <FormItem>
+              <FormLabel>Slug</FormLabel>
               <FormControl>
-                <PublishDropdown
-                  value={field.value}
-                  onChange={field.onChange}
-                />
+                <Input placeholder="category-slug" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Image Upload */}
         <FormField
           control={form.control}
           name="image"
@@ -113,8 +122,8 @@ export default function CategoryForm({ data }: CategoryFormProps) {
             <FormItem>
               <FormControl>
                 <ImageUpload
-                  initialImages={field.value ? [field.value] : []}
-                  onUploadSuccess={(urls) => field.onChange(urls[0] || "")}
+                  initialImages={field.value}
+                  onUploadSuccess={(urls) => field.onChange(urls)}
                 />
               </FormControl>
               <FormMessage />
@@ -122,7 +131,6 @@ export default function CategoryForm({ data }: CategoryFormProps) {
           )}
         />
 
-        {/* Submit Button */}
         <Button type="submit" className="w-full">
           Save
         </Button>

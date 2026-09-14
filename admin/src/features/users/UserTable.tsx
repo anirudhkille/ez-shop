@@ -23,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IUser } from "@/models/User";
+import { IUser } from "@/types";
 import { columns } from "./UserColumn";
 
 export function UserTable({ data }: { data: IUser[] }) {

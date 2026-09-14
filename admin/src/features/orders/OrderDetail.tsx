@@ -12,7 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { IOrder } from "@/models/Order";
+import { IOrder } from "@/types";
+import { clientFetch } from "@/lib/client-api";
 
 interface OrderDetailProps {
   order: IOrder;
@@ -27,7 +28,7 @@ export default function OrderDetail({ order }: OrderDetailProps) {
   const handleUpdate = async () => {
     setUpdating(true);
     try {
-      const response = await fetch(`/api/orders/${order._id}`, {
+      const response = await clientFetch(`/api/order/${order._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderStatus, paymentStatus }),
@@ -48,7 +49,7 @@ export default function OrderDetail({ order }: OrderDetailProps) {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`/api/orders/${order._id}`, {
+      const response = await clientFetch(`/api/order/${order._id}`, {
         method: "DELETE",
       });
       if (response.ok) {
@@ -109,8 +110,8 @@ export default function OrderDetail({ order }: OrderDetailProps) {
               {order.products.map((item, i) => (
                 <tr key={i} className="border-b">
                   <td className="py-2">
-                    {item.product && typeof item.product === "object" && "title" in item.product
-                      ? (item.product as { title: string }).title
+                    {item.product && typeof item.product === "object" && "name" in item.product
+                      ? (item.product as { name: string }).name
                       : "Product"}
                   </td>
                   <td className="py-2">${item.price.toFixed(2)}</td>

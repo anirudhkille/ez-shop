@@ -40,5 +40,5 @@ export default {
   "client/**/*.{css,json,md}": task("client", formatOnly("client")),
   "server/**/*.ts": task("server", lintAndFormat("server")),
   "server/**/*.{json,md}": task("server", formatOnly("server")),
-  "admin/**/*.{ts,tsx}": task("admin", lintOnly("admin")),
+
 };

@@ -11,8 +11,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { IOrder } from "@/models/Order";
+import { IOrder } from "@/types";
 import { useRouter } from "next/navigation";
+import { clientFetch } from "@/lib/client-api";
 
 export const columns: ColumnDef<IOrder>[] = [
   {
@@ -145,7 +146,7 @@ const OrderActions = ({ order }: { order: IOrder }) => {
   };
 
   const handleDelete = async () => {
-    const response = await fetch(`/api/orders/${order._id}`, {
+    const response = await clientFetch(`/api/order/${order._id}`, {
       method: "DELETE",
     });
     if (response.ok) {

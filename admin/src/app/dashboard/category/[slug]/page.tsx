@@ -1,6 +1,8 @@
 import { PageHeading } from "@/components/shared/PageHeading";
 import { Separator } from "@/components/ui/separator";
 import CategoryForm from "@/features/category/CategoryForm";
+import { serverFetch } from "@/lib/server-api";
+import { ICategory } from "@/types";
 import React from "react";
 
 export const metadata = {
@@ -13,10 +15,11 @@ export default async function page({
   params: Promise<{ slug: string }>;
 }) {
   const slug = (await params).slug;
-  const data = await fetch(
-    `${process.env.NEXT_DOMAIN_NAME}/api/category/${slug}`
+  const listRes = await serverFetch("/api/category", { cache: "no-store" });
+  const list = await listRes.json();
+  const category = (list.data || []).find(
+    (item: ICategory) => item.slug === slug,
   );
-  const posts = await data.json();
 
   return (
     <div className="space-y-5">
@@ -26,7 +29,7 @@ export default async function page({
       />
 
       <Separator />
-      <CategoryForm data={posts?.data} />
+      <CategoryForm data={category} />
     </div>
   );
 }

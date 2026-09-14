@@ -10,9 +10,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { IProduct } from "@/models/Product";
+import { IProduct } from "@/types";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { clientFetch } from "@/lib/client-api";
 
 export const columns: ColumnDef<IProduct>[] = [
   {
@@ -41,8 +42,7 @@ export const columns: ColumnDef<IProduct>[] = [
     accessorKey: "image",
     header: "Image",
     cell: ({ row }) => {
-      const images: string[] = row.getValue("image") || [];
-      const src = images[0] || "";
+      const src = (row.getValue("image") as string) || "";
       return src ? (
         <Image
           height={48}
@@ -55,10 +55,10 @@ export const columns: ColumnDef<IProduct>[] = [
     },
   },
   {
-    accessorKey: "title",
-    header: "Title",
+    accessorKey: "name",
+    header: "Name",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("title")}</div>
+      <div className="capitalize">{row.getValue("name")}</div>
     ),
   },
   {
@@ -117,7 +117,7 @@ const ProductActions = ({ product }: { product: IProduct }) => {
   };
 
   const handleDelete = async () => {
-    const response = await fetch(`/api/products/${product.slug}`, {
+    const response = await clientFetch(`/api/product/${product._id}`, {
       method: "DELETE",
     });
     if (response.ok) {

@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { IUser } from "@/models/User";
+import { IUser } from "@/types";
 import Image from "next/image";
+import { clientFetch } from "@/lib/client-api";
 
 interface UserDetailProps {
   user: IUser;
@@ -17,7 +18,7 @@ export default function UserDetail({ user }: UserDetailProps) {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`/api/users/${user._id}`, {
+      const response = await clientFetch(`/api/user/${user._id}`, {
         method: "DELETE",
       });
       if (response.ok) {

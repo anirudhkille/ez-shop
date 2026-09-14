@@ -16,15 +16,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { clientFetch } from "@/lib/client-api";
 
 const formSchema = z.object({
   name: z.string().nonempty({ message: "Please enter your name" }),
-  email: z.string().email({ message: "Please enter a valid email" }),
-  phoneNumber: z.string().optional(),
+  phone: z.string().optional(),
 });
 
 interface ProfileFormProps {
-  admin: { name: string; email: string; phoneNumber?: string };
+  admin: { name: string; email: string; phone?: string };
 }
 
 export default function ProfileForm({ admin }: ProfileFormProps) {
@@ -35,15 +35,14 @@ export default function ProfileForm({ admin }: ProfileFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: admin.name || "",
-      email: admin.email || "",
-      phoneNumber: admin.phoneNumber || "",
+      phone: admin.phone || "",
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
     try {
-      const response = await fetch("/api/auth/profile", {
+      const response = await clientFetch("/api/admin/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
@@ -59,7 +58,7 @@ export default function ProfileForm({ admin }: ProfileFormProps) {
       }
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "An error occurred"
+        error instanceof Error ? error.message : "An error occurred",
       );
     } finally {
       setLoading(false);
@@ -83,27 +82,16 @@ export default function ProfileForm({ admin }: ProfileFormProps) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <FormItem>
+          <FormLabel>Email</FormLabel>
+          <FormControl>
+            <Input type="email" value={admin.email} disabled />
+          </FormControl>
+        </FormItem>
 
         <FormField
           control={form.control}
-          name="phoneNumber"
+          name="phone"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Phone Number</FormLabel>

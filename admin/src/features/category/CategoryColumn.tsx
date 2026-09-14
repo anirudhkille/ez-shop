@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -10,9 +10,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ICategory } from "@/models/Category";
+import { ICategory } from "@/types";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { clientFetch } from "@/lib/client-api";
 
 export const columns: ColumnDef<ICategory>[] = [
   {
@@ -44,34 +45,17 @@ export const columns: ColumnDef<ICategory>[] = [
       <Image
         height={48}
         width={48}
-        src={row.getValue("image")}
+        src={(row.getValue("image") as string) || ""}
         alt="Category"
         className="object-cover w-12 h-12 rounded-md"
       />
     ),
   },
   {
-    accessorKey: "title",
-    header: "Title",
+    accessorKey: "name",
+    header: "Name",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("title")}</div>
-    ),
-  },
-  {
-    accessorKey: "publish",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Publish
-        <ArrowUpDown />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {row.getValue("publish") ? "Published" : "Draft"}
-      </div>
+      <div className="capitalize">{row.getValue("name")}</div>
     ),
   },
   {
@@ -92,7 +76,7 @@ const CategoryActions = ({ category }: { category: ICategory }) => {
   };
 
   const handleDelete = async () => {
-    const response = await fetch(`/api/category/${category.slug}`, {
+    const response = await clientFetch(`/api/category/${category._id}`, {
       method: "DELETE",
     });
     if (response.ok) {

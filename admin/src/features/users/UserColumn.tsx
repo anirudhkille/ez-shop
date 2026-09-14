@@ -11,9 +11,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { IUser } from "@/models/User";
+import { IUser } from "@/types";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { clientFetch } from "@/lib/client-api";
 
 export const columns: ColumnDef<IUser>[] = [
   {
@@ -124,7 +125,7 @@ const UserActions = ({ user }: { user: IUser }) => {
   };
 
   const handleDelete = async () => {
-    const response = await fetch(`/api/users/${user._id}`, {
+    const response = await clientFetch(`/api/user/${user._id}`, {
       method: "DELETE",
     });
     if (response.ok) {

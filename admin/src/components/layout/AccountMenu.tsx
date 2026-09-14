@@ -12,15 +12,18 @@ import { BadgeCheck, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import useAuthStore from "@/store/authStore";
+import { removeAuthToken } from "@/lib/client-api";
 
 export default function AccountMenu() {
   const router = useRouter();
+  const { name, email, logout } = useAuthStore();
 
   const handleLogout = () => {
+    removeAuthToken();
+    logout();
     router.push("/");
   };
-  const name = "anirudhkille";
-  const email = "anirudhkille@gmail.com";
 
   return (
     <DropdownMenu>
@@ -49,8 +52,8 @@ export default function AccountMenu() {
               </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-sm leading-tight text-left">
-              <span className="font-semibold truncate">{name}</span>
-              <span className="text-xs truncate">{email}</span>
+              <span className="font-semibold truncate">{name || "Admin"}</span>
+              <span className="text-xs truncate">{email || ""}</span>
             </div>
           </div>
         </DropdownMenuLabel>

@@ -23,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ICategory } from "@/models/Category";
+import { ICategory } from "@/types";
 import { columns } from "./CategoryColumn";
 
 export default function CategoryTable({ data }: { data: ICategory[] }) {

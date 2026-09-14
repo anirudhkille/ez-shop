@@ -38,6 +38,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Logo from "../shared/Logo";
+import useAuthStore from "@/store/authStore";
+import { removeAuthToken } from "@/lib/client-api";
 
 const navMain = [
   {
@@ -70,13 +72,13 @@ const navMain = [
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const { isMobile } = useSidebar();
+  const { name, email, logout } = useAuthStore();
 
   const handleLogout = () => {
+    removeAuthToken();
+    logout();
     router.push("/");
   };
-
-  const name = "anirudh kille";
-  const email = "anirudhkille@gmail.com";
 
   return (
     <Sidebar collapsible="icon" {...props}>

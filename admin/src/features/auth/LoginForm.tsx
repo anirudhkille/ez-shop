@@ -17,6 +17,10 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast, Toaster } from "sonner";
 import { LinkButton } from "@/components/ui/link";
+import { setAuthToken } from "@/lib/client-api";
+import useAuthStore from "@/store/authStore";
+
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
 const formSchema = z.object({
   email: z.string().email({
@@ -41,11 +45,13 @@ export default function LoginForm() {
     },
   });
 
+  const login = useAuthStore((state) => state.login);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setStatus("loading");
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch(`${SERVER_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
@@ -53,13 +59,15 @@ export default function LoginForm() {
 
       const data = await response.json();
 
-      if (data.success) {
+      if (data.success && data.data?.token) {
+        setAuthToken(data.data.token);
+        login({ name: data.data.name, email: data.data.email });
         setStatus("success");
         toast.success(data.message);
         router.push("/dashboard");
       } else {
         setStatus("error");
-        toast.error(data.message);
+        toast.error(data.message || "Login failed");
       }
     } catch (error) {
       setStatus("error");

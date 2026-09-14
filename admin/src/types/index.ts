@@ -1,0 +1,93 @@
+export interface IUser {
+  _id: string;
+  name?: string;
+  email: string;
+  phone?: string;
+  avatar?: string;
+  role: string;
+  isEmailVerified: boolean;
+  isProfileCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ICategory {
+  _id: string;
+  name: string;
+  slug: string;
+  image: string;
+}
+
+export interface IVariantSize {
+  size: string;
+  stock: number;
+  sku?: string;
+  price?: number;
+  discountPrice?: number;
+}
+
+export interface IVariant {
+  color: string;
+  colorCode?: string;
+  images: string[];
+  sizes: IVariantSize[];
+}
+
+export interface IProduct {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  category: string | { _id: string; name: string };
+  price: number;
+  discountPrice?: number;
+  stock: number;
+  image: string;
+  publish: boolean;
+  isFeatured?: boolean;
+  isBestSellers?: boolean;
+  variants?: IVariant[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IOrderProduct {
+  product: string | { _id: string; name: string; image?: string };
+  quantity: number;
+  price: number;
+}
+
+export interface IOrder {
+  _id: string;
+  user?: string;
+  name: string;
+  email: string;
+  phone?: string;
+  products: IOrderProduct[];
+  address: {
+    name: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    phone: string;
+  };
+  subtotal: number;
+  deliveryCharge: number;
+  totalAmount: number;
+  paymentStatus: string;
+  paymentType: string;
+  orderStatus: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IAdminProfile {
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  role: string;
+}

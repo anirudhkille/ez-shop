@@ -23,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IOrder } from "@/models/Order";
+import { IOrder } from "@/types";
 import { columns } from "./OrderColumn";
 
 export function OrderTable({ data }: { data: IOrder[] }) {

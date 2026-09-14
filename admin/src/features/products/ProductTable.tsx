@@ -23,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IProduct } from "@/models/Product";
+import { IProduct } from "@/types";
 import { columns } from "./ProductColumn";
 
 export function ProductTable({ data }: { data: IProduct[] }) {

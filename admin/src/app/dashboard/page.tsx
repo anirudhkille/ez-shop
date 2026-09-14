@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, ShoppingCart, Users, DollarSign } from "lucide-react";
+import { serverFetch } from "@/lib/server-api";
 
 export const metadata = {
   title: "Dashboard | EZ Shop Admin",
@@ -9,9 +10,9 @@ export const metadata = {
 async function getStats() {
   try {
     const [productsRes, ordersRes, usersRes] = await Promise.all([
-      fetch(`${process.env.NEXT_DOMAIN_NAME}/api/products`, { cache: "no-store" }),
-      fetch(`${process.env.NEXT_DOMAIN_NAME}/api/orders`, { cache: "no-store" }),
-      fetch(`${process.env.NEXT_DOMAIN_NAME}/api/users`, { cache: "no-store" }),
+      serverFetch("/api/product", { cache: "no-store" }),
+      serverFetch("/api/order", { cache: "no-store" }),
+      serverFetch("/api/user", { cache: "no-store" }),
     ]);
 
     const products = await productsRes.json();
