@@ -16,17 +16,17 @@ const IMAGES = {
   camera:
     "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80",
   earbuds:
-    "https://images.unsplash.com/photo-1572569028738-411a197b8367?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368875/ez-shop/products/mrsvc6rvm73yrpgw6upu.jpg",
   denimJacket:
-    "https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368776/ez-shop/products/yqtlqzajv2umbp0nyrsb.jpg",
   tShirt:
-    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368789/ez-shop/products/yj8csuf2iajtvsxydavg.jpg",
   chinos:
     "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=800&q=80",
   crossbodyBag:
-    "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368751/ez-shop/products/ts99uxylcx81ecrrw7vp.jpg",
   runningSneaker:
-    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368766/ez-shop/products/pkxc3o7r7m8brjv0ph1r.jpg",
   mug: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=800&q=80",
   cookware:
     "https://images.unsplash.com/photo-1584990347449-a2d4c2c044c7?auto=format&fit=crop&w=800&q=80",
@@ -52,7 +52,7 @@ const IMAGES = {
   waterBottle:
     "https://images.unsplash.com/photo-1602143407151-01114192003f?auto=format&fit=crop&w=800&q=80",
   runningBelt:
-    "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368775/ez-shop/products/xvqibgzbtypzzt3gpsdi.jpg",
   tent: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=800&q=80",
   avocado:
     "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?auto=format&fit=crop&w=800&q=80",
@@ -64,32 +64,32 @@ const IMAGES = {
   juice:
     "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=800&q=80",
   whiteSneaker:
-    "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368764/ez-shop/products/hlr83bcynfqobzjlfynm.jpg",
   canvasSneakers:
-    "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368765/ez-shop/products/cnnwomrbc23w1adtcalh.jpg",
   hikingBoots:
-    "https://images.unsplash.com/photo-1605034313761-73ea4a0cfbf3?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368782/ez-shop/products/poizdalndjd6gwciykpj.jpg",
   wristWatch:
-    "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368784/ez-shop/products/dtu24pnlyi6fxcfblido.jpg",
   sunglasses:
-    "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368789/ez-shop/products/nsvmyuu50yqdwv3c95fy.jpg",
   wallet:
-    "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368781/ez-shop/products/jjug78fgtl1xkkjptsc2.jpg",
   backpack:
-    "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368769/ez-shop/products/yqchyhfbfujv8w6uhtqw.jpg",
   dress:
-    "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368778/ez-shop/products/f0kkejrvaghtfmkhrrz2.jpg",
   handbag:
-    "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368753/ez-shop/products/f8ipb8t4rws9hmbylern.jpg",
   heels:
-    "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80",
-  cap: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368754/ez-shop/products/malaksfhynadat0kagxd.jpg",
+  cap: "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368783/ez-shop/products/lt595ijhzxrwfknurrvw.jpg",
   shorts:
-    "https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368787/ez-shop/products/ok4lnejixnnkmmmxo4f8.jpg",
   hoodie:
-    "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368788/ez-shop/products/vgmqsjesv1y6yj7fqkth.jpg",
   genericProduct:
-    "https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=800&q=80",
+    "https://res.cloudinary.com/dgkzfogba/image/upload/v1789368758/ez-shop/products/kibf3tvbfrc2b9bfklxq.jpg",
 };
 
 const categoriesSeed = [
@@ -296,7 +296,7 @@ const productsSeed: { categorySlug: string; items: ProductSeed[] }[] = [
         "Smart Fitness Band",
         "Track steps, heart rate, and sleep with a slim fitness band.",
         59,
-        IMAGES.smartwatch,
+        IMAGES.wristWatch,
         50,
         "New",
       ),
