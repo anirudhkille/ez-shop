@@ -1,0 +1,11 @@
+{
+  "name": "ez-shop",
+  "private": true,
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7"
+  },
+  "scripts": {
+    "prepare": "husky"
+  }
+}
