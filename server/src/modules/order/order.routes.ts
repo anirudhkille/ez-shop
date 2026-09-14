@@ -1,10 +1,12 @@
 import {
+  deleteOrder,
   getMyOrder,
+  getOrderById,
+  getOrderBySessionId,
+  getOrders,
   placeCODOrder,
   placeGuestCODOrder,
-  getOrders,
-  getOrderBySessionId,
-  getOrderById,
+  updateOrder,
 } from "@/modules/order/order.controller";
 import {
   addressDeliverySchema,
@@ -24,5 +26,7 @@ router.get("/session-id/:sessionId", optionalAuth, getOrderBySessionId);
 router.get("/order-id/:id", optionalAuth, getOrderById);
 router.get("/my-orders", protect, getMyOrder);
 router.get("/:id", protect, getOrderById);
+router.patch("/:id", protect, authorize(["Admin"]), updateOrder);
+router.delete("/:id", protect, authorize(["Admin"]), deleteOrder);
 
 export default router;

@@ -277,6 +277,31 @@ export const logout = async (token: string) => {
   return { message: "Logged out successfully" };
 };
 
+export const getAllUsers = async () => {
+  const users = await userRepository.findAll("-password");
+  return { users };
+};
+
+export const getUserById = async (id: string) => {
+  const user = await userRepository.findById(id, "-password");
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  return { user };
+};
+
+export const deleteUserById = async (id: string) => {
+  const user = await userRepository.deleteById(id);
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  return { message: "User deleted successfully" };
+};
+
 export const googleLogin = async (googleUser: {
   email?: string;
   name?: string;

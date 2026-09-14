@@ -48,3 +48,17 @@ export const getOrderBySessionId = asyncHandler(
     res.status(result.status || 200).json(result.data);
   },
 );
+
+export const updateOrder = asyncHandler(async (req: Request, res: Response) => {
+  const result = await orderService.updateOrder(req.params.id, req.body);
+  res.status(200).json({
+    success: true,
+    message: result.message,
+    data: result.order,
+  });
+});
+
+export const deleteOrder = asyncHandler(async (req: Request, res: Response) => {
+  const result = await orderService.deleteOrder(req.params.id);
+  res.status(200).json({ success: true, message: result.message });
+});

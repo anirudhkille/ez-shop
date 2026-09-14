@@ -1,7 +1,10 @@
 import express from "express";
 import {
+  deleteUserById,
   forgotPassword,
+  getAllUsers,
   getProfile,
+  getUserById,
   login,
   logout,
   refreshToken,
@@ -14,9 +17,15 @@ import {
 } from "@/modules/user/user.controller";
 import { authLimiter } from "@/config/limiter";
 import { protect } from "@/middlewares/authMiddleware";
+import { authorize } from "@/middlewares/authorize";
 import passport from "@/config/passport";
 
 const router = express.Router();
+
+router.get("/", protect, authorize(["Admin"]), getAllUsers);
+router.get("/:id", protect, authorize(["Admin"]), getUserById);
+router.delete("/:id", protect, authorize(["Admin"]), deleteUserById);
+
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] }),

@@ -10,8 +10,13 @@ const formatZodError = (error: ZodError) =>
 
 export const postCategory = asyncHandler(
   async (req: Request, res: Response) => {
-    const { name, slug } = req.body;
-    const result = await categoryService.createCategory(name, slug, req.file);
+    const { name, slug, image } = req.body;
+    const result = await categoryService.createCategory(
+      name,
+      slug,
+      req.file,
+      image,
+    );
     return res.status(201).json(result);
   },
 );

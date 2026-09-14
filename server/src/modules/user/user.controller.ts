@@ -106,6 +106,25 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
   sendMessage(res, result.message);
 });
 
+export const getAllUsers = asyncHandler(
+  async (_req: Request, res: Response) => {
+    const result = await userService.getAllUsers();
+    sendSuccess(res, result.users);
+  },
+);
+
+export const getUserById = asyncHandler(async (req: Request, res: Response) => {
+  const result = await userService.getUserById(req.params.id);
+  sendSuccess(res, result.user);
+});
+
+export const deleteUserById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const result = await userService.deleteUserById(req.params.id);
+    sendMessage(res, result.message);
+  },
+);
+
 export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
   const googleUser = req.user as unknown as {
     email?: string;

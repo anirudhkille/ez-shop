@@ -5,7 +5,8 @@ import mongoose from "mongoose";
 import { env } from "@/config/env.config";
 import { decrementStock, verifyStock } from "@/modules/product/product.service";
 import * as orderRepository from "@/modules/order/order.repository";
-import { IOrderProduct } from "@/modules/order/order.model";
+import { IOrder, IOrderProduct } from "@/modules/order/order.model";
+import { AppError } from "@/utils/appError";
 
 type ProductRef = {
   _id: mongoose.Types.ObjectId;
@@ -311,6 +312,29 @@ export const placeGuestCODOrder = async (body: GuestCheckoutBody) => {
       redirectUrl: `${env.CLIENT_URL}/success?orderId=${newOrder._id}`,
     },
   };
+};
+
+export const updateOrder = async (
+  id: string,
+  body: Partial<Pick<IOrder, "orderStatus" | "paymentStatus">>,
+) => {
+  const order = await orderRepository.findByIdAndUpdate(id, body);
+
+  if (!order) {
+    throw new AppError("Order not found", 404);
+  }
+
+  return { message: "Order updated successfully", order };
+};
+
+export const deleteOrder = async (id: string) => {
+  const order = await orderRepository.deleteById(id);
+
+  if (!order) {
+    throw new AppError("Order not found", 404);
+  }
+
+  return { message: "Order deleted successfully" };
 };
 
 export const getOrderBySessionId = async (

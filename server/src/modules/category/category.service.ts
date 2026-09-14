@@ -17,20 +17,21 @@ export const createCategory = async (
   name: string,
   slug: string,
   file?: Express.Multer.File,
+  imageUrl?: string,
 ) => {
-  let imageUrl = "";
+  let finalImageUrl = imageUrl || "";
 
   if (file) {
     const result = (await uploadToCloudinary("categories", file.buffer)) as {
       secure_url: string;
     };
-    imageUrl = result.secure_url;
+    finalImageUrl = result.secure_url;
   }
 
   const category = await categoryRepository.create({
     name,
     slug,
-    image: imageUrl,
+    image: finalImageUrl,
   });
 
   return {
@@ -51,7 +52,7 @@ export const getAllCategories = async () => {
 
 export const updateCategory = async (
   id: string,
-  body: { name?: string; slug?: string },
+  body: { name?: string; slug?: string; image?: string },
   file?: Express.Multer.File,
 ) => {
   const category = await categoryRepository.findById(id);
@@ -60,7 +61,7 @@ export const updateCategory = async (
     return { success: false, status: 404, message: "Category not found" };
   }
 
-  let imageUrl = category.image;
+  let imageUrl = body.image ?? category.image;
 
   if (file) {
     if (category.image) {
@@ -74,7 +75,8 @@ export const updateCategory = async (
   }
 
   const updated = await categoryRepository.updateById(id, {
-    ...body,
+    name: body.name,
+    slug: body.slug,
     image: imageUrl,
   });
 

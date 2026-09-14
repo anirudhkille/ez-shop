@@ -38,3 +38,14 @@ export const findOnePopulated = async (filter: FilterQuery<IOrder>) => {
     "name image price slug",
   );
 };
+
+export const findByIdAndUpdate = async (
+  id: string,
+  updates: Partial<IOrder>,
+) => {
+  return await Order.findByIdAndUpdate(id, updates, { new: true });
+};
+
+export const deleteById = async (id: string) => {
+  return await Order.findByIdAndDelete(id);
+};

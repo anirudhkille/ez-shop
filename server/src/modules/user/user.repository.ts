@@ -24,3 +24,13 @@ export const findByIdAndUpdate = async (
     runValidators: true,
   });
 };
+
+export const findAll = async (select?: string) => {
+  const query = User.find();
+  if (select) query.select(select);
+  return await query;
+};
+
+export const deleteById = async (id: string) => {
+  return await User.findByIdAndDelete(id);
+};
