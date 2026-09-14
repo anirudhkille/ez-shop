@@ -133,17 +133,17 @@ export default function Products() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasNextPage) {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
           fetchNextPage();
         }
       },
-      { threshold: 1 }
+      { threshold: 0.1, rootMargin: "200px" }
     );
 
     observer.observe(loadMoreRef.current);
 
     return () => observer.disconnect();
-  }, [hasNextPage, fetchNextPage]);
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
 
   const matchedCategoryId = useMemo(() => {
     if (!categories || !category) return null;
@@ -304,6 +304,10 @@ export default function Products() {
           )}
           {isFetchingNextPage && (
             <div className="py-4 text-center">Loading more...</div>
+          )}
+
+          {!isLoading && (
+            <div ref={loadMoreRef} className="h-4 w-full" aria-hidden="true" />
           )}
         </div>
       </div>
