@@ -1,7 +1,7 @@
 "use client";
 
 import { UploadIcon, Trash2Icon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
@@ -17,12 +17,6 @@ export function ImageUpload({
   initialImages = [],
 }: ImageUploadProps) {
   const [previews, setPreviews] = useState<string[]>(initialImages);
-
-  useEffect(() => {
-    if (initialImages.length > 0) {
-      setPreviews(initialImages);
-    }
-  }, [initialImages]);
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {

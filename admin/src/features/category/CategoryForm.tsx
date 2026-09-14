@@ -122,6 +122,7 @@ export default function CategoryForm({ data }: CategoryFormProps) {
             <FormItem>
               <FormControl>
                 <ImageUpload
+                  key={data?._id ?? "new"}
                   initialImages={field.value}
                   onUploadSuccess={(urls) => field.onChange(urls)}
                 />
