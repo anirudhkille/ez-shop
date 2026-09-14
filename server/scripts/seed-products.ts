@@ -6,42 +6,122 @@ import slugify from "slugify";
 import Category from "../src/modules/category/category.model";
 import Product from "../src/modules/product/product.model";
 
+const IMAGES = {
+  headphones:
+    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80",
+  smartwatch:
+    "https://images.unsplash.com/photo-1523275335684-8f982e9a7f3a?auto=format&fit=crop&w=800&q=80",
+  speaker:
+    "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=800&q=80",
+  camera:
+    "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80",
+  earbuds:
+    "https://images.unsplash.com/photo-1572569028738-411a197b8367?auto=format&fit=crop&w=800&q=80",
+  denimJacket:
+    "https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?auto=format&fit=crop&w=800&q=80",
+  tShirt:
+    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
+  chinos:
+    "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=800&q=80",
+  crossbodyBag:
+    "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80",
+  runningSneaker:
+    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+  mug: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=800&q=80",
+  cookware:
+    "https://images.unsplash.com/photo-1584990347449-a2d4c2c044c7?auto=format&fit=crop&w=800&q=80",
+  cuttingBoard:
+    "https://images.unsplash.com/photo-1584269600519-112d071b35e6?auto=format&fit=crop&w=800&q=80",
+  candle:
+    "https://images.unsplash.com/photo-1602825269966-1a1eb5f4c56f?auto=format&fit=crop&w=800&q=80",
+  lamp: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=800&q=80",
+  serum:
+    "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80",
+  lipstick:
+    "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=800&q=80",
+  lotion:
+    "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=800&q=80",
+  beardKit:
+    "https://images.unsplash.com/photo-1621607512214-68297480165e?auto=format&fit=crop&w=800&q=80",
+  perfume:
+    "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=800&q=80",
+  yogaMat:
+    "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?auto=format&fit=crop&w=800&q=80",
+  dumbbells:
+    "https://images.unsplash.com/photo-1638536532686-d610adfc8e5c?auto=format&fit=crop&w=800&q=80",
+  waterBottle:
+    "https://images.unsplash.com/photo-1602143407151-01114192003f?auto=format&fit=crop&w=800&q=80",
+  runningBelt:
+    "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+  tent: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=800&q=80",
+  avocado:
+    "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?auto=format&fit=crop&w=800&q=80",
+  bread:
+    "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80",
+  oliveOil:
+    "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=800&q=80",
+  nuts: "https://images.unsplash.com/photo-1606923829579-0cb981a83e2e?auto=format&fit=crop&w=800&q=80",
+  juice:
+    "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=800&q=80",
+  whiteSneaker:
+    "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&w=800&q=80",
+  canvasSneakers:
+    "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80",
+  hikingBoots:
+    "https://images.unsplash.com/photo-1605034313761-73ea4a0cfbf3?auto=format&fit=crop&w=800&q=80",
+  wristWatch:
+    "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=800&q=80",
+  sunglasses:
+    "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=800&q=80",
+  wallet:
+    "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80",
+  backpack:
+    "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&w=800&q=80",
+  dress:
+    "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80",
+  handbag:
+    "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80",
+  heels:
+    "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80",
+  cap: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=800&q=80",
+  shorts:
+    "https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=800&q=80",
+  hoodie:
+    "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=800&q=80",
+  genericProduct:
+    "https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=800&q=80",
+};
+
 const categoriesSeed = [
   {
-    name: "Electronics",
-    slug: "electronics",
-    image:
-      "https://images.unsplash.com/photo-1498049860654-af1a5c5668ba?auto=format&fit=crop&w=800&q=80",
+    name: "Shoes",
+    slug: "shoes",
+    image: IMAGES.whiteSneaker,
   },
   {
-    name: "Fashion",
-    slug: "fashion",
-    image:
-      "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80",
+    name: "Accessories",
+    slug: "accessories",
+    image: IMAGES.wristWatch,
   },
   {
-    name: "Home & Kitchen",
-    slug: "home-kitchen",
-    image:
-      "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80",
+    name: "Men",
+    slug: "men",
+    image: IMAGES.hoodie,
   },
   {
-    name: "Beauty & Personal Care",
-    slug: "beauty",
-    image:
-      "https://images.unsplash.com/photo-1596462502278-27bfdd403348?auto=format&fit=crop&w=800&q=80",
+    name: "Clothing",
+    slug: "clothing",
+    image: IMAGES.tShirt,
   },
   {
-    name: "Sports & Outdoors",
-    slug: "sports-outdoors",
-    image:
-      "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=800&q=80",
+    name: "Women",
+    slug: "women",
+    image: IMAGES.handbag,
   },
   {
-    name: "Groceries",
-    slug: "groceries",
-    image:
-      "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80",
+    name: "Kids",
+    slug: "kids",
+    image: IMAGES.cap,
   },
 ];
 
@@ -57,687 +137,559 @@ interface ProductSeed {
   isBestSellers?: boolean;
 }
 
+const product = (
+  name: string,
+  description: string,
+  price: number,
+  image: string,
+  stock: number,
+  tag: string,
+  discountPrice?: number,
+): ProductSeed => ({
+  name,
+  description,
+  price,
+  image,
+  stock,
+  tag,
+  ...(discountPrice !== undefined && { discountPrice }),
+});
+
 const productsSeed: { categorySlug: string; items: ProductSeed[] }[] = [
-  {
-    categorySlug: "electronics",
-    items: [
-      {
-        name: "Wireless Noise-Cancelling Headphones",
-        description:
-          "Over-ear Bluetooth headphones with active noise cancellation and 30-hour battery life.",
-        price: 199,
-        discountPrice: 169,
-        image:
-          "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80",
-        stock: 45,
-        tag: "Best Seller",
-        isFeatured: true,
-      },
-      {
-        name: "Smart Watch Series X",
-        description:
-          "Track fitness, notifications, and health metrics with a sleek AMOLED display.",
-        price: 249,
-        discountPrice: 219,
-        image:
-          "https://images.unsplash.com/photo-1523275335684-8f982e9a7f3a?auto=format&fit=crop&w=800&q=80",
-        stock: 38,
-        tag: "Trending",
-        isFeatured: true,
-      },
-      {
-        name: "Portable Bluetooth Speaker",
-        description:
-          "Waterproof 360° sound speaker with deep bass and 12-hour playtime.",
-        price: 79,
-        image:
-          "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=800&q=80",
-        stock: 62,
-        tag: "Hot",
-      },
-      {
-        name: "4K Action Camera",
-        description:
-          "Rugged waterproof camera with 4K video, stabilization, and wide-angle lens.",
-        price: 299,
-        discountPrice: 259,
-        image:
-          "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80",
-        stock: 24,
-        tag: "Limited",
-      },
-      {
-        name: "Wireless Earbuds Pro",
-        description:
-          "True wireless earbuds with active noise cancellation and transparency mode.",
-        price: 149,
-        discountPrice: 129,
-        image:
-          "https://images.unsplash.com/photo-1572569028738-411a197b8367?auto=format&fit=crop&w=800&q=80",
-        stock: 55,
-        tag: "New",
-      },
-    ],
-  },
-  {
-    categorySlug: "fashion",
-    items: [
-      {
-        name: "Classic Denim Jacket",
-        description:
-          "Timeless blue denim jacket with a relaxed fit and vintage wash.",
-        price: 89,
-        image:
-          "https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?auto=format&fit=crop&w=800&q=80",
-        stock: 33,
-        tag: "Best Seller",
-        isBestSellers: true,
-      },
-      {
-        name: "Minimal Cotton T-Shirt",
-        description:
-          "Soft organic cotton tee in a regular fit, perfect for everyday wear.",
-        price: 29,
-        discountPrice: 24,
-        image:
-          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
-        stock: 100,
-        tag: "New",
-      },
-      {
-        name: "Slim Fit Chinos",
-        description: "Versatile slim-fit chinos in a breathable cotton blend.",
-        price: 59,
-        image:
-          "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=800&q=80",
-        stock: 48,
-        tag: "Trending",
-      },
-      {
-        name: "Leather Crossbody Bag",
-        description:
-          "Compact genuine leather bag with adjustable strap and secure zip closure.",
-        price: 119,
-        discountPrice: 99,
-        image:
-          "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80",
-        stock: 21,
-        tag: "Hot",
-      },
-      {
-        name: "Running Sneakers",
-        description:
-          "Lightweight cushioned sneakers designed for road running and daily comfort.",
-        price: 129,
-        discountPrice: 109,
-        image:
-          "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
-        stock: 40,
-        tag: "Sale",
-        isFeatured: true,
-      },
-    ],
-  },
-  {
-    categorySlug: "home-kitchen",
-    items: [
-      {
-        name: "Ceramic Coffee Mug Set",
-        description:
-          "Set of 4 handcrafted ceramic mugs with a matte glaze finish.",
-        price: 34,
-        image:
-          "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=800&q=80",
-        stock: 60,
-        tag: "New",
-      },
-      {
-        name: "Non-Stick Cookware Set",
-        description:
-          "Complete 8-piece cookware set with tempered glass lids and stay-cool handles.",
-        price: 149,
-        discountPrice: 129,
-        image:
-          "https://images.unsplash.com/photo-1584990347449-a2d4c2c044c7?auto=format&fit=crop&w=800&q=80",
-        stock: 18,
-        tag: "Best Seller",
-      },
-      {
-        name: "Bamboo Cutting Board",
-        description:
-          "Durable eco-friendly bamboo board with juice groove and easy-grip handles.",
-        price: 24,
-        image:
-          "https://images.unsplash.com/photo-1584269600519-112d071b35e6?auto=format&fit=crop&w=800&q=80",
-        stock: 75,
-        tag: "Hot",
-      },
-      {
-        name: "Aromatic Soy Candle",
-        description:
-          "Hand-poured scented soy candle with a cotton wick for a clean burn.",
-        price: 22,
-        discountPrice: 18,
-        image:
-          "https://images.unsplash.com/photo-1602825269966-1a1eb5f4c56f?auto=format&fit=crop&w=800&q=80",
-        stock: 50,
-        tag: "Trending",
-      },
-      {
-        name: "Minimalist Table Lamp",
-        description:
-          "Modern metal table lamp with adjustable shade and warm LED bulb.",
-        price: 69,
-        image:
-          "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=800&q=80",
-        stock: 28,
-        tag: "Limited",
-        isFeatured: true,
-      },
-    ],
-  },
-  {
-    categorySlug: "beauty",
-    items: [
-      {
-        name: "Hydrating Face Serum",
-        description:
-          "Hyaluronic acid serum that plumps and hydrates all skin types.",
-        price: 42,
-        discountPrice: 36,
-        image:
-          "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80",
-        stock: 55,
-        tag: "Best Seller",
-      },
-      {
-        name: "Matte Lipstick Set",
-        description:
-          "Long-wearing matte lipstick set with 6 flattering nude shades.",
-        price: 38,
-        image:
-          "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=800&q=80",
-        stock: 42,
-        tag: "Trending",
-      },
-      {
-        name: "Natural Body Lotion",
-        description:
-          "Shea butter and aloe lotion for deep moisture without greasy residue.",
-        price: 18,
-        discountPrice: 15,
-        image:
-          "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=800&q=80",
-        stock: 80,
-        tag: "New",
-      },
-      {
-        name: "Beard Grooming Kit",
-        description: "Complete kit with beard oil, balm, comb, and scissors.",
-        price: 45,
-        image:
-          "https://images.unsplash.com/photo-1621607512214-68297480165e?auto=format&fit=crop&w=800&q=80",
-        stock: 30,
-        tag: "Hot",
-      },
-      {
-        name: "Perfume Gift Set",
-        description:
-          "Elegant fragrance collection with three signature scents.",
-        price: 89,
-        discountPrice: 75,
-        image:
-          "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=800&q=80",
-        stock: 25,
-        tag: "Limited",
-        isFeatured: true,
-      },
-    ],
-  },
-  {
-    categorySlug: "sports-outdoors",
-    items: [
-      {
-        name: "Premium Yoga Mat",
-        description:
-          "Non-slip 6mm yoga mat with alignment lines and carrying strap.",
-        price: 49,
-        discountPrice: 42,
-        image:
-          "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?auto=format&fit=crop&w=800&q=80",
-        stock: 65,
-        tag: "Best Seller",
-      },
-      {
-        name: "Adjustable Dumbbells",
-        description: "Space-saving adjustable dumbbells from 5 to 25 kg.",
-        price: 199,
-        discountPrice: 179,
-        image:
-          "https://images.unsplash.com/photo-1638536532686-d610adfc8e5c?auto=format&fit=crop&w=800&q=80",
-        stock: 15,
-        tag: "Trending",
-      },
-      {
-        name: "Insulated Water Bottle",
-        description:
-          "Double-wall stainless steel bottle keeps drinks cold for 24 hours.",
-        price: 28,
-        image:
-          "https://images.unsplash.com/photo-1602143407151-01114192003f?auto=format&fit=crop&w=800&q=80",
-        stock: 90,
-        tag: "Hot",
-      },
-      {
-        name: "Running Belt Pack",
-        description:
-          "Lightweight running belt with pockets for phone, keys, and cards.",
-        price: 22,
-        discountPrice: 18,
-        image:
-          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
-        stock: 70,
-        tag: "New",
-      },
-      {
-        name: "Camping Tent 2-Person",
-        description:
-          "Waterproof two-person tent with easy-pitch poles and mesh vents.",
-        price: 159,
-        discountPrice: 139,
-        image:
-          "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=800&q=80",
-        stock: 12,
-        tag: "Limited",
-        isFeatured: true,
-      },
-    ],
-  },
-  {
-    categorySlug: "groceries",
-    items: [
-      {
-        name: "Organic Avocados (3-pack)",
-        description: "Ripe Hass avocados sourced from certified organic farms.",
-        price: 7,
-        image:
-          "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?auto=format&fit=crop&w=800&q=80",
-        stock: 120,
-        tag: "Best Seller",
-      },
-      {
-        name: "Artisan Sourdough Bread",
-        description:
-          "Freshly baked sourdough loaf with a crispy crust and soft crumb.",
-        price: 6,
-        image:
-          "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80",
-        stock: 45,
-        tag: "New",
-      },
-      {
-        name: "Extra Virgin Olive Oil",
-        description: "Cold-pressed olive oil in a 500ml glass bottle.",
-        price: 14,
-        discountPrice: 12,
-        image:
-          "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=800&q=80",
-        stock: 85,
-        tag: "Hot",
-      },
-      {
-        name: "Mixed Nuts & Dried Fruit",
-        description:
-          "Healthy trail mix of almonds, cashews, cranberries, and raisins.",
-        price: 11,
-        image:
-          "https://images.unsplash.com/photo-1606923829579-0cb981a83e2e?auto=format&fit=crop&w=800&q=80",
-        stock: 60,
-        tag: "Trending",
-      },
-      {
-        name: "Fresh Orange Juice",
-        description: "100% pure squeezed orange juice, no added sugar.",
-        price: 5,
-        image:
-          "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=800&q=80",
-        stock: 95,
-        tag: "New",
-      },
-    ],
-  },
   {
     categorySlug: "shoes",
     items: [
-      {
-        name: "Lightweight Running Shoes",
-        description:
-          "Breathable mesh upper with responsive cushioning for daily runs.",
-        price: 89,
-        discountPrice: 79,
-        image:
-          "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&w=800&q=80",
-        stock: 56,
-        tag: "Best Seller",
-      },
-      {
-        name: "Canvas Sneakers",
-        description:
-          "Classic low-top canvas sneakers with a durable rubber sole.",
-        price: 59,
-        image:
-          "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80",
-        stock: 72,
-        tag: "New",
-      },
-      {
-        name: "Hiking Boots",
-        description:
-          "Water-resistant leather boots with ankle support and rugged outsoles.",
-        price: 139,
-        discountPrice: 119,
-        image:
-          "https://images.unsplash.com/photo-1605034313761-73ea4a0cfbf3?auto=format&fit=crop&w=800&q=80",
-        stock: 22,
-        tag: "Trending",
-      },
-      {
-        name: "Casual Loafers",
-        description:
-          "Slip-on loafers with a cushioned insole for all-day comfort.",
-        price: 79,
-        image:
-          "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80",
-        stock: 35,
-        tag: "Hot",
-      },
-      {
-        name: "Sport Sandals",
-        description:
-          "Adjustable outdoor sandals with grippy soles and quick-dry straps.",
-        price: 45,
-        discountPrice: 39,
-        image:
-          "https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=800&q=80",
-        stock: 48,
-        tag: "Sale",
-      },
+      product(
+        "Lightweight Running Shoes",
+        "Breathable mesh upper with responsive cushioning for daily runs.",
+        89,
+        IMAGES.whiteSneaker,
+        56,
+        "Best Seller",
+        79,
+      ),
+      product(
+        "Canvas Sneakers",
+        "Classic low-top canvas sneakers with a durable rubber sole.",
+        59,
+        IMAGES.canvasSneakers,
+        72,
+        "New",
+      ),
+      product(
+        "Hiking Boots",
+        "Water-resistant leather boots with ankle support and rugged outsoles.",
+        139,
+        IMAGES.hikingBoots,
+        22,
+        "Trending",
+        119,
+      ),
+      product(
+        "Casual Loafers",
+        "Slip-on loafers with a cushioned insole for all-day comfort.",
+        79,
+        IMAGES.crossbodyBag,
+        35,
+        "Hot",
+      ),
+      product(
+        "Sport Sandals",
+        "Adjustable outdoor sandals with grippy soles and quick-dry straps.",
+        45,
+        IMAGES.shorts,
+        48,
+        "Sale",
+        39,
+      ),
+      product(
+        "Athletic Training Shoes",
+        "Supportive trainers built for gym sessions and cross-training.",
+        99,
+        IMAGES.runningSneaker,
+        40,
+        "New",
+        89,
+      ),
+      product(
+        "Leather Chelsea Boots",
+        "Sleek ankle boots with elastic side panels and a sturdy sole.",
+        129,
+        IMAGES.hikingBoots,
+        18,
+        "Limited",
+      ),
+      product(
+        "Comfy Walking Shoes",
+        "Cushioned walking shoes for everyday errands and long strolls.",
+        69,
+        IMAGES.whiteSneaker,
+        64,
+        "Best Seller",
+        59,
+      ),
+      product(
+        "Performance Soccer Cleats",
+        "Lightweight cleats designed for speed and ball control.",
+        109,
+        IMAGES.canvasSneakers,
+        30,
+        "Trending",
+      ),
+      product(
+        "Retro High-Top Sneakers",
+        "Vintage-style high-tops with bold color blocking.",
+        79,
+        IMAGES.runningSneaker,
+        45,
+        "Hot",
+      ),
     ],
   },
   {
     categorySlug: "accessories",
     items: [
-      {
-        name: "Classic Wrist Watch",
-        description:
-          "Minimalist analog watch with a stainless steel case and leather strap.",
-        price: 99,
-        discountPrice: 89,
-        image:
-          "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=800&q=80",
-        stock: 40,
-        tag: "Best Seller",
-      },
-      {
-        name: "Polarized Sunglasses",
-        description:
-          "UV400 protection sunglasses with a lightweight metal frame.",
-        price: 49,
-        image:
-          "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=800&q=80",
-        stock: 65,
-        tag: "Trending",
-      },
-      {
-        name: "Leather Wallet",
-        description:
-          "Slim bifold wallet crafted from genuine leather with RFID blocking.",
-        price: 39,
-        discountPrice: 34,
-        image:
-          "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80",
-        stock: 80,
-        tag: "New",
-      },
-      {
-        name: "Canvas Backpack",
-        description:
-          "Durable everyday backpack with padded laptop compartment.",
-        price: 69,
-        image:
-          "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&w=800&q=80",
-        stock: 45,
-        tag: "Hot",
-      },
-      {
-        name: "Braided Leather Belt",
-        description: "Woven leather belt with a brushed metal buckle.",
-        price: 29,
-        discountPrice: 25,
-        image:
-          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
-        stock: 55,
-        tag: "Sale",
-      },
+      product(
+        "Classic Wrist Watch",
+        "Minimalist analog watch with a stainless steel case and leather strap.",
+        99,
+        IMAGES.wristWatch,
+        40,
+        "Best Seller",
+        89,
+      ),
+      product(
+        "Polarized Sunglasses",
+        "UV400 protection sunglasses with a lightweight metal frame.",
+        49,
+        IMAGES.sunglasses,
+        65,
+        "Trending",
+      ),
+      product(
+        "Leather Wallet",
+        "Slim bifold wallet crafted from genuine leather with RFID blocking.",
+        39,
+        IMAGES.wallet,
+        80,
+        "New",
+        34,
+      ),
+      product(
+        "Canvas Backpack",
+        "Durable everyday backpack with padded laptop compartment.",
+        69,
+        IMAGES.backpack,
+        45,
+        "Hot",
+      ),
+      product(
+        "Braided Leather Belt",
+        "Woven leather belt with a brushed metal buckle.",
+        29,
+        IMAGES.runningBelt,
+        55,
+        "Sale",
+        25,
+      ),
+      product(
+        "Smart Fitness Band",
+        "Track steps, heart rate, and sleep with a slim fitness band.",
+        59,
+        IMAGES.smartwatch,
+        50,
+        "New",
+      ),
+      product(
+        "Leather Passport Holder",
+        "Slim travel wallet for passports, cards, and boarding passes.",
+        34,
+        IMAGES.wallet,
+        60,
+        "Limited",
+        29,
+      ),
+      product(
+        "Travel Duffel Bag",
+        "Spacious duffel bag with detachable shoulder strap.",
+        89,
+        IMAGES.backpack,
+        28,
+        "Trending",
+      ),
+      product(
+        "Metal Cufflinks",
+        "Polished metal cufflinks for formal shirts and special occasions.",
+        24,
+        IMAGES.wristWatch,
+        90,
+        "Hot",
+      ),
+      product(
+        "Wireless Earbuds Case",
+        "Protective silicone case for wireless earbuds.",
+        14,
+        IMAGES.earbuds,
+        120,
+        "New",
+      ),
     ],
   },
   {
     categorySlug: "men",
     items: [
-      {
-        name: "Bomber Jacket",
-        description:
-          "Lightweight bomber jacket with ribbed cuffs and a modern fit.",
-        price: 109,
-        discountPrice: 94,
-        image:
-          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=800&q=80",
-        stock: 28,
-        tag: "Trending",
-      },
-      {
-        name: "Casual Polo Shirt",
-        description: "Soft cotton pique polo shirt in a regular fit.",
-        price: 39,
-        image:
-          "https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=800&q=80",
-        stock: 60,
-        tag: "New",
-      },
-      {
-        name: "Slim Fit Trousers",
-        description:
-          "Tailored slim trousers with a hint of stretch for comfort.",
-        price: 59,
-        discountPrice: 49,
-        image:
-          "https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=800&q=80",
-        stock: 44,
-        tag: "Hot",
-      },
-      {
-        name: "Chronograph Watch",
-        description: "Bold chronograph watch with a stainless steel bracelet.",
-        price: 149,
-        image:
-          "https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?auto=format&fit=crop&w=800&q=80",
-        stock: 20,
-        tag: "Limited",
-      },
-      {
-        name: "Aviator Sunglasses",
-        description: "Timeless aviator sunglasses with mirrored lenses.",
-        price: 59,
-        discountPrice: 49,
-        image:
-          "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=800&q=80",
-        stock: 50,
-        tag: "Sale",
-      },
+      product(
+        "Bomber Jacket",
+        "Lightweight bomber jacket with ribbed cuffs and a modern fit.",
+        109,
+        IMAGES.hoodie,
+        28,
+        "Trending",
+        94,
+      ),
+      product(
+        "Casual Polo Shirt",
+        "Soft cotton pique polo shirt in a regular fit.",
+        39,
+        IMAGES.genericProduct,
+        60,
+        "New",
+      ),
+      product(
+        "Slim Fit Trousers",
+        "Tailored slim trousers with a hint of stretch for comfort.",
+        59,
+        IMAGES.shorts,
+        44,
+        "Hot",
+        49,
+      ),
+      product(
+        "Chronograph Watch",
+        "Bold chronograph watch with a stainless steel bracelet.",
+        149,
+        IMAGES.wristWatch,
+        20,
+        "Limited",
+      ),
+      product(
+        "Aviator Sunglasses",
+        "Timeless aviator sunglasses with mirrored lenses.",
+        59,
+        IMAGES.sunglasses,
+        50,
+        "Sale",
+        49,
+      ),
+      product(
+        "Formal Dress Shirt",
+        "Crisp cotton dress shirt perfect for office and evening wear.",
+        49,
+        IMAGES.tShirt,
+        55,
+        "Best Seller",
+      ),
+      product(
+        "Merino Wool Sweater",
+        "Soft merino sweater that regulates temperature year-round.",
+        79,
+        IMAGES.hoodie,
+        32,
+        "Trending",
+        69,
+      ),
+      product(
+        "Chino Shorts",
+        "Versatile chino shorts with a relaxed yet tailored fit.",
+        34,
+        IMAGES.shorts,
+        70,
+        "New",
+      ),
+      product(
+        "Leather Belt",
+        "Classic leather belt with a polished silver-tone buckle.",
+        39,
+        IMAGES.runningBelt,
+        48,
+        "Hot",
+      ),
+      product(
+        "Crew Neck Sweatshirt",
+        "Essential crew neck sweatshirt in a soft cotton blend.",
+        49,
+        IMAGES.hoodie,
+        66,
+        "Sale",
+        42,
+      ),
     ],
   },
   {
     categorySlug: "clothing",
     items: [
-      {
-        name: "Essential Cotton T-Shirt",
-        description:
-          "Everyday crew neck tee made from breathable organic cotton.",
-        price: 25,
-        discountPrice: 21,
-        image:
-          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
-        stock: 110,
-        tag: "Best Seller",
-      },
-      {
-        name: "Pullover Hoodie",
-        description: "Cozy fleece hoodie with kangaroo pocket and relaxed fit.",
-        price: 69,
-        image:
-          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=800&q=80",
-        stock: 48,
-        tag: "New",
-      },
-      {
-        name: "Summer Dress",
-        description:
-          "Flowy midi dress with a flattering silhouette for warm days.",
-        price: 79,
-        discountPrice: 69,
-        image:
-          "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80",
-        stock: 36,
-        tag: "Trending",
-      },
-      {
-        name: "Crossbody Bag",
-        description:
-          "Compact crossbody bag with adjustable strap and multiple pockets.",
-        price: 49,
-        image:
-          "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80",
-        stock: 42,
-        tag: "Hot",
-      },
-      {
-        name: "Printed Scarf",
-        description: "Lightweight printed scarf to layer over any outfit.",
-        price: 29,
-        discountPrice: 24,
-        image:
-          "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80",
-        stock: 58,
-        tag: "Sale",
-      },
+      product(
+        "Essential Cotton T-Shirt",
+        "Everyday crew neck tee made from breathable organic cotton.",
+        25,
+        IMAGES.tShirt,
+        110,
+        "Best Seller",
+        21,
+      ),
+      product(
+        "Pullover Hoodie",
+        "Cozy fleece hoodie with kangaroo pocket and relaxed fit.",
+        69,
+        IMAGES.hoodie,
+        48,
+        "New",
+      ),
+      product(
+        "Summer Dress",
+        "Flowy midi dress with a flattering silhouette for warm days.",
+        79,
+        IMAGES.dress,
+        36,
+        "Trending",
+        69,
+      ),
+      product(
+        "Crossbody Bag",
+        "Compact crossbody bag with adjustable strap and multiple pockets.",
+        49,
+        IMAGES.crossbodyBag,
+        42,
+        "Hot",
+      ),
+      product(
+        "Printed Scarf",
+        "Lightweight printed scarf to layer over any outfit.",
+        29,
+        IMAGES.dress,
+        58,
+        "Sale",
+        24,
+      ),
+      product(
+        "Denim Jacket",
+        "Classic blue denim jacket with a vintage wash and relaxed fit.",
+        89,
+        IMAGES.denimJacket,
+        30,
+        "Best Seller",
+      ),
+      product(
+        "Graphic Hoodie",
+        "Streetwear hoodie with a bold front graphic print.",
+        59,
+        IMAGES.hoodie,
+        40,
+        "New",
+      ),
+      product(
+        "Pleated Skirt",
+        "Elegant pleated midi skirt with a comfortable elastic waist.",
+        49,
+        IMAGES.dress,
+        35,
+        "Trending",
+        44,
+      ),
+      product(
+        "Linen Shirt",
+        "Breathable linen button-up shirt for warm-weather style.",
+        55,
+        IMAGES.tShirt,
+        50,
+        "Hot",
+      ),
+      product(
+        "Wool Coat",
+        "Tailored wool-blend coat with a clean silhouette.",
+        149,
+        IMAGES.hoodie,
+        20,
+        "Limited",
+        129,
+      ),
     ],
   },
   {
     categorySlug: "women",
     items: [
-      {
-        name: "Tote Handbag",
-        description: "Spacious structured tote with gold-tone hardware.",
-        price: 99,
-        discountPrice: 84,
-        image:
-          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80",
-        stock: 30,
-        tag: "Best Seller",
-      },
-      {
-        name: "Stiletto Heels",
-        description: "Elegant pointed-toe stilettos in classic black.",
-        price: 89,
-        image:
-          "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80",
-        stock: 25,
-        tag: "Trending",
-      },
-      {
-        name: "Silk Scarf",
-        description: "Luxurious silk scarf with a subtle geometric print.",
-        price: 35,
-        discountPrice: 29,
-        image:
-          "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80",
-        stock: 60,
-        tag: "New",
-      },
-      {
-        name: "Oversized Sunglasses",
-        description: "Chic oversized frames with full UV protection.",
-        price: 55,
-        image:
-          "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=800&q=80",
-        stock: 45,
-        tag: "Hot",
-      },
-      {
-        name: "Floral Maxi Dress",
-        description:
-          "Floor-length floral dress with a cinched waist and flowy skirt.",
-        price: 95,
-        discountPrice: 85,
-        image:
-          "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80",
-        stock: 22,
-        tag: "Sale",
-      },
+      product(
+        "Tote Handbag",
+        "Spacious structured tote with gold-tone hardware.",
+        99,
+        IMAGES.handbag,
+        30,
+        "Best Seller",
+        84,
+      ),
+      product(
+        "Stiletto Heels",
+        "Elegant pointed-toe stilettos in classic black.",
+        89,
+        IMAGES.heels,
+        25,
+        "Trending",
+      ),
+      product(
+        "Silk Scarf",
+        "Luxurious silk scarf with a subtle geometric print.",
+        35,
+        IMAGES.dress,
+        60,
+        "New",
+        29,
+      ),
+      product(
+        "Oversized Sunglasses",
+        "Chic oversized frames with full UV protection.",
+        55,
+        IMAGES.sunglasses,
+        45,
+        "Hot",
+      ),
+      product(
+        "Floral Maxi Dress",
+        "Floor-length floral dress with a cinched waist and flowy skirt.",
+        95,
+        IMAGES.dress,
+        22,
+        "Sale",
+        85,
+      ),
+      product(
+        "Clutch Wallet",
+        "Sleek clutch wallet with card slots and a snap closure.",
+        45,
+        IMAGES.wallet,
+        38,
+        "New",
+      ),
+      product(
+        "Ankle Boots",
+        "Versatile ankle boots with a stacked heel and side zipper.",
+        109,
+        IMAGES.hikingBoots,
+        28,
+        "Best Seller",
+        94,
+      ),
+      product(
+        "Summer Hat",
+        "Wide-brim straw hat with a breathable weave.",
+        29,
+        IMAGES.cap,
+        55,
+        "Trending",
+      ),
+      product(
+        "Statement Necklace",
+        "Bold necklace with layered chains and a polished finish.",
+        39,
+        IMAGES.wristWatch,
+        42,
+        "Hot",
+      ),
+      product(
+        "Yoga Leggings",
+        "High-waist leggings with four-way stretch and moisture-wicking fabric.",
+        49,
+        IMAGES.shorts,
+        70,
+        "New",
+      ),
     ],
   },
   {
     categorySlug: "kids",
     items: [
-      {
-        name: "Kids Graphic T-Shirt",
-        description:
-          "Soft cotton tee with a fun printed design for everyday play.",
-        price: 18,
-        image:
-          "https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=800&q=80",
-        stock: 80,
-        tag: "New",
-      },
-      {
-        name: "Kids Running Shoes",
-        description: "Lightweight flexible sneakers built for active kids.",
-        price: 49,
-        discountPrice: 42,
-        image:
-          "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&w=800&q=80",
-        stock: 65,
-        tag: "Best Seller",
-      },
-      {
-        name: "Kids School Backpack",
-        description:
-          "Colorful backpack with padded straps and multiple compartments.",
-        price: 35,
-        image:
-          "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&w=800&q=80",
-        stock: 55,
-        tag: "Hot",
-      },
-      {
-        name: "Kids Baseball Cap",
-        description: "Adjustable cotton cap with a curved brim.",
-        price: 16,
-        discountPrice: 13,
-        image:
-          "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=800&q=80",
-        stock: 70,
-        tag: "Trending",
-      },
-      {
-        name: "Kids Chino Shorts",
-        description: "Comfortable cotton shorts with an adjustable waistband.",
-        price: 22,
-        image:
-          "https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=800&q=80",
-        stock: 62,
-        tag: "New",
-      },
+      product(
+        "Kids Graphic T-Shirt",
+        "Soft cotton tee with a fun printed design for everyday play.",
+        18,
+        IMAGES.genericProduct,
+        80,
+        "New",
+      ),
+      product(
+        "Kids Running Shoes",
+        "Lightweight flexible sneakers built for active kids.",
+        49,
+        IMAGES.whiteSneaker,
+        65,
+        "Best Seller",
+        42,
+      ),
+      product(
+        "Kids School Backpack",
+        "Colorful backpack with padded straps and multiple compartments.",
+        35,
+        IMAGES.backpack,
+        55,
+        "Hot",
+      ),
+      product(
+        "Kids Baseball Cap",
+        "Adjustable cotton cap with a curved brim.",
+        16,
+        IMAGES.cap,
+        70,
+        "Trending",
+        13,
+      ),
+      product(
+        "Kids Chino Shorts",
+        "Comfortable cotton shorts with an adjustable waistband.",
+        22,
+        IMAGES.shorts,
+        62,
+        "New",
+      ),
+      product(
+        "Kids Hoodie",
+        "Cozy fleece hoodie for school days and weekend adventures.",
+        34,
+        IMAGES.hoodie,
+        50,
+        "New",
+      ),
+      product(
+        "Kids Sandals",
+        "Easy slip-on sandals with cushioned footbeds.",
+        19,
+        IMAGES.shorts,
+        75,
+        "Hot",
+      ),
+      product(
+        "Kids Winter Jacket",
+        "Insulated winter jacket with a fleece-lined hood.",
+        59,
+        IMAGES.hoodie,
+        30,
+        "Trending",
+      ),
+      product(
+        "Kids Sunglasses",
+        "Durable flexible sunglasses with UV protection.",
+        12,
+        IMAGES.sunglasses,
+        90,
+        "New",
+      ),
+      product(
+        "Kids Pajama Set",
+        "Soft cotton pajama set with a playful pattern.",
+        24,
+        IMAGES.tShirt,
+        60,
+        "Sale",
+        19,
+      ),
     ],
   },
 ];
