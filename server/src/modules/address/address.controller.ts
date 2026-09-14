@@ -1,9 +1,9 @@
 import { asyncHandler } from "@/utils/asyncHandler";
-import { Response } from "express";
+import { Request, Response } from "express";
 import * as addressService from "@/modules/address/address.service";
 
-export const postAddress = asyncHandler(async (req: any, res: Response) => {
-  const { id } = req.user;
+export const postAddress = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.user!;
   const result = await addressService.createAddress(id, req.body);
 
   return res.status(201).json({
@@ -14,8 +14,8 @@ export const postAddress = asyncHandler(async (req: any, res: Response) => {
 });
 
 export const getAddressByUser = asyncHandler(
-  async (req: any, res: Response) => {
-    const { id } = req.user;
+  async (req: Request, res: Response) => {
+    const { id } = req.user!;
     const result = await addressService.getAddressByUser(id);
 
     return res.status(200).json({
@@ -27,10 +27,10 @@ export const getAddressByUser = asyncHandler(
 );
 
 export const updateAddress = asyncHandler(
-  async (req: any, res: Response) => {
+  async (req: Request, res: Response) => {
     const result = await addressService.updateAddress(
       req.params.id,
-      req.user._id,
+      req.user!._id,
       req.body,
     );
 
@@ -49,10 +49,10 @@ export const updateAddress = asyncHandler(
 );
 
 export const deleteAddress = asyncHandler(
-  async (req: any, res: Response) => {
+  async (req: Request, res: Response) => {
     const result = await addressService.deleteAddress(
       req.params.id,
-      req.user._id,
+      req.user!._id,
     );
 
     if (!result.address)

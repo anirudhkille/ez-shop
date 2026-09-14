@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
 
+export interface IWishlist {
+  user: mongoose.Types.ObjectId | string;
+  products: (mongoose.Types.ObjectId | string)[];
+}
+
 const wishlistSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,

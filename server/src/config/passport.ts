@@ -24,7 +24,7 @@ passport.use(
           });
         }
 
-        return done(null, user as any);
+        return done(null, user as unknown as Express.User);
       } catch (err) {
         done(err);
       }
@@ -32,14 +32,14 @@ passport.use(
   ),
 );
 
-passport.serializeUser((user: any, done) => {
+passport.serializeUser((user, done) => {
   done(null, user._id);
 });
 
 passport.deserializeUser(async (_id: string, done) => {
   try {
     const user = await User.findById(_id);
-    done(null, user as any);
+    done(null, user as unknown as Express.User);
   } catch (err) {
     done(err, null);
   }

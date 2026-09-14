@@ -21,11 +21,17 @@ export const createCategory = async (
   let imageUrl = "";
 
   if (file) {
-    const result: any = await uploadToCloudinary("categories", file.buffer);
+    const result = (await uploadToCloudinary("categories", file.buffer)) as {
+      secure_url: string;
+    };
     imageUrl = result.secure_url;
   }
 
-  const category = await categoryRepository.create({ name, slug, image: imageUrl });
+  const category = await categoryRepository.create({
+    name,
+    slug,
+    image: imageUrl,
+  });
 
   return {
     success: true,
@@ -61,7 +67,9 @@ export const updateCategory = async (
       await deleteCategoryImage(category.image);
     }
 
-    const result: any = await uploadToCloudinary("categories", file.buffer);
+    const result = (await uploadToCloudinary("categories", file.buffer)) as {
+      secure_url: string;
+    };
     imageUrl = result.secure_url;
   }
 

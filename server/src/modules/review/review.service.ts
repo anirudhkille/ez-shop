@@ -1,6 +1,7 @@
 import * as reviewRepository from "@/modules/review/review.repository";
+import { IReview } from "@/modules/review/review.model";
 
-export const postReview = async (userId: string, body: any) => {
+export const postReview = async (userId: string, body: Partial<IReview>) => {
   const review = await reviewRepository.create({ ...body, user: userId });
 
   return {
@@ -13,7 +14,11 @@ export const postReview = async (userId: string, body: any) => {
   };
 };
 
-export const getReviewByProduct = async (productId: string, limit: number, page: number) => {
+export const getReviewByProduct = async (
+  productId: string,
+  limit: number,
+  page: number,
+) => {
   const skip = (page - 1) * limit;
 
   const [review, total] = await Promise.all([
@@ -36,11 +41,18 @@ export const getReviewByProduct = async (productId: string, limit: number, page:
   };
 };
 
-export const updateReview = async (id: string, userId: string, body: any) => {
+export const updateReview = async (
+  id: string,
+  userId: string,
+  body: Partial<IReview>,
+) => {
   const review = await reviewRepository.findByIdAndUpdate(id, userId, body);
 
   if (!review)
-    return { status: 404, data: { success: false, message: "Review not found" } };
+    return {
+      status: 404,
+      data: { success: false, message: "Review not found" },
+    };
 
   return {
     data: {
@@ -55,7 +67,10 @@ export const deleteReview = async (id: string, userId: string) => {
   const review = await reviewRepository.findByIdAndDelete(id, userId);
 
   if (!review)
-    return { status: 404, data: { success: false, message: "Review not found" } };
+    return {
+      status: 404,
+      data: { success: false, message: "Review not found" },
+    };
 
   return {
     data: {

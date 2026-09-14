@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+export interface IReview {
+  product: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId;
+  rating: number;
+  comment?: string;
+}
+
 const reviewSchema = new mongoose.Schema({
   product: {
     type: mongoose.Schema.Types.ObjectId,

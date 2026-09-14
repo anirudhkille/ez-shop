@@ -1,6 +1,11 @@
+import { UpdateQuery } from "mongoose";
 import * as addressRepository from "@/modules/address/address.repository";
+import { IAddress } from "@/modules/address/address.model";
 
-export const createAddress = async (userId: string, body: any) => {
+export const createAddress = async (
+  userId: string,
+  body: Partial<IAddress>,
+) => {
   const address = await addressRepository.create({ ...body, user: userId });
   return { address, message: "Address created successfully" };
 };
@@ -10,7 +15,11 @@ export const getAddressByUser = async (userId: string) => {
   return { address, message: "Address fetched successfully" };
 };
 
-export const updateAddress = async (id: string, userId: string, body: any) => {
+export const updateAddress = async (
+  id: string,
+  userId: string,
+  body: UpdateQuery<IAddress>,
+) => {
   const address = await addressRepository.findByIdAndUpdate(id, userId, body);
   return { address, message: "Address updated successfully" };
 };

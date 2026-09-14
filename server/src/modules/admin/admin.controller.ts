@@ -34,7 +34,10 @@ export const forgotPassword = asyncHandler(
 
 export const resetPassword = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await adminService.resetPassword(req.body.token, req.body.password);
+    const result = await adminService.resetPassword(
+      req.body.token,
+      req.body.password,
+    );
 
     res
       .cookie("refreshToken", result.data.refreshToken, {
@@ -48,12 +51,12 @@ export const resetPassword = asyncHandler(
   },
 );
 
-export const editProfile = asyncHandler(async (req: any, res: Response) => {
-  const result = await adminService.editProfile(req.user._id, req.body);
+export const editProfile = asyncHandler(async (req: Request, res: Response) => {
+  const result = await adminService.editProfile(req.user!._id, req.body);
   res.status(result.status).json(result.data);
 });
 
-export const getProfile = asyncHandler(async (req: any, res: Response) => {
-  const result = await adminService.getProfile(req.user._id);
+export const getProfile = asyncHandler(async (req: Request, res: Response) => {
+  const result = await adminService.getProfile(req.user!._id);
   res.status(result.status).json(result.data);
 });

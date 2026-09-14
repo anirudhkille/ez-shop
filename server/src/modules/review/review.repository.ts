@@ -1,11 +1,21 @@
-import Review from "@/modules/review/review.model";
+import Review, { IReview } from "@/modules/review/review.model";
+import { Types, UpdateQuery } from "mongoose";
 
-export const create = async (data: any) => {
+export const create = async (data: {
+  product?: string | Types.ObjectId;
+  rating?: number;
+  comment?: string;
+  user?: string | Types.ObjectId;
+}) => {
   const review = new Review(data);
   return await review.save();
 };
 
-export const findByProduct = async (productId: string, skip: number, limit: number) => {
+export const findByProduct = async (
+  productId: string,
+  skip: number,
+  limit: number,
+) => {
   return await Review.find({ product: productId }).skip(skip).limit(limit);
 };
 
@@ -13,8 +23,14 @@ export const countByProduct = async (productId: string) => {
   return await Review.countDocuments({ product: productId });
 };
 
-export const findByIdAndUpdate = async (id: string, userId: string, data: any) => {
-  return await Review.findByIdAndUpdate({ _id: id, user: userId }, data, { new: true });
+export const findByIdAndUpdate = async (
+  id: string | Types.ObjectId,
+  userId: string,
+  data: UpdateQuery<IReview>,
+) => {
+  return await Review.findByIdAndUpdate({ _id: id, user: userId }, data, {
+    new: true,
+  });
 };
 
 export const findByIdAndDelete = async (id: string, userId: string) => {

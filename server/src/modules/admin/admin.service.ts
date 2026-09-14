@@ -7,11 +7,15 @@ import {
   generateRefreshToken,
 } from "@/utils/generateToken";
 import * as adminRepository from "@/modules/admin/admin.repository";
+import type { IAdmin } from "@/modules/admin/admin.model";
 
 export const login = async (email: string, password: string) => {
   const user = await adminRepository.findByEmail(email);
   if (!user || !(await user.matchPassword(password))) {
-    return { status: 401, data: { success: false, message: "Invalid credentials" } };
+    return {
+      status: 401,
+      data: { success: false, message: "Invalid credentials" },
+    };
   }
 
   const accessToken = generateAccessToken({
@@ -46,7 +50,10 @@ export const login = async (email: string, password: string) => {
 export const forgotPassword = async (email: string) => {
   const user = await adminRepository.findByEmail(email);
   if (!user) {
-    return { status: 404, data: { success: false, message: "Admin with this email does not exist" } };
+    return {
+      status: 404,
+      data: { success: false, message: "Admin with this email does not exist" },
+    };
   }
 
   const resetToken = user.generateResetToken();
@@ -69,7 +76,10 @@ export const forgotPassword = async (email: string) => {
     html: resetPasswordTemplate(user.name, resetUrl),
   });
 
-  return { status: 200, data: { success: true, message: "Password reset link sent to email" } };
+  return {
+    status: 200,
+    data: { success: true, message: "Password reset link sent to email" },
+  };
 };
 
 export const resetPassword = async (token: string, newPassword: string) => {
@@ -84,7 +94,10 @@ export const resetPassword = async (token: string, newPassword: string) => {
   });
 
   if (!user) {
-    return { status: 400, data: { success: false, message: "Invalid or expired reset token" } };
+    return {
+      status: 400,
+      data: { success: false, message: "Invalid or expired reset token" },
+    };
   }
 
   user.password = newPassword;
@@ -120,9 +133,14 @@ export const resetPassword = async (token: string, newPassword: string) => {
   };
 };
 
-export const editProfile = async (userId: string, updates: any) => {
-  const allowedFields = ["name", "phone"];
-  const sanitized: any = {};
+type AdminProfileUpdate = Partial<Pick<IAdmin, "name" | "phone">>;
+
+export const editProfile = async (
+  userId: string,
+  updates: AdminProfileUpdate,
+) => {
+  const allowedFields = ["name", "phone"] as const;
+  const sanitized: AdminProfileUpdate = {};
 
   for (const field of allowedFields) {
     if (updates[field] !== undefined) sanitized[field] = updates[field];
@@ -131,17 +149,26 @@ export const editProfile = async (userId: string, updates: any) => {
   const user = await adminRepository.findByIdAndUpdate(userId, sanitized);
 
   if (!user) {
-    return { status: 404, data: { success: false, message: "Admin not found" } };
+    return {
+      status: 404,
+      data: { success: false, message: "Admin not found" },
+    };
   }
 
-  return { status: 200, data: { success: true, message: "Profile updated successfully", user } };
+  return {
+    status: 200,
+    data: { success: true, message: "Profile updated successfully", user },
+  };
 };
 
 export const getProfile = async (userId: string) => {
   const user = await adminRepository.findById(userId, "-password");
 
   if (!user) {
-    return { status: 404, data: { success: false, message: "Admin not found" } };
+    return {
+      status: 404,
+      data: { success: false, message: "Admin not found" },
+    };
   }
 
   return { status: 200, data: { success: true, user } };

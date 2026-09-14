@@ -1,10 +1,11 @@
-import User from "@/modules/user/user.model";
+import type { UpdateQuery } from "mongoose";
+import User, { type IUser } from "@/modules/user/user.model";
 
 export const findByEmail = async (email: string) => {
   return await User.findOne({ email });
 };
 
-export const createUser = async (data: Record<string, any>) => {
+export const createUser = async (data: Partial<IUser>) => {
   return await User.create(data);
 };
 
@@ -16,7 +17,7 @@ export const findById = async (id: string, select?: string) => {
 
 export const findByIdAndUpdate = async (
   id: string,
-  updates: Record<string, any>,
+  updates: UpdateQuery<IUser>,
 ) => {
   return await User.findByIdAndUpdate(id, updates, {
     new: true,

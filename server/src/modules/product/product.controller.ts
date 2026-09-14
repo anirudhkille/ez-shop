@@ -1,5 +1,6 @@
 import { asyncHandler } from "@/utils/asyncHandler";
 import { Request, Response } from "express";
+import { ZodError } from "zod";
 import * as productService from "@/modules/product/product.service";
 import {
   objectIdParamSchema,
@@ -7,11 +8,14 @@ import {
   searchQuerySchema,
 } from "@/modules/product/product.schema";
 
-const formatZodError = (error: any) =>
-  error.errors.map((e: any) => e.message).join(", ");
+const queryString = (value: unknown): string | undefined =>
+  typeof value === "string" ? value : undefined;
+
+const formatZodError = (error: ZodError) =>
+  error.issues.map((issue) => issue.message).join(", ");
 
 export const postProduct = asyncHandler(async (req: Request, res: Response) => {
-  const result = await productService.postProduct(req.body, (req as any).files);
+  const result = await productService.postProduct(req.body, req.files);
   return res.status(result.status || 200).json(result.data);
 });
 
@@ -56,7 +60,7 @@ export const updateProduct = asyncHandler(
     const result = await productService.updateProduct(
       paramsParsed.data.id,
       req.body,
-      (req as any).files,
+      req.files,
     );
     return res.status(result.status || 200).json(result.data);
   },
@@ -93,10 +97,25 @@ export const getSearchProduct = asyncHandler(
   },
 );
 
-export const getFilteredProducts = asyncHandler(async (req: any, res: any) => {
-  const result = await productService.getFilteredProducts(req.query);
-  return res.status(200).json(result.data);
-});
+export const getFilteredProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const query = req.query;
+    const result = await productService.getFilteredProducts({
+      search: queryString(query.search),
+      category: queryString(query.category),
+      gender: queryString(query.gender),
+      type: queryString(query.type),
+      price: queryString(query.price),
+      size: queryString(query.size),
+      color: queryString(query.color),
+      sort: queryString(query.sort),
+      minRating: queryString(query.minRating),
+      page: queryString(query.page),
+      limit: queryString(query.limit),
+    });
+    return res.status(200).json(result.data);
+  },
+);
 
 export const getFeaturedProducts = asyncHandler(
   async (req: Request, res: Response) => {
@@ -121,7 +140,9 @@ export const getSimilarProducts = asyncHandler(
         .json({ success: false, message: formatZodError(paramsParsed.error) });
     }
 
-    const result = await productService.getSimilarProducts(paramsParsed.data.id);
+    const result = await productService.getSimilarProducts(
+      paramsParsed.data.id,
+    );
     return res.status(result.status || 200).json(result.data);
   },
 );

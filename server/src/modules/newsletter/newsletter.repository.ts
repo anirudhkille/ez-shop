@@ -1,10 +1,11 @@
-import Newsletter from "@/modules/newsletter/newsletter.model";
+import { FilterQuery } from "mongoose";
+import Newsletter, { INewsletter } from "@/modules/newsletter/newsletter.model";
 
-export const findOne = async (filter: any) => {
+export const findOne = async (filter: FilterQuery<INewsletter>) => {
   return await Newsletter.findOne(filter).lean();
 };
 
-export const create = async (data: any) => {
+export const create = async (data: Partial<INewsletter>) => {
   return await Newsletter.create(data);
 };
 

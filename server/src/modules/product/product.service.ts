@@ -1,11 +1,73 @@
 import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
 import slugify from "slugify";
 import mongoose from "mongoose";
-import Product from "@/modules/product/product.model";
+import Product, { IProduct, IVariant } from "@/modules/product/product.model";
 import * as productRepository from "@/modules/product/product.repository";
+import type { FilterQuery } from "mongoose";
+
+interface VariantImageMap {
+  variantIndex: number;
+  count: number;
+}
+
+interface ProductBody {
+  name: string;
+  description?: string;
+  category?: IProduct["category"];
+  price?: number;
+  discountPrice?: number;
+  gender?: IProduct["gender"];
+  stock?: number;
+  isFeatured?: boolean;
+  isBestSellers?: boolean;
+  tag?: string;
+  publish?: boolean;
+  image?: string;
+  slug?: string;
+  variants?: string | IVariant[];
+  variantImageMap?: string | VariantImageMap[];
+}
+
+interface ProductQuery {
+  publish?: string;
+  isFeatured?: string;
+  isNewArrival?: string;
+  page?: number;
+  limit?: number;
+}
+
+interface FilteredProductsQuery {
+  search?: string;
+  category?: string;
+  gender?: string;
+  type?: string;
+  price?: string;
+  size?: string;
+  color?: string;
+  sort?: string;
+  minRating?: string;
+  page?: string;
+  limit?: string;
+}
+
+type ProductFilter = FilterQuery<IProduct> & { isNewArrival?: boolean };
+
+type FilteredDBQuery = FilterQuery<IProduct> & {
+  "variants.sizes.size"?: { $in: string[] };
+  "variants.color"?: { $in: string[] };
+};
+
+type UploadedFiles =
+  | Express.Multer.File[]
+  | { [fieldname: string]: Express.Multer.File[] };
 
 export const decrementStock = async (
-  items: { product: string; variantId?: string; size?: string; quantity: number }[],
+  items: {
+    product: string;
+    variantId?: string;
+    size?: string;
+    quantity: number;
+  }[],
 ) => {
   for (const item of items) {
     if (!item.quantity || item.quantity <= 0) continue;
@@ -15,7 +77,7 @@ export const decrementStock = async (
       if (!product) continue;
 
       const variant = product.variants.find(
-        (v) => (v as any)._id.toString() === item.variantId,
+        (v) => String(v._id) === item.variantId,
       );
       const sizeObj = variant?.sizes.find((s) => s.size === item.size);
 
@@ -33,7 +95,12 @@ export const decrementStock = async (
 };
 
 export const verifyStock = async (
-  items: { product: string; variantId?: string; size?: string; quantity: number }[],
+  items: {
+    product: string;
+    variantId?: string;
+    size?: string;
+    quantity: number;
+  }[],
 ): Promise<string | null> => {
   for (const item of items) {
     if (!item.quantity || item.quantity <= 0) continue;
@@ -45,7 +112,7 @@ export const verifyStock = async (
 
     if (item.variantId && item.size) {
       const variant = product.variants.find(
-        (v) => (v as any)._id.toString() === item.variantId,
+        (v) => String(v._id) === item.variantId,
       );
       const sizeObj = variant?.sizes.find((s) => s.size === item.size);
 
@@ -66,38 +133,40 @@ export const verifyStock = async (
   return null;
 };
 
-export const postProduct = async (body: any, files: any) => {
-  if (typeof body.variants === "string") {
-    body.variants = JSON.parse(body.variants);
-  }
+export const postProduct = async (body: ProductBody, files?: UploadedFiles) => {
+  const variants: IVariant[] =
+    typeof body.variants === "string"
+      ? JSON.parse(body.variants)
+      : (body.variants ?? []);
 
-  if (typeof body.variantImageMap === "string") {
-    body.variantImageMap = JSON.parse(body.variantImageMap);
-  }
+  const variantImageMap: VariantImageMap[] =
+    typeof body.variantImageMap === "string"
+      ? JSON.parse(body.variantImageMap)
+      : (body.variantImageMap ?? []);
 
-  if (files && files.image) {
+  if (files && !Array.isArray(files) && files.image) {
     const file = files.image[0];
-    const result: any = await uploadToCloudinary("products", file.buffer);
+    const result = await uploadToCloudinary("products", file.buffer);
     body.image = result.secure_url;
   }
 
-  if (files && files.variantImages) {
+  if (files && !Array.isArray(files) && files.variantImages) {
     const variantFiles = files.variantImages;
 
     let fileIndex = 0;
 
-    for (const map of body.variantImageMap) {
+    for (const map of variantImageMap) {
       const { variantIndex, count } = map;
 
-      body.variants[variantIndex].images = [];
+      variants[variantIndex].images = [];
 
       for (let i = 0; i < count; i++) {
-        const result: any = await uploadToCloudinary(
+        const result = await uploadToCloudinary(
           "products/variants",
           variantFiles[fileIndex].buffer,
         );
 
-        body.variants[variantIndex].images.push(result.secure_url);
+        variants[variantIndex].images.push(result.secure_url);
         fileIndex++;
       }
     }
@@ -105,7 +174,11 @@ export const postProduct = async (body: any, files: any) => {
 
   body.slug = slugify(body.name, { lower: true, strict: true });
 
-  const product = await productRepository.create(body);
+  const product = await productRepository.create({
+    ...body,
+    variants,
+    variantImageMap,
+  });
 
   return {
     data: {
@@ -117,8 +190,8 @@ export const postProduct = async (body: any, files: any) => {
   };
 };
 
-export const getProducts = async (query: any) => {
-  const filter: any = {};
+export const getProducts = async (query: ProductQuery) => {
+  const filter: ProductFilter = {};
 
   if (query.publish) {
     filter.publish = query.publish === "true";
@@ -161,7 +234,10 @@ export const getProductById = async (slug: string, id: string) => {
   const product = await productRepository.findById(id);
 
   if (!product) {
-    return { status: 404, data: { success: true, message: "Product not found" } };
+    return {
+      status: 404,
+      data: { success: true, message: "Product not found" },
+    };
   }
 
   if (product.slug !== slug) {
@@ -183,28 +259,33 @@ export const getProductById = async (slug: string, id: string) => {
   };
 };
 
-export const updateProduct = async (id: string, body: any, files: any) => {
-  if (typeof body.variants === "string") {
-    body.variants = JSON.parse(body.variants);
-  }
+export const updateProduct = async (
+  id: string,
+  body: ProductBody,
+  files?: UploadedFiles,
+) => {
+  const variants: IVariant[] =
+    typeof body.variants === "string"
+      ? JSON.parse(body.variants)
+      : (body.variants ?? []);
 
-  if (files && files.image) {
+  if (files && !Array.isArray(files) && files.image) {
     const file = files.image[0];
-    const result: any = await uploadToCloudinary("products", file.buffer);
+    const result = await uploadToCloudinary("products", file.buffer);
     body.image = result.secure_url;
   }
 
-  if (files && files.variantImages) {
+  if (files && !Array.isArray(files) && files.variantImages) {
     const variantFiles = files.variantImages;
 
     for (let i = 0; i < variantFiles.length; i++) {
-      const result: any = await uploadToCloudinary(
+      const result = await uploadToCloudinary(
         "products/variants",
         variantFiles[i].buffer,
       );
 
-      if (body.variants && body.variants[i]) {
-        body.variants[i].images = [result.secure_url];
+      if (variants[i]) {
+        variants[i].images = [result.secure_url];
       }
     }
   }
@@ -213,10 +294,16 @@ export const updateProduct = async (id: string, body: any, files: any) => {
     body.slug = slugify(body.name, { lower: true, strict: true });
   }
 
-  const product = await productRepository.findByIdAndUpdate(id, body);
+  const product = await productRepository.findByIdAndUpdate(id, {
+    ...body,
+    variants,
+  });
 
   if (!product) {
-    return { status: 404, data: { success: false, message: "Product not found" } };
+    return {
+      status: 404,
+      data: { success: false, message: "Product not found" },
+    };
   }
 
   return {
@@ -232,7 +319,10 @@ export const deleteProduct = async (id: string) => {
   const product = await productRepository.findByIdAndDelete(id);
 
   if (!product) {
-    return { status: 404, data: { success: false, message: "Product not found" } };
+    return {
+      status: 404,
+      data: { success: false, message: "Product not found" },
+    };
   }
 
   return {
@@ -255,7 +345,7 @@ export const getSearchProduct = async (keyword: string, limit: number) => {
   };
 };
 
-export const getFilteredProducts = async (query: any) => {
+export const getFilteredProducts = async (query: FilteredProductsQuery) => {
   const {
     search,
     category,
@@ -270,7 +360,7 @@ export const getFilteredProducts = async (query: any) => {
     limit = 20,
   } = query;
 
-  const dbQuery: any = {
+  const dbQuery: FilteredDBQuery = {
     publish: true,
   };
 
@@ -329,7 +419,7 @@ export const getFilteredProducts = async (query: any) => {
     dbQuery.rating = { $gte: Number(minRating) };
   }
 
-  let sortOption: any = { createdAt: -1 };
+  let sortOption: Record<string, 1 | -1> = { createdAt: -1 };
 
   switch (sort) {
     case "price-low":
@@ -401,10 +491,16 @@ export const getSimilarProducts = async (id: string) => {
   const product = await productRepository.findByIdSelect(id, "category");
 
   if (!product) {
-    return { status: 404, data: { success: false, message: "Product not found" } };
+    return {
+      status: 404,
+      data: { success: false, message: "Product not found" },
+    };
   }
 
-  const similarProducts = await productRepository.findSimilar(id, product.category);
+  const similarProducts = await productRepository.findSimilar(
+    id,
+    product.category as unknown as mongoose.Types.ObjectId,
+  );
 
   return {
     data: {

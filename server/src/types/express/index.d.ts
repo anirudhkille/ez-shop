@@ -1,15 +1,10 @@
-import "express";
-import { Types, Document } from "mongoose";
-
 declare global {
   namespace Express {
-    interface User extends Document {
-      _id: Types.ObjectId;
-      name: string;
-      email: string;
+    interface User {
+      _id: string;
+      id: string;
       role: string;
-      googleId?: string;
-      avatar?: string;
+      email: string;
     }
 
     interface Request {

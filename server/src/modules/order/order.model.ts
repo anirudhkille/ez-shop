@@ -1,5 +1,40 @@
 import mongoose from "mongoose";
 
+export interface IOrderProduct {
+  product: mongoose.Types.ObjectId | string;
+  quantity: number;
+  price: number;
+  variantId?: string;
+  size?: string;
+}
+
+export interface IOrder {
+  user?: mongoose.Types.ObjectId | string | null;
+  name?: string;
+  email?: string;
+  phone?: string;
+  products: IOrderProduct[];
+  address?: {
+    name: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    phone: string;
+  };
+  deliveryMethod?: string;
+  subtotal?: number;
+  deliveryCharge?: number;
+  totalAmount?: number;
+  paymentStatus?: string;
+  paymentType?: string;
+  paymentIntentId?: string;
+  sessionId?: string;
+  orderStatus?: string;
+}
+
 const orderSchema = new mongoose.Schema(
   {
     user: {

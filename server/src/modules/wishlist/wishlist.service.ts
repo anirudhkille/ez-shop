@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import * as wishlistRepository from "@/modules/wishlist/wishlist.repository";
 
 export const toggleWishlist = async (userId: string, productId: string) => {
@@ -19,16 +20,16 @@ export const toggleWishlist = async (userId: string, productId: string) => {
     };
   }
 
-  const exists = wishlist.products.some((id: any) => id.toString() === productId);
+  const exists = wishlist.products.some((id) => id.toString() === productId);
 
   let isAdded = false;
 
   if (exists) {
     wishlist.products = wishlist.products.filter(
-      (id: any) => id.toString() !== productId,
+      (id) => id.toString() !== productId,
     );
   } else {
-    wishlist.products.push(productId as any);
+    wishlist.products.push(productId as unknown as mongoose.Types.ObjectId);
     isAdded = true;
   }
 

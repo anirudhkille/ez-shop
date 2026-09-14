@@ -1,20 +1,17 @@
 import { asyncHandler } from "@/utils/asyncHandler";
 import { Request, Response } from "express";
+import { ZodError } from "zod";
 import { sendSuccess } from "@/utils/response";
 import { objectIdParamSchema } from "@/modules/product/product.schema";
 import * as categoryService from "@/modules/category/category.service";
 
-const formatZodError = (error: any) =>
-  error.errors.map((e: any) => e.message).join(", ");
+const formatZodError = (error: ZodError) =>
+  error.issues.map((e) => e.message).join(", ");
 
 export const postCategory = asyncHandler(
   async (req: Request, res: Response) => {
     const { name, slug } = req.body;
-    const result = await categoryService.createCategory(
-      name,
-      slug,
-      req.file,
-    );
+    const result = await categoryService.createCategory(name, slug, req.file);
     return res.status(201).json(result);
   },
 );

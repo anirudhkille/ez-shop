@@ -1,6 +1,7 @@
-import Order from "@/modules/order/order.model";
+import Order, { IOrder } from "@/modules/order/order.model";
+import { FilterQuery } from "mongoose";
 
-export const create = async (data: any) => {
+export const create = async (data: Partial<IOrder>) => {
   return await Order.create(data);
 };
 
@@ -8,11 +9,15 @@ export const find = async (skip: number, limit: number) => {
   return await Order.find().skip(skip).limit(limit);
 };
 
-export const countDocuments = async (filter?: any) => {
+export const countDocuments = async (filter?: FilterQuery<IOrder>) => {
   return await Order.countDocuments(filter);
 };
 
-export const findByUser = async (userId: string, skip: number, limit: number) => {
+export const findByUser = async (
+  userId: string,
+  skip: number,
+  limit: number,
+) => {
   return await Order.find({ user: userId }).skip(skip).limit(limit);
 };
 
@@ -27,6 +32,9 @@ export const findByIdPopulated = async (id: string) => {
   );
 };
 
-export const findOnePopulated = async (filter: any) => {
-  return await Order.findOne(filter).populate("products.product", "name image price slug");
+export const findOnePopulated = async (filter: FilterQuery<IOrder>) => {
+  return await Order.findOne(filter).populate(
+    "products.product",
+    "name image price slug",
+  );
 };

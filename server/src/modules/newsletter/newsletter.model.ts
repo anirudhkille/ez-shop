@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-interface INewsletter {
+export interface INewsletter {
   email: string;
 }
 

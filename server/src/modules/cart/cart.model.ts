@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface ICartProduct {
+export interface ICartProduct {
   _id: mongoose.Types.ObjectId;
   product: mongoose.Types.ObjectId;
   variantId?: mongoose.Types.ObjectId;
@@ -10,7 +10,7 @@ interface ICartProduct {
   discountPriceAtPurchase?: number;
 }
 
-interface ICart extends Document {
+export interface ICart extends Document {
   user: mongoose.Types.ObjectId;
   products: mongoose.Types.DocumentArray<ICartProduct>;
 }

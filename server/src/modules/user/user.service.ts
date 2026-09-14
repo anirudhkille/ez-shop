@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { type JwtPayload } from "jsonwebtoken";
 import { env } from "@/config/env.config";
 import {
   generateAccessToken,
@@ -11,6 +11,7 @@ import { verifyEmailTemplate } from "@/templates/verifyEmailTemplate";
 import Session from "./session..model";
 import { AppError } from "@/utils/appError";
 import * as userRepository from "@/modules/user/user.repository";
+import type { IUser } from "@/modules/user/user.model";
 
 const REFRESH_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -209,12 +210,14 @@ export const updatePassword = async (
   return { message: "Password updated successfully" };
 };
 
+type ProfileUpdateInput = Partial<Pick<IUser, "name" | "phone" | "avatar">>;
+
 export const updateProfile = async (
   userId: string,
-  updates: Record<string, any>,
+  updates: ProfileUpdateInput,
 ) => {
-  const allowedFields = ["name", "phone", "avatar"];
-  const sanitized: Record<string, any> = {};
+  const allowedFields = ["name", "phone", "avatar"] as const;
+  const sanitized: ProfileUpdateInput = {};
 
   for (const field of allowedFields) {
     if (updates[field] !== undefined) sanitized[field] = updates[field];
@@ -234,9 +237,9 @@ export const refreshToken = async (token: string) => {
     throw new AppError("No refresh token", 401);
   }
 
-  let decoded: any;
+  let decoded: JwtPayload;
   try {
-    decoded = jwt.verify(token, env.JWT_REFRESH_SECRET);
+    decoded = jwt.verify(token, env.JWT_REFRESH_SECRET) as JwtPayload;
   } catch {
     throw new AppError("Invalid refresh token", 403);
   }
@@ -247,8 +250,12 @@ export const refreshToken = async (token: string) => {
     throw new AppError("Refresh token mismatch", 403);
   }
 
-  const newRefreshToken = generateRefreshToken(decoded);
-  const newAccessToken = generateAccessToken(decoded);
+  const newRefreshToken = generateRefreshToken(
+    decoded as unknown as { _id: string; role: string },
+  );
+  const newAccessToken = generateAccessToken(
+    decoded as unknown as { _id: string; role: string },
+  );
 
   session.value = newRefreshToken;
   session.expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
@@ -260,7 +267,7 @@ export const refreshToken = async (token: string) => {
 export const logout = async (token: string) => {
   if (token) {
     try {
-      const decoded: any = jwt.verify(token, env.JWT_REFRESH_SECRET);
+      const decoded = jwt.verify(token, env.JWT_REFRESH_SECRET) as JwtPayload;
       await Session.findOneAndDelete({ key: `refresh:${decoded._id}` });
     } catch {
       // ignore
@@ -270,14 +277,12 @@ export const logout = async (token: string) => {
   return { message: "Logged out successfully" };
 };
 
-export const googleLogin = async (
-  googleUser: {
-    email?: string;
-    name?: string;
-    googleId: string;
-    avatar?: string;
-  },
-) => {
+export const googleLogin = async (googleUser: {
+  email?: string;
+  name?: string;
+  googleId: string;
+  avatar?: string;
+}) => {
   if (!googleUser || !googleUser.email) {
     throw new AppError("Invalid Google user data", 400);
   }

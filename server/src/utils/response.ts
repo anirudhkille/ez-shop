@@ -1,11 +1,5 @@
 import { Response } from "express";
 
-interface ApiResponse<T = any> {
-  success: boolean;
-  message: string;
-  data?: T;
-}
-
 export const sendSuccess = <T>(
   res: Response,
   data: T,

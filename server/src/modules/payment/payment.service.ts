@@ -1,14 +1,53 @@
+import mongoose from "mongoose";
 import Stripe from "stripe";
 import Cart from "@/modules/cart/cart.model";
 import Address from "@/modules/address/address.model";
-import Order from "@/modules/order/order.model";
+import Order, { IOrderProduct } from "@/modules/order/order.model";
 import Product from "@/modules/product/product.model";
 import { env } from "@/config/env.config";
 import { decrementStock, verifyStock } from "@/modules/product/product.service";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
-export const createCheckoutSession = async (userId: string, body: any, userEmail: string) => {
+type ProductRef = {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  image: string;
+};
+
+interface CheckoutSessionBody {
+  addressId: string;
+  deliveryMethod: string;
+}
+
+interface GuestCheckoutBody {
+  products: Array<{
+    productId: string;
+    variantId?: string;
+    size?: string;
+    quantity: number;
+  }>;
+  address: {
+    name: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    phone: string;
+  };
+  deliveryMethod: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+export const createCheckoutSession = async (
+  userId: string,
+  body: CheckoutSessionBody,
+  userEmail: string,
+) => {
   const { addressId, deliveryMethod } = body;
 
   const cart = await Cart.findOne({ user: userId }).populate(
@@ -24,7 +63,7 @@ export const createCheckoutSession = async (userId: string, body: any, userEmail
 
   const stockError = await verifyStock(
     cart.products.map((item) => ({
-      product: (item.product as any)._id.toString(),
+      product: (item.product as unknown as ProductRef)._id.toString(),
       variantId: item.variantId ? String(item.variantId) : undefined,
       size: item.size,
       quantity: item.quantity,
@@ -59,7 +98,7 @@ export const createCheckoutSession = async (userId: string, body: any, userEmail
     paymentIntentId: "",
 
     products: cart.products.map((item) => ({
-      product: (item.product as any)._id,
+      product: (item.product as unknown as ProductRef)._id,
       quantity: item.quantity,
       price: item.discountPriceAtPurchase ?? item.priceAtPurchase,
     })),
@@ -77,7 +116,7 @@ export const createCheckoutSession = async (userId: string, body: any, userEmail
   });
 
   const line_items = cart.products.map((item) => {
-    const product: any = item.product;
+    const product = item.product as unknown as ProductRef;
     const price = item.discountPriceAtPurchase ?? item.priceAtPurchase;
 
     return {
@@ -139,7 +178,7 @@ export const createCheckoutSession = async (userId: string, body: any, userEmail
 
   await decrementStock(
     cart.products.map((item) => ({
-      product: (item.product as any)._id,
+      product: (item.product as unknown as ProductRef)._id.toString(),
       variantId: item.variantId ? String(item.variantId) : undefined,
       size: item.size,
       quantity: item.quantity,
@@ -158,7 +197,7 @@ export const createCheckoutSession = async (userId: string, body: any, userEmail
   };
 };
 
-export const createGuestCheckoutSession = async (body: any) => {
+export const createGuestCheckoutSession = async (body: GuestCheckoutBody) => {
   const { products, address, deliveryMethod, name, email, phone } = body;
 
   if (!products || products.length === 0)
@@ -167,21 +206,22 @@ export const createGuestCheckoutSession = async (body: any) => {
   if (!address)
     return { status: 400, data: { message: "Address is required" } };
 
-  const productIds = products.map((p: any) => p.productId);
+  const productIds = products.map((p) => p.productId);
   const dbProducts = await Product.find({ _id: { $in: productIds } });
 
-  const productMap = new Map(
-    dbProducts.map((p: any) => [p._id.toString(), p]),
-  );
+  const productMap = new Map(dbProducts.map((p) => [String(p._id), p]));
 
   let subtotal = 0;
-  const orderProducts: any[] = [];
-  const line_items: any[] = [];
+  const orderProducts: IOrderProduct[] = [];
+  const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
   for (const item of products) {
     const prod = productMap.get(item.productId);
     if (!prod || !prod.publish)
-      return { status: 400, data: { message: `Product ${item.productId} not found or unavailable` } };
+      return {
+        status: 400,
+        data: { message: `Product ${item.productId} not found or unavailable` },
+      };
 
     const price = prod.discountPrice || prod.price;
     subtotal += price * item.quantity;
@@ -208,7 +248,7 @@ export const createGuestCheckoutSession = async (body: any) => {
   }
 
   const stockError = await verifyStock(
-    products.map((p: any) => ({
+    products.map((p) => ({
       product: p.productId,
       variantId: p.variantId,
       size: p.size,
@@ -291,8 +331,8 @@ export const createGuestCheckoutSession = async (body: any) => {
   }
 
   await decrementStock(
-    orderProducts.map((p) => ({
-      product: p.product,
+    products.map((p) => ({
+      product: p.productId,
       variantId: p.variantId,
       size: p.size,
       quantity: p.quantity,

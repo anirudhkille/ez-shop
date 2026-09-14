@@ -1,11 +1,45 @@
 import Cart from "@/modules/cart/cart.model";
 import Address from "@/modules/address/address.model";
 import Product from "@/modules/product/product.model";
+import mongoose from "mongoose";
 import { env } from "@/config/env.config";
 import { decrementStock, verifyStock } from "@/modules/product/product.service";
 import * as orderRepository from "@/modules/order/order.repository";
+import { IOrderProduct } from "@/modules/order/order.model";
 
-export const placeCODOrder = async (userId: string, body: any) => {
+type ProductRef = {
+  _id: mongoose.Types.ObjectId;
+};
+
+interface CODRequestBody {
+  addressId: string;
+  deliveryMethod: string;
+}
+
+interface GuestCheckoutBody {
+  products: Array<{
+    productId: string;
+    variantId?: string;
+    size?: string;
+    quantity: number;
+  }>;
+  address: {
+    name: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    phone: string;
+  };
+  deliveryMethod: string;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+export const placeCODOrder = async (userId: string, body: CODRequestBody) => {
   const { addressId, deliveryMethod } = body;
 
   const cart = await Cart.findOne({ user: userId }).populate(
@@ -15,11 +49,15 @@ export const placeCODOrder = async (userId: string, body: any) => {
     return { status: 400, data: { success: false, message: "Cart is empty" } };
 
   const address = await Address.findById(addressId);
-  if (!address) return { status: 400, data: { success: false, message: "Invalid address" } };
+  if (!address)
+    return {
+      status: 400,
+      data: { success: false, message: "Invalid address" },
+    };
 
   const stockError = await verifyStock(
     cart.products.map((item) => ({
-      product: (item.product as any)._id.toString(),
+      product: (item.product as unknown as ProductRef)._id.toString(),
       variantId: item.variantId ? String(item.variantId) : undefined,
       size: item.size,
       quantity: item.quantity,
@@ -29,7 +67,7 @@ export const placeCODOrder = async (userId: string, body: any) => {
     return { status: 400, data: { success: false, message: stockError } };
   }
 
-  const subtotal = cart.products.reduce((sum: number, item: any) => {
+  const subtotal = cart.products.reduce((sum, item) => {
     const price = item.discountPriceAtPurchase ?? item.priceAtPurchase;
     return sum + price * item.quantity;
   }, 0);
@@ -51,7 +89,7 @@ export const placeCODOrder = async (userId: string, body: any) => {
     totalAmount,
 
     products: cart.products.map((item) => ({
-      product: (item.product as any)._id,
+      product: (item.product as unknown as ProductRef)._id,
       quantity: item.quantity,
       price: item.discountPriceAtPurchase ?? item.priceAtPurchase,
     })),
@@ -70,7 +108,7 @@ export const placeCODOrder = async (userId: string, body: any) => {
 
   await decrementStock(
     cart.products.map((item) => ({
-      product: (item.product as any)._id,
+      product: (item.product as unknown as ProductRef)._id.toString(),
       variantId: item.variantId ? String(item.variantId) : undefined,
       size: item.size,
       quantity: item.quantity,
@@ -114,7 +152,11 @@ export const getOrders = async (limit: number, page: number) => {
   };
 };
 
-export const getMyOrder = async (userId: string, limit: number, page: number) => {
+export const getMyOrder = async (
+  userId: string,
+  limit: number,
+  page: number,
+) => {
   const skip = (page - 1) * limit;
 
   const [orders, total] = await Promise.all([
@@ -138,18 +180,27 @@ export const getMyOrder = async (userId: string, limit: number, page: number) =>
   };
 };
 
-const isOrderAccessible = (order: any, user?: any): boolean => {
+const isOrderAccessible = (
+  order: { user?: mongoose.Types.ObjectId | string | null },
+  user?: Express.User,
+): boolean => {
   if (!user) return true;
   if (user.role === "Admin") return true;
   if (!order.user) return false;
-  return String(order.user._id ?? order.user) === String(user._id);
+  return (
+    String((order.user as unknown as { _id?: unknown })._id ?? order.user) ===
+    String(user._id)
+  );
 };
 
-export const getOrderById = async (id: string, user?: any) => {
+export const getOrderById = async (id: string, user?: Express.User) => {
   const order = await orderRepository.findByIdPopulated(id);
 
   if (!order)
-    return { status: 404, data: { success: false, message: "Orders not found" } };
+    return {
+      status: 404,
+      data: { success: false, message: "Orders not found" },
+    };
 
   if (!isOrderAccessible(order, user))
     return { status: 403, data: { success: false, message: "Access denied" } };
@@ -164,7 +215,7 @@ export const getOrderById = async (id: string, user?: any) => {
   };
 };
 
-export const placeGuestCODOrder = async (body: any) => {
+export const placeGuestCODOrder = async (body: GuestCheckoutBody) => {
   const { products, address, deliveryMethod, name, email, phone } = body;
 
   if (!products || products.length === 0)
@@ -173,20 +224,21 @@ export const placeGuestCODOrder = async (body: any) => {
   if (!address)
     return { status: 400, data: { message: "Address is required" } };
 
-  const productIds = products.map((p: any) => p.productId);
+  const productIds = products.map((p) => p.productId);
   const dbProducts = await Product.find({ _id: { $in: productIds } });
 
-  const productMap = new Map(
-    dbProducts.map((p: any) => [p._id.toString(), p]),
-  );
+  const productMap = new Map(dbProducts.map((p) => [String(p._id), p]));
 
   let subtotal = 0;
-  const orderProducts: any[] = [];
+  const orderProducts: IOrderProduct[] = [];
 
   for (const item of products) {
     const prod = productMap.get(item.productId);
     if (!prod || !prod.publish)
-      return { status: 400, data: { message: `Product ${item.productId} not found or unavailable` } };
+      return {
+        status: 400,
+        data: { message: `Product ${item.productId} not found or unavailable` },
+      };
 
     const price = prod.discountPrice || prod.price;
     subtotal += price * item.quantity;
@@ -199,7 +251,7 @@ export const placeGuestCODOrder = async (body: any) => {
   }
 
   const stockError = await verifyStock(
-    products.map((p: any) => ({
+    products.map((p) => ({
       product: p.productId,
       variantId: p.variantId,
       size: p.size,
@@ -242,7 +294,7 @@ export const placeGuestCODOrder = async (body: any) => {
   });
 
   await decrementStock(
-    products.map((p: any) => ({
+    products.map((p) => ({
       product: p.productId,
       variantId: p.variantId,
       size: p.size,
@@ -261,11 +313,17 @@ export const placeGuestCODOrder = async (body: any) => {
   };
 };
 
-export const getOrderBySessionId = async (sessionId: string, user?: any) => {
+export const getOrderBySessionId = async (
+  sessionId: string,
+  user?: Express.User,
+) => {
   const order = await orderRepository.findOnePopulated({ sessionId });
 
   if (!order)
-    return { status: 404, data: { success: false, message: "Order doesn't exists" } };
+    return {
+      status: 404,
+      data: { success: false, message: "Order doesn't exists" },
+    };
 
   if (!isOrderAccessible(order, user))
     return { status: 403, data: { success: false, message: "Access denied" } };

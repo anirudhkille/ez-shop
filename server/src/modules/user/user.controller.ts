@@ -51,22 +51,24 @@ export const forgotPassword = asyncHandler(
   },
 );
 
-export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
-  const { email, otp, newPassword } = req.body;
-  const result = await userService.resetPassword(email, otp, newPassword);
-  sendMessage(res, result.message);
-});
+export const resetPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { email, otp, newPassword } = req.body;
+    const result = await userService.resetPassword(email, otp, newPassword);
+    sendMessage(res, result.message);
+  },
+);
 
-export const getProfile = asyncHandler(async (req: any, res: Response) => {
-  const result = await userService.getProfile(req.user._id);
+export const getProfile = asyncHandler(async (req: Request, res: Response) => {
+  const result = await userService.getProfile(req.user!._id);
   sendSuccess(res, result.user);
 });
 
 export const updatePassword = asyncHandler(
-  async (req: any, res: Response) => {
+  async (req: Request, res: Response) => {
     const { currentPassword, newPassword } = req.body;
     const result = await userService.updatePassword(
-      req.user._id,
+      req.user!._id,
       currentPassword,
       newPassword,
     );
@@ -75,8 +77,8 @@ export const updatePassword = asyncHandler(
 );
 
 export const updateProfile = asyncHandler(
-  async (req: any, res: Response) => {
-    const result = await userService.updateProfile(req.user._id, req.body);
+  async (req: Request, res: Response) => {
+    const result = await userService.updateProfile(req.user!._id, req.body);
     sendSuccess(res, result.user);
   },
 );
@@ -104,22 +106,20 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
   sendMessage(res, result.message);
 });
 
-export const googleLogin = asyncHandler(
-  async (req: Request, res: Response) => {
-    const googleUser = req.user as {
-      email?: string;
-      name?: string;
-      googleId: string;
-      avatar?: string;
-    };
+export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
+  const googleUser = req.user as unknown as {
+    email?: string;
+    name?: string;
+    googleId: string;
+    avatar?: string;
+  };
 
-    const result = await userService.googleLogin(googleUser);
+  const result = await userService.googleLogin(googleUser);
 
-    const frontendURL = env.CLIENT_URL;
-    const redirectURL = `${frontendURL}/auth/google-callback?token=${encodeURIComponent(result.accessToken)}&name=${encodeURIComponent(result.user.name || "")}&email=${encodeURIComponent(result.user.email || "")}`;
+  const frontendURL = env.CLIENT_URL;
+  const redirectURL = `${frontendURL}/auth/google-callback?token=${encodeURIComponent(result.accessToken)}&name=${encodeURIComponent(result.user.name || "")}&email=${encodeURIComponent(result.user.email || "")}`;
 
-    return res
-      .cookie("refreshToken", result.refreshToken, refreshCookieOptions())
-      .redirect(redirectURL);
-  },
-);
+  return res
+    .cookie("refreshToken", result.refreshToken, refreshCookieOptions())
+    .redirect(redirectURL);
+});

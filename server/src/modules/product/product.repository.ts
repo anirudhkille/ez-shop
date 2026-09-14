@@ -1,29 +1,42 @@
-import Product from "@/modules/product/product.model";
+import Product, { IProduct } from "@/modules/product/product.model";
+import { FilterQuery, Types, UpdateQuery } from "mongoose";
 
-export const create = async (data: any) => {
+export const create = async (
+  data: Partial<IProduct> & { variantImageMap?: unknown },
+) => {
   return await Product.create(data);
 };
 
-export const find = async (filter: any, skip: number, limit: number) => {
-  return await Product.find(filter).skip(skip).limit(limit).populate("category");
+export const find = async (
+  filter: FilterQuery<IProduct>,
+  skip: number,
+  limit: number,
+) => {
+  return await Product.find(filter)
+    .skip(skip)
+    .limit(limit)
+    .populate("category");
 };
 
-export const countDocuments = async (filter: any) => {
+export const countDocuments = async (filter: FilterQuery<IProduct>) => {
   return await Product.countDocuments(filter);
 };
 
-export const findById = async (id: string) => {
+export const findById = async (id: string | Types.ObjectId) => {
   return await Product.findById(id).populate("category");
 };
 
-export const findByIdAndUpdate = async (id: string, data: any) => {
+export const findByIdAndUpdate = async (
+  id: string | Types.ObjectId,
+  data: UpdateQuery<IProduct>,
+) => {
   return await Product.findByIdAndUpdate(id, data, {
     new: true,
     runValidators: true,
   });
 };
 
-export const findByIdAndDelete = async (id: string) => {
+export const findByIdAndDelete = async (id: string | Types.ObjectId) => {
   const product = await Product.findById(id);
   if (product) await product.deleteOne();
   return product;
@@ -32,16 +45,22 @@ export const findByIdAndDelete = async (id: string) => {
 export const findSearch = async (keyword: string, limit: number) => {
   return await Product.find({
     name: { $regex: keyword, $options: "i" },
-  }).populate("category","name").limit(limit);
+  })
+    .populate("category", "name")
+    .limit(limit);
 };
 
 export const findFiltered = async (
-  query: any,
-  sortOption: any,
+  query: FilterQuery<IProduct>,
+  sortOption: Record<string, 1 | -1>,
   skip: number,
   limit: number,
 ) => {
-  return await Product.find(query).sort(sortOption).skip(skip).limit(limit).lean();
+  return await Product.find(query)
+    .sort(sortOption)
+    .skip(skip)
+    .limit(limit)
+    .lean();
 };
 
 export const findFeatured = async () => {
@@ -61,13 +80,15 @@ export const findBestSellers = async () => {
     .lean();
 };
 
-export const findSimilar = async (id: string, categoryId: any) => {
+export const findSimilar = async (id: string, categoryId: Types.ObjectId) => {
   return await Product.find({
     _id: { $ne: id },
     category: categoryId,
     publish: true,
   })
-    .select("name slug image reviewsCount rating tag category price discountPrice")
+    .select(
+      "name slug image reviewsCount rating tag category price discountPrice",
+    )
     .limit(4)
     .lean();
 };

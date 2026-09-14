@@ -1,15 +1,29 @@
 import Product from "@/modules/product/product.model";
 import * as cartRepository from "@/modules/cart/cart.repository";
 
-const findVariantSize = (product: any, variantId?: string, size?: string) => {
+type VariantSize = {
+  size?: string;
+  stock: number;
+  price?: number;
+  discountPrice?: number;
+};
+
+type ProductLike = {
+  stock: number;
+  variants: { _id: unknown; sizes: VariantSize[] }[];
+};
+
+const findVariantSize = (
+  product: ProductLike,
+  variantId?: string,
+  size?: string,
+) => {
   if (!variantId || !size) return null;
 
-  const variant = product.variants.find(
-    (v: any) => v._id.toString() === variantId,
-  );
+  const variant = product.variants.find((v) => String(v._id) === variantId);
   if (!variant) return null;
 
-  return variant.sizes.find((s: any) => s.size === size) || null;
+  return variant.sizes.find((s) => s.size === size) || null;
 };
 
 export const getCart = async (userId: string) => {
@@ -22,12 +36,16 @@ export const getCart = async (userId: string) => {
     };
   }
 
-  const validItems: any[] = [];
+  const validItems: (typeof cart.products)[number][] = [];
   let subtotal = 0;
   let discountTotal = 0;
 
   for (const item of cart.products) {
-    const prod = item.product as any;
+    const prod = item.product as unknown as {
+      publish?: boolean;
+      price: number;
+      discountPrice: number;
+    };
 
     if (!prod || !prod.publish) continue;
 
@@ -54,16 +72,30 @@ export const getCart = async (userId: string) => {
   };
 };
 
-export const addToCart = async (userId: string, body: any) => {
+export const addToCart = async (
+  userId: string,
+  body: {
+    productId: string;
+    variantId?: string;
+    size?: string;
+    quantity?: number;
+  },
+) => {
   const { productId, variantId, size, quantity } = body;
 
   const product = await Product.findById(productId);
   if (!product) {
-    return { status: 404, data: { success: false, message: "Product not found" } };
+    return {
+      status: 404,
+      data: { success: false, message: "Product not found" },
+    };
   }
 
   if (!product.publish) {
-    return { status: 400, data: { success: false, message: "Product not available" } };
+    return {
+      status: 400,
+      data: { success: false, message: "Product not available" },
+    };
   }
 
   let selectedPrice = product.price;
@@ -74,7 +106,10 @@ export const addToCart = async (userId: string, body: any) => {
 
   if (variantId && size) {
     if (!sizeObj) {
-      return { status: 400, data: { success: false, message: "Invalid variant/size" } };
+      return {
+        status: 400,
+        data: { success: false, message: "Invalid variant/size" },
+      };
     }
 
     sizeStock = sizeObj.stock;
@@ -90,7 +125,7 @@ export const addToCart = async (userId: string, body: any) => {
   if (!cart) cart = await cartRepository.create({ user: userId, products: [] });
 
   const existing = cart.products.find(
-    (p: any) =>
+    (p) =>
       p.product.toString() === productId &&
       p.variantId?.toString() === variantId &&
       p.size === size,
@@ -100,7 +135,10 @@ export const addToCart = async (userId: string, body: any) => {
 
   if (existing) {
     if (existing.quantity + addQty > sizeStock) {
-      return { status: 400, data: { success: false, message: "Exceeds stock" } };
+      return {
+        status: 400,
+        data: { success: false, message: "Exceeds stock" },
+      };
     }
 
     existing.quantity += addQty;
@@ -120,8 +158,14 @@ export const addToCart = async (userId: string, body: any) => {
   return { data: { success: true, message: "Added to cart", data: cart } };
 };
 
-export const updateQuantity = async (userId: string, cartItemId: string, quantity: number) => {
-  const cart = await cartRepository.findOneWithProductPopulated({ user: userId });
+export const updateQuantity = async (
+  userId: string,
+  cartItemId: string,
+  quantity: number,
+) => {
+  const cart = await cartRepository.findOneWithProductPopulated({
+    user: userId,
+  });
 
   if (!cart) {
     return { status: 404, data: { success: false, message: "Cart not found" } };
@@ -132,7 +176,7 @@ export const updateQuantity = async (userId: string, cartItemId: string, quantit
     return { status: 404, data: { success: false, message: "Item not found" } };
   }
 
-  const product = item.product as any;
+  const product = item.product as unknown as ProductLike;
 
   const sizeObj = findVariantSize(
     product,
@@ -143,7 +187,10 @@ export const updateQuantity = async (userId: string, cartItemId: string, quantit
   const maxStock = sizeObj ? sizeObj.stock : product.stock;
 
   if (quantity > maxStock) {
-    return { status: 400, data: { success: false, message: "Exceeds stock limit" } };
+    return {
+      status: 400,
+      data: { success: false, message: "Exceeds stock limit" },
+    };
   }
 
   item.quantity = quantity;

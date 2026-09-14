@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import Order from "@/modules/order/order.model";
-import express from "express";
+import express, { Request, Response } from "express";
 import Cart from "@/modules/cart/cart.model";
 import { env } from "@/config/env.config";
 
@@ -10,10 +10,10 @@ const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 router.post(
   "/webhook",
   express.raw({ type: "application/json" }),
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const sig = req.headers["stripe-signature"];
 
-    let event;
+    let event: Stripe.Event;
 
     try {
       event = stripe.webhooks.constructEvent(
@@ -21,12 +21,15 @@ router.post(
         sig!,
         env.STRIPE_WEBHOOK_SECRET,
       );
-    } catch (err: any) {
-      return res.status(400).send(`Webhook Error: ${err.message}`);
+    } catch (err) {
+      return res.status(400).send(`Webhook Error: ${(err as Error).message}`);
     }
 
     if (event.type === "checkout.session.completed") {
-      const session: any = event.data.object;
+      const session = event.data.object as unknown as {
+        metadata: { orderId?: string };
+        payment_intent?: string;
+      };
 
       try {
         const order = await Order.findById(session.metadata.orderId);
@@ -38,12 +41,17 @@ router.post(
         order.paymentIntentId = session.payment_intent;
         order.orderStatus = "processing";
         if (order.user) {
-          await Cart.updateOne({ user: order.user }, { $set: { products: [] } });
+          await Cart.updateOne(
+            { user: order.user },
+            { $set: { products: [] } },
+          );
         }
 
         await order.save();
-      } catch (err: any) {
-        return res.status(500).send(`Webhook processing error: ${err.message}`);
+      } catch (err) {
+        return res
+          .status(500)
+          .send(`Webhook processing error: ${(err as Error).message}`);
       }
     }
 
