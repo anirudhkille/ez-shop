@@ -27,10 +27,10 @@ export default function SuccessPage() {
   const { data: orderBySession, isLoading: loadingSession } =
     useOrderBySessionId(sessionId ?? "");
 
-  const order = orderById?.data || orderBySession?.data;
+  const paidOrderId = orderById?.data?._id || orderBySession?.data?._id;
 
   useEffect(() => {
-    if (!order) return;
+    if (!paidOrderId) return;
 
     if (token) {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
@@ -38,7 +38,7 @@ export default function SuccessPage() {
     } else {
       clearGuestCart();
     }
-  }, [order?._id, token, clearGuestCart]);
+  }, [paidOrderId, token, clearGuestCart, queryClient]);
 
   // Loading state
   if ((orderId && loadingId) || (sessionId && loadingSession)) {

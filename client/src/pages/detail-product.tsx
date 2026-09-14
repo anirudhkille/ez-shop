@@ -164,15 +164,11 @@ export default function ProductDetail() {
         <div className="flex flex-col gap-4">
           <div className="bg-brand-surface-raised relative flex aspect-square items-center justify-center overflow-hidden rounded-3xl p-12">
             <div className="bg-gradient-radial-dark absolute inset-0 opacity-60" />
-            <div className="bg-brand-orange/8 absolute size-100 rounded-full blur-[80px]" />
             <img
               key={activeImage}
               src={activeImage}
               alt={`${product.name} – ${activeVariant?.color ?? ""}`}
-              className="animate-float-subtle relative z-10 h-full w-full object-contain drop-shadow-2xl transition-opacity duration-300"
-              style={{
-                filter: "drop-shadow(0 20px 40px hsl(22 100% 52% / 0.2))",
-              }}
+              className="relative z-10 h-full w-full object-contain transition-opacity duration-300"
             />
             <span
               className={`font-body absolute top-5 left-5 z-20 rounded-full px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase ${tagColors[product.tag] ?? "bg-muted text-muted-foreground"}`}
@@ -189,7 +185,7 @@ export default function ProductDetail() {
                         activeImages.length
                     )
                   }
-                  className="bg-background/80 hover:bg-brand-orange hover:text-primary-foreground absolute left-4 z-20 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-all"
+                  className="bg-background/80 hover:bg-brand-orange hover:text-primary-foreground absolute left-4 z-20 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-colors duration-150"
                 >
                   <ChevronLeft size={16} />
                 </button>
@@ -199,7 +195,7 @@ export default function ProductDetail() {
                       (selectedImageIdx + 1) % activeImages.length
                     )
                   }
-                  className="bg-background/80 hover:bg-brand-orange hover:text-primary-foreground absolute right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-all"
+                  className="bg-background/80 hover:bg-brand-orange hover:text-primary-foreground absolute right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-colors duration-150"
                 >
                   <ChevronRight size={16} />
                 </button>
@@ -213,7 +209,7 @@ export default function ProductDetail() {
                 <button
                   key={i}
                   onClick={() => setSelectedImageIdx(i)}
-                  className={`h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-200 ${
+                  className={`h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-colors duration-200 ${
                     selectedImageIdx === i
                       ? "border-brand-orange"
                       : "border-brand-border hover:border-brand-orange/50"
@@ -293,7 +289,7 @@ export default function ProductDetail() {
                 <button
                   key={i}
                   onClick={() => handleColorChange(i)}
-                  className={`h-9 w-9 rounded-full border-2 transition-all duration-200 ${
+                  className={`h-9 w-9 rounded-full border-2 transition-colors duration-200 ${
                     selectedColorIdx === i
                       ? "border-brand-orange scale-110"
                       : "border-brand-border"
@@ -319,7 +315,7 @@ export default function ProductDetail() {
                 <button
                   key={s.size}
                   onClick={() => setSelectedSize(s.size)}
-                  className={`font-body h-10 w-12 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  className={`font-body h-10 w-12 rounded-lg text-sm font-medium transition-colors duration-200 ${
                     selectedSize === s.size
                       ? "bg-brand-orange text-primary-foreground"
                       : "border-brand-border text-muted-foreground hover:border-brand-orange/50 hover:text-foreground border"
@@ -359,9 +355,9 @@ export default function ProductDetail() {
             <button
               onClick={handleAddToCart}
               disabled={!selectedSize}
-              className={`font-body flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold tracking-wider uppercase transition-all duration-300 ${
+              className={`font-body flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold tracking-wider uppercase transition-colors duration-300 ${
                 selectedSize
-                  ? "bg-gradient-orange text-primary-foreground btn-primary-glow hover:opacity-90"
+                  ? "bg-brand-orange text-primary-foreground hover:bg-brand-orange-glow"
                   : "bg-muted text-muted-foreground cursor-not-allowed"
               }`}
             >
@@ -370,7 +366,7 @@ export default function ProductDetail() {
             </button>
 
             <button
-              className={`flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 ${liked ? "border-red-500/40 bg-red-500/10" : "border-brand-border hover:border-brand-orange/40"}`}
+              className={`flex h-12 w-12 items-center justify-center rounded-xl border transition-colors duration-200 ${liked ? "border-red-500/40 bg-red-500/10" : "border-brand-border hover:border-brand-orange/40"}`}
               onClick={handleWishlist}
             >
               <Heart
@@ -438,9 +434,9 @@ export default function ProductDetail() {
           <button
             onClick={handleAddToCart}
             disabled={!selectedSize}
-            className={`font-body flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold tracking-wider uppercase transition-all duration-300 ${
+            className={`font-body flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold tracking-wider uppercase transition-colors duration-300 ${
               selectedSize
-                ? "bg-gradient-orange text-primary-foreground btn-primary-glow hover:opacity-90"
+                ? "bg-brand-orange text-primary-foreground hover:bg-brand-orange-glow"
                 : "bg-muted text-muted-foreground cursor-not-allowed"
             }`}
           >
@@ -450,7 +446,7 @@ export default function ProductDetail() {
 
           {/* Wishlist */}
           <button
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 ${
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors duration-200 ${
               liked
                 ? "border-red-500/40 bg-red-500/10"
                 : "border-brand-border hover:border-brand-orange/40"

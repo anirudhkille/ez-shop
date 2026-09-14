@@ -39,6 +39,14 @@ const statusColor: Record<string, string> = {
   Processing: "text-amber-400 bg-amber-400/10 border-amber-400/20",
 };
 
+interface OrderDoc {
+  _id: string;
+  createdAt: string;
+  orderStatus: string;
+  products?: unknown[];
+  totalAmount: number;
+}
+
 export default function Profile() {
   const { name, email, logout } = useUserStore();
   const navigate = useNavigate();
@@ -95,7 +103,7 @@ export default function Profile() {
                 </div>
                 <button
                   onClick={() => fileRef.current?.click()}
-                  className="bg-brand-orange absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-xl shadow-lg transition-opacity hover:opacity-90"
+                  className="bg-brand-orange absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-xl shadow-lg transition-[background-color,transform] duration-150 active:scale-[0.98]"
                 >
                   <Camera size={14} className="text-primary-foreground" />
                 </button>
@@ -121,7 +129,7 @@ export default function Profile() {
               <div className="flex shrink-0 gap-2">
                 <button
                   onClick={handleLogout}
-                  className="border-brand-border font-body text-muted-foreground hover:border-destructive/40 hover:text-destructive flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition-all duration-200"
+                  className="border-brand-border font-body text-muted-foreground hover:border-destructive/40 hover:text-destructive flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition-colors duration-200"
                 >
                   <LogOut size={14} /> Sign out
                 </button>
@@ -155,7 +163,7 @@ export default function Profile() {
                   setActiveTab(tab);
                   setSettingsSection(null);
                 }}
-                className={`font-body flex-1 rounded-xl px-5 py-2.5 text-sm font-semibold whitespace-nowrap transition-all duration-200 sm:flex-none ${
+                className={`font-body flex-1 rounded-xl px-5 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors duration-200 sm:flex-none ${
                   activeTab === tab
                     ? "bg-brand-orange text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -191,7 +199,7 @@ export default function Profile() {
                       </button>
                       <button
                         onClick={handleSave}
-                        className="bg-brand-orange text-primary-foreground font-body flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition-opacity hover:opacity-90"
+                        className="bg-brand-orange text-primary-foreground font-body flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition-[background-color,transform] duration-150 active:scale-[0.98]"
                       >
                         <Save size={14} /> Save
                       </button>
@@ -327,7 +335,7 @@ export default function Profile() {
                     View all
                   </button>
                 </div>
-                {(orders ?? []).slice(0, 2).map((order: any) => (
+                {(orders ?? []).slice(0, 2).map((order: OrderDoc) => (
                   <div
                     key={order._id}
                     className="border-brand-border/50 flex items-center justify-between border-b py-4 last:border-0"
@@ -381,13 +389,13 @@ export default function Profile() {
                   </p>
                   <Link
                     to="/products"
-                    className="bg-gradient-orange text-primary-foreground font-body mt-4 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
+                    className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow mt-4 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
                   >
                     Start Shopping
                   </Link>
                 </div>
               ) : (
-                (orders ?? []).map((order: any) => (
+                (orders ?? []).map((order: OrderDoc) => (
                   <div
                     key={order._id}
                     className="bg-card border-brand-border hover:border-brand-orange/30 flex flex-col items-start gap-4 rounded-2xl border p-5 transition-colors sm:flex-row sm:items-center"
@@ -442,7 +450,7 @@ export default function Profile() {
                   </p>
                   <Link
                     to="/products"
-                    className="bg-gradient-orange text-primary-foreground font-body mt-4 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
+                    className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow mt-4 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
                   >
                     Browse Products
                   </Link>
@@ -451,7 +459,7 @@ export default function Profile() {
                 wishlistProducts.map((p: TProduct) => (
                   <div
                     key={p._id}
-                    className="group bg-card border-brand-border hover:border-brand-orange/40 relative overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-1"
+                    className="group bg-card border-brand-border hover:border-brand-orange/40 relative overflow-hidden rounded-2xl border transition-[border-color,transform] duration-200 hover:-translate-y-1"
                   >
                     <button
                       onClick={() => toggleWishlist(p._id)}
@@ -464,7 +472,7 @@ export default function Profile() {
                         <img
                           src={p.image}
                           alt={p.name}
-                          className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                          className="h-full w-full object-contain transition-transform duration-200 ease-out group-hover:scale-[1.04]"
                         />
                       </div>
                       <div className="p-4">
@@ -530,7 +538,7 @@ export default function Profile() {
                   </div>
                   <ChevronRight
                     size={16}
-                    className="text-muted-foreground group-hover:text-brand-orange transition-all duration-200 group-hover:translate-x-1"
+                    className="text-muted-foreground group-hover:text-brand-orange transition-[color,transform] duration-200 group-hover:translate-x-1"
                   />
                 </button>
               ))}
@@ -580,7 +588,7 @@ export default function Profile() {
                 </p>
                 <Link
                   to="/account/update-password"
-                  className="bg-gradient-orange text-primary-foreground font-body inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
+                  className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
                 >
                   <Lock size={14} /> Update Password
                 </Link>

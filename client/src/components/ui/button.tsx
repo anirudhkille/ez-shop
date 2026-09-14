@@ -7,12 +7,12 @@ import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "font-body flex items-center justify-center gap-2 rounded-full font-semibold tracking-wider transition-all duration-300 cursor-pointer",
+  "font-body flex items-center justify-center gap-2 rounded-full font-semibold tracking-wider transition-[transform,background-color,border-color,color] duration-150 ease-out cursor-pointer active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-orange",
   {
     variants: {
       variant: {
         default:
-          "bg-gradient-orange text-primary-foreground btn-primary-glow hover:scale-105 uppercase",
+          "bg-brand-orange text-primary-foreground hover:bg-brand-orange-glow uppercase",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 lowercase",
         outline:
@@ -57,4 +57,4 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 Button.displayName = "Button";
 
-export { Button, buttonVariants };
+export { Button };

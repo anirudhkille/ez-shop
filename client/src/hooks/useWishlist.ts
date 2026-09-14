@@ -22,6 +22,10 @@ export const useWishlists = () => {
   });
 };
 
+interface WishlistData {
+  products?: string[];
+}
+
 export const useToggleWishlist = () => {
   const { token } = useUserStore();
   const queryClient = useQueryClient();
@@ -38,24 +42,27 @@ export const useToggleWishlist = () => {
     onMutate: async (productId: string) => {
       await queryClient.cancelQueries({ queryKey: ["wishlist"] });
 
-      const prev = queryClient.getQueryData<any>(["wishlist"]);
+      const prev = queryClient.getQueryData<WishlistData>(["wishlist"]);
 
-      queryClient.setQueryData(["wishlist"], (old: any) => {
-        if (!old) {
-          return { products: [productId] };
+      queryClient.setQueryData(
+        ["wishlist"],
+        (old: WishlistData | undefined) => {
+          if (!old) {
+            return { products: [productId] };
+          }
+
+          const products = old.products || [];
+
+          const exists = products.includes(productId);
+
+          return {
+            ...old,
+            products: exists
+              ? products.filter((id: string) => id !== productId)
+              : [...products, productId],
+          };
         }
-
-        const products = old.products || [];
-
-        const exists = products.includes(productId);
-
-        return {
-          ...old,
-          products: exists
-            ? products.filter((id: string) => id !== productId)
-            : [...products, productId],
-        };
-      });
+      );
 
       return { prev };
     },

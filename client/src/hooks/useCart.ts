@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
+import { getErrorMessage } from "@/lib/apiError";
+
 import {
   addToCart,
   clearCart,
@@ -125,16 +127,19 @@ export const useAddToCart = () => {
 
       const previousCart = queryClient.getQueryData(["cart"]);
 
-      queryClient.setQueryData(["cart"], (old: any) => {
-        if (!old) return old;
-        return {
-          ...old,
-          data: {
-            ...old.data,
-            products: [...old.data.products],
-          },
-        };
-      });
+      queryClient.setQueryData(
+        ["cart"],
+        (old: { data: { products: unknown[] } } | undefined) => {
+          if (!old) return old;
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              products: [...old.data.products],
+            },
+          };
+        }
+      );
 
       return { previousCart };
     },
@@ -180,9 +185,9 @@ export const useUpdateCartQty = () => {
         toast.success("Cart updated");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
       if (token) {
-        toast.error(error.response?.data?.message || "Failed to update cart");
+        toast.error(getErrorMessage(error, "Failed to update cart"));
       }
     },
   });
@@ -208,9 +213,9 @@ export const useRemoveCartItem = () => {
         toast.success("Item removed from cart");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
       if (token) {
-        toast.error(error.response?.data?.message || "Failed to remove item");
+        toast.error(getErrorMessage(error, "Failed to remove item"));
       }
     },
   });
@@ -236,9 +241,9 @@ export const useClearCart = () => {
         toast.success("Cart cleared");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
       if (token) {
-        toast.error(error.response?.data?.message || "Failed to clear cart");
+        toast.error(getErrorMessage(error, "Failed to clear cart"));
       }
     },
   });

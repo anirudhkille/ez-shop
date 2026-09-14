@@ -22,12 +22,20 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
 
   const { data: products, isLoading } = useSearchProducts(debouncedQuery);
 
-  useEffect(() => {
+  // Reset the search when the modal opens (state adjustment during render)
+  const [lastOpen, setLastOpen] = useState(open);
+  if (open !== lastOpen) {
+    setLastOpen(open);
     if (open) {
-      setTimeout(() => inputRef.current?.focus(), 80);
       setQuery("");
       setDebouncedQuery("");
     }
+  }
+
+  useEffect(() => {
+    if (!open) return;
+    const timer = setTimeout(() => inputRef.current?.focus(), 80);
+    return () => clearTimeout(timer);
   }, [open]);
 
   useEffect(() => {
@@ -134,13 +142,13 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
                   key={product._id}
                   to={`/${product.slug}/${product._id}`}
                   onClick={onClose}
-                  className="group border-brand-border hover:border-brand-orange/40 bg-card hover:bg-card/80 flex items-center gap-4 rounded-2xl border p-3 transition-all duration-200"
+                  className="group border-brand-border hover:border-brand-orange/40 bg-card hover:bg-card/80 flex items-center gap-4 rounded-2xl border p-3 transition-colors duration-200"
                 >
                   <div className="bg-muted/20 flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl sm:h-20 sm:w-20">
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-110"
+                      className="h-full w-full object-contain transition-transform duration-200 ease-out group-hover:scale-[1.04]"
                     />
                   </div>
 
@@ -183,7 +191,7 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
 
                   <ArrowRight
                     size={14}
-                    className="text-muted-foreground/30 group-hover:text-brand-orange shrink-0 transition-all duration-200 group-hover:translate-x-1"
+                    className="text-muted-foreground/30 group-hover:text-brand-orange shrink-0 transition-[color,transform] duration-200 group-hover:translate-x-1"
                   />
                 </Link>
               ))}

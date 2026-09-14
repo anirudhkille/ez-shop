@@ -53,7 +53,7 @@ export default function ProductCard({
         </span>
         <button
           onClick={handleWishlist}
-          className="bg-background/80 absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur transition-all duration-200 hover:scale-110"
+          className="bg-background/80 hover:bg-background absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur transition-[background-color,transform] duration-150 active:scale-95"
         >
           <Heart
             size={15}
@@ -65,7 +65,7 @@ export default function ProductCard({
         <img
           src={product?.image}
           alt={product?.name}
-          className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-110"
+          className="h-full w-full object-contain transition-transform duration-300 ease-out group-hover:scale-[1.04]"
         />
         <div className="absolute bottom-3 left-3 flex gap-1.5">
           {product?.variants?.map((v, i) => (

@@ -9,6 +9,8 @@ import { toast } from "sonner";
 
 import type { TAddress } from "@/types/address";
 
+import { getErrorMessage } from "@/lib/apiError";
+
 import {
   deleteAddress,
   getAddresses,
@@ -37,10 +39,9 @@ export const usePostAddress = () => {
       toast.success("Address created successfully");
       queryClient.invalidateQueries({ queryKey: ["address"] });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error.response?.data?.message ||
-          "An error occurred while creating address"
+        getErrorMessage(error, "An error occurred while creating address")
       );
     },
   });
@@ -61,10 +62,9 @@ export const useUpdateAddress = () => {
       toast.success("Address updated successfully");
       queryClient.invalidateQueries({ queryKey: ["address"] });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error.response?.data?.message ||
-          "An error occurred while updated address"
+        getErrorMessage(error, "An error occurred while updated address")
       );
     },
   });
@@ -79,7 +79,7 @@ export const useDeleteAddress = () => {
       queryClient.invalidateQueries({ queryKey: ["address"] });
       toast.success("Address deleted successfully");
     },
-    onError: (error: any) => {
+    onError: (error) => {
       console.error("Delete failed", error);
     },
   });

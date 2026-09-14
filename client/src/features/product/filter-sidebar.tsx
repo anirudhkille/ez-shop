@@ -2,25 +2,13 @@ import { useState } from "react";
 
 import { ChevronDown, Star, X } from "lucide-react";
 
+import type { TCategory } from "@/types/category";
+
 import { cn } from "@/lib/utils";
 
 import { useCategorys } from "@/hooks/useCategory";
 
-export interface FilterState {
-  categories: string[];
-  priceRange: [number, number];
-  sizes: string[];
-  colors: string[];
-  minRating: number;
-}
-
-export const defaultFilters: FilterState = {
-  categories: [],
-  priceRange: [0, 20000],
-  sizes: [],
-  colors: [],
-  minRating: 0,
-};
+import { type FilterState } from "./filters";
 
 interface FilterSidebarProps {
   filters: FilterState;
@@ -69,7 +57,7 @@ function CollapsibleSection({
       </button>
       <div
         className={cn(
-          "overflow-hidden transition-all duration-200",
+          "overflow-hidden transition-[max-height,opacity] duration-200",
           open ? "max-h-96 pb-4 opacity-100" : "max-h-0 opacity-0"
         )}
       >
@@ -113,7 +101,7 @@ export default function FilterSidebar({
 
       <CollapsibleSection title="Category">
         <div className="space-y-1">
-          {categories?.map((cat: any) => {
+          {categories?.map((cat: TCategory) => {
             const active = filters.categories.includes(cat._id);
 
             return (
@@ -126,7 +114,7 @@ export default function FilterSidebar({
                   })
                 }
                 className={cn(
-                  "font-body flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm capitalize transition-all duration-150",
+                  "font-body flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm capitalize transition-colors duration-150",
                   active
                     ? "bg-brand-orange/10 text-brand-orange"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -180,7 +168,7 @@ export default function FilterSidebar({
                   onChange({ ...filters, sizes: toggle(filters.sizes, size) })
                 }
                 className={cn(
-                  "font-body rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all duration-150",
+                  "font-body rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors duration-150",
                   active
                     ? "border-brand-orange bg-brand-orange/10 text-brand-orange"
                     : "border-brand-border text-muted-foreground hover:border-brand-orange/50 hover:text-foreground"
@@ -211,10 +199,10 @@ export default function FilterSidebar({
               >
                 <div
                   className={cn(
-                    "h-7 w-7 rounded-full border-2 transition-all duration-150",
+                    "h-7 w-7 rounded-full border-2 transition-[border-color,transform] duration-150",
                     active
                       ? "border-brand-orange scale-110 shadow-[0_0_0_2px_hsl(var(--brand-orange)/0.3)]"
-                      : "border-brand-border group-hover:border-brand-orange/50 group-hover:scale-105"
+                      : "border-brand-border group-hover:border-brand-orange/50"
                   )}
                   style={{ backgroundColor: hex }}
                 />
@@ -244,7 +232,7 @@ export default function FilterSidebar({
                 })
               }
               className={cn(
-                "font-body flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all",
+                "font-body flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors duration-150",
                 filters.minRating === r
                   ? "bg-brand-orange/10 text-brand-orange"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"

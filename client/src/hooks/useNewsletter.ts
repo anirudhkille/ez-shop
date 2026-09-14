@@ -2,15 +2,16 @@ import { useMutation } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
+import { getErrorMessage } from "@/lib/apiError";
+
 import { subscribeNewsletter } from "@/api/newsletter";
 
 export const useSubscribeNewsletter = () => {
   return useMutation({
     mutationFn: (email: string) => subscribeNewsletter(email),
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error?.response?.data?.message ||
-          "Failed to subscribe. Please try again."
+        getErrorMessage(error, "Failed to subscribe. Please try again.")
       );
     },
   });

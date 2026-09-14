@@ -23,9 +23,6 @@ export default function Newsletter() {
     <section className="bg-card/40 py-24">
       <div className="mx-auto max-w-350 px-6 lg:px-10">
         <Fade className="bg-card border-brand-border relative overflow-hidden rounded-3xl border p-8 md:p-16">
-          <div className="bg-brand-orange/6 pointer-events-none absolute top-0 right-0 h-96 w-96 rounded-full blur-[100px]" />
-          <div className="bg-brand-orange/4 pointer-events-none absolute bottom-0 left-0 h-64 w-64 rounded-full blur-[80px]" />
-
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
             <span className="font-display text-foreground/[0.018] text-[160px] leading-none font-black uppercase select-none">
               EZ SHOP

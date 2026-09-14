@@ -20,7 +20,7 @@ export default function EmptyState({ handleClearFilters }: EmptyStateProps) {
       </div>
       <button
         onClick={handleClearFilters}
-        className="bg-brand-orange font-body rounded-full px-8 py-3 text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95"
+        className="bg-brand-orange font-body rounded-full px-8 py-3 text-sm font-semibold text-white transition-[background-color,opacity,transform] duration-150 hover:opacity-90 active:scale-95"
       >
         Clear Filters
       </button>

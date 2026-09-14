@@ -4,6 +4,8 @@ import { toast } from "sonner";
 
 import type { TOrder } from "@/types/order";
 
+import { getErrorMessage } from "@/lib/apiError";
+
 import { createPayment } from "@/api/payment";
 
 export const usePayment = () => {
@@ -14,10 +16,9 @@ export const usePayment = () => {
       window.location.href = data.url;
     },
 
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error?.response?.data?.message ||
-          "An error occurred while creating payment"
+        getErrorMessage(error, "An error occurred while creating payment")
       );
     },
   });

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Link } from "react-router";
 
@@ -129,19 +129,24 @@ export default function Checkout() {
   const [guestCountry, setGuestCountry] = useState("India");
 
   const cartProducts = (cart?.products ?? []) as CartProduct[];
-  const addresses = (addressResponse?.data ?? []) as TAddress[];
+  const addresses = useMemo(
+    () => (addressResponse?.data ?? []) as TAddress[],
+    [addressResponse]
+  );
   const guestCartItems = useCartStore((s) => s.cartItems);
 
-  useEffect(() => {
-    if (!addresses.length) return;
-
-    const preferredAddress =
-      addresses.find((address) => address.isDefault) ?? addresses[0];
-
-    if (preferredAddress?._id && !selectedAddressId) {
-      setSelectedAddressId(preferredAddress._id);
+  // Select the preferred address once addresses load (render-time adjustment)
+  const [lastAddresses, setLastAddresses] = useState(addresses);
+  if (addresses !== lastAddresses) {
+    setLastAddresses(addresses);
+    if (!selectedAddressId) {
+      const preferredAddress =
+        addresses.find((address) => address.isDefault) ?? addresses[0];
+      if (preferredAddress?._id) {
+        setSelectedAddressId(preferredAddress._id);
+      }
     }
-  }, [addresses, selectedAddressId]);
+  }
 
   const selectedAddress = useMemo(
     () => addresses.find((address) => address._id === selectedAddressId),
@@ -245,7 +250,7 @@ export default function Checkout() {
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
                 to="/products"
-                className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow inline-flex items-center gap-2 rounded-full px-7 py-4 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90"
+                className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-7 py-4 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
               >
                 Browse Products <ArrowRight size={16} />
               </Link>
@@ -295,13 +300,13 @@ export default function Checkout() {
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
                 to="/products"
-                className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow inline-flex items-center gap-2 rounded-full px-7 py-4 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90"
+                className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-7 py-4 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
               >
                 Explore Products <ArrowRight size={16} />
               </Link>
               <Link
                 to="/cart"
-                className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-7 py-4 text-sm tracking-wider uppercase transition-all"
+                className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-7 py-4 text-sm tracking-wider uppercase transition-colors duration-150"
               >
                 Back to Cart
               </Link>
@@ -329,7 +334,7 @@ export default function Checkout() {
                 onClick={() => step > s.n && setStep(s.n as 1 | 2 | 3)}
               >
                 <div
-                  className={`font-body flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all duration-200 ${step >= s.n ? "bg-brand-orange text-primary-foreground" : "border-brand-border text-muted-foreground border"}`}
+                  className={`font-body flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors duration-200 ${step >= s.n ? "bg-brand-orange text-primary-foreground" : "border-brand-border text-muted-foreground border"}`}
                 >
                   {s.n}
                 </div>
@@ -368,7 +373,7 @@ export default function Checkout() {
                   <button
                     type="button"
                     onClick={() => setIsAddressModalOpen(true)}
-                    className="border-brand-border text-muted-foreground hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold tracking-[0.18em] uppercase transition-all"
+                    className="border-brand-border text-muted-foreground hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold tracking-[0.18em] uppercase transition-colors duration-150"
                   >
                     <Plus size={14} />
                     Add Address
@@ -400,7 +405,7 @@ export default function Checkout() {
                       <button
                         type="button"
                         onClick={() => setIsAddressModalOpen(true)}
-                        className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90"
+                        className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
                       >
                         <Plus size={14} />
                         Add Address
@@ -414,7 +419,7 @@ export default function Checkout() {
                         return (
                           <label
                             key={address._id}
-                            className={`block cursor-pointer rounded-3xl border p-5 transition-all ${
+                            className={`block cursor-pointer rounded-3xl border p-5 transition-colors duration-150 ${
                               isSelected
                                 ? "border-brand-orange bg-brand-orange/8 shadow-[0_18px_50px_-35px_rgba(255,122,24,0.8)]"
                                 : "border-brand-border hover:border-brand-orange/35 hover:bg-brand-surface-raised/40"
@@ -604,7 +609,7 @@ export default function Checkout() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   to="/cart"
-                  className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm tracking-wider uppercase transition-all"
+                  className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm tracking-wider uppercase transition-colors duration-150"
                 >
                   <ArrowLeft size={16} />
                   Back to Cart
@@ -624,7 +629,7 @@ export default function Checkout() {
                         !guestZip ||
                         !guestCountry
                   }
-                  className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Continue to Delivery
                   <ArrowRight size={16} />
@@ -653,7 +658,7 @@ export default function Checkout() {
                   return (
                     <label
                       key={option.id}
-                      className={`block cursor-pointer rounded-3xl border p-5 transition-all ${
+                      className={`block cursor-pointer rounded-3xl border p-5 transition-colors duration-150 ${
                         isSelected
                           ? "border-brand-orange bg-brand-orange/8"
                           : "border-brand-border hover:border-brand-orange/35 hover:bg-brand-surface-raised/40"
@@ -718,7 +723,7 @@ export default function Checkout() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm tracking-wider uppercase transition-all"
+                  className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm tracking-wider uppercase transition-colors duration-150"
                 >
                   <ArrowLeft size={16} />
                   Back
@@ -727,7 +732,7 @@ export default function Checkout() {
                   type="button"
                   onClick={() => setStep(3)}
                   disabled={token ? !selectedAddressId : !guestAddressLine1}
-                  className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Continue to Payment
                   <ArrowRight size={16} />
@@ -762,7 +767,7 @@ export default function Checkout() {
                   return (
                     <label
                       key={option.id}
-                      className={`block cursor-pointer rounded-3xl border p-5 transition-all ${
+                      className={`block cursor-pointer rounded-3xl border p-5 transition-colors duration-150 ${
                         isSelected
                           ? "border-brand-orange bg-brand-orange/8"
                           : "border-brand-border hover:border-brand-orange/35 hover:bg-brand-surface-raised/40"
@@ -822,7 +827,7 @@ export default function Checkout() {
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm tracking-wider uppercase transition-all"
+                  className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm tracking-wider uppercase transition-colors duration-150"
                 >
                   <ArrowLeft size={16} />
                   Back
@@ -833,7 +838,7 @@ export default function Checkout() {
                   disabled={
                     token ? !selectedAddressId || isSubmitting : isSubmitting
                   }
-                  className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Lock size={16} />
                   {isSubmitting

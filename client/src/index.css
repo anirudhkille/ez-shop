@@ -107,17 +107,11 @@ layer(base);
 }
 
 @utility card-hover {
-  @apply transition-all duration-500 ease-out;
+  @apply transition-[transform,box-shadow,border-color] duration-200 ease-out;
 
   &:hover {
-    @apply -translate-y-2;
-    box-shadow: var(--shadow-orange);
-  }
-}
-
-@utility btn-primary-glow {
-  &:hover {
-    box-shadow: var(--shadow-orange);
+    @apply -translate-y-1;
+    box-shadow: var(--shadow-card);
   }
 }
 
@@ -230,4 +224,15 @@ layer(base);
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Edge */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

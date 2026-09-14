@@ -41,7 +41,7 @@ export default function Cart() {
           </p>
           <Link
             to="/products"
-            className="bg-gradient-orange text-primary-foreground font-body inline-flex items-center gap-2 rounded-full px-8 py-4 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90"
+            className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-8 py-4 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
           >
             Start Shopping <ArrowRight size={16} />
           </Link>
@@ -78,7 +78,7 @@ export default function Cart() {
                   onClick={() => {
                     if (coupon) setCouponApplied(true);
                   }}
-                  className="bg-brand-orange/10 border-brand-orange/30 text-brand-orange font-body hover:bg-brand-orange hover:text-primary-foreground rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all duration-200"
+                  className="bg-brand-orange/10 border-brand-orange/30 text-brand-orange font-body hover:bg-brand-orange hover:text-primary-foreground rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors duration-200"
                 >
                   Apply
                 </button>
@@ -132,14 +132,14 @@ export default function Cart() {
 
               <Link
                 to="/checkout"
-                className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-4 text-sm font-semibold tracking-wider uppercase transition-all duration-300 hover:opacity-90"
+                className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-4 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
               >
                 Checkout <ArrowRight size={16} />
               </Link>
 
               <Link
                 to="/products"
-                className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/50 hover:text-foreground mt-3 flex w-full items-center justify-center gap-2 rounded-xl border py-3 text-sm tracking-wider uppercase transition-all duration-200"
+                className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/50 hover:text-foreground mt-3 flex w-full items-center justify-center gap-2 rounded-xl border py-3 text-sm tracking-wider uppercase transition-colors duration-200"
               >
                 Continue Shopping
               </Link>

@@ -38,11 +38,13 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close profile menu on route change
-  useEffect(() => {
+  // Close menus on route change (state adjustment during render)
+  const [lastPath, setLastPath] = useState(location.pathname);
+  if (location.pathname !== lastPath) {
+    setLastPath(location.pathname);
     setProfileMenuOpen(false);
     setMobileOpen(false);
-  }, [location.pathname]);
+  }
 
   const solidBg = !isHomePage || scrolled;
 
@@ -55,7 +57,7 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 right-0 left-0 z-50 transition-all duration-500 ${
+      className={`fixed top-0 right-0 left-0 z-50 transition-[background-color,border-color,box-shadow] duration-300 ${
         solidBg
           ? "bg-background/95 border-brand-border border-b shadow-lg backdrop-blur-lg"
           : "bg-transparent"
@@ -83,7 +85,7 @@ export default function Header() {
               className="font-body text-muted-foreground hover:text-foreground group relative text-sm font-medium transition-colors duration-200"
             >
               {link.label}
-              <span className="bg-brand-orange absolute -bottom-1 left-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full" />
+              <span className="bg-brand-orange absolute -bottom-1 left-0 h-0.5 w-full origin-left scale-x-0 transition-transform duration-200 group-hover:scale-x-100" />
             </Link>
           ))}
         </nav>
@@ -91,7 +93,7 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSearchOpen(true)}
-            className="text-muted-foreground hover:text-foreground hover:bg-muted hidden h-9 w-9 items-center justify-center rounded-full transition-all duration-200 md:flex"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted hidden h-9 w-9 items-center justify-center rounded-full transition-colors duration-150 md:flex"
             aria-label="Open search"
           >
             <Search size={18} />
@@ -99,7 +101,7 @@ export default function Header() {
 
           <Link
             to="/cart"
-            className="text-muted-foreground hover:text-foreground hover:bg-muted relative flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted relative flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150"
           >
             <ShoppingCart size={18} />
             {cartCount > 0 && (
@@ -114,7 +116,7 @@ export default function Header() {
               <>
                 <button
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                  className="bg-brand-orange/10 border-brand-orange/30 font-display text-brand-orange hover:bg-brand-orange/20 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-black uppercase transition-all duration-200"
+                  className="bg-brand-orange/10 border-brand-orange/30 font-display text-brand-orange hover:bg-brand-orange/20 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-black uppercase transition-colors duration-150"
                 >
                   {avatarInitial}
                 </button>
@@ -163,7 +165,7 @@ export default function Header() {
             ) : (
               <Link
                 to="/login"
-                className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150"
               >
                 <User size={18} />
               </Link>
@@ -171,7 +173,7 @@ export default function Header() {
           </div>
 
           <button
-            className="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-full transition-all md:hidden"
+            className="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -180,7 +182,7 @@ export default function Header() {
       </div>
 
       <div
-        className={`overflow-hidden transition-all duration-300 md:hidden ${
+        className={`overflow-hidden transition-[max-height,opacity] duration-300 md:hidden ${
           mobileOpen ? "max-h-120 opacity-100" : "max-h-0 opacity-0"
         } bg-card border-brand-border border-b`}
       >

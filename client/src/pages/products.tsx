@@ -1,8 +1,11 @@
-import { Activity, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useSearchParams } from "react-router";
 
 import { ChevronDown, Settings2, X } from "lucide-react";
+
+import type { TCategory } from "@/types/category";
+import type { TProduct } from "@/types/product";
 
 import { buildFilterParams } from "@/lib/buildFilterParams";
 import { cn } from "@/lib/utils";
@@ -12,10 +15,8 @@ import { useFilteredProducts } from "@/hooks/useProduct";
 
 import EmptyState from "@/features/product/empty-state";
 import FilterDrawer from "@/features/product/filter-drawer";
-import FilterSidebar, {
-  defaultFilters,
-  type FilterState,
-} from "@/features/product/filter-sidebar";
+import FilterSidebar from "@/features/product/filter-sidebar";
+import { defaultFilters, type FilterState } from "@/features/product/filters";
 import ProductCard from "@/features/product/product-card";
 import ProductSkeleton from "@/features/product/product-skleton";
 
@@ -48,7 +49,7 @@ export default function Products() {
 
   const categoryMap = useMemo(() => {
     const map: Record<string, string> = {};
-    categories?.forEach((cat: any) => {
+    categories?.forEach((cat: TCategory) => {
       map[cat._id] = cat.name;
     });
     return map;
@@ -64,7 +65,7 @@ export default function Products() {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useFilteredProducts(queryParams);
 
-  const products = data?.pages.flatMap((page: any) => page.data) ?? [];
+  const products = data?.pages.flatMap((page) => page.data) ?? [];
 
   const activeFilterCount = countActiveFilters(filters);
 
@@ -74,7 +75,7 @@ export default function Products() {
     if (!category) return "All";
 
     const matchedCategory = categories?.find(
-      (cat: any) =>
+      (cat: TCategory) =>
         cat._id === category ||
         cat.slug === category ||
         cat.name.toLowerCase() === category.toLowerCase()
@@ -144,40 +145,38 @@ export default function Products() {
     return () => observer.disconnect();
   }, [hasNextPage, fetchNextPage]);
 
-  useEffect(() => {
-    if (!categories) return;
+  const matchedCategoryId = useMemo(() => {
+    if (!categories || !category) return null;
 
-    if (!category) {
-      setFilters((prev) =>
-        prev.categories.length === 0
-          ? prev
-          : {
-              ...prev,
-              categories: [],
-            }
-      );
-      return;
-    }
-
-    const matchedCategory = categories.find(
-      (cat: any) =>
+    const matched = categories.find(
+      (cat: TCategory) =>
         cat._id === category ||
         cat.slug === category ||
         cat.name.toLowerCase() === category.toLowerCase()
     );
 
-    setFilters((prev) => ({
-      ...prev,
-      categories: matchedCategory?._id ? [matchedCategory._id] : [],
-    }));
+    return matched?._id ?? null;
   }, [categories, category]);
+
+  // Sync category filter with the URL (state adjustment during render)
+  const syncKey = category ? (matchedCategoryId ?? "none") : "all";
+  const [lastSync, setLastSync] = useState(syncKey);
+  if (lastSync !== syncKey) {
+    setLastSync(syncKey);
+    const target = syncKey === "all" || syncKey === "none" ? [] : [syncKey];
+    if (filters.categories.join(",") !== target.join(",")) {
+      setFilters((f) => ({ ...f, categories: target }));
+    }
+  }
 
   return (
     <main className="mx-auto mt-16 max-w-360 border px-4 py-10 sm:px-6 lg:px-10">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <span className="text-foreground font-body text-lg font-semibold uppercase md:text-xl">
           {selectedCategoryLabel} Styles (
-          {(data?.pages[0] as any)?.pagination?.total ?? 0})
+          {(data?.pages[0] as { pagination?: { total?: number } } | undefined)
+            ?.pagination?.total ?? 0}
+          )
         </span>{" "}
         <div className="lg:hidden">
           <FilterDrawer
@@ -189,7 +188,7 @@ export default function Products() {
         <div className="relative hidden gap-5 lg:flex">
           <button
             onClick={() => setShowFilter(!showFilter)}
-            className="border-brand-border bg-card font-body text-foreground hover:border-brand-orange/40 flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition-all"
+            className="border-brand-border bg-card font-body text-foreground hover:border-brand-orange/40 flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition-colors duration-150"
           >
             {showFilter ? "Hide" : "Show"} Filters
             <Settings2 size={20} strokeWidth={1.5} />
@@ -197,7 +196,7 @@ export default function Products() {
 
           <button
             onClick={() => setSortOpen(!sortOpen)}
-            className="border-brand-border bg-card font-body text-foreground hover:border-brand-orange/40 flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition-all"
+            className="border-brand-border bg-card font-body text-foreground hover:border-brand-orange/40 flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition-colors duration-150"
           >
             <span className="text-muted-foreground hidden sm:inline">
               Sort:{" "}
@@ -226,7 +225,7 @@ export default function Products() {
                       setSortOpen(false);
                     }}
                     className={cn(
-                      "font-body flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-sm transition-all",
+                      "font-body flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-sm transition-colors duration-150",
                       sortBy === opt.value
                         ? "bg-brand-orange/10 text-brand-orange font-semibold"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -244,8 +243,8 @@ export default function Products() {
         </div>
       </div>
       <div className="flex items-start gap-8">
-        <Activity mode={showFilter ? "visible" : "hidden"}>
-          <div className="sticky top-24 hidden max-h-[calc(100vh-7rem)] self-start overflow-y-auto lg:block">
+        <div className={showFilter ? "hidden lg:block" : "hidden"}>
+          <div className="sticky top-24 max-h-[calc(100vh-7rem)] self-start overflow-y-auto">
             <FilterSidebar
               filters={filters}
               onChange={setFilters}
@@ -253,7 +252,7 @@ export default function Products() {
               activeCount={activeFilterCount}
             />
           </div>
-        </Activity>
+        </div>
 
         {/* ── Right column ── */}
         <div className="min-w-0 flex-1">
@@ -275,7 +274,7 @@ export default function Products() {
               ))}
               <button
                 onClick={handleClearFilters}
-                className="border-brand-border font-body text-muted-foreground hover:border-brand-orange/40 hover:text-foreground rounded-full border px-3 py-1 text-xs transition-all"
+                className="border-brand-border font-body text-muted-foreground hover:border-brand-orange/40 hover:text-foreground rounded-full border px-3 py-1 text-xs transition-colors duration-150"
               >
                 Clear all
               </button>
@@ -294,7 +293,7 @@ export default function Products() {
             <div
               className={`grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 lg:gap-5 ${!showFilter ? "xl:grid-cols-4" : ""}`}
             >
-              {products.map((product: any, i: number) => (
+              {products.map((product: TProduct, i: number) => (
                 <ProductCard
                   key={product._id}
                   product={product}

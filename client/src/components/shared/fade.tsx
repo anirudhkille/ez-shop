@@ -1,29 +1,27 @@
-import { type ElementType } from "react";
+import type { ReactNode } from "react";
 
 import { motion } from "motion/react";
 
 type FadeProps = {
-  children: React.ReactNode;
-  as?: ElementType;
+  children: ReactNode;
   direction?: "up" | "left" | "right";
   delay?: number;
   duration?: number;
   distance?: number;
   once?: boolean;
   margin?: string;
-  ease?: any;
+  ease?: [number, number, number, number];
   className?: string;
 };
 
 export default function Fade({
   children,
-  as: Component = "div",
   direction = "up",
   delay = 0,
-  duration = 0.6,
-  distance = 30,
+  duration = 0.45,
+  distance = 16,
   once = true,
-  margin = "-100px",
+  margin = "-60px",
   ease = [0.22, 1, 0.36, 1],
   className = "",
 }: FadeProps) {
@@ -44,10 +42,8 @@ export default function Fade({
       : { opacity: 1, y: 0 };
   };
 
-  const MotionComponent = motion(Component);
-
   return (
-    <MotionComponent
+    <motion.div
       initial={getInitial()}
       whileInView={getAnimate()}
       viewport={{ once, margin }}
@@ -59,6 +55,6 @@ export default function Fade({
       className={className}
     >
       {children}
-    </MotionComponent>
+    </motion.div>
   );
 }

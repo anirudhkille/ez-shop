@@ -50,13 +50,13 @@ export default class ErrorBoundary extends Component<Props, State> {
             <div className="flex justify-center gap-3">
               <button
                 onClick={this.handleReset}
-                className="bg-gradient-orange text-primary-foreground font-body rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-opacity hover:opacity-90"
+                className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
               >
                 Try again
               </button>
               <button
                 onClick={() => window.location.reload()}
-                className="border-brand-border text-foreground font-body hover:border-brand-orange/50 hover:text-brand-orange rounded-full border px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-all"
+                className="border-brand-border text-foreground font-body hover:border-brand-orange/50 hover:text-brand-orange rounded-full border px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-colors duration-150"
               >
                 Reload
               </button>

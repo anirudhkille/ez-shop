@@ -84,7 +84,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="border-brand-border text-muted-foreground hover:text-brand-orange hover:border-brand-orange/40 flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-200"
+                  className="border-brand-border text-muted-foreground hover:text-brand-orange hover:border-brand-orange/40 flex h-9 w-9 items-center justify-center rounded-full border transition-colors duration-200"
                 >
                   <social.icon size={15} />
                 </a>

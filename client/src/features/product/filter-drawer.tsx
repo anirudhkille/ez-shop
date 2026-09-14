@@ -2,11 +2,13 @@ import { useState } from "react";
 
 import { ChevronDown, SlidersHorizontal, Star, X } from "lucide-react";
 
+import type { TCategory } from "@/types/category";
+
 import { cn } from "@/lib/utils";
 
 import { useCategorys } from "@/hooks/useCategory";
 
-import { defaultFilters, type FilterState } from "./filter-sidebar";
+import { defaultFilters, type FilterState } from "./filters";
 
 const ALL_SIZES = ["XS", "S", "M", "L", "XL", "7", "8", "9", "10", "11", "12"];
 const ALL_COLORS = [
@@ -45,7 +47,7 @@ function Section({
       </button>
       <div
         className={cn(
-          "overflow-hidden transition-all duration-200",
+          "overflow-hidden transition-[max-height,opacity] duration-200",
           open ? "max-h-80 pb-4 opacity-100" : "max-h-0 opacity-0"
         )}
       >
@@ -99,7 +101,7 @@ export default function FilterDrawer({
       {/* Trigger button */}
       <button
         onClick={handleOpen}
-        className="border-brand-border bg-card font-body text-foreground hover:border-brand-orange/50 relative flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all"
+        className="border-brand-border bg-card font-body text-foreground hover:border-brand-orange/50 relative flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors duration-150"
       >
         <SlidersHorizontal size={15} />
         Filters
@@ -148,7 +150,7 @@ export default function FilterDrawer({
           {/* Category */}
           <Section title="Category">
             <div className="flex flex-wrap gap-2">
-              {categories?.map((cat: any) => {
+              {categories?.map((cat: TCategory) => {
                 const active = draft.categories.includes(cat._id);
 
                 return (
@@ -161,7 +163,7 @@ export default function FilterDrawer({
                       })
                     }
                     className={cn(
-                      "font-body flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm capitalize transition-all duration-150",
+                      "font-body flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm capitalize transition-colors duration-150",
                       active
                         ? "bg-brand-orange/10 text-brand-orange"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -216,7 +218,7 @@ export default function FilterDrawer({
                       setDraft({ ...draft, sizes: toggle(draft.sizes, size) })
                     }
                     className={cn(
-                      "font-body rounded-lg border px-3 py-2 text-sm font-semibold transition-all",
+                      "font-body rounded-lg border px-3 py-2 text-sm font-semibold transition-colors duration-150",
                       active
                         ? "border-brand-orange bg-brand-orange/10 text-brand-orange"
                         : "border-brand-border text-muted-foreground hover:border-brand-orange/40"
@@ -247,7 +249,7 @@ export default function FilterDrawer({
                   >
                     <div
                       className={cn(
-                        "h-9 w-9 rounded-full border-2 transition-all",
+                        "h-9 w-9 rounded-full border-2 transition-colors duration-150",
                         active
                           ? "border-brand-orange scale-110 shadow-[0_0_0_3px_hsl(var(--brand-orange)/0.3)]"
                           : "border-brand-border"
@@ -281,7 +283,7 @@ export default function FilterDrawer({
                     })
                   }
                   className={cn(
-                    "font-body flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-all",
+                    "font-body flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors duration-150",
                     draft.minRating === r
                       ? "border-brand-orange bg-brand-orange/10 text-brand-orange"
                       : "border-brand-border text-muted-foreground"
@@ -313,13 +315,13 @@ export default function FilterDrawer({
         <div className="border-brand-border pb-safe flex gap-3 border-t p-4">
           <button
             onClick={handleClear}
-            className="border-brand-border font-body text-muted-foreground hover:border-foreground hover:text-foreground flex-1 rounded-xl border py-3 text-sm font-semibold transition-all"
+            className="border-brand-border font-body text-muted-foreground hover:border-foreground hover:text-foreground flex-1 rounded-xl border py-3 text-sm font-semibold transition-colors duration-150"
           >
             Clear All
           </button>
           <button
             onClick={handleApply}
-            className="bg-brand-orange font-body flex-2 rounded-xl py-3 text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-[0.98]"
+            className="bg-brand-orange font-body flex-2 rounded-xl py-3 text-sm font-semibold text-white transition-[background-color,opacity,transform] duration-150 hover:opacity-90 active:scale-[0.98]"
           >
             Apply Filters{draftActiveCount > 0 ? ` (${draftActiveCount})` : ""}
           </button>

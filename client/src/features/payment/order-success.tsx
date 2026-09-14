@@ -161,7 +161,7 @@ export default function OrderSuccess({
           <div className="mt-6 flex gap-3">
             <a
               href="/"
-              className="bg-gradient-orange text-primary-foreground font-body inline-flex rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase"
+              className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase"
             >
               Continue Shopping
             </a>

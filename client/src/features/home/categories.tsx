@@ -48,21 +48,21 @@ export default function CategoriesSection() {
                 <img
                   src={cat.image}
                   alt={cat.name}
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
                 />
 
-                <div className="from-background via-background/40 absolute inset-0 bg-linear-to-t to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-75" />
+                <div className="from-background via-background/40 absolute inset-0 bg-linear-to-t to-transparent opacity-90 transition-opacity duration-200 group-hover:opacity-75" />
 
-                <div className="bg-brand-orange/0 group-hover:bg-brand-orange/10 absolute inset-0 transition-all duration-300" />
+                <div className="bg-brand-orange/0 group-hover:bg-brand-orange/10 absolute inset-0 transition-colors duration-200" />
 
                 <div className="absolute inset-0 flex flex-col justify-end p-5">
                   <div>
-                    <h3 className="font-display text-foreground group-hover:text-brand-orange mt-0.5 text-3xl font-black uppercase transition-colors duration-300 lg:text-4xl">
+                    <h3 className="font-display text-foreground group-hover:text-brand-orange mt-0.5 text-3xl font-black uppercase transition-colors duration-200 lg:text-4xl">
                       {cat.name}
                     </h3>
                   </div>
 
-                  <div className="mt-3 flex translate-y-4 items-center gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                  <div className="mt-3 flex translate-y-4 items-center gap-2 opacity-0 transition-[transform,opacity] duration-200 group-hover:translate-y-0 group-hover:opacity-100">
                     <span className="font-body text-brand-orange text-xs font-semibold tracking-wider uppercase">
                       Shop Now
                     </span>
@@ -70,8 +70,8 @@ export default function CategoriesSection() {
                   </div>
                 </div>
 
-                <div className="border-brand-orange/0 group-hover:border-brand-orange/60 absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300">
-                  <span className="text-brand-orange/0 group-hover:text-brand-orange text-xs transition-all duration-300">
+                <div className="border-brand-orange/0 group-hover:border-brand-orange/60 absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full border transition-colors duration-200">
+                  <span className="text-brand-orange/0 group-hover:text-brand-orange text-xs transition-colors duration-200">
                     ↗
                   </span>
                 </div>

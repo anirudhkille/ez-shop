@@ -37,7 +37,7 @@ export default function BestSellers() {
             <Fade key={item._id} delay={i * 0.1}>
               <Link
                 to={`/${item.slug}/${item._id}`}
-                className="group bg-card border-brand-border hover:border-brand-orange/40 flex items-center gap-4 rounded-2xl border p-4 transition-all duration-300"
+                className="group bg-card border-brand-border hover:border-brand-orange/40 flex items-center gap-4 rounded-2xl border p-4 transition-colors duration-200"
               >
                 <div className="w-8 shrink-0 text-center">
                   <span
@@ -51,7 +51,7 @@ export default function BestSellers() {
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="h-full w-full object-contain p-2 transition-transform duration-300 group-hover:scale-110"
+                    className="h-full w-full object-contain p-2 transition-transform duration-200 ease-out group-hover:scale-[1.05]"
                   />
                 </div>
 

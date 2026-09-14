@@ -53,7 +53,7 @@ export default function CartProductCard({ item }: { item: CartItem }) {
           <img
             src={item.product.image}
             alt={item.product.name}
-            className="h-full w-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
+            className="h-full w-full object-contain p-2 transition-transform duration-200 ease-out group-hover:scale-[1.04]"
           />
         </div>
       </Link>

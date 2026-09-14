@@ -11,7 +11,7 @@ import Head from "@/layout/head";
 
 import Image from "@/components/ui/img";
 
-export default function wishlist() {
+export default function Wishlist() {
   const { data } = useWishlists();
 
   const { mutate } = useToggleWishlist();

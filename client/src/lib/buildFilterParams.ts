@@ -1,5 +1,18 @@
-export const buildFilterParams = (filters: any, sortBy: string) => {
-  const params: Record<string, any> = {};
+import type { FilterState } from "@/features/product/filters";
+
+const sortMap: Record<string, string> = {
+  "price-asc": "price-low",
+  "price-desc": "price-high",
+  newest: "newest",
+  featured: "featured",
+  rating: "rating",
+};
+
+export const buildFilterParams = (
+  filters: FilterState,
+  sortBy: string
+): Record<string, string | number> => {
+  const params: Record<string, string | number> = {};
 
   if (filters.categories?.length) {
     params.category = filters.categories.join(",");
@@ -20,14 +33,6 @@ export const buildFilterParams = (filters: any, sortBy: string) => {
   if (filters.minRating > 0) {
     params.minRating = filters.minRating;
   }
-
-  const sortMap: any = {
-    "price-asc": "price-low",
-    "price-desc": "price-high",
-    newest: "newest",
-    featured: "featured",
-    rating: "rating",
-  };
 
   if (sortBy) {
     params.sort = sortMap[sortBy] || "newest";

@@ -121,7 +121,7 @@ export default function VerifyEmailForm() {
             value={digit}
             onChange={(e) => handleChange(i, e.target.value)}
             onKeyDown={(e) => handleKeyDown(i, e)}
-            className={`font-display bg-card text-foreground h-14 w-12 rounded-xl border text-center text-2xl font-bold transition-all duration-200 outline-none ${
+            className={`font-display bg-card text-foreground h-14 w-12 rounded-xl border text-center text-2xl font-bold transition-colors duration-200 outline-none ${
               digit
                 ? "border-brand-orange"
                 : "border-brand-border focus:border-brand-orange/60"

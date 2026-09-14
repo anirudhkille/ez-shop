@@ -1,6 +1,6 @@
 import axiosInstance from "@/lib/axiosInstance";
 
-export const getProducts = async (params?: any) => {
+export const getProducts = async (params?: Record<string, unknown>) => {
   const res = await axiosInstance.get(`/product`, { params });
   return res.data;
 };
@@ -17,7 +17,7 @@ export const getProductBySlug = async (slug: string, id: string) => {
   return res.data;
 };
 
-export const getFilteredProducts = async (params: Record<string, any>) => {
+export const getFilteredProducts = async (params: Record<string, unknown>) => {
   const response = await axiosInstance.get("/product/filter", { params });
   return response.data;
 };

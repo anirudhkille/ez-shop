@@ -4,6 +4,8 @@ import { toast } from "sonner";
 
 import type { TOrder } from "@/types/order";
 
+import { getErrorMessage } from "@/lib/apiError";
+
 import {
   createGuestCheckoutSession,
   placeGuestCODOrder,
@@ -28,10 +30,9 @@ export const usePlaceCodOrder = () => {
       }
     },
 
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error?.response?.data?.message ||
-          "An error occurred while creating order"
+        getErrorMessage(error, "An error occurred while creating order")
       );
     },
   });
@@ -62,10 +63,9 @@ export const usePlaceGuestCODOrder = () => {
       clearCart();
       window.location.href = data.redirectUrl;
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error?.response?.data?.message ||
-          "An error occurred while creating order"
+        getErrorMessage(error, "An error occurred while creating order")
       );
     },
   });
@@ -78,10 +78,9 @@ export const useGuestPayment = () => {
     onSuccess: (data) => {
       window.location.href = data.url;
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error?.response?.data?.message ||
-          "An error occurred while creating payment"
+        getErrorMessage(error, "An error occurred while creating payment")
       );
     },
   });

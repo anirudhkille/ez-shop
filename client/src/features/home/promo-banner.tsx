@@ -25,7 +25,6 @@ export default function PromoBanner() {
           >
             <div className="max-w-xl">
               <span className="font-body text-brand-orange bg-brand-orange/10 border-brand-orange/30 mb-4 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold tracking-widest uppercase">
-                <span className="bg-brand-orange h-1.5 w-1.5 animate-pulse rounded-full" />
                 Limited Edition Drop
               </span>
 
@@ -40,42 +39,12 @@ export default function PromoBanner() {
                 available worldwide.
               </p>
 
-              <div className="flex flex-col gap-4 sm:flex-row">
-                <a
-                  href="#"
-                  className="bg-gradient-orange text-primary-foreground font-body btn-primary-glow inline-flex items-center justify-center rounded-full px-8 py-3.5 text-sm font-semibold tracking-wider uppercase transition-all duration-300 hover:scale-105"
-                >
-                  Shop the Drop
-                </a>
-                <div className="flex items-center gap-4">
-                  <div className="text-center">
-                    <div className="font-display text-foreground text-2xl font-bold">
-                      24
-                    </div>
-                    <div className="font-body text-muted-foreground text-[10px] tracking-widest uppercase">
-                      Hours
-                    </div>
-                  </div>
-                  <div className="text-muted-foreground">:</div>
-                  <div className="text-center">
-                    <div className="font-display text-foreground text-2xl font-bold">
-                      18
-                    </div>
-                    <div className="font-body text-muted-foreground text-[10px] tracking-widest uppercase">
-                      Mins
-                    </div>
-                  </div>
-                  <div className="text-muted-foreground">:</div>
-                  <div className="text-center">
-                    <div className="font-display text-foreground text-2xl font-bold">
-                      42
-                    </div>
-                    <div className="font-body text-muted-foreground text-[10px] tracking-widest uppercase">
-                      Secs
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <a
+                href="#"
+                className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center justify-center rounded-full px-8 py-3.5 text-sm font-semibold tracking-wider uppercase transition-[transform,background-color] duration-150 ease-out active:scale-[0.98]"
+              >
+                Shop the Drop
+              </a>
             </div>
           </div>
         </div>

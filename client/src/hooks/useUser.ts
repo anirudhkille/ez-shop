@@ -6,6 +6,8 @@ import { toast } from "sonner";
 
 import type { TLogin, TSignup, TUser } from "@/types/user";
 
+import { getErrorMessage } from "@/lib/apiError";
+
 import {
   changePassword,
   forgotPassword,
@@ -32,8 +34,8 @@ export const useSignup = () => {
       });
     },
 
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Signup failed");
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "Signup failed"));
     },
   });
 };
@@ -57,8 +59,8 @@ export const useVerifySignupOTP = () => {
       navigate("/");
     },
 
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Invalid OTP");
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "Invalid OTP"));
     },
   });
 };
@@ -77,10 +79,9 @@ export const useLogin = () => {
       });
       navigate("/");
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error.response?.data?.message ||
-          "An error occurred while creating user."
+        getErrorMessage(error, "An error occurred while creating user.")
       );
     },
   });
@@ -92,10 +93,9 @@ export const useForgotPassword = () => {
     onSuccess: () => {
       toast.success("Password reset link has been sent your email");
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error.response?.data?.message ||
-          "An error occurred while creating user."
+        getErrorMessage(error, "An error occurred while creating user.")
       );
     },
   });
@@ -108,10 +108,9 @@ export const useResetPassword = () => {
     onSuccess: () => {
       toast.success("Password reset link has been sent your email");
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error.response?.data?.message ||
-          "An error occurred while creating user."
+        getErrorMessage(error, "An error occurred while creating user.")
       );
     },
   });
@@ -124,8 +123,8 @@ export const useUpdatePassword = () => {
     onSuccess: () => {
       toast.success("Password updated successfully");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to update password");
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "Failed to update password"));
     },
   });
 };
@@ -142,10 +141,9 @@ export const useUpdateProfile = () => {
         token: res.data.token,
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error.response?.data?.message ||
-          "An error occurred while updating profile."
+        getErrorMessage(error, "An error occurred while updating profile.")
       );
     },
   });

@@ -20,7 +20,7 @@ import {
   searchProducts,
 } from "@/api/product";
 
-export const useProducts = (filters?: any) => {
+export const useProducts = (filters?: Record<string, unknown>) => {
   return useQuery({
     queryFn: () => getProducts(filters),
     queryKey: ["product", filters],
@@ -49,7 +49,12 @@ export const useProduct = (slug: string, id: string) => {
   return { ...query, data: product };
 };
 
-export const useFilteredProducts = (filters: Record<string, any>) => {
+interface FilteredPage {
+  data: TProduct[];
+  pagination: { page: number; totalPages: number };
+}
+
+export const useFilteredProducts = (filters: Record<string, unknown>) => {
   return useInfiniteQuery({
     queryKey: ["infinite-products", filters],
     initialPageParam: 1,
@@ -64,7 +69,7 @@ export const useFilteredProducts = (filters: Record<string, any>) => {
       return res;
     },
 
-    getNextPageParam: (lastPage: any) => {
+    getNextPageParam: (lastPage: FilteredPage) => {
       const { page, totalPages } = lastPage.pagination;
 
       return page < totalPages ? page + 1 : undefined;
