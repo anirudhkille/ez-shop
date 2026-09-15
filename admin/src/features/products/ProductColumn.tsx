@@ -112,10 +112,6 @@ export const columns: ColumnDef<IProduct>[] = [
 const ProductActions = ({ product }: { product: IProduct }) => {
   const router = useRouter();
 
-  const handleView = () => {
-    router.push(`/dashboard/products/${product.slug}`);
-  };
-
   const handleDelete = async () => {
     const response = await clientFetch(`/api/product/${product._id}`, {
       method: "DELETE",
@@ -135,7 +131,6 @@ const ProductActions = ({ product }: { product: IProduct }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={handleView}>View</DropdownMenuItem>
         <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
