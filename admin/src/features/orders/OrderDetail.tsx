@@ -114,10 +114,10 @@ export default function OrderDetail({ order }: OrderDetailProps) {
                       ? (item.product as { name: string }).name
                       : "Product"}
                   </td>
-                  <td className="py-2">${item.price.toFixed(2)}</td>
+                  <td className="py-2">₹{item.price.toFixed(2)}</td>
                   <td className="py-2">{item.quantity}</td>
                   <td className="py-2 text-right">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    ₹{(item.price * item.quantity).toFixed(2)}
                   </td>
                 </tr>
               ))}
@@ -128,7 +128,7 @@ export default function OrderDetail({ order }: OrderDetailProps) {
                   Subtotal
                 </td>
                 <td className="py-2 text-right">
-                  ${order.subtotal?.toFixed(2)}
+                  ₹{order.subtotal?.toFixed(2)}
                 </td>
               </tr>
               <tr>
@@ -136,7 +136,7 @@ export default function OrderDetail({ order }: OrderDetailProps) {
                   Delivery
                 </td>
                 <td className="py-2 text-right">
-                  ${order.deliveryCharge?.toFixed(2)}
+                  ₹{order.deliveryCharge?.toFixed(2)}
                 </td>
               </tr>
               <tr>
@@ -144,7 +144,7 @@ export default function OrderDetail({ order }: OrderDetailProps) {
                   Total
                 </td>
                 <td className="py-2 text-lg font-bold text-right">
-                  ${order.totalAmount?.toFixed(2)}
+                  ₹{order.totalAmount?.toFixed(2)}
                 </td>
               </tr>
             </tfoot>

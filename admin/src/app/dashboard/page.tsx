@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, ShoppingCart, Users, DollarSign } from "lucide-react";
+import { Package, ShoppingCart, Users, IndianRupee } from "lucide-react";
 import { serverFetch } from "@/lib/server-api";
 
 export const metadata = {
@@ -56,8 +56,8 @@ export default async function DashboardPage() {
     },
     {
       title: "Total Revenue",
-      value: `$${stats.totalRevenue.toFixed(2)}`,
-      icon: DollarSign,
+      value: `₹${stats.totalRevenue.toFixed(2)}`,
+      icon: IndianRupee,
     },
   ];
 

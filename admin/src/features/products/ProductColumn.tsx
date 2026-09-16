@@ -14,6 +14,7 @@ import { IProduct } from "@/types";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { clientFetch } from "@/lib/client-api";
+import { toast } from "sonner";
 
 export const columns: ColumnDef<IProduct>[] = [
   {
@@ -74,7 +75,7 @@ export const columns: ColumnDef<IProduct>[] = [
     ),
     cell: ({ row }) => {
       const price = row.getValue("price") as number;
-      return <div>${price.toFixed(2)}</div>;
+      return <div>₹{price.toFixed(2)}</div>;
     },
   },
   {
@@ -117,7 +118,10 @@ const ProductActions = ({ product }: { product: IProduct }) => {
       method: "DELETE",
     });
     if (response.ok) {
+      toast.success("Product deleted");
       router.refresh();
+    } else {
+      toast.error("Failed to delete product");
     }
   };
 
@@ -129,9 +133,12 @@ const ProductActions = ({ product }: { product: IProduct }) => {
           <MoreHorizontal />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent
+        align="end"
+        onPointerDown={(event) => event.stopPropagation()}
+      >
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleDelete}>Delete</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

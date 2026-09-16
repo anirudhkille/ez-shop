@@ -14,6 +14,7 @@ import {
 import { IOrder } from "@/types";
 import { useRouter } from "next/navigation";
 import { clientFetch } from "@/lib/client-api";
+import { toast } from "sonner";
 
 export const columns: ColumnDef<IOrder>[] = [
   {
@@ -62,7 +63,7 @@ export const columns: ColumnDef<IOrder>[] = [
     ),
     cell: ({ row }) => {
       const amount = row.getValue("totalAmount") as number;
-      return <div>${amount?.toFixed(2)}</div>;
+      return <div>₹{amount?.toFixed(2)}</div>;
     },
   },
   {
@@ -150,7 +151,10 @@ const OrderActions = ({ order }: { order: IOrder }) => {
       method: "DELETE",
     });
     if (response.ok) {
+      toast.success("Order deleted");
       router.refresh();
+    } else {
+      toast.error("Failed to delete order");
     }
   };
 
@@ -162,10 +166,13 @@ const OrderActions = ({ order }: { order: IOrder }) => {
           <MoreHorizontal />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent
+        align="end"
+        onPointerDown={(event) => event.stopPropagation()}
+      >
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={handleView}>View</DropdownMenuItem>
-        <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleView}>View</DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleDelete}>Delete</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

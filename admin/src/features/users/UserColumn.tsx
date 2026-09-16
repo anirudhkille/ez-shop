@@ -15,6 +15,7 @@ import { IUser } from "@/types";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { clientFetch } from "@/lib/client-api";
+import { toast } from "sonner";
 
 export const columns: ColumnDef<IUser>[] = [
   {
@@ -129,7 +130,10 @@ const UserActions = ({ user }: { user: IUser }) => {
       method: "DELETE",
     });
     if (response.ok) {
+      toast.success("User deleted");
       router.refresh();
+    } else {
+      toast.error("Failed to delete user");
     }
   };
 
@@ -141,10 +145,13 @@ const UserActions = ({ user }: { user: IUser }) => {
           <MoreHorizontal />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent
+        align="end"
+        onPointerDown={(event) => event.stopPropagation()}
+      >
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={handleView}>View</DropdownMenuItem>
-        <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleView}>View</DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleDelete}>Delete</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
