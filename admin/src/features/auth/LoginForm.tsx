@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast, Toaster } from "sonner";
-import { LinkButton } from "@/components/ui/link";
 import { setAuthToken } from "@/lib/client-api";
 import useAuthStore from "@/store/authStore";
 
@@ -104,12 +103,7 @@ export default function LoginForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <div className="flex items-center justify-between">
-                  <FormLabel htmlFor="password">Password</FormLabel>
-                  <LinkButton variant="link" href="/forgot-password">
-                    Forgot your password?
-                  </LinkButton>
-                </div>
+                <FormLabel htmlFor="password">Password</FormLabel>
 
                 <FormControl>
                   <Input type="password" placeholder="********" {...field} />
