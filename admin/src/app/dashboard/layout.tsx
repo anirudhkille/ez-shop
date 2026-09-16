@@ -1,4 +1,4 @@
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import Header from "@/components/layout/Header";
 
@@ -10,10 +10,10 @@ export default function RootLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <section className="flex-1 min-w-0">
+      <SidebarInset>
         <Header />
-        <div className="p-3 sm:p-5 md:px-8">{children}</div>
-      </section>
+        <main className="p-3 sm:p-5 md:px-8">{children}</main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }

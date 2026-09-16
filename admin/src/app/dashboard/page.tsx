@@ -2,6 +2,8 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, ShoppingCart, Users, IndianRupee } from "lucide-react";
 import { serverFetch } from "@/lib/server-api";
+import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
+import { IOrder, IProduct } from "@/types";
 
 export const metadata = {
   title: "Dashboard | EZ Shop Admin",

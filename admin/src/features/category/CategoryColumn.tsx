@@ -71,12 +71,15 @@ export const columns: ColumnDef<ICategory>[] = [
 
 const CategoryActions = ({ category }: { category: ICategory }) => {
   const router = useRouter();
+  const [open, setOpen] = React.useState(false);
 
   const handleView = () => {
+    setOpen(false);
     router.push(`/dashboard/category/${category.slug}`);
   };
 
   const handleDelete = async () => {
+    setOpen(false);
     const response = await clientFetch(`/api/category/${category._id}`, {
       method: "DELETE",
     });
@@ -89,17 +92,18 @@ const CategoryActions = ({ category }: { category: ICategory }) => {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="w-8 h-8 p-0">
+        <Button
+          variant="ghost"
+          className="w-8 h-8 p-0"
+          onClick={(event) => event.stopPropagation()}
+        >
           <span className="sr-only">Open menu</span>
           <MoreHorizontal />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        onPointerDown={(event) => event.stopPropagation()}
-      >
+      <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuItem onSelect={handleView}>View</DropdownMenuItem>
         <DropdownMenuItem onSelect={handleDelete}>Delete</DropdownMenuItem>

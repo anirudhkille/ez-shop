@@ -41,12 +41,16 @@ export interface IProduct {
   category: string | { _id: string; name: string };
   price: number;
   discountPrice?: number;
-  stock: number;
   image: string;
-  publish: boolean;
-  isFeatured?: boolean;
-  isBestSellers?: boolean;
   variants?: IVariant[];
+  gender: "men" | "women" | "unisex";
+  stock: number;
+  isFeatured: boolean;
+  isBestSellers: boolean;
+  rating?: number;
+  reviewsCount?: number;
+  tag: "Best Seller" | "Trending" | "Limited" | "New" | "Hot" | "Sale";
+  publish: boolean;
   createdAt: string;
   updatedAt: string;
 }
