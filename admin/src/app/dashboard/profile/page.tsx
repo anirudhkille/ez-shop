@@ -15,11 +15,11 @@ export default async function ProfilePage() {
   try {
     const res = await serverFetch("/api/admin/profile", { cache: "no-store" });
     const data = await res.json();
-    if (data.success && data.data) {
+    if (data.success && data.user) {
       admin = {
-        name: data.data.name || "",
-        email: data.data.email || "",
-        phone: data.data.phone || "",
+        name: data.user.name || "",
+        email: data.user.email || "",
+        phone: data.user.phone || "",
       };
     }
   } catch {

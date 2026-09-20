@@ -41,12 +41,24 @@ export const createCategory = async (
   };
 };
 
-export const getAllCategories = async () => {
-  const categories = await categoryRepository.findAll();
+export const getAllCategories = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [categories, total] = await Promise.all([
+    categoryRepository.findAll(skip, limit),
+    categoryRepository.countDocuments(),
+  ]);
+
   return {
     success: true,
     message: "Categories fetched successfully",
     data: categories,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
   };
 };
 

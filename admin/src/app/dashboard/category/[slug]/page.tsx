@@ -15,7 +15,9 @@ export default async function page({
   params: Promise<{ slug: string }>;
 }) {
   const slug = (await params).slug;
-  const listRes = await serverFetch("/api/category", { cache: "no-store" });
+  const listRes = await serverFetch("/api/category?limit=1000", {
+    cache: "no-store",
+  });
   const list = await listRes.json();
   const category = (list.data || []).find(
     (item: ICategory) => item.slug === slug,

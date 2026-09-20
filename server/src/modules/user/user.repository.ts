@@ -25,10 +25,14 @@ export const findByIdAndUpdate = async (
   });
 };
 
-export const findAll = async (select?: string) => {
-  const query = User.find();
+export const findAll = async (skip = 0, limit = 10, select?: string) => {
+  const query = User.find().skip(skip).limit(limit);
   if (select) query.select(select);
   return await query;
+};
+
+export const countDocuments = async () => {
+  return await User.countDocuments();
 };
 
 export const deleteById = async (id: string) => {

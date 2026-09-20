@@ -1,3 +1,17 @@
+export interface IPagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface IPaginatedResponse<T> {
+  success: boolean;
+  message: string;
+  data: T[];
+  pagination: IPagination;
+}
+
 export interface IUser {
   _id: string;
   name?: string;

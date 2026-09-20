@@ -277,9 +277,23 @@ export const logout = async (token: string) => {
   return { message: "Logged out successfully" };
 };
 
-export const getAllUsers = async () => {
-  const users = await userRepository.findAll("-password");
-  return { users };
+export const getAllUsers = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [users, total] = await Promise.all([
+    userRepository.findAll(skip, limit, "-password"),
+    userRepository.countDocuments(),
+  ]);
+
+  return {
+    users,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 export const getUserById = async (id: string) => {

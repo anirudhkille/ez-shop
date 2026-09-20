@@ -220,7 +220,7 @@ export default function ProductForm({ data }: ProductFormProps) {
   });
 
   useEffect(() => {
-    clientFetch("/api/category")
+    clientFetch("/api/category?limit=1000")
       .then((res) => res.json())
       .then((result) => setCategories(result.data || []))
       .catch(() => toast.error("Failed to load categories"));

@@ -1,4 +1,5 @@
 "use client";
+import * as React from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,15 +19,17 @@ import { removeAuthToken } from "@/lib/client-api";
 export default function AccountMenu() {
   const router = useRouter();
   const { name, email, logout } = useAuthStore();
+  const [open, setOpen] = React.useState(false);
 
   const handleLogout = () => {
+    setOpen(false);
     removeAuthToken();
     logout();
     router.push("/");
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar className="w-8 h-8">
@@ -38,7 +41,7 @@ export default function AccountMenu() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+        className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg"
         side="bottom"
         align="end"
         sideOffset={4}
@@ -59,13 +62,18 @@ export default function AccountMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => router.push("/dashboard/profile")}>
+          <DropdownMenuItem
+            onSelect={() => {
+              setOpen(false);
+              router.push("/dashboard/profile");
+            }}
+          >
             <BadgeCheck />
             Account
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem onSelect={handleLogout}>
           <LogOut />
           Log out
         </DropdownMenuItem>

@@ -143,7 +143,7 @@ export const getOrders = async (limit: number, page: number) => {
       success: true,
       message: "Orders fetched successfully",
       data: orders,
-      pagintion: {
+      pagination: {
         total,
         page,
         limit,

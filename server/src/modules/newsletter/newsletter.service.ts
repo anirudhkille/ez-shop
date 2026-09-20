@@ -4,12 +4,25 @@ export const subscribeNewsletter = async (email: string) => {
   const alerdySubscribed = await newsletterRepository.findOne({ email });
 
   if (alerdySubscribed) {
-    return { status: 401, data: { success: true, message: "Email already subscribed for newsletter" } };
+    return {
+      status: 401,
+      data: {
+        success: true,
+        message: "Email already subscribed for newsletter",
+      },
+    };
   }
 
   const newsletter = await newsletterRepository.create({ email });
 
-  return { status: 201, data: { success: true, message: "Newsletter subscribed successfully", data: newsletter } };
+  return {
+    status: 201,
+    data: {
+      success: true,
+      message: "Newsletter subscribed successfully",
+      data: newsletter,
+    },
+  };
 };
 
 export const getNewsletterSubscribers = async (limit: number, page: number) => {
@@ -25,7 +38,7 @@ export const getNewsletterSubscribers = async (limit: number, page: number) => {
       success: true,
       message: "Newsletter subscribers fetched successfully",
       data: subscribers,
-      pagintion: {
+      pagination: {
         total,
         page,
         limit,

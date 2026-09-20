@@ -15,6 +15,19 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IOrder, IProduct } from "@/types";
 
+const AXIS_TICK = { fill: "hsl(var(--muted-foreground))", fontSize: 12 };
+const GRID_STROKE = {
+  stroke: "hsl(var(--border))",
+  opacity: 0.6,
+};
+const TOOLTIP_STYLE = {
+  borderRadius: 8,
+  backgroundColor: "hsl(var(--popover))",
+  border: "1px solid hsl(var(--border))",
+  color: "hsl(var(--popover-foreground))",
+  fontSize: 12,
+};
+
 function formatINR(value: number) {
   return `₹${value.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
 }
@@ -70,13 +83,14 @@ function topProducts(orders: IOrder[]) {
 export function DashboardCharts({
   orders,
   products,
+  totalProducts,
 }: {
   orders: IOrder[];
   products: IProduct[];
+  totalProducts: number;
 }) {
   const data = React.useMemo(() => groupByDate(orders), [orders]);
   const top = React.useMemo(() => topProducts(orders), [orders]);
-  const totalProducts = products.length;
 
   if (data.length === 0) {
     return (
@@ -103,16 +117,16 @@ export function DashboardCharts({
                   <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} {...GRID_STROKE} />
               <XAxis
                 dataKey="label"
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, ...AXIS_TICK }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
                 tickFormatter={(value) => `₹${value}`}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, ...AXIS_TICK }}
                 axisLine={false}
                 tickLine={false}
                 width={60}
@@ -120,7 +134,7 @@ export function DashboardCharts({
               <Tooltip
                 formatter={(value) => [formatINR(Number(value) || 0), "Revenue"]}
                 labelClassName="font-medium"
-                contentStyle={{ borderRadius: 8 }}
+                contentStyle={TOOLTIP_STYLE}
               />
               <Area
                 type="monotone"
@@ -142,23 +156,24 @@ export function DashboardCharts({
         <CardContent>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={data} margin={{ left: 0, right: 16, top: 8, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid {...GRID_STROKE} strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="label"
-                tick={{ fontSize: 12 }}
+                tick={AXIS_TICK}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
                 allowDecimals={false}
-                tick={{ fontSize: 12 }}
+                tick={AXIS_TICK}
                 axisLine={false}
                 tickLine={false}
                 width={40}
               />
               <Tooltip
                 formatter={(value) => [value, "Orders"]}
-                contentStyle={{ borderRadius: 8 }}
+                labelClassName="font-medium"
+                contentStyle={TOOLTIP_STYLE}
               />
               <Bar dataKey="orders" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -177,19 +192,19 @@ export function DashboardCharts({
               layout="vertical"
               margin={{ left: 24, right: 16, top: 8, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} {...GRID_STROKE} />
               <XAxis type="number" hide />
               <YAxis
                 dataKey="name"
                 type="category"
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, ...AXIS_TICK }}
                 width={100}
                 axisLine={false}
                 tickLine={false}
               />
               <Tooltip
                 formatter={(value) => [formatINR(Number(value) || 0), "Revenue"]}
-                contentStyle={{ borderRadius: 8 }}
+                contentStyle={TOOLTIP_STYLE}
               />
               <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
             </BarChart>

@@ -1,7 +1,6 @@
 import { asyncHandler } from "@/utils/asyncHandler";
 import { Request, Response } from "express";
 import { ZodError } from "zod";
-import { sendSuccess } from "@/utils/response";
 import { objectIdParamSchema } from "@/modules/product/product.schema";
 import * as categoryService from "@/modules/category/category.service";
 
@@ -22,8 +21,10 @@ export const postCategory = asyncHandler(
 );
 
 export const getCategory = asyncHandler(async (req: Request, res: Response) => {
-  const result = await categoryService.getAllCategories();
-  sendSuccess(res, result.data, result.message);
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const result = await categoryService.getAllCategories(page, limit);
+  return res.status(200).json(result);
 });
 
 export const updateCategory = asyncHandler(

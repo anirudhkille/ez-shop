@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -110,73 +111,6 @@
 @custom-variant data-side-bottom (&[data-side="bottom"]);
 @custom-variant data-side-left (&[data-side="left"]);
 @custom-variant data-side-right (&[data-side="right"]);
-
-@keyframes in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes out {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-@utility animate-in {
-    animation: in 0.2s ease-in-out;
-}
-
-@utility animate-out {
-    animation: out 0.2s ease-in-out;
-}
-
-@utility fade-in-0 {
-    --tw-enter-opacity: 0;
-    opacity: 0;
-}
-
-@utility fade-out-0 {
-    --tw-exit-opacity: 0;
-}
-
-@utility zoom-in-95 {
-    --tw-enter-scale: 0.95;
-}
-
-@utility zoom-out-95 {
-    --tw-exit-scale: 0.95;
-}
-
-@utility slide-in-from-top-2 {
-    --tw-enter-translate-y: -0.5rem;
-}
-
-@utility slide-in-from-bottom-2 {
-    --tw-enter-translate-y: 0.5rem;
-}
-
-@utility slide-in-from-left-2 {
-    --tw-enter-translate-x: -0.5rem;
-}
-
-@utility slide-in-from-right-2 {
-    --tw-enter-translate-x: 0.5rem;
-}
-
-@utility slide-out-to-top {
-    --tw-exit-translate-y: -100%;
-}
-
-@utility slide-out-to-bottom {
-    --tw-exit-translate-y: 100%;
-}
-
-@utility slide-out-to-left {
-    --tw-exit-translate-x: -100%;
-}
-
-@utility slide-out-to-right {
-    --tw-exit-translate-x: 100%;
-}
 
 @layer base {
     * {

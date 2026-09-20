@@ -220,7 +220,7 @@ export const getProducts = async (query: ProductQuery) => {
       success: true,
       message: "Product fetched successfully",
       data: product,
-      pagintion: {
+      pagination: {
         total,
         page,
         limit,

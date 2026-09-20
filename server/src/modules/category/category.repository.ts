@@ -1,18 +1,29 @@
 import Category from "@/modules/category/category.model";
 
-export const create = async (data: { name: string; slug: string; image: string }) => {
+export const create = async (data: {
+  name: string;
+  slug: string;
+  image: string;
+}) => {
   return await Category.create(data);
 };
 
-export const findAll = async () => {
-  return await Category.find().lean();
+export const findAll = async (skip = 0, limit = 10) => {
+  return await Category.find().skip(skip).limit(limit).lean();
+};
+
+export const countDocuments = async () => {
+  return await Category.countDocuments();
 };
 
 export const findById = async (id: string) => {
   return await Category.findById(id);
 };
 
-export const updateById = async (id: string, data: Partial<{ name: string; slug: string; image: string }>) => {
+export const updateById = async (
+  id: string,
+  data: Partial<{ name: string; slug: string; image: string }>,
+) => {
   return await Category.findByIdAndUpdate(id, data, { new: true });
 };
 

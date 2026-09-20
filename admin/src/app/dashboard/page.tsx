@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, ShoppingCart, Users, IndianRupee } from "lucide-react";
 import { serverFetch } from "@/lib/server-api";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
-import { IOrder, IProduct } from "@/types";
+import { IPaginatedResponse, IOrder, IProduct } from "@/types";
 
 export const metadata = {
   title: "Dashboard | EZ Shop Admin",
@@ -12,28 +12,40 @@ export const metadata = {
 async function getStats() {
   try {
     const [productsRes, ordersRes, usersRes] = await Promise.all([
-      serverFetch("/api/product", { cache: "no-store" }),
-      serverFetch("/api/order", { cache: "no-store" }),
-      serverFetch("/api/user", { cache: "no-store" }),
+      serverFetch("/api/product?limit=1000", { cache: "no-store" }),
+      serverFetch("/api/order?limit=1000", { cache: "no-store" }),
+      serverFetch("/api/user?limit=1000", { cache: "no-store" }),
     ]);
 
-    const products = await productsRes.json();
-    const orders = await ordersRes.json();
-    const users = await usersRes.json();
+    const products: IPaginatedResponse<IProduct> = await productsRes.json();
+    const orders: IPaginatedResponse<IOrder> = await ordersRes.json();
+    const users: IPaginatedResponse<{ _id: string }> = await usersRes.json();
 
-    const totalRevenue = (orders.data || []).reduce(
-      (sum: number, order: { totalAmount: number }) => sum + (order.totalAmount || 0),
-      0
+    const ordersList: IOrder[] = orders.data || [];
+    const productsList: IProduct[] = products.data || [];
+
+    const totalRevenue = ordersList.reduce(
+      (sum: number, order) => sum + (order.totalAmount || 0),
+      0,
     );
 
     return {
-      totalProducts: (products.data || []).length,
-      totalOrders: (orders.data || []).length,
-      totalUsers: (users.data || []).length,
+      totalProducts: products.pagination?.total ?? productsList.length,
+      totalOrders: orders.pagination?.total ?? ordersList.length,
+      totalUsers: users.pagination?.total ?? (users.data || []).length,
       totalRevenue,
+      orders: ordersList,
+      products: productsList,
     };
   } catch {
-    return { totalProducts: 0, totalOrders: 0, totalUsers: 0, totalRevenue: 0 };
+    return {
+      totalProducts: 0,
+      totalOrders: 0,
+      totalUsers: 0,
+      totalRevenue: 0,
+      orders: [] as IOrder[],
+      products: [] as IProduct[],
+    };
   }
 }
 
@@ -84,6 +96,8 @@ export default async function DashboardPage() {
           );
         })}
       </div>
+
+      <DashboardCharts orders={stats.orders} products={stats.products} />
     </div>
   );
 }

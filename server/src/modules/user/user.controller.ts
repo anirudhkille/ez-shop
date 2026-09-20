@@ -106,12 +106,17 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
   sendMessage(res, result.message);
 });
 
-export const getAllUsers = asyncHandler(
-  async (_req: Request, res: Response) => {
-    const result = await userService.getAllUsers();
-    sendSuccess(res, result.users);
-  },
-);
+export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const result = await userService.getAllUsers(page, limit);
+  res.status(200).json({
+    success: true,
+    message: "Users fetched successfully",
+    data: result.users,
+    pagination: result.pagination,
+  });
+});
 
 export const getUserById = asyncHandler(async (req: Request, res: Response) => {
   const result = await userService.getUserById(req.params.id);

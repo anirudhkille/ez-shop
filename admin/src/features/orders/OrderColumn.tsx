@@ -166,10 +166,7 @@ const OrderActions = ({ order }: { order: IOrder }) => {
           <MoreHorizontal />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        onPointerDown={(event) => event.stopPropagation()}
-      >
+      <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuItem onSelect={handleView}>View</DropdownMenuItem>
         <DropdownMenuItem onSelect={handleDelete}>Delete</DropdownMenuItem>
