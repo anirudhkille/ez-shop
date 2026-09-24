@@ -15,7 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IOrder, IProduct } from "@/types";
 
-const AXIS_TICK = { fill: "hsl(var(--muted-foreground))", fontSize: 12 };
+const AXIS_TICK = { fill: "hsl(var(--muted-foreground))" };
 const GRID_STROKE = {
   stroke: "hsl(var(--border))",
   opacity: 0.6,
@@ -83,11 +83,11 @@ function topProducts(orders: IOrder[]) {
 export function DashboardCharts({
   orders,
   products,
-  totalProducts,
+  totalProducts = 0,
 }: {
   orders: IOrder[];
   products: IProduct[];
-  totalProducts: number;
+  totalProducts?: number;
 }) {
   const data = React.useMemo(() => groupByDate(orders), [orders]);
   const top = React.useMemo(() => topProducts(orders), [orders]);
@@ -120,13 +120,13 @@ export function DashboardCharts({
               <CartesianGrid strokeDasharray="3 3" vertical={false} {...GRID_STROKE} />
               <XAxis
                 dataKey="label"
-                tick={{ fontSize: 12, ...AXIS_TICK }}
+                tick={{ ...AXIS_TICK, fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
                 tickFormatter={(value) => `₹${value}`}
-                tick={{ fontSize: 12, ...AXIS_TICK }}
+                tick={{ ...AXIS_TICK, fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
                 width={60}
@@ -197,7 +197,7 @@ export function DashboardCharts({
               <YAxis
                 dataKey="name"
                 type="category"
-                tick={{ fontSize: 11, ...AXIS_TICK }}
+                tick={{ ...AXIS_TICK, fontSize: 11 }}
                 width={100}
                 axisLine={false}
                 tickLine={false}

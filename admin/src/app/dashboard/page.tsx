@@ -97,7 +97,11 @@ export default async function DashboardPage() {
         })}
       </div>
 
-      <DashboardCharts orders={stats.orders} products={stats.products} />
+      <DashboardCharts
+        orders={stats.orders}
+        products={stats.products}
+        totalProducts={stats.totalProducts}
+      />
     </div>
   );
 }
