@@ -1,10 +1,5 @@
 import axiosInstance from "@/lib/axiosInstance";
 
-export const getProducts = async (params?: Record<string, unknown>) => {
-  const res = await axiosInstance.get(`/product`, { params });
-  return res.data;
-};
-
 export const searchProducts = async (name: string, limit = 20) => {
   const res = await axiosInstance.get(`/product/search`, {
     params: { name, limit },

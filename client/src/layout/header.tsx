@@ -102,6 +102,7 @@ export default function Header() {
 
           <Link
             to="/cart"
+            aria-label="Shopping Cart"
             className="text-muted-foreground hover:text-foreground hover:bg-muted relative flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150"
           >
             <ShoppingCart size={18} />
@@ -166,6 +167,7 @@ export default function Header() {
             ) : (
               <Link
                 to="/login"
+                aria-label="Sign in"
                 className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150"
               >
                 <User size={18} />
@@ -176,6 +178,7 @@ export default function Header() {
           <button
             className="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle mobile menu"
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>

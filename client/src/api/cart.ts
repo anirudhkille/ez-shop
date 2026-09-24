@@ -32,8 +32,3 @@ export const removeFromCart = async (cartItemId: string) => {
   const res = await axiosInstance.delete(`/cart/${cartItemId}`);
   return res.data;
 };
-
-export const clearCart = async () => {
-  const res = await axiosInstance.delete("/cart/clear");
-  return res.data;
-};

@@ -2,11 +2,7 @@ import { useEffect } from "react";
 
 import { useNavigate } from "react-router";
 
-import {
-  keepPreviousData,
-  useInfiniteQuery,
-  useQuery,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 import type { TProduct } from "@/types/product";
 
@@ -15,18 +11,9 @@ import {
   getFeaturedProducts,
   getFilteredProducts,
   getProductBySlug,
-  getProducts,
   getSimilarProducts,
   searchProducts,
 } from "@/api/product";
-
-export const useProducts = (filters?: Record<string, unknown>) => {
-  return useQuery({
-    queryFn: () => getProducts(filters),
-    queryKey: ["product", filters],
-    placeholderData: keepPreviousData,
-  });
-};
 
 export const useProduct = (slug: string, id: string) => {
   const navigate = useNavigate();

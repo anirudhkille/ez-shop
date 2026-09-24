@@ -6,7 +6,6 @@ import { getErrorMessage } from "@/lib/apiError";
 
 import {
   addToCart,
-  clearCart,
   getCart,
   getCartCount,
   removeFromCart,
@@ -216,34 +215,6 @@ export const useRemoveCartItem = () => {
     onError: (error) => {
       if (token) {
         toast.error(getErrorMessage(error, "Failed to remove item"));
-      }
-    },
-  });
-};
-
-export const useClearCart = () => {
-  const { token } = useUserStore();
-  const clearCartStore = useCartStore((s) => s.clearCart);
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: () => {
-      if (!token) {
-        clearCartStore();
-        syncGuestCartToCache(queryClient);
-        return Promise.resolve({});
-      }
-      return clearCart();
-    },
-    onSuccess: () => {
-      if (token) {
-        queryClient.invalidateQueries({ queryKey: ["cart"] });
-        toast.success("Cart cleared");
-      }
-    },
-    onError: (error) => {
-      if (token) {
-        toast.error(getErrorMessage(error, "Failed to clear cart"));
       }
     },
   });

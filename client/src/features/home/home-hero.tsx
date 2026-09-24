@@ -103,6 +103,8 @@ export default function HeroSection() {
           <motion.img
             src={heroSneaker}
             alt="EZ Shop Pro — Run the Future"
+            width={1024}
+            height={1024}
             className="relative z-10 w-full max-w-145 select-none"
             draggable={false}
             initial={{ opacity: 0, y: 16 }}
