@@ -68,6 +68,7 @@ export default function Header() {
           <div className="">
             <img
               src="/logo.svg"
+              alt="EZ Shop Logo"
               loading="eager"
               className="size-6 object-contain"
             />

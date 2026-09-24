@@ -64,7 +64,11 @@ export default function Footer() {
         <div className="grid grid-cols-2 gap-10 py-16 md:grid-cols-3 lg:grid-cols-5">
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <Link to="/" className="mb-4 flex items-center gap-2">
-              <img src="/logo.svg" className="size-6 object-contain" />
+              <img
+                src="/logo.svg"
+                alt="EZ Shop Logo"
+                className="size-6 object-contain"
+              />
 
               <span className="font-display text-foreground text-2xl font-bold tracking-wider">
                 EZ Shop
