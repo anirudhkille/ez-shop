@@ -19,6 +19,7 @@ import {
 
 import type { TProduct, TVariant } from "@/types/product";
 
+import { tagColors } from "@/lib/constants";
 import { formatPrice } from "@/lib/formatPrice";
 
 import useUserStore from "@/store/userStore";
@@ -27,7 +28,6 @@ import { useAddToCart } from "@/hooks/useCart";
 import { useProduct, useSimilarProducts } from "@/hooks/useProduct";
 import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
 
-import { tagColors } from "@/data/products";
 import ProductCard from "@/features/product/product-card";
 
 function ProductDetailSkeleton() {

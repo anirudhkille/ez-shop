@@ -2,7 +2,7 @@ import { motion, type Variants } from "motion/react";
 
 import { Zap } from "lucide-react";
 
-import heroSneaker from "@/assets/hero-sneaker.png";
+import heroSneaker from "@/assets/hero-sneaker.webp";
 
 const container: Variants = {
   hidden: {},
