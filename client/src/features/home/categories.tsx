@@ -5,6 +5,7 @@ import type { TCategory } from "@/types/category";
 import { useCategorys } from "@/hooks/useCategory";
 
 import Fade from "@/components/shared/fade";
+import Image from "@/components/ui/img";
 
 export default function CategoriesSection() {
   const { data: categories } = useCategorys();
@@ -45,7 +46,7 @@ export default function CategoriesSection() {
                 to={`/products?category=${cat.slug}`}
                 style={{ aspectRatio: "3/4" }}
               >
-                <img
+                <Image
                   src={cat.image}
                   alt={cat.name}
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"

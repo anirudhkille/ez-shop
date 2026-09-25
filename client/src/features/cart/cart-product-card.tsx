@@ -6,6 +6,8 @@ import { formatPrice } from "@/lib/formatPrice";
 
 import { useRemoveCartItem, useUpdateCartQty } from "@/hooks/useCart";
 
+import Image from "@/components/ui/img";
+
 export type CartItem = {
   _id: string;
   product: {
@@ -50,7 +52,7 @@ export default function CartProductCard({ item }: { item: CartItem }) {
         className="shrink-0"
       >
         <div className="bg-brand-surface-raised flex h-24 w-24 items-center justify-center overflow-hidden rounded-xl">
-          <img
+          <Image
             src={item.product.image}
             alt={item.product.name}
             className="h-full w-full object-contain p-2 transition-transform duration-200 ease-out group-hover:scale-[1.04]"

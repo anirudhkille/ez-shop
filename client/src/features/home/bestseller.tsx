@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/formatPrice";
 import { useBestSellers } from "@/hooks/useProduct";
 
 import Fade from "@/components/shared/fade";
+import Image from "@/components/ui/img";
 
 export default function BestSellers() {
   const { data: bestSellers } = useBestSellers();
@@ -48,7 +49,7 @@ export default function BestSellers() {
                 </div>
 
                 <div className="bg-brand-surface-raised flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl">
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.name}
                     className="h-full w-full object-contain p-2 transition-transform duration-200 ease-out group-hover:scale-[1.05]"

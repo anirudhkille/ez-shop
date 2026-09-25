@@ -1,4 +1,5 @@
 import Fade from "@/components/shared/fade";
+import Image from "@/components/ui/img";
 
 import promoBanner from "@/assets/promo-banner.webp";
 
@@ -10,7 +11,7 @@ export default function PromoBanner() {
           className="relative overflow-hidden rounded-3xl"
           style={{ minHeight: "420px" }}
         >
-          <img
+          <Image
             src={promoBanner}
             alt="New Collection Drop"
             className="absolute inset-0 h-full w-full object-cover"

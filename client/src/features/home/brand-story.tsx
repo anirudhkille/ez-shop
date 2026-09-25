@@ -1,6 +1,7 @@
 import { Award, Globe, Shield, Zap } from "lucide-react";
 
 import Fade from "@/components/shared/fade";
+import Image from "@/components/ui/img";
 
 import brandStory from "@/assets/brand-story.webp";
 
@@ -37,7 +38,7 @@ export default function BrandStory() {
               className="relative overflow-hidden rounded-3xl"
               style={{ aspectRatio: "4/3" }}
             >
-              <img
+              <Image
                 src={brandStory}
                 alt="EZ Shop brand story — craftsmanship"
                 className="h-full w-full object-cover"

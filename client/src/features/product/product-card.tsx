@@ -13,6 +13,8 @@ import useUserStore from "@/store/userStore";
 
 import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
 
+import Image from "@/components/ui/img";
+
 interface ProductCardProps {
   product: TProduct;
   delay?: number;
@@ -61,7 +63,7 @@ export default function ProductCard({
             }
           />
         </button>
-        <img
+        <Image
           src={product?.image}
           alt={product?.name}
           className="h-full w-full object-contain transition-transform duration-300 ease-out group-hover:scale-[1.04]"
