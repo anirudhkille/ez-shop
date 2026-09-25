@@ -2,9 +2,6 @@ import { motion, type Variants } from "motion/react";
 
 import { Zap } from "lucide-react";
 
-import heroSneakerMobile from "@/assets/hero-sneaker-mobile.webp";
-import heroSneaker from "@/assets/hero-sneaker.webp";
-
 const container: Variants = {
   hidden: {},
   show: {
@@ -112,9 +109,12 @@ export default function HeroSection() {
             className="relative z-10 w-full max-w-145 select-none"
           >
             <picture>
-              <source media="(max-width: 768px)" srcSet={heroSneakerMobile} />
+              <source
+                media="(max-width: 768px)"
+                srcSet="/hero-sneaker-mobile.webp"
+              />
               <img
-                src={heroSneaker}
+                src="/hero-sneaker.webp"
                 alt="EZ Shop Pro — Run the Future"
                 width={1024}
                 height={1024}

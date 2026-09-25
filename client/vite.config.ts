@@ -15,29 +15,13 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes("node_modules")) {
-            if (
-              id.includes("react") ||
-              id.includes("react-dom") ||
-              id.includes("react-router")
-            ) {
-              return "vendor-react";
-            }
-            if (
-              id.includes("@tanstack") ||
-              id.includes("axios") ||
-              id.includes("zustand")
-            ) {
-              return "vendor-state";
-            }
-            if (
-              id.includes("lucide-react") ||
-              id.includes("motion") ||
-              id.includes("sonner")
-            ) {
-              return "vendor-ui";
-            }
-            return "vendor";
+          if (!id.includes("node_modules")) return;
+          if (
+            id.includes("/react/") ||
+            id.includes("react-dom") ||
+            id.includes("react-router")
+          ) {
+            return "vendor-react";
           }
         },
       },
