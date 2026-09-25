@@ -9,7 +9,7 @@ import {
 export const categoryCreateSchema = z.object({
   name: nonEmptyString,
   slug: nonEmptyString,
-  image: nonEmptyString,
+  image: nonEmptyString.optional(),
 });
 
 export const categoryUpdateSchema = z

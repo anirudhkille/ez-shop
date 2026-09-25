@@ -27,9 +27,12 @@ const positiveNumberSchema = z.preprocess(
   z.coerce.number().positive("Price must be a positive number"),
 );
 
-const nonNegativeNumberSchema = z.preprocess(
+const optionalNonNegativeNumberSchema = z.preprocess(
   cleanNumberInput,
-  z.coerce.number().nonnegative("Value must be zero or greater"),
+  z.coerce
+    .number()
+    .nonnegative("Value must be zero or greater")
+    .optional(),
 );
 
 const stockSchema = z.preprocess(
@@ -51,6 +54,11 @@ const booleanSchema = z.preprocess((value) => {
   return value;
 }, z.boolean());
 
+const optionalBooleanSchema = z.preprocess(
+  (value) => (value === "" ? undefined : value),
+  booleanSchema.optional(),
+);
+
 const optionalNonEmptyString = z.preprocess(
   (value) =>
     typeof value === "string" && value.trim() === "" ? undefined : value,
@@ -63,6 +71,7 @@ const parseJsonInput = (
   fieldName: string,
 ) => {
   if (typeof value !== "string") return value;
+  if (value.trim() === "") return undefined;
 
   try {
     return JSON.parse(value);
@@ -79,8 +88,8 @@ export const productVariantSizeSchema = z.object({
   size: nonEmptyString,
   stock: stockSchema,
   sku: optionalNonEmptyString,
-  price: nonNegativeNumberSchema.optional(),
-  discountPrice: nonNegativeNumberSchema.optional(),
+  price: optionalNonNegativeNumberSchema,
+  discountPrice: optionalNonNegativeNumberSchema,
 });
 
 export const productVariantSchema = z.object({
@@ -115,7 +124,7 @@ const productFields = {
   name: nonEmptyString,
   description: nonEmptyString,
   price: positiveNumberSchema,
-  discountPrice: nonNegativeNumberSchema.optional(),
+  discountPrice: optionalNonNegativeNumberSchema,
   stock: stockSchema,
   category: objectIdSchema,
   image: nonEmptyString.optional(),
@@ -147,7 +156,7 @@ export const productUpdateSchema = z
     stock: productFields.stock.optional(),
     category: productFields.category.optional(),
     image: productFields.image,
-    publish: productFields.publish.optional(),
+    publish: optionalBooleanSchema,
     gender: productFields.gender.optional(),
     isFeatured: productFields.isFeatured.optional(),
     isBestSellers: productFields.isBestSellers.optional(),

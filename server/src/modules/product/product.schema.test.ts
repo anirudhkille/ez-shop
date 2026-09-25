@@ -86,6 +86,25 @@ describe("product schemas", () => {
     assert.equal(productUpdateSchema.safeParse({ name: " " }).success, false);
   });
 
+  it("treats blank multipart optional fields as omitted", () => {
+    const result = productUpdateSchema.safeParse({
+      name: "Updated",
+      discountPrice: "",
+      slug: "",
+      publish: "",
+      variants: "",
+      variantImageMap: "",
+    });
+
+    assert.equal(result.success, true);
+    if (result.success) {
+      assert.equal(result.data.discountPrice, undefined);
+      assert.equal(result.data.slug, undefined);
+      assert.equal(result.data.publish, undefined);
+      assert.equal(result.data.variants, undefined);
+    }
+  });
+
   it("allowlists product filters and bounds pagination", () => {
     assert.equal(
       filteredProductQuerySchema.safeParse({
