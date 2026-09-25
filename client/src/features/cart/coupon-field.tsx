@@ -73,11 +73,16 @@ export default function CouponField({ subtotal, className }: CouponFieldProps) {
             placeholder={quote ? `${quote.code} applied` : "Promo code"}
             disabled={isPending || !!quote}
             autoComplete="off"
-            className="font-body pl-9 uppercase"
+            className="rounded-xl py-2.5 pr-4 pl-9 text-sm"
           />
         </div>
         {quote ? (
-          <Button type="button" variant="outline" onClick={handleRemove}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleRemove}
+            className="rounded-xl px-4 py-2.5 text-sm"
+          >
             Remove
           </Button>
         ) : (
@@ -85,6 +90,7 @@ export default function CouponField({ subtotal, className }: CouponFieldProps) {
             type="button"
             onClick={handleApply}
             disabled={isPending || !code.trim()}
+            className="rounded-xl px-4 py-2.5 text-sm"
           >
             {isPending ? "Applying…" : "Apply"}
           </Button>

@@ -64,7 +64,10 @@ axiosInstance.interceptors.response.use(
     const { status } = error.response || {};
     const authStore = useAuthStore.getState();
 
-    if ((status === 401 || status === 403) && authStore.token) {
+    // Only 401 means the token is no longer valid. A 403 is a legitimate
+    // "authenticated but not allowed" response, and treating it as an expiry
+    // signs the user out for hitting a route they cannot access.
+    if (status === 401 && authStore.token) {
       if (originalRequest.url?.includes("/refresh")) {
         authStore.logout();
         return Promise.reject(error);

@@ -143,6 +143,7 @@ export const evaluateCoupon = async (
   return {
     code: coupon.code,
     type: coupon.type,
+    value: coupon.value,
     discount: computeDiscount(coupon, subtotal),
   };
 };

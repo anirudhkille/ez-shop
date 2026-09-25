@@ -24,14 +24,12 @@ import type { TDeliveryMethod } from "@/types/order";
 
 import { formatPrice } from "@/lib/formatPrice";
 
-import type { TCouponQuote } from "@/api/coupon";
-
 import { useCartStore } from "@/store/cartStore";
+import { useCouponStore } from "@/store/couponStore";
 import useUserStore from "@/store/userStore";
 
 import { useAddresss } from "@/hooks/useAddress";
 import { useCart } from "@/hooks/useCart";
-import { useApplyCoupon } from "@/hooks/useCoupon";
 import {
   useGuestPayment,
   usePlaceCodOrder,
@@ -39,10 +37,8 @@ import {
 } from "@/hooks/useOrder";
 import { usePayment } from "@/hooks/usePayment";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-
 import AddressModal from "@/features/account/address-modal";
+import CouponField from "@/features/cart/coupon-field";
 
 type CheckoutStep = 1 | 2 | 3;
 type PaymentMethod = "card" | "cod";
@@ -121,11 +117,9 @@ export default function Checkout() {
 
   const [step, setStep] = useState<CheckoutStep>(1);
   const [selectedAddressId, setSelectedAddressId] = useState("");
-  // The server validates and applies the coupon when the order is placed, so
-  // this is submitted with the order rather than checked as you type.
-  const [couponCode, setCouponCode] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState<TCouponQuote | null>(null);
-  const { mutate: quoteCoupon, isPending: isCouponPending } = useApplyCoupon();
+  // The applied coupon lives in a store so a code applied on the cart page
+  // carries through to checkout.
+  const appliedCoupon = useCouponStore((state) => state.quote);
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] =
     useState<TDeliveryMethod>("standard");
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
@@ -208,24 +202,6 @@ export default function Checkout() {
     isGuestCodPending ||
     isGuestStripePending;
   const isBusy = cartLoading || addressLoading;
-
-  const handleApplyCoupon = () => {
-    const code = couponCode.trim();
-    if (!code) return;
-
-    quoteCoupon(
-      { code, subtotal },
-      {
-        onSuccess: (quote) => setAppliedCoupon(quote),
-        onError: () => setAppliedCoupon(null),
-      }
-    );
-  };
-
-  const handleRemoveCoupon = () => {
-    setAppliedCoupon(null);
-    setCouponCode("");
-  };
 
   const handlePlaceOrder = () => {
     if (isSubmitting) return;
@@ -974,56 +950,11 @@ export default function Checkout() {
               </div>
 
               <div className="border-brand-border mt-6 border-t pt-5">
-                <label
-                  htmlFor="coupon-code"
-                  className="font-body text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-[0.2em] uppercase"
-                >
+                <p className="font-body text-muted-foreground mb-3 flex items-center gap-2 text-sm font-medium">
                   <TicketPercent className="h-4 w-4" />
-                  Have a coupon?
-                </label>
-                <div className="mt-3 flex gap-2">
-                  <Input
-                    id="coupon-code"
-                    value={couponCode}
-                    onChange={(event) => {
-                      setCouponCode(event.target.value);
-                      if (appliedCoupon) setAppliedCoupon(null);
-                    }}
-                    placeholder="Enter code"
-                    autoComplete="off"
-                    disabled={isCouponPending}
-                    className="font-body uppercase"
-                  />
-                  {appliedCoupon ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleRemoveCoupon}
-                    >
-                      Remove
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      onClick={handleApplyCoupon}
-                      disabled={isCouponPending || !couponCode.trim()}
-                    >
-                      {isCouponPending ? "Applying…" : "Apply"}
-                    </Button>
-                  )}
-                </div>
-                {appliedCoupon ? (
-                  <p className="font-body mt-2 text-xs font-medium text-green-500">
-                    {appliedCoupon.code} applied — you saved{" "}
-                    {formatPrice(appliedCoupon.discount)}
-                  </p>
-                ) : (
-                  <p className="font-body text-muted-foreground mt-2 text-xs">
-                    {couponCode.trim()
-                      ? "Apply to see your discount."
-                      : "Have a code? Enter it to see your discount."}
-                  </p>
-                )}
+                  Coupon
+                </p>
+                <CouponField subtotal={subtotal} />
               </div>
 
               <div className="border-brand-border mt-6 space-y-3 border-t pt-5">

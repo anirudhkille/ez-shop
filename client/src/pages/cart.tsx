@@ -121,7 +121,7 @@ export default function Cart() {
 
               <Link
                 to="/checkout"
-                className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-4 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
+                className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
               >
                 Checkout <ArrowRight size={16} />
               </Link>

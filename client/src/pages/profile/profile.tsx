@@ -29,7 +29,7 @@ import useUserStore from "@/store/userStore";
 
 import { useAddresss } from "@/hooks/useAddress";
 import { useMyOrders } from "@/hooks/useOrder";
-import { useUpdateProfile } from "@/hooks/useUser";
+import { useProfile, useUpdateProfile } from "@/hooks/useUser";
 import { useToggleWishlist, useWishlistDetails } from "@/hooks/useWishlist";
 
 const tabs = ["Overview", "Orders", "Wishlist", "Settings"] as const;
@@ -154,6 +154,8 @@ export default function Profile() {
   const { data: wishlistData } = useWishlistDetails();
   const { mutate: toggleWishlist } = useToggleWishlist();
   const { mutate: updateProfile } = useUpdateProfile();
+  const { data: profile } = useProfile();
+  const phone = profile?.phone ?? "";
 
   const wishlistProducts: TProduct[] = wishlistData?.products ?? [];
 

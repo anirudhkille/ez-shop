@@ -5,6 +5,7 @@ import {
   ChevronsUpDown,
   LogOut,
   LayoutDashboard,
+  Mail,
   Package,
   Tags,
   ShoppingCart,
@@ -62,6 +63,11 @@ const navMain = [
     title: "Coupons",
     url: "/dashboard/coupon",
     icon: TicketPercent,
+  },
+  {
+    title: "Newsletter",
+    url: "/dashboard/newsletter",
+    icon: Mail,
   },
   {
     title: "Orders",

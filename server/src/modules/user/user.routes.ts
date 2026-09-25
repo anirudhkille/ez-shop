@@ -35,6 +35,12 @@ import passport from "@/config/passport";
 
 const router = express.Router();
 
+// Literal paths must be registered before the "/:id" routes below. Express
+// matches in registration order, so "/profile" would otherwise be captured by
+// "/:id" and rejected with 403 for non-admin users.
+router.get("/profile", protect, getProfile);
+router.get("/refresh", refreshToken);
+
 router.get(
   "/",
   protect,
@@ -74,8 +80,6 @@ router.get(
   googleLogin,
 );
 router.get("/login-failed", (req, res) => res.send("Google login failed"));
-router.get("/refresh", refreshToken);
-router.get("/profile", protect, getProfile);
 router.post("/signup", authLimiter, validate(signupSchema), signUp);
 router.post(
   "/verify-signup-otp",

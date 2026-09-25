@@ -302,14 +302,9 @@ export default function ProductDetail() {
 
           {/* Size */}
           <div className="mt-6">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="font-body text-foreground text-sm font-semibold">
-                Size (US)
-              </span>
-              <button className="font-body text-brand-orange text-xs hover:underline">
-                Size Guide
-              </button>
-            </div>
+            <span className="font-body text-foreground text-sm font-semibold">
+              Size (US)
+            </span>
             <div className="flex flex-wrap gap-2">
               {sizes.map((s: { size: string; stock: number }) => (
                 <button

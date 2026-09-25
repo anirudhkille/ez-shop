@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
@@ -11,6 +11,7 @@ import { getErrorMessage } from "@/lib/apiError";
 import {
   changePassword,
   forgotPassword,
+  getProfile,
   postLogin,
   postSignup,
   resetPassword,
@@ -19,6 +20,17 @@ import {
 } from "@/api/user";
 
 import useAuthStore from "@/store/userStore";
+
+export const useProfile = () => {
+  const { token } = useAuthStore();
+
+  return useQuery({
+    queryKey: ["profile"],
+    queryFn: getProfile,
+    enabled: !!token,
+    staleTime: 60_000,
+  });
+};
 
 export const useSignup = () => {
   const navigate = useNavigate();

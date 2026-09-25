@@ -10,7 +10,11 @@ export const create = async (data: Partial<INewsletter>) => {
 };
 
 export const find = async (skip: number, limit: number) => {
-  return await Newsletter.find().skip(skip).limit(limit).lean();
+  return await Newsletter.find()
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
 };
 
 export const countDocuments = async () => {

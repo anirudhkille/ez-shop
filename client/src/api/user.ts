@@ -43,6 +43,12 @@ export const resetPassword = async (token: string, newPassword: string) => {
   return res.data;
 };
 
+export const getProfile = async () => {
+  const res = await axiosInstance.get("/user/profile");
+
+  return res.data.data as TUser;
+};
+
 export const updateProfile = async (formData: Partial<TUser>) => {
   const res = await axiosInstance.patch(`/user`, formData);
 

@@ -171,3 +171,10 @@ export interface IUserAdminDetail {
   wishlist: IUserWishlistItem[];
   addresses: IUserAddress[];
 }
+export interface INewsletterSubscriber {
+  _id: string;
+  email: string;
+  /** Undefined for records that predate the timestamps option. */
+  createdAt?: string;
+  updatedAt?: string;
+}

@@ -3,6 +3,7 @@ import axiosInstance from "@/lib/axiosInstance";
 export type TCouponQuote = {
   code: string;
   type: "percentage" | "fixed";
+  value: number;
   discount: number;
 };
 

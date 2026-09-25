@@ -1,10 +1,12 @@
-import { FC } from "react";
+import type { FC } from "react";
 
 import { Link } from "react-router";
 
 import { Heart } from "lucide-react";
 
 import type { TProduct } from "@/types/product";
+
+import { formatPrice } from "@/lib/formatPrice";
 
 export interface SavedItemsProps {
   products?: TProduct[];
