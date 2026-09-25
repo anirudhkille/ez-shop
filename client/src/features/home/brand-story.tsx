@@ -103,9 +103,9 @@ export default function BrandStory() {
                     <pillar.icon size={18} className="text-brand-orange" />
                   </div>
                   <div>
-                    <h4 className="font-display text-foreground text-base font-bold">
+                    <h3 className="font-display text-foreground text-base font-bold">
                       {pillar.title}
-                    </h4>
+                    </h3>
                     <p className="font-body text-muted-foreground mt-0.5 text-xs leading-relaxed">
                       {pillar.desc}
                     </p>
