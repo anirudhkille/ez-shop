@@ -1,25 +1,30 @@
 import express from "express";
 import { protect } from "@/middlewares/authMiddleware";
+import { validate } from "@/middlewares/validate";
+import {
+  categoryCreateSchema,
+  categoryIdParamSchema,
+  categoryPaginationQuerySchema,
+  categoryUpdateSchema,
+} from "@/modules/category/category.schema";
 import {
   getCategory,
   postCategory,
   updateCategory,
   deleteCategory,
 } from "@/modules/category/category.controller";
-import { categorySchema } from "@/modules/product/product.schema";
 import { authorize } from "@/middlewares/authorize";
 import { upload } from "@/middlewares/upload";
-import { validate } from "@/middlewares/validate";
 
 const router = express.Router();
 
-router.get("/", getCategory);
+router.get("/", validate(categoryPaginationQuerySchema, "query"), getCategory);
 router.post(
   "/",
   protect,
   authorize(["Admin"]),
   upload.single("image"),
-  validate(categorySchema),
+  validate(categoryCreateSchema),
   postCategory,
 );
 
@@ -28,10 +33,17 @@ router.patch(
   protect,
   authorize(["Admin"]),
   upload.single("image"),
-  validate(categorySchema),
+  validate(categoryIdParamSchema, "params"),
+  validate(categoryUpdateSchema),
   updateCategory,
 );
 
-router.delete("/:id", protect, authorize(["Admin"]), deleteCategory);
+router.delete(
+  "/:id",
+  protect,
+  authorize(["Admin"]),
+  validate(categoryIdParamSchema, "params"),
+  deleteCategory,
+);
 
 export default router;

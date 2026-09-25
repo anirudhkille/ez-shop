@@ -11,6 +11,10 @@ import {
 import {
   addressDeliverySchema,
   guestCheckoutSchema,
+  orderIdParamSchema,
+  orderPaginationQuerySchema,
+  orderStatusUpdateSchema,
+  sessionIdParamSchema,
 } from "@/modules/order/order.schema";
 import express from "express";
 import { optionalAuth, protect } from "@/middlewares/authMiddleware";
@@ -21,12 +25,51 @@ const router = express.Router();
 
 router.post("/cod", protect, validate(addressDeliverySchema), placeCODOrder);
 router.post("/guest", validate(guestCheckoutSchema), placeGuestCODOrder);
-router.get("/", protect, authorize(["Admin"]), getOrders);
-router.get("/session-id/:sessionId", optionalAuth, getOrderBySessionId);
-router.get("/order-id/:id", optionalAuth, getOrderById);
-router.get("/my-orders", protect, getMyOrder);
-router.get("/:id", protect, getOrderById);
-router.patch("/:id", protect, authorize(["Admin"]), updateOrder);
-router.delete("/:id", protect, authorize(["Admin"]), deleteOrder);
+router.get(
+  "/",
+  protect,
+  authorize(["Admin"]),
+  validate(orderPaginationQuerySchema, "query"),
+  getOrders,
+);
+router.get(
+  "/session-id/:sessionId",
+  optionalAuth,
+  validate(sessionIdParamSchema, "params"),
+  getOrderBySessionId,
+);
+router.get(
+  "/order-id/:id",
+  optionalAuth,
+  validate(orderIdParamSchema, "params"),
+  getOrderById,
+);
+router.get(
+  "/my-orders",
+  protect,
+  validate(orderPaginationQuerySchema, "query"),
+  getMyOrder,
+);
+router.get(
+  "/:id",
+  protect,
+  validate(orderIdParamSchema, "params"),
+  getOrderById,
+);
+router.patch(
+  "/:id",
+  protect,
+  authorize(["Admin"]),
+  validate(orderIdParamSchema, "params"),
+  validate(orderStatusUpdateSchema),
+  updateOrder,
+);
+router.delete(
+  "/:id",
+  protect,
+  authorize(["Admin"]),
+  validate(orderIdParamSchema, "params"),
+  deleteOrder,
+);
 
 export default router;

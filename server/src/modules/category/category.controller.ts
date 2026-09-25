@@ -1,11 +1,6 @@
 import { asyncHandler } from "@/utils/asyncHandler";
 import { Request, Response } from "express";
-import { ZodError } from "zod";
-import { objectIdParamSchema } from "@/modules/product/product.schema";
 import * as categoryService from "@/modules/category/category.service";
-
-const formatZodError = (error: ZodError) =>
-  error.issues.map((e) => e.message).join(", ");
 
 export const postCategory = asyncHandler(
   async (req: Request, res: Response) => {
@@ -21,23 +16,18 @@ export const postCategory = asyncHandler(
 );
 
 export const getCategory = asyncHandler(async (req: Request, res: Response) => {
-  const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 10;
+  const { page = 1, limit = 10 } = req.query as {
+    page?: number;
+    limit?: number;
+  };
   const result = await categoryService.getAllCategories(page, limit);
   return res.status(200).json(result);
 });
 
 export const updateCategory = asyncHandler(
   async (req: Request, res: Response) => {
-    const paramsParsed = objectIdParamSchema.safeParse(req.params);
-    if (!paramsParsed.success) {
-      return res
-        .status(400)
-        .json({ success: false, message: formatZodError(paramsParsed.error) });
-    }
-
     const result = await categoryService.updateCategory(
-      paramsParsed.data.id,
+      req.params.id,
       req.body,
       req.file,
     );
@@ -52,14 +42,7 @@ export const updateCategory = asyncHandler(
 
 export const deleteCategory = asyncHandler(
   async (req: Request, res: Response) => {
-    const paramsParsed = objectIdParamSchema.safeParse(req.params);
-    if (!paramsParsed.success) {
-      return res
-        .status(400)
-        .json({ success: false, message: formatZodError(paramsParsed.error) });
-    }
-
-    const result = await categoryService.deleteCategory(paramsParsed.data.id);
+    const result = await categoryService.deleteCategory(req.params.id);
 
     if (!result.success) {
       return res.status(result.status || 400).json(result);
