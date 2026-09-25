@@ -2,13 +2,14 @@ import { z } from "zod";
 
 import {
   emailSchema,
+  loginPasswordSchema,
   nonEmptyString,
   passwordSchema,
 } from "@/validation/common.schema";
 
 export const adminLoginSchema = z.object({
   email: emailSchema,
-  password: passwordSchema,
+  password: loginPasswordSchema,
 });
 
 export const adminForgotPasswordSchema = z.object({

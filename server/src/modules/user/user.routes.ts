@@ -20,8 +20,7 @@ import {
   loginSchema,
   passwordUpdateSchema,
   profileUpdateSchema,
-  resetPasswordBodySchema,
-  resetPasswordParamsSchema,
+  resetPasswordSchema,
   signupSchema,
   userIdParamSchema,
   userPaginationQuerySchema,
@@ -84,9 +83,9 @@ router.post(
   forgotPassword,
 );
 router.put(
-  "/reset-password/:token",
-  validate(resetPasswordParamsSchema, "params"),
-  validate(resetPasswordBodySchema),
+  "/reset-password",
+  authLimiter,
+  validate(resetPasswordSchema),
   resetPassword,
 );
 router.patch("/", protect, validate(profileUpdateSchema), updateProfile);

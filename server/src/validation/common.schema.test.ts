@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import {
   emailSchema,
   idParamSchema,
+  loginPasswordSchema,
   objectIdSchema,
   paginationQuerySchema,
   passwordSchema,
@@ -42,5 +43,7 @@ describe("common schemas", () => {
     assert.equal(passwordSchema.safeParse("short").success, false);
     assert.equal(passwordSchema.safeParse("valid-password").success, true);
     assert.equal(passwordSchema.safeParse("a".repeat(129)).success, false);
+    assert.equal(loginPasswordSchema.safeParse("short").success, true);
+    assert.equal(loginPasswordSchema.safeParse("").success, false);
   });
 });

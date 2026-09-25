@@ -31,6 +31,10 @@ export default function UpdatePassword() {
       return;
     }
 
+    if (newPassword.trim().length < 8) {
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       return;
     }
@@ -40,7 +44,7 @@ export default function UpdatePassword() {
 
   const isValid =
     currentPassword.trim() &&
-    newPassword.trim() &&
+    newPassword.trim().length >= 8 &&
     confirmPassword.trim() &&
     newPassword === confirmPassword;
 

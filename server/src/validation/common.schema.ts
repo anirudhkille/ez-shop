@@ -35,3 +35,8 @@ export const passwordSchema = z
   .string()
   .min(8, "Password must be at least 8 characters")
   .max(128, "Password must be at most 128 characters");
+
+export const loginPasswordSchema = z
+  .string()
+  .min(1, "Password is required")
+  .max(128, "Password must be at most 128 characters");

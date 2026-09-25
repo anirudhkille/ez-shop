@@ -17,7 +17,7 @@ const formSchema = z
   .object({
     newPassword: z
       .string()
-      .min(6, { message: "Password must be at least 6 characters" }),
+      .min(8, { message: "Password must be at least 8 characters" }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
@@ -39,7 +39,7 @@ export default function ResetPasswordForm() {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    mutate({ token: token ?? "", password: data.confirmPassword });
+    mutate({ token: token ?? "", newPassword: data.confirmPassword });
   };
 
   return (

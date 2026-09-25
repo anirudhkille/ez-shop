@@ -5,6 +5,11 @@ import {
   generateRefreshToken,
 } from "@/utils/generateToken";
 import { generateOtp } from "@/utils/generateOtp";
+import {
+  createResetToken,
+  RESET_TOKEN_TTL_MS,
+  resetSessionKey,
+} from "@/utils/passwordReset";
 import { sendEmail } from "@/services/emailService";
 import { resetPasswordTemplate } from "@/templates/resetEmailTemplate";
 import { verifyEmailTemplate } from "@/templates/verifyEmailTemplate";
@@ -126,42 +131,48 @@ export const login = async (email: string, password: string) => {
   };
 };
 
+const genericResetMessage =
+  "If an account exists, a password reset link has been sent.";
+
 export const forgotPassword = async (email: string) => {
   const user = await userRepository.findByEmail(email);
 
   if (!user) {
-    throw new AppError("User not found", 404);
+    return { message: genericResetMessage };
   }
 
-  const otp = generateOtp();
+  const token = createResetToken();
+  const sessionKey = resetSessionKey(token);
 
   await Session.create({
-    key: `reset:${email}`,
-    value: otp,
-    expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+    key: sessionKey,
+    value: String(user._id),
+    expiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MS),
   });
+
+  const resetUrl = `${env.CLIENT_URL}/reset-password?token=${encodeURIComponent(token)}`;
 
   await sendEmail({
-    to: email,
-    subject: "Reset Password - EZ Shop",
-    html: resetPasswordTemplate(user.name || "User", otp),
+    to: user.email,
+    subject: "Reset your EZ Shop password",
+    html: resetPasswordTemplate(user.name || "User", resetUrl),
   });
 
-  return { message: "Reset OTP sent" };
+  return { message: genericResetMessage };
 };
 
-export const resetPassword = async (
-  email: string,
-  otp: string,
-  newPassword: string,
-) => {
-  const session = await Session.findOne({ key: `reset:${email}` });
+export const resetPassword = async (token: string, newPassword: string) => {
+  const sessionKey = resetSessionKey(token);
+  const session = await Session.findOneAndDelete({
+    key: sessionKey,
+    expiresAt: { $gt: new Date() },
+  });
 
-  if (!session || session.value !== otp) {
-    throw new AppError("Invalid or expired OTP", 400);
+  if (!session) {
+    throw new AppError("Invalid or expired reset token", 400);
   }
 
-  const user = await userRepository.findByEmail(email);
+  const user = await userRepository.findById(String(session.value));
 
   if (!user) {
     throw new AppError("User not found", 404);
@@ -169,7 +180,8 @@ export const resetPassword = async (
 
   user.password = newPassword;
   await user.save();
-  await session.deleteOne();
+
+  await Session.deleteOne({ key: `refresh:${user._id}` });
 
   return { message: "Password reset successful" };
 };
@@ -244,12 +256,7 @@ export const refreshToken = async (token: string) => {
     throw new AppError("Invalid refresh token", 403);
   }
 
-  const session = await Session.findOne({ key: `refresh:${decoded._id}` });
-
-  if (!session || session.value !== token) {
-    throw new AppError("Refresh token mismatch", 403);
-  }
-
+  const userId = String(decoded._id);
   const newRefreshToken = generateRefreshToken(
     decoded as unknown as { _id: string; role: string },
   );
@@ -257,9 +264,22 @@ export const refreshToken = async (token: string) => {
     decoded as unknown as { _id: string; role: string },
   );
 
-  session.value = newRefreshToken;
-  session.expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  await session.save();
+  const session = await Session.findOneAndUpdate(
+    {
+      key: `refresh:${userId}`,
+      value: token,
+      expiresAt: { $gt: new Date() },
+    },
+    {
+      value: newRefreshToken,
+      expiresAt: new Date(Date.now() + REFRESH_TTL_MS),
+    },
+    { new: true },
+  );
+
+  if (!session) {
+    throw new AppError("Refresh token mismatch", 403);
+  }
 
   return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 };

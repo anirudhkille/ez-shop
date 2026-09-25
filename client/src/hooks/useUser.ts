@@ -103,10 +103,15 @@ export const useForgotPassword = () => {
 
 export const useResetPassword = () => {
   return useMutation({
-    mutationFn: ({ token, password }: { token: string; password: string }) =>
-      resetPassword(token, password),
+    mutationFn: ({
+      token,
+      newPassword,
+    }: {
+      token: string;
+      newPassword: string;
+    }) => resetPassword(token, newPassword),
     onSuccess: () => {
-      toast.success("Password reset link has been sent your email");
+      toast.success("Password reset successfully");
     },
     onError: (error) => {
       toast.error(

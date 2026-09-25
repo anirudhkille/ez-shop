@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   emailSchema,
   idParamSchema,
+  loginPasswordSchema,
   nonEmptyString,
   paginationQuerySchema,
   passwordSchema,
@@ -15,7 +16,7 @@ export const signupSchema = z.object({
 
 export const loginSchema = z.object({
   email: emailSchema,
-  password: passwordSchema,
+  password: loginPasswordSchema,
 });
 
 export const verifySignupOTPSchema = z.object({
@@ -32,14 +33,6 @@ export const forgotPasswordSchema = z.object({
 
 export const resetPasswordSchema = z.object({
   token: nonEmptyString,
-  newPassword: passwordSchema,
-});
-
-export const resetPasswordParamsSchema = z.object({
-  token: nonEmptyString,
-});
-
-export const resetPasswordBodySchema = z.object({
   newPassword: passwordSchema,
 });
 
