@@ -1,21 +1,28 @@
-import BestSellers from "@/features/home/bestseller";
-import BrandStory from "@/features/home/brand-story";
-import CategoriesSection from "@/features/home/categories";
-import FeaturedProducts from "@/features/home/featured-products";
+import { lazy, Suspense } from "react";
+
 import HomeHero from "@/features/home/home-hero";
-import Newsletter from "@/features/home/newsletter";
-import PromoBanner from "@/features/home/promo-banner";
+
+const CategoriesSection = lazy(() => import("@/features/home/categories"));
+const FeaturedProducts = lazy(
+  () => import("@/features/home/featured-products")
+);
+const PromoBanner = lazy(() => import("@/features/home/promo-banner"));
+const BestSellers = lazy(() => import("@/features/home/bestseller"));
+const BrandStory = lazy(() => import("@/features/home/brand-story"));
+const Newsletter = lazy(() => import("@/features/home/newsletter"));
 
 export default function Home() {
   return (
     <>
       <HomeHero />
-      <CategoriesSection />
-      <FeaturedProducts />
-      <PromoBanner />
-      <BestSellers />
-      <BrandStory />
-      <Newsletter />
+      <Suspense fallback={null}>
+        <CategoriesSection />
+        <FeaturedProducts />
+        <PromoBanner />
+        <BestSellers />
+        <BrandStory />
+        <Newsletter />
+      </Suspense>
     </>
   );
 }

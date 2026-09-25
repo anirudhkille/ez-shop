@@ -2,6 +2,7 @@ import { motion, type Variants } from "motion/react";
 
 import { Zap } from "lucide-react";
 
+import heroSneakerMobile from "@/assets/hero-sneaker-mobile.webp";
 import heroSneaker from "@/assets/hero-sneaker.webp";
 
 const container: Variants = {
@@ -100,13 +101,7 @@ export default function HeroSection() {
         </motion.div>
 
         <div className="relative order-1 flex items-center justify-center lg:order-2">
-          <motion.img
-            src={heroSneaker}
-            alt="EZ Shop Pro — Run the Future"
-            width={1024}
-            height={1024}
-            className="relative z-10 w-full max-w-145 select-none"
-            draggable={false}
+          <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
@@ -114,7 +109,23 @@ export default function HeroSection() {
               delay: 0.15,
               ease: [0.22, 1, 0.36, 1],
             }}
-          />
+            className="relative z-10 w-full max-w-145 select-none"
+          >
+            <picture>
+              <source media="(max-width: 768px)" srcSet={heroSneakerMobile} />
+              <img
+                src={heroSneaker}
+                alt="EZ Shop Pro — Run the Future"
+                width={1024}
+                height={1024}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="h-auto w-full object-contain select-none"
+                draggable={false}
+              />
+            </picture>
+          </motion.div>
 
           <div className="bg-card border-brand-border absolute bottom-8 left-4 flex items-center gap-3 rounded-2xl border px-4 py-3 shadow-lg lg:-left-4">
             <div className="bg-brand-orange/15 flex h-10 w-10 items-center justify-center rounded-xl">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
 import { Link, useLocation, useNavigate } from "react-router";
 
@@ -8,7 +8,7 @@ import useUserStore from "@/store/userStore";
 
 import { useGetCartCount } from "@/hooks/useCart";
 
-import SearchModal from "@/features/product/search-modal";
+const SearchModal = lazy(() => import("@/features/product/search-modal"));
 
 const navLinks = [
   { label: "Men", href: "/products?category=men" },
@@ -257,7 +257,9 @@ export default function Header() {
         </nav>
       </div>
 
-      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <Suspense fallback={null}>
+        <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+      </Suspense>
     </header>
   );
 }
