@@ -43,7 +43,7 @@ export default function Returns() {
             <CardContent>
               <ol className="list-decimal space-y-2 pl-6">
                 <li>
-                  Log in to your account and go to the <strong>Orders</strong>{" "}
+                  Login to your account and go to the <strong>Orders</strong>{" "}
                   section.
                 </li>
                 <li>

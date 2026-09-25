@@ -1,70 +1,55 @@
 import { asyncHandler } from "@/utils/asyncHandler";
+import { sendResponse } from "@/utils/response";
 import { Request, Response } from "express";
 import * as addressService from "@/modules/address/address.service";
 
 export const postAddress = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.user!;
-  const result = await addressService.createAddress(id, req.body);
+  const address = await addressService.createAddress(id, req.body);
 
-  return res.status(201).json({
-    success: true,
-    message: "Address created successfully",
-    data: result.address,
-  });
+  return sendResponse(res, 201, "Address created successfully", address);
 });
 
 export const getAddressByUser = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.user!;
-    const result = await addressService.getAddressByUser(id);
+    const address = await addressService.getAddressByUser(id);
 
-    return res.status(200).json({
-      success: true,
-      message: "Address fetched successfully",
-      data: result.address,
-    });
+    return sendResponse(res, 200, "Address fetched successfully", address);
   },
 );
 
 export const updateAddress = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await addressService.updateAddress(
+    const address = await addressService.updateAddress(
       req.params.id,
       req.user!._id,
       req.body,
     );
 
-    if (!result.address)
-      return res.status(404).json({
-        success: false,
-        message: "Address not found",
+    if (!address) {
+      return sendResponse(res, 404, "Address not found", {
+        code: "ADDRESS_NOT_FOUND",
       });
+    }
 
-    return res.status(200).json({
-      success: true,
-      message: "Address updated successfully",
-      data: result.address,
-    });
+    return sendResponse(res, 200, "Address updated successfully", address);
   },
 );
 
 export const deleteAddress = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await addressService.deleteAddress(
+    const address = await addressService.deleteAddress(
       req.params.id,
       req.user!._id,
     );
 
-    if (!result.address)
-      return res.status(404).json({
-        success: false,
-        message: "Address not found",
+    if (!address) {
+      return sendResponse(res, 404, "Address not found", {
+        code: "ADDRESS_NOT_FOUND",
       });
+    }
 
-    return res.status(200).json({
-      success: true,
-      message: "Address deleted successfully",
-      data: result.address,
-    });
+    return sendResponse(res, 200, "Address deleted successfully", address);
   },
 );

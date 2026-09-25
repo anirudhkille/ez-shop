@@ -5,6 +5,8 @@ import Address from "@/modules/address/address.model";
 import Order, { IOrderProduct } from "@/modules/order/order.model";
 import Product from "@/modules/product/product.model";
 import { env } from "@/config/env.config";
+import { AppError } from "@/utils/appError";
+import * as couponService from "@/modules/coupon/coupon.service";
 import { decrementStock, verifyStock } from "@/modules/product/product.service";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
@@ -18,6 +20,7 @@ type ProductRef = {
 interface CheckoutSessionBody {
   addressId: string;
   deliveryMethod: string;
+  couponCode?: string;
 }
 
 interface GuestCheckoutBody {
@@ -41,6 +44,7 @@ interface GuestCheckoutBody {
   name: string;
   email: string;
   phone: string;
+  couponCode?: string;
 }
 
 export const createCheckoutSession = async (
@@ -48,18 +52,17 @@ export const createCheckoutSession = async (
   body: CheckoutSessionBody,
   userEmail: string,
 ) => {
-  const { addressId, deliveryMethod } = body;
+  const { addressId, deliveryMethod, couponCode } = body;
 
   const cart = await Cart.findOne({ user: userId }).populate(
     "products.product",
   );
 
   if (!cart || cart.products.length === 0)
-    return { status: 400, data: { message: "Cart is empty" } };
+    throw new AppError("Cart is empty", 400);
 
   const shippingAddress = await Address.findById(addressId);
-  if (!shippingAddress)
-    return { status: 400, data: { message: "Invalid address" } };
+  if (!shippingAddress) throw new AppError("Invalid address", 400);
 
   const stockError = await verifyStock(
     cart.products.map((item) => ({
@@ -70,7 +73,7 @@ export const createCheckoutSession = async (
     })),
   );
   if (stockError) {
-    return { status: 400, data: { success: false, message: stockError } };
+    throw new AppError(stockError, 400);
   }
 
   const subtotal = cart.products.reduce((acc, item) => {
@@ -82,38 +85,47 @@ export const createCheckoutSession = async (
   if (deliveryMethod === "express") deliveryCharge = 120;
   if (deliveryMethod === "same-day") deliveryCharge = 199;
 
-  const total = subtotal + deliveryCharge;
+  const coupon = couponCode
+    ? await couponService.evaluateCoupon(couponCode, subtotal, userId)
+    : null;
+  const discount = coupon?.discount ?? 0;
 
-  const newOrder = await Order.create({
-    user: userId,
-    paymentType: "card",
-    paymentStatus: "pending",
-    orderStatus: "processing",
-    deliveryMethod,
-    subtotal,
-    deliveryCharge,
-    totalAmount: total,
+  const total = Math.max(0, subtotal - discount) + deliveryCharge;
 
-    sessionId: "",
-    paymentIntentId: "",
+  const newOrder = await couponService.withCouponClaim(couponCode, () =>
+    Order.create({
+      user: userId,
+      paymentType: "card",
+      paymentStatus: "pending",
+      orderStatus: "processing",
+      deliveryMethod,
+      subtotal,
+      discount,
+      ...(coupon ? { coupon } : {}),
+      deliveryCharge,
+      totalAmount: total,
 
-    products: cart.products.map((item) => ({
-      product: (item.product as unknown as ProductRef)._id,
-      quantity: item.quantity,
-      price: item.discountPriceAtPurchase ?? item.priceAtPurchase,
-    })),
+      sessionId: "",
+      paymentIntentId: "",
 
-    address: {
-      name: shippingAddress.name,
-      addressLine1: shippingAddress.addressLine1,
-      addressLine2: shippingAddress.addressLine2,
-      city: shippingAddress.city,
-      state: shippingAddress.state,
-      zipCode: shippingAddress.zipCode,
-      country: shippingAddress.country,
-      phone: shippingAddress.phone,
-    },
-  });
+      products: cart.products.map((item) => ({
+        product: (item.product as unknown as ProductRef)._id,
+        quantity: item.quantity,
+        price: item.discountPriceAtPurchase ?? item.priceAtPurchase,
+      })),
+
+      address: {
+        name: shippingAddress.name,
+        addressLine1: shippingAddress.addressLine1,
+        addressLine2: shippingAddress.addressLine2,
+        city: shippingAddress.city,
+        state: shippingAddress.state,
+        zipCode: shippingAddress.zipCode,
+        country: shippingAddress.country,
+        phone: shippingAddress.phone,
+      },
+    }),
+  );
 
   const line_items = cart.products.map((item) => {
     const product = item.product as unknown as ProductRef;
@@ -141,6 +153,22 @@ export const createCheckoutSession = async (
           images: [],
         },
         unit_amount: deliveryCharge * 100,
+      },
+      quantity: 1,
+    });
+  }
+
+  // Stripe charges the sum of line_items, so the discount has to be a
+  // negative line item for the customer to actually pay less.
+  if (discount > 0 && coupon) {
+    line_items.push({
+      price_data: {
+        currency: "inr",
+        product_data: {
+          name: `Discount (${coupon.code})`,
+          images: [],
+        },
+        unit_amount: -Math.round(discount * 100),
       },
       quantity: 1,
     });
@@ -189,22 +217,19 @@ export const createCheckoutSession = async (
   await newOrder.save();
 
   return {
-    data: {
-      success: true,
-      type: "card",
-      url: session.url,
-    },
+    type: "card",
+    url: session.url,
   };
 };
 
 export const createGuestCheckoutSession = async (body: GuestCheckoutBody) => {
-  const { products, address, deliveryMethod, name, email, phone } = body;
+  const { products, address, deliveryMethod, name, email, phone, couponCode } =
+    body;
 
   if (!products || products.length === 0)
-    return { status: 400, data: { message: "Cart is empty" } };
+    throw new AppError("Cart is empty", 400);
 
-  if (!address)
-    return { status: 400, data: { message: "Address is required" } };
+  if (!address) throw new AppError("Address is required", 400);
 
   const productIds = products.map((p) => p.productId);
   const dbProducts = await Product.find({ _id: { $in: productIds } });
@@ -218,10 +243,10 @@ export const createGuestCheckoutSession = async (body: GuestCheckoutBody) => {
   for (const item of products) {
     const prod = productMap.get(item.productId);
     if (!prod || !prod.publish)
-      return {
-        status: 400,
-        data: { message: `Product ${item.productId} not found or unavailable` },
-      };
+      throw new AppError(
+        `Product ${item.productId} not found or unavailable`,
+        400,
+      );
 
     const price = prod.discountPrice || prod.price;
     subtotal += price * item.quantity;
@@ -256,14 +281,19 @@ export const createGuestCheckoutSession = async (body: GuestCheckoutBody) => {
     })),
   );
   if (stockError) {
-    return { status: 400, data: { success: false, message: stockError } };
+    throw new AppError(stockError, 400);
   }
 
   let deliveryCharge = 0;
   if (deliveryMethod === "express") deliveryCharge = 120;
   if (deliveryMethod === "same-day") deliveryCharge = 199;
 
-  const total = subtotal + deliveryCharge;
+  const coupon = couponCode
+    ? await couponService.evaluateCoupon(couponCode, subtotal, null)
+    : null;
+  const discount = coupon?.discount ?? 0;
+
+  const total = Math.max(0, subtotal - discount) + deliveryCharge;
 
   if (deliveryCharge > 0) {
     line_items.push({
@@ -279,32 +309,52 @@ export const createGuestCheckoutSession = async (body: GuestCheckoutBody) => {
     });
   }
 
-  const newOrder = await Order.create({
-    user: null,
-    name,
-    email,
-    phone,
-    paymentType: "card",
-    paymentStatus: "pending",
-    orderStatus: "processing",
-    deliveryMethod,
-    subtotal,
-    deliveryCharge,
-    totalAmount: total,
-    sessionId: "",
-    paymentIntentId: "",
-    products: orderProducts,
-    address: {
-      name: address.name,
-      addressLine1: address.addressLine1,
-      addressLine2: address.addressLine2,
-      city: address.city,
-      state: address.state,
-      zipCode: address.zipCode,
-      country: address.country,
-      phone: address.phone,
-    },
-  });
+  // Stripe charges the sum of line_items, so the discount has to be a
+  // negative line item for the customer to actually pay less.
+  if (discount > 0 && coupon) {
+    line_items.push({
+      price_data: {
+        currency: "inr",
+        product_data: {
+          name: `Discount (${coupon.code})`,
+          images: [],
+        },
+        unit_amount: -Math.round(discount * 100),
+      },
+      quantity: 1,
+    });
+  }
+
+  const newOrder = await couponService.withCouponClaim(couponCode, () =>
+    Order.create({
+      user: null,
+      name,
+      email,
+      phone,
+      paymentType: "card",
+      paymentStatus: "pending",
+      orderStatus: "processing",
+      deliveryMethod,
+      subtotal,
+      discount,
+      ...(coupon ? { coupon } : {}),
+      deliveryCharge,
+      totalAmount: total,
+      sessionId: "",
+      paymentIntentId: "",
+      products: orderProducts,
+      address: {
+        name: address.name,
+        addressLine1: address.addressLine1,
+        addressLine2: address.addressLine2,
+        city: address.city,
+        state: address.state,
+        zipCode: address.zipCode,
+        country: address.country,
+        phone: address.phone,
+      },
+    }),
+  );
 
   let session: Stripe.Checkout.Session;
   try {
@@ -343,10 +393,7 @@ export const createGuestCheckoutSession = async (body: GuestCheckoutBody) => {
   await newOrder.save();
 
   return {
-    data: {
-      success: true,
-      type: "card",
-      url: session.url,
-    },
+    type: "card",
+    url: session.url,
   };
 };

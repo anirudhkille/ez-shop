@@ -12,9 +12,6 @@ export default function CookiePolicy() {
           <h1 className="font-display text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
             Cookie Policy
           </h1>
-          <p className="font-body text-muted-foreground mt-4 text-lg">
-            Last updated: October 10, 2026
-          </p>
         </div>
 
         <div className="font-body text-muted-foreground space-y-8 leading-relaxed">

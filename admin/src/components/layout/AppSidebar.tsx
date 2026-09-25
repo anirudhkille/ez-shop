@@ -8,6 +8,7 @@ import {
   Package,
   Tags,
   ShoppingCart,
+  TicketPercent,
   Users,
 } from "lucide-react";
 
@@ -56,6 +57,11 @@ const navMain = [
     title: "Category",
     url: "/dashboard/category",
     icon: Tags,
+  },
+  {
+    title: "Coupons",
+    url: "/dashboard/coupon",
+    icon: TicketPercent,
   },
   {
     title: "Orders",

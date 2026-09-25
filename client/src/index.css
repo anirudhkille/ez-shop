@@ -115,6 +115,8 @@
 
 @layer base {
   :root {
+    color-scheme: dark;
+
     --background: 0 0% 5%;
     --foreground: 0 0% 96%;
 
@@ -203,6 +205,21 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    @apply cursor-pointer;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+    caret-color: hsl(var(--foreground)) !important;
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+    -webkit-box-shadow: 0 0 0 1000px hsl(var(--background)) inset !important;
+  }
+
   h1,
   h2,
   h3,
@@ -215,7 +232,8 @@
 }
 
 .scrollbar-hide {
-  overflow: auto; /* or scroll */
+  overflow-x: hidden;
+  overflow-y: auto;
   -ms-overflow-style: none; /* IE & Edge */
   scrollbar-width: none; /* Firefox */
 }

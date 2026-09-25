@@ -25,8 +25,8 @@ export const usePlaceCodOrder = () => {
   return useMutation({
     mutationFn: (formData: TOrder) => placeCodOrder(formData),
     onSuccess: (data) => {
-      if (data.redirectUrl) {
-        window.location.href = data.redirectUrl;
+      if (data.data?.redirectUrl) {
+        window.location.href = data.data.redirectUrl;
       }
     },
 
@@ -61,7 +61,7 @@ export const usePlaceGuestCODOrder = () => {
     mutationFn: (payload: TGuestOrderPayload) => placeGuestCODOrder(payload),
     onSuccess: (data) => {
       clearCart();
-      window.location.href = data.redirectUrl;
+      window.location.href = data.data.redirectUrl;
     },
     onError: (error) => {
       toast.error(
@@ -76,7 +76,7 @@ export const useGuestPayment = () => {
     mutationFn: (payload: TGuestOrderPayload) =>
       createGuestCheckoutSession(payload),
     onSuccess: (data) => {
-      window.location.href = data.url;
+      window.location.href = data.data.url;
     },
     onError: (error) => {
       toast.error(

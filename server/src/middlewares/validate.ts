@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 
+import { sendResponse } from "@/utils/response";
+
 type ValidationSource = "body" | "params" | "query";
 
 export const validate = (
@@ -16,10 +18,8 @@ export const validate = (
         message: issue.message,
       }));
 
-      return res.status(400).json({
-        success: false,
-        message: details.map((detail) => detail.message).join(", "),
-        error: "Validation error",
+      return sendResponse(res, 400, "Validation failed", {
+        code: "VALIDATION_ERROR",
         details,
       });
     }

@@ -14,6 +14,9 @@ import { sendEmail } from "@/services/emailService";
 import { resetPasswordTemplate } from "@/templates/resetEmailTemplate";
 import { verifyEmailTemplate } from "@/templates/verifyEmailTemplate";
 import Session from "./session..model";
+import * as orderRepository from "@/modules/order/order.repository";
+import * as wishlistRepository from "@/modules/wishlist/wishlist.repository";
+import * as addressRepository from "@/modules/address/address.repository";
 import { AppError } from "@/utils/appError";
 import * as userRepository from "@/modules/user/user.repository";
 import type { IUser } from "@/modules/user/user.model";
@@ -51,7 +54,7 @@ export const signUp = async (email: string, password: string) => {
     html: verifyEmailTemplate(email, otp),
   });
 
-  return { message: "OTP sent to email" };
+  return { sent: true };
 };
 
 export const verifySignupOTP = async (email: string, otp: string) => {
@@ -158,7 +161,7 @@ export const forgotPassword = async (email: string) => {
     html: resetPasswordTemplate(user.name || "User", resetUrl),
   });
 
-  return { message: genericResetMessage };
+  return { sent: true };
 };
 
 export const resetPassword = async (token: string, newPassword: string) => {
@@ -183,7 +186,7 @@ export const resetPassword = async (token: string, newPassword: string) => {
 
   await Session.deleteOne({ key: `refresh:${user._id}` });
 
-  return { message: "Password reset successful" };
+  return { reset: true };
 };
 
 export const getProfile = async (userId: string) => {
@@ -193,7 +196,7 @@ export const getProfile = async (userId: string) => {
     throw new AppError("User not found", 404);
   }
 
-  return { user };
+  return user;
 };
 
 export const updatePassword = async (
@@ -219,7 +222,7 @@ export const updatePassword = async (
   user.password = newPassword;
   await user.save();
 
-  return { message: "Password updated successfully" };
+  return { updated: true };
 };
 
 type ProfileUpdateInput = Partial<Pick<IUser, "name" | "phone" | "avatar">>;
@@ -241,7 +244,7 @@ export const updateProfile = async (
     throw new AppError("User not found", 404);
   }
 
-  return { user };
+  return user;
 };
 
 export const refreshToken = async (token: string) => {
@@ -294,7 +297,7 @@ export const logout = async (token: string) => {
     }
   }
 
-  return { message: "Logged out successfully" };
+  return { loggedOut: true };
 };
 
 export const getAllUsers = async (page = 1, limit = 10) => {
@@ -306,7 +309,7 @@ export const getAllUsers = async (page = 1, limit = 10) => {
   ]);
 
   return {
-    users,
+    items: users,
     pagination: {
       total,
       page,
@@ -323,7 +326,60 @@ export const getUserById = async (id: string) => {
     throw new AppError("User not found", 404);
   }
 
-  return { user };
+  return user;
+};
+
+/** Shape the admin user detail view needs for a wishlist product. */
+interface TAdminWishlistProduct {
+  _id: string;
+  name: string;
+  slug?: string;
+  image?: string;
+  price: number;
+  discountPrice?: number;
+  publish?: boolean;
+  stock?: number;
+}
+
+/**
+ * Everything the admin needs about one customer in a single request: profile,
+ * lifetime value, recent orders, wishlist and saved addresses.
+ */
+export const getUserAdminDetail = async (id: string) => {
+  const user = await userRepository.findById(id, "-password");
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  const [stats, orders, wishlist, addresses] = await Promise.all([
+    orderRepository.statsByUser(id),
+    orderRepository.recentByUser(id, 10),
+    wishlistRepository.findOnePopulated({ user: id }),
+    addressRepository.findByUser(id),
+  ]);
+
+  // The wishlist query uses .lean(), so populated products arrive as plain
+  // objects rather than documents. Unpopulated refs are filtered out.
+  const wishlistItems = (
+    (wishlist?.products ?? []) as unknown as TAdminWishlistProduct[]
+  ).filter((product) => !!product && typeof product === "object");
+
+  return {
+    user: user.toObject(),
+    stats: {
+      ...stats,
+      averageOrderValue:
+        stats.orderCount > 0
+          ? Math.round((stats.totalSpent / stats.orderCount) * 100) / 100
+          : 0,
+      wishlistCount: wishlistItems.length,
+      addressCount: addresses.length,
+    },
+    orders: orders.map((order) => order.toObject()),
+    wishlist: wishlistItems,
+    addresses: addresses.map((address) => address.toObject()),
+  };
 };
 
 export const deleteUserById = async (id: string) => {
@@ -333,7 +389,7 @@ export const deleteUserById = async (id: string) => {
     throw new AppError("User not found", 404);
   }
 
-  return { message: "User deleted successfully" };
+  return { deleted: true };
 };
 
 export const googleLogin = async (googleUser: {

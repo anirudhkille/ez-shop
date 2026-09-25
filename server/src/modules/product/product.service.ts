@@ -1,4 +1,5 @@
 import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
+import { AppError } from "@/utils/appError";
 import slugify from "slugify";
 import mongoose from "mongoose";
 import Product, { IProduct, IVariant } from "@/modules/product/product.model";
@@ -180,14 +181,7 @@ export const postProduct = async (body: ProductBody, files?: UploadedFiles) => {
     variantImageMap,
   });
 
-  return {
-    data: {
-      success: true,
-      message: "Product created successfully",
-      data: product,
-    },
-    status: 201,
-  };
+  return product;
 };
 
 export const getProducts = async (query: ProductQuery) => {
@@ -216,16 +210,12 @@ export const getProducts = async (query: ProductQuery) => {
   ]);
 
   return {
-    data: {
-      success: true,
-      message: "Product fetched successfully",
-      data: product,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+    items: product,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     },
   };
 };
@@ -234,29 +224,17 @@ export const getProductById = async (slug: string, id: string) => {
   const product = await productRepository.findById(id);
 
   if (!product) {
-    return {
-      status: 404,
-      data: { success: true, message: "Product not found" },
-    };
+    throw new AppError("Product not found", 404);
   }
 
   if (product.slug !== slug) {
     return {
-      data: {
-        success: true,
-        redirectUrl: `/${product.slug}/${product._id}`,
-        data: product,
-      },
+      product,
+      redirectUrl: `/${product.slug}/${product._id}`,
     };
   }
 
-  return {
-    data: {
-      success: true,
-      message: "Product fetched successfully",
-      data: product,
-    },
-  };
+  return { product };
 };
 
 export const updateProduct = async (
@@ -300,49 +278,26 @@ export const updateProduct = async (
   });
 
   if (!product) {
-    return {
-      status: 404,
-      data: { success: false, message: "Product not found" },
-    };
+    throw new AppError("Product not found", 404);
   }
 
-  return {
-    data: {
-      success: true,
-      message: "Product updated successfully",
-      data: product,
-    },
-  };
+  return product;
 };
 
 export const deleteProduct = async (id: string) => {
   const product = await productRepository.findByIdAndDelete(id);
 
   if (!product) {
-    return {
-      status: 404,
-      data: { success: false, message: "Product not found" },
-    };
+    throw new AppError("Product not found", 404);
   }
 
-  return {
-    data: {
-      success: true,
-      message: "Product deleted successfully",
-    },
-  };
+  return product;
 };
 
 export const getSearchProduct = async (keyword: string, limit: number) => {
   const products = await productRepository.findSearch(keyword, limit);
 
-  return {
-    data: {
-      success: true,
-      message: "Search results fetched successfully",
-      data: products,
-    },
-  };
+  return products;
 };
 
 export const getFilteredProducts = async (query: FilteredProductsQuery) => {
@@ -449,16 +404,12 @@ export const getFilteredProducts = async (query: FilteredProductsQuery) => {
   ]);
 
   return {
-    data: {
-      success: true,
-      message: "Filtered products fetched successfully",
-      data: products,
-      pagination: {
-        total,
-        page: pageNumber,
-        limit: limitNumber,
-        totalPages: Math.ceil(total / limitNumber),
-      },
+    items: products,
+    pagination: {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
     },
   };
 };
@@ -466,35 +417,20 @@ export const getFilteredProducts = async (query: FilteredProductsQuery) => {
 export const getFeaturedProducts = async () => {
   const products = await productRepository.findFeatured();
 
-  return {
-    data: {
-      success: true,
-      messge: "Featured product fetched successfully",
-      data: products,
-    },
-  };
+  return products;
 };
 
 export const getBestSellers = async () => {
   const products = await productRepository.findBestSellers();
 
-  return {
-    data: {
-      success: true,
-      messge: "Featured product fetched successfully",
-      data: products,
-    },
-  };
+  return products;
 };
 
 export const getSimilarProducts = async (id: string) => {
   const product = await productRepository.findByIdSelect(id, "category");
 
   if (!product) {
-    return {
-      status: 404,
-      data: { success: false, message: "Product not found" },
-    };
+    throw new AppError("Product not found", 404);
   }
 
   const similarProducts = await productRepository.findSimilar(
@@ -502,11 +438,5 @@ export const getSimilarProducts = async (id: string) => {
     product.category as unknown as mongoose.Types.ObjectId,
   );
 
-  return {
-    data: {
-      success: true,
-      message: "Similar products fetched successfully",
-      data: similarProducts,
-    },
-  };
+  return similarProducts;
 };

@@ -1,5 +1,5 @@
 import Order, { IOrder } from "@/modules/order/order.model";
-import { FilterQuery } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 
 export const create = async (data: Partial<IOrder>) => {
   return await Order.create(data);
@@ -23,6 +23,48 @@ export const findByUser = async (
 
 export const countByUser = async (userId: string) => {
   return await Order.countDocuments({ user: userId });
+};
+
+export const countByUserAndCoupon = async (userId: string, code: string) => {
+  return await Order.countDocuments({
+    user: userId,
+    "coupon.code": code,
+  });
+};
+
+/** Lifetime value for a customer, used by the admin user detail view. */
+export const statsByUser = async (userId: string) => {
+  const [row] = await Order.aggregate<{
+    orderCount: number;
+    totalSpent: number;
+    itemCount: number;
+    lastOrderAt: Date | null;
+  }>([
+    { $match: { user: new Types.ObjectId(String(userId)) } },
+    {
+      $group: {
+        _id: null,
+        orderCount: { $sum: 1 },
+        totalSpent: { $sum: "$totalAmount" },
+        itemCount: { $sum: { $sum: "$products.quantity" } },
+        lastOrderAt: { $max: "$createdAt" },
+      },
+    },
+  ]);
+
+  return {
+    orderCount: row?.orderCount ?? 0,
+    totalSpent: Math.round((row?.totalSpent ?? 0) * 100) / 100,
+    itemCount: row?.itemCount ?? 0,
+    lastOrderAt: row?.lastOrderAt ?? null,
+  };
+};
+
+export const recentByUser = async (userId: string, limit = 10) => {
+  return await Order.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .populate("products.product", "name image price slug");
 };
 
 export const findByIdPopulated = async (id: string) => {

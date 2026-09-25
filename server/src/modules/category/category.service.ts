@@ -1,5 +1,6 @@
 import cloudinary from "@/config/cloudinary";
 import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
+import { AppError } from "@/utils/appError";
 import * as categoryRepository from "@/modules/category/category.repository";
 
 const extractCloudinaryPublicId = (imageUrl: string) => {
@@ -34,11 +35,7 @@ export const createCategory = async (
     image: finalImageUrl,
   });
 
-  return {
-    success: true,
-    message: "Category created successfully",
-    data: category,
-  };
+  return category;
 };
 
 export const getAllCategories = async (page = 1, limit = 10) => {
@@ -50,9 +47,7 @@ export const getAllCategories = async (page = 1, limit = 10) => {
   ]);
 
   return {
-    success: true,
-    message: "Categories fetched successfully",
-    data: categories,
+    items: categories,
     pagination: {
       total,
       page,
@@ -70,7 +65,7 @@ export const updateCategory = async (
   const category = await categoryRepository.findById(id);
 
   if (!category) {
-    return { success: false, status: 404, message: "Category not found" };
+    throw new AppError("Category not found", 404);
   }
 
   let imageUrl = body.image ?? category.image;
@@ -92,26 +87,19 @@ export const updateCategory = async (
     image: imageUrl,
   });
 
-  return {
-    success: true,
-    message: "Category updated successfully",
-    data: updated,
-  };
+  return updated;
 };
 
 export const deleteCategory = async (id: string) => {
   const category = await categoryRepository.deleteById(id);
 
   if (!category) {
-    return { success: false, status: 404, message: "Category not found" };
+    throw new AppError("Category not found", 404);
   }
 
   if (category.image) {
     await deleteCategoryImage(category.image);
   }
 
-  return {
-    success: true,
-    message: "Category deleted successfully",
-  };
+  return category;
 };

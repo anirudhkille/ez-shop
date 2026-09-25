@@ -6,9 +6,10 @@ import axios, {
 
 import useAuthStore from "@/store/userStore";
 
-interface RefreshResponse {
-  token: string;
-  refreshToken: string;
+interface RefreshEnvelope {
+  success: boolean;
+  message: string;
+  data?: { token: string };
 }
 
 interface FailedRequest {
@@ -91,9 +92,12 @@ axiosInstance.interceptors.response.use(
           isRefreshing = true;
 
           axiosInstance
-            .get<RefreshResponse>(`/user/refresh`)
+            .get<RefreshEnvelope>(`/user/refresh`)
             .then((res) => {
-              const { token: newAccessToken } = res.data;
+              const newAccessToken = res.data.data?.token;
+              if (!newAccessToken) {
+                throw new Error("Refresh response did not include a token");
+              }
               authStore.setUser({
                 token: newAccessToken,
               });

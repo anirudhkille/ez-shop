@@ -2,13 +2,14 @@ import { Request, Response } from "express";
 import { asyncHandler } from "@/utils/asyncHandler";
 import { env } from "@/config/env.config";
 import * as userService from "@/modules/user/user.service";
-import { sendSuccess, sendMessage } from "@/utils/response";
+import { sendResponse } from "@/utils/response";
 import { refreshCookieOptions } from "@/utils/cookies";
 
 export const signUp = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const result = await userService.signUp(email, password);
-  sendMessage(res, result.message, 200);
+  await userService.signUp(email, password);
+
+  return sendResponse(res, 201, "OTP sent to email", { sent: true });
 });
 
 export const verifySignupOTP = asyncHandler(
@@ -16,15 +17,12 @@ export const verifySignupOTP = asyncHandler(
     const { email, otp } = req.body;
     const result = await userService.verifySignupOTP(email, otp);
 
-    res
-      .cookie("refreshToken", result.refreshToken, refreshCookieOptions())
-      .status(201)
-      .json({
-        success: true,
-        message: "Account verified successfully",
-        data: result.user,
-        token: result.accessToken,
-      });
+    res.cookie("refreshToken", result.refreshToken, refreshCookieOptions());
+
+    return sendResponse(res, 201, "Account verified successfully", {
+      ...result.user,
+      token: result.accessToken,
+    });
   },
 );
 
@@ -32,54 +30,60 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const result = await userService.login(email, password);
 
-  res
-    .cookie("refreshToken", result.refreshToken, refreshCookieOptions())
-    .status(200)
-    .json({
-      success: true,
-      message: "Login successful",
-      data: result.user,
-      token: result.accessToken,
-    });
+  res.cookie("refreshToken", result.refreshToken, refreshCookieOptions());
+
+  return sendResponse(res, 200, "Login successful", {
+    ...result.user,
+    token: result.accessToken,
+  });
 });
 
 export const forgotPassword = asyncHandler(
   async (req: Request, res: Response) => {
     const { email } = req.body;
-    const result = await userService.forgotPassword(email);
-    sendMessage(res, result.message);
+    await userService.forgotPassword(email);
+
+    return sendResponse(res, 200, "Reset OTP sent", { sent: true });
   },
 );
 
 export const resetPassword = asyncHandler(
   async (req: Request, res: Response) => {
     const { token, newPassword } = req.body;
-    const result = await userService.resetPassword(token, newPassword);
-    sendMessage(res, result.message);
+    await userService.resetPassword(token, newPassword);
+
+    return sendResponse(res, 200, "Password reset successful", {
+      reset: true,
+    });
   },
 );
 
 export const getProfile = asyncHandler(async (req: Request, res: Response) => {
-  const result = await userService.getProfile(req.user!._id);
-  sendSuccess(res, result.user);
+  const user = await userService.getProfile(req.user!._id);
+
+  return sendResponse(res, 200, "Profile fetched successfully", user);
 });
 
 export const updatePassword = asyncHandler(
   async (req: Request, res: Response) => {
     const { currentPassword, newPassword } = req.body;
-    const result = await userService.updatePassword(
+    await userService.updatePassword(
       req.user!._id,
       currentPassword,
       newPassword,
     );
-    sendMessage(res, result.message);
+
+    return sendResponse(res, 200, "Password updated successfully", {
+      updated: true,
+    });
   },
 );
 
 export const updateProfile = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await userService.updateProfile(req.user!._id, req.body);
-    sendSuccess(res, result.user);
+    const user = await userService.updateProfile(req.user!._id, req.body);
+
+    return sendResponse(res, 200, "Profile updated successfully", user);
   },
 );
 
@@ -88,45 +92,60 @@ export const refreshToken = asyncHandler(
     const token = req.cookies.refreshToken;
     const result = await userService.refreshToken(token);
 
-    res
-      .cookie("refreshToken", result.refreshToken, refreshCookieOptions())
-      .status(200)
-      .json({
-        success: true,
-        token: result.accessToken,
-      });
+    res.cookie("refreshToken", result.refreshToken, refreshCookieOptions());
+
+    return sendResponse(res, 200, "Access token refreshed", {
+      token: result.accessToken,
+    });
   },
 );
 
 export const logout = asyncHandler(async (req: Request, res: Response) => {
   const token = req.cookies.refreshToken;
-  const result = await userService.logout(token);
+  await userService.logout(token);
 
   res.clearCookie("refreshToken", refreshCookieOptions());
-  sendMessage(res, result.message);
+
+  return sendResponse(res, 200, "Logged out successfully", {
+    loggedOut: true,
+  });
 });
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
   const result = await userService.getAllUsers(page, limit);
-  res.status(200).json({
-    success: true,
-    message: "Users fetched successfully",
-    data: result.users,
-    pagination: result.pagination,
-  });
+
+  return sendResponse(
+    res,
+    200,
+    "Users fetched successfully",
+    result.items,
+    result.pagination,
+  );
 });
 
 export const getUserById = asyncHandler(async (req: Request, res: Response) => {
-  const result = await userService.getUserById(req.params.id);
-  sendSuccess(res, result.user);
+  const user = await userService.getUserById(req.params.id);
+
+  return sendResponse(res, 200, "User fetched successfully", user);
 });
+
+export const getUserAdminDetail = asyncHandler(
+  async (req: Request, res: Response) => {
+    const result = await userService.getUserAdminDetail(req.params.id);
+
+    return sendResponse(res, 200, "User details fetched successfully", result);
+  },
+);
 
 export const deleteUserById = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await userService.deleteUserById(req.params.id);
-    sendMessage(res, result.message);
+    await userService.deleteUserById(req.params.id);
+
+    return sendResponse(res, 200, "User deleted successfully", {
+      deleted: true,
+    });
   },
 );
 

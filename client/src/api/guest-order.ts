@@ -23,6 +23,7 @@ export type TGuestOrderPayload = {
   name: string;
   email: string;
   phone: string;
+  couponCode?: string;
 };
 
 export const placeGuestCODOrder = async (payload: TGuestOrderPayload) => {

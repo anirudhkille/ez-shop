@@ -1,4 +1,5 @@
 import Product from "@/modules/product/product.model";
+import { AppError } from "@/utils/appError";
 import * as cartRepository from "@/modules/cart/cart.repository";
 
 type VariantSize = {
@@ -30,10 +31,7 @@ export const getCart = async (userId: string) => {
   const cart = await cartRepository.findOnePopulated({ user: userId });
 
   if (!cart) {
-    return {
-      data: { products: [], total: 0, subtotal: 0, discountTotal: 0 },
-      status: 200,
-    };
+    return { products: [], total: 0, subtotal: 0, discountTotal: 0 };
   }
 
   const validItems: (typeof cart.products)[number][] = [];
@@ -62,13 +60,11 @@ export const getCart = async (userId: string) => {
   }
 
   return {
-    data: {
-      ...cart.toObject(),
-      products: validItems,
-      subtotal,
-      discountTotal,
-      total: subtotal - discountTotal,
-    },
+    ...cart.toObject(),
+    products: validItems,
+    subtotal,
+    discountTotal,
+    total: subtotal - discountTotal,
   };
 };
 
@@ -85,17 +81,11 @@ export const addToCart = async (
 
   const product = await Product.findById(productId);
   if (!product) {
-    return {
-      status: 404,
-      data: { success: false, message: "Product not found" },
-    };
+    throw new AppError("Product not found", 404);
   }
 
   if (!product.publish) {
-    return {
-      status: 400,
-      data: { success: false, message: "Product not available" },
-    };
+    throw new AppError("Product not available", 400);
   }
 
   let selectedPrice = product.price;
@@ -106,10 +96,7 @@ export const addToCart = async (
 
   if (variantId && size) {
     if (!sizeObj) {
-      return {
-        status: 400,
-        data: { success: false, message: "Invalid variant/size" },
-      };
+      throw new AppError("Invalid variant/size", 400);
     }
 
     sizeStock = sizeObj.stock;
@@ -118,7 +105,7 @@ export const addToCart = async (
   }
 
   if (sizeStock <= 0) {
-    return { status: 400, data: { success: false, message: "Out of stock" } };
+    throw new AppError("Out of stock", 400);
   }
 
   let cart = await cartRepository.findOne({ user: userId });
@@ -135,10 +122,7 @@ export const addToCart = async (
 
   if (existing) {
     if (existing.quantity + addQty > sizeStock) {
-      return {
-        status: 400,
-        data: { success: false, message: "Exceeds stock" },
-      };
+      throw new AppError("Exceeds stock", 400);
     }
 
     existing.quantity += addQty;
@@ -155,7 +139,7 @@ export const addToCart = async (
 
   await cart.save();
 
-  return { data: { success: true, message: "Added to cart", data: cart } };
+  return cart;
 };
 
 export const updateQuantity = async (
@@ -168,12 +152,12 @@ export const updateQuantity = async (
   });
 
   if (!cart) {
-    return { status: 404, data: { success: false, message: "Cart not found" } };
+    throw new AppError("Cart not found", 404);
   }
 
   const item = cart.products.id(String(cartItemId));
   if (!item) {
-    return { status: 404, data: { success: false, message: "Item not found" } };
+    throw new AppError("Item not found", 404);
   }
 
   const product = item.product as unknown as ProductLike;
@@ -187,36 +171,33 @@ export const updateQuantity = async (
   const maxStock = sizeObj ? sizeObj.stock : product.stock;
 
   if (quantity > maxStock) {
-    return {
-      status: 400,
-      data: { success: false, message: "Exceeds stock limit" },
-    };
+    throw new AppError("Exceeds stock limit", 400);
   }
 
   item.quantity = quantity;
 
   await cart.save();
 
-  return { data: { success: true, message: "Quantity updated", data: cart } };
+  return cart;
 };
 
 export const removeFromCart = async (userId: string, cartItemId: string) => {
   const cart = await cartRepository.findOne({ user: userId });
 
   if (!cart) {
-    return { status: 404, data: { success: false, message: "Cart not found" } };
+    throw new AppError("Cart not found", 404);
   }
 
   cart.products.pull(cartItemId);
 
   await cart.save();
 
-  return { data: { success: true, message: "Item removed", data: cart } };
+  return cart;
 };
 
 export const clearCart = async (userId: string) => {
   await cartRepository.findOneAndUpdate({ user: userId }, { products: [] });
-  return { data: { success: true, message: "Cart cleared" } };
+  return { cleared: true };
 };
 
 export const getCartItemCount = async (userId: string) => {
@@ -224,5 +205,5 @@ export const getCartItemCount = async (userId: string) => {
 
   const count = cart?.products.length || 0;
 
-  return { data: { success: true, data: { count } } };
+  return { count };
 };

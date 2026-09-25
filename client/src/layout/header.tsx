@@ -157,7 +157,7 @@ export default function Header() {
                           onClick={handleLogout}
                           className="font-body text-destructive hover:bg-destructive/5 flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors"
                         >
-                          <LogOut size={14} /> Sign out
+                          <LogOut size={14} /> Logout
                         </button>
                       </div>
                     </div>
@@ -167,7 +167,7 @@ export default function Header() {
             ) : (
               <Link
                 to="/login"
-                aria-label="Sign in"
+                aria-label="Login"
                 className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150"
               >
                 <User size={18} />
@@ -233,7 +233,7 @@ export default function Header() {
                 }}
                 className="font-body text-destructive hover:text-destructive/80 py-2.5 text-left text-sm font-medium transition-colors"
               >
-                Sign out
+                Logout
               </button>
             </>
           ) : (
@@ -243,7 +243,7 @@ export default function Header() {
                 className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
-                Sign in
+                Login
               </Link>
               <Link
                 to="/signup"

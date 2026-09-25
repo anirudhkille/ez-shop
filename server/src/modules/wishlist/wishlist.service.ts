@@ -10,14 +10,7 @@ export const toggleWishlist = async (userId: string, productId: string) => {
       products: [productId],
     });
 
-    return {
-      data: {
-        success: true,
-        message: "Added to wishlist",
-        action: "added",
-        data: wishlist,
-      },
-    };
+    return { wishlist, action: "added" };
   }
 
   const exists = wishlist.products.some((id) => id.toString() === productId);
@@ -35,36 +28,17 @@ export const toggleWishlist = async (userId: string, productId: string) => {
 
   await wishlist.save();
 
-  return {
-    data: {
-      success: true,
-      message: isAdded ? "Added to wishlist" : "Removed from wishlist",
-      action: isAdded ? "added" : "removed",
-      data: wishlist,
-    },
-  };
+  return { wishlist, action: isAdded ? "added" : "removed" };
 };
 
 export const getWishlistByUser = async (userId: string) => {
   const wishlist = await wishlistRepository.findOneLean({ user: userId });
 
-  return {
-    data: {
-      success: true,
-      message: "Wishlist fetched successfully",
-      data: wishlist,
-    },
-  };
+  return wishlist;
 };
 
 export const getWishlistDetails = async (userId: string) => {
   const wishlist = await wishlistRepository.findOnePopulated({ user: userId });
 
-  return {
-    data: {
-      success: true,
-      message: "Wishlist details fetched successfully",
-      data: wishlist,
-    },
-  };
+  return wishlist;
 };

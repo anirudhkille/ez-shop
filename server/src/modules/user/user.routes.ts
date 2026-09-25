@@ -4,6 +4,7 @@ import {
   forgotPassword,
   getAllUsers,
   getProfile,
+  getUserAdminDetail,
   getUserById,
   login,
   logout,
@@ -40,6 +41,13 @@ router.get(
   authorize(["Admin"]),
   validate(userPaginationQuerySchema, "query"),
   getAllUsers,
+);
+router.get(
+  "/:id/dashboard",
+  protect,
+  authorize(["Admin"]),
+  validate(userIdParamSchema, "params"),
+  getUserAdminDetail,
 );
 router.get(
   "/:id",

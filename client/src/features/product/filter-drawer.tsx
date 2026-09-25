@@ -146,7 +146,7 @@ export default function FilterDrawer({
         </div>
 
         {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto px-6">
+        <div className="scrollbar-hide flex-1 px-6">
           {/* Category */}
           <Section title="Category">
             <div className="flex flex-wrap gap-2">

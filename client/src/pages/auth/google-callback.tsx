@@ -24,7 +24,7 @@ export default function GoogleCallback() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <p className="text-muted-foreground">Signing you in...</p>
+      <p className="text-muted-foreground">Logging you in...</p>
     </div>
   );
 }

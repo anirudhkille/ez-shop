@@ -1,20 +1,18 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "@/utils/asyncHandler";
+import { sendResponse } from "@/utils/response";
 import * as cartService from "@/modules/cart/cart.service";
 
 export const getCart = asyncHandler(async (req: Request, res: Response) => {
   const result = await cartService.getCart(req.user!._id);
 
-  return res.status(result.status || 200).json({
-    success: true,
-    data: result.data,
-  });
+  return sendResponse(res, 200, "Cart fetched successfully", result);
 });
 
 export const addToCart = asyncHandler(async (req: Request, res: Response) => {
   const result = await cartService.addToCart(req.user!._id, req.body);
 
-  return res.status(result.status || 200).json(result.data);
+  return sendResponse(res, 200, "Added to cart", result);
 });
 
 export const updateQuantity = asyncHandler(
@@ -26,7 +24,7 @@ export const updateQuantity = asyncHandler(
       quantity,
     );
 
-    return res.status(result.status || 200).json(result.data);
+    return sendResponse(res, 200, "Quantity updated", result);
   },
 );
 
@@ -37,20 +35,20 @@ export const removeFromCart = asyncHandler(
       req.params.cartItemId,
     );
 
-    return res.status(result.status || 200).json(result.data);
+    return sendResponse(res, 200, "Item removed", result);
   },
 );
 
 export const clearCart = asyncHandler(async (req: Request, res: Response) => {
   const result = await cartService.clearCart(req.user!._id);
 
-  res.status(200).json(result.data);
+  return sendResponse(res, 200, "Cart cleared", result);
 });
 
 export const getCartItemCount = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await cartService.getCartItemCount(req.user!._id);
 
-    return res.json(result.data);
+    return sendResponse(res, 200, "Cart count fetched", result);
   },
 );

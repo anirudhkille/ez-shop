@@ -1,17 +1,11 @@
+import { AppError } from "@/utils/appError";
 import * as reviewRepository from "@/modules/review/review.repository";
 import { IReview } from "@/modules/review/review.model";
 
 export const postReview = async (userId: string, body: Partial<IReview>) => {
   const review = await reviewRepository.create({ ...body, user: userId });
 
-  return {
-    status: 201,
-    data: {
-      success: true,
-      message: "Review created successfully",
-      data: review,
-    },
-  };
+  return review;
 };
 
 export const getReviewByProduct = async (
@@ -27,16 +21,12 @@ export const getReviewByProduct = async (
   ]);
 
   return {
-    data: {
-      success: true,
-      message: "Review fetched successfully",
-      data: review,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+    items: review,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     },
   };
 };
@@ -48,35 +38,15 @@ export const updateReview = async (
 ) => {
   const review = await reviewRepository.findByIdAndUpdate(id, userId, body);
 
-  if (!review)
-    return {
-      status: 404,
-      data: { success: false, message: "Review not found" },
-    };
+  if (!review) throw new AppError("Review not found", 404);
 
-  return {
-    data: {
-      success: true,
-      message: "Review updated successfully",
-      data: review,
-    },
-  };
+  return review;
 };
 
 export const deleteReview = async (id: string, userId: string) => {
   const review = await reviewRepository.findByIdAndDelete(id, userId);
 
-  if (!review)
-    return {
-      status: 404,
-      data: { success: false, message: "Review not found" },
-    };
+  if (!review) throw new AppError("Review not found", 404);
 
-  return {
-    data: {
-      success: true,
-      message: "Review deleted successfully",
-      data: review,
-    },
-  };
+  return review;
 };

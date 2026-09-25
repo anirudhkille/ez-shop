@@ -16,5 +16,6 @@ export const authLimiter = rateLimit({
   message: {
     success: false,
     message: "Too many attempts from this IP, please try again later.",
+    error: { code: "RATE_LIMITED" },
   },
 });

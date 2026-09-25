@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import { AppError } from "@/utils/appError";
 import { env } from "@/config/env.config";
 import { resetPasswordTemplate } from "@/templates/resetEmailTemplate";
 import {
@@ -12,10 +13,7 @@ import type { IAdmin } from "@/modules/admin/admin.model";
 export const login = async (email: string, password: string) => {
   const user = await adminRepository.findByEmail(email);
   if (!user || !(await user.matchPassword(password))) {
-    return {
-      status: 401,
-      data: { success: false, message: "Invalid credentials" },
-    };
+    throw new AppError("Invalid credentials", 401);
   }
 
   const accessToken = generateAccessToken({
@@ -31,29 +29,19 @@ export const login = async (email: string, password: string) => {
   await user.save();
 
   return {
-    status: 200,
-    data: {
-      success: true,
-      message: "Login successful",
-      data: {
-        token: accessToken,
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-      refreshToken,
-    },
+    token: accessToken,
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    refreshToken,
   };
 };
 
 export const forgotPassword = async (email: string) => {
   const user = await adminRepository.findByEmail(email);
   if (!user) {
-    return {
-      status: 404,
-      data: { success: false, message: "Admin with this email does not exist" },
-    };
+    throw new AppError("Admin with this email does not exist", 404);
   }
 
   const resetToken = user.generateResetToken();
@@ -76,10 +64,7 @@ export const forgotPassword = async (email: string) => {
     html: resetPasswordTemplate(user.name, resetUrl),
   });
 
-  return {
-    status: 200,
-    data: { success: true, message: "Password reset link sent to email" },
-  };
+  return { sent: true };
 };
 
 export const resetPassword = async (token: string, newPassword: string) => {
@@ -94,10 +79,7 @@ export const resetPassword = async (token: string, newPassword: string) => {
   });
 
   if (!user) {
-    return {
-      status: 400,
-      data: { success: false, message: "Invalid or expired reset token" },
-    };
+    throw new AppError("Invalid or expired reset token", 400);
   }
 
   user.password = newPassword;
@@ -117,19 +99,12 @@ export const resetPassword = async (token: string, newPassword: string) => {
   await user.save();
 
   return {
-    status: 200,
-    data: {
-      success: true,
-      message: "Password reset successful",
-      data: {
-        token: accessToken,
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-      refreshToken,
-    },
+    token: accessToken,
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    refreshToken,
   };
 };
 
@@ -149,27 +124,18 @@ export const editProfile = async (
   const user = await adminRepository.findByIdAndUpdate(userId, sanitized);
 
   if (!user) {
-    return {
-      status: 404,
-      data: { success: false, message: "Admin not found" },
-    };
+    throw new AppError("Admin not found", 404);
   }
 
-  return {
-    status: 200,
-    data: { success: true, message: "Profile updated successfully", user },
-  };
+  return user;
 };
 
 export const getProfile = async (userId: string) => {
   const user = await adminRepository.findById(userId, "-password");
 
   if (!user) {
-    return {
-      status: 404,
-      data: { success: false, message: "Admin not found" },
-    };
+    throw new AppError("Admin not found", 404);
   }
 
-  return { status: 200, data: { success: true, user } };
+  return user;
 };

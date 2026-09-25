@@ -25,7 +25,7 @@ export const useProduct = (slug: string, id: string) => {
   });
 
   const product: TProduct | null = query.data?.data ?? null;
-  const redirectUrl = query.data?.redirectUrl;
+  const redirectUrl = query.data?.data?.redirectUrl;
 
   useEffect(() => {
     if (redirectUrl) {

@@ -1,10 +1,12 @@
 import { asyncHandler } from "@/utils/asyncHandler";
+import { sendResponse } from "@/utils/response";
 import { Request, Response } from "express";
 import * as reviewService from "@/modules/review/review.service";
 
 export const postReview = asyncHandler(async (req: Request, res: Response) => {
-  const result = await reviewService.postReview(req.user!._id, req.body);
-  return res.status(result.status || 200).json(result.data);
+  const review = await reviewService.postReview(req.user!._id, req.body);
+
+  return sendResponse(res, 201, "Review created successfully", review);
 });
 
 export const getReviewByProduct = asyncHandler(
@@ -17,33 +19,36 @@ export const getReviewByProduct = asyncHandler(
       limit,
       page,
     );
-    return res.status(200).json(result.data);
+
+    return sendResponse(
+      res,
+      200,
+      "Reviews fetched successfully",
+      result.items,
+      result.pagination,
+    );
   },
 );
 
 export const updateReview = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await reviewService.updateReview(
+    const review = await reviewService.updateReview(
       req.params.id,
       req.user!._id,
       req.body,
     );
 
-    if (result.status === 404) return res.status(404).json(result.data);
-
-    return res.status(200).json(result.data);
+    return sendResponse(res, 200, "Review updated successfully", review);
   },
 );
 
 export const deleteReview = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await reviewService.deleteReview(
+    const review = await reviewService.deleteReview(
       req.params.id,
       req.user!._id,
     );
 
-    if (result.status === 404) return res.status(404).json(result.data);
-
-    return res.status(200).json(result.data);
+    return sendResponse(res, 200, "Review deleted successfully", review);
   },
 );

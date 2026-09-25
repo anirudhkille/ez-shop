@@ -9,7 +9,7 @@ export interface IPaginatedResponse<T> {
   success: boolean;
   message: string;
   data: T[];
-  pagination: IPagination;
+  pagination?: IPagination;
 }
 
 export interface IUser {
@@ -94,6 +94,8 @@ export interface IOrder {
   };
   subtotal: number;
   deliveryCharge: number;
+  discount?: number;
+  coupon?: { code: string; type: string; discount: number };
   totalAmount: number;
   paymentStatus: string;
   paymentType: string;
@@ -108,4 +110,64 @@ export interface IAdminProfile {
   email: string;
   phone?: string;
   role: string;
+}
+
+export type ICouponType = "percentage" | "fixed";
+
+export interface ICoupon {
+  _id: string;
+  code: string;
+  type: ICouponType;
+  value: number;
+  description?: string;
+  minOrderValue?: number;
+  maxDiscountAmount?: number;
+  maxUses?: number;
+  usedCount: number;
+  maxUsesPerUser?: number;
+  expiresAt?: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IUserStats {
+  orderCount: number;
+  totalSpent: number;
+  averageOrderValue: number;
+  itemCount: number;
+  lastOrderAt: string | null;
+  wishlistCount: number;
+  addressCount: number;
+}
+
+export interface IUserWishlistItem {
+  _id: string;
+  name: string;
+  slug?: string;
+  image?: string;
+  price: number;
+  discountPrice?: number;
+  publish?: boolean;
+  stock?: number;
+}
+
+export interface IUserAddress {
+  _id: string;
+  name: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  phone: string;
+}
+
+export interface IUserAdminDetail {
+  user: IUser;
+  stats: IUserStats;
+  orders: IOrder[];
+  wishlist: IUserWishlistItem[];
+  addresses: IUserAddress[];
 }

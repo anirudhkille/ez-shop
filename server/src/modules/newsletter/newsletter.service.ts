@@ -1,28 +1,16 @@
+import { AppError } from "@/utils/appError";
 import * as newsletterRepository from "@/modules/newsletter/newsletter.repository";
 
 export const subscribeNewsletter = async (email: string) => {
-  const alerdySubscribed = await newsletterRepository.findOne({ email });
+  const alreadySubscribed = await newsletterRepository.findOne({ email });
 
-  if (alerdySubscribed) {
-    return {
-      status: 401,
-      data: {
-        success: true,
-        message: "Email already subscribed for newsletter",
-      },
-    };
+  if (alreadySubscribed) {
+    throw new AppError("Email already subscribed for newsletter", 401);
   }
 
   const newsletter = await newsletterRepository.create({ email });
 
-  return {
-    status: 201,
-    data: {
-      success: true,
-      message: "Newsletter subscribed successfully",
-      data: newsletter,
-    },
-  };
+  return newsletter;
 };
 
 export const getNewsletterSubscribers = async (limit: number, page: number) => {
@@ -34,16 +22,12 @@ export const getNewsletterSubscribers = async (limit: number, page: number) => {
   ]);
 
   return {
-    data: {
-      success: true,
-      message: "Newsletter subscribers fetched successfully",
-      data: subscribers,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+    items: subscribers,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     },
   };
 };

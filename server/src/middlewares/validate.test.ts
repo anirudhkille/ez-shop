@@ -108,9 +108,11 @@ describe("validate", () => {
     assert.equal(response.statusCode, 400);
     assert.deepEqual(response.body, {
       success: false,
-      message: "Invalid email",
-      error: "Validation error",
-      details: [{ field: "profile.email", message: "Invalid email" }],
+      message: "Validation failed",
+      data: {
+        code: "VALIDATION_ERROR",
+        details: [{ field: "profile.email", message: "Invalid email" }],
+      },
     });
     assert.equal(next.mock.callCount(), 0);
   });

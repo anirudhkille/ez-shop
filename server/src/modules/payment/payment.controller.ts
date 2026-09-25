@@ -1,4 +1,5 @@
 import { asyncHandler } from "@/utils/asyncHandler";
+import { sendResponse } from "@/utils/response";
 import { Request, Response } from "express";
 import * as paymentService from "@/modules/payment/payment.service";
 
@@ -9,13 +10,15 @@ export const createCheckoutSession = asyncHandler(
       req.body,
       req.user!.email,
     );
-    res.status(result.status || 200).json(result.data);
+
+    return sendResponse(res, 200, "Checkout session created", result);
   },
 );
 
 export const createGuestCheckoutSession = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await paymentService.createGuestCheckoutSession(req.body);
-    res.status(result.status || 200).json(result.data);
+
+    return sendResponse(res, 200, "Checkout session created", result);
   },
 );

@@ -7,6 +7,7 @@ import { decrementStock, verifyStock } from "@/modules/product/product.service";
 import * as orderRepository from "@/modules/order/order.repository";
 import { IOrder, IOrderProduct } from "@/modules/order/order.model";
 import { AppError } from "@/utils/appError";
+import * as couponService from "@/modules/coupon/coupon.service";
 
 type ProductRef = {
   _id: mongoose.Types.ObjectId;
@@ -15,6 +16,7 @@ type ProductRef = {
 interface CODRequestBody {
   addressId: string;
   deliveryMethod: string;
+  couponCode?: string;
 }
 
 interface GuestCheckoutBody {
@@ -38,23 +40,20 @@ interface GuestCheckoutBody {
   name: string;
   email: string;
   phone: string;
+  couponCode?: string;
 }
 
 export const placeCODOrder = async (userId: string, body: CODRequestBody) => {
-  const { addressId, deliveryMethod } = body;
+  const { addressId, deliveryMethod, couponCode } = body;
 
   const cart = await Cart.findOne({ user: userId }).populate(
     "products.product",
   );
   if (!cart || cart.products.length === 0)
-    return { status: 400, data: { success: false, message: "Cart is empty" } };
+    throw new AppError("Cart is empty", 400);
 
   const address = await Address.findById(addressId);
-  if (!address)
-    return {
-      status: 400,
-      data: { success: false, message: "Invalid address" },
-    };
+  if (!address) throw new AppError("Invalid address", 400);
 
   const stockError = await verifyStock(
     cart.products.map((item) => ({
@@ -65,7 +64,7 @@ export const placeCODOrder = async (userId: string, body: CODRequestBody) => {
     })),
   );
   if (stockError) {
-    return { status: 400, data: { success: false, message: stockError } };
+    throw new AppError(stockError, 400);
   }
 
   const subtotal = cart.products.reduce((sum, item) => {
@@ -77,35 +76,44 @@ export const placeCODOrder = async (userId: string, body: CODRequestBody) => {
   if (deliveryMethod === "express") deliveryCharge = 120;
   if (deliveryMethod === "same-day") deliveryCharge = 199;
 
-  const totalAmount = subtotal + deliveryCharge;
+  const coupon = couponCode
+    ? await couponService.evaluateCoupon(couponCode, subtotal, userId)
+    : null;
+  const discount = coupon?.discount ?? 0;
 
-  const newOrder = await orderRepository.create({
-    user: userId,
-    paymentType: "cod",
-    paymentStatus: "pending",
-    orderStatus: "processing",
-    deliveryMethod,
-    subtotal,
-    deliveryCharge,
-    totalAmount,
+  const totalAmount = Math.max(0, subtotal - discount) + deliveryCharge;
 
-    products: cart.products.map((item) => ({
-      product: (item.product as unknown as ProductRef)._id,
-      quantity: item.quantity,
-      price: item.discountPriceAtPurchase ?? item.priceAtPurchase,
-    })),
+  const newOrder = await couponService.withCouponClaim(couponCode, () =>
+    orderRepository.create({
+      user: userId,
+      paymentType: "cod",
+      paymentStatus: "pending",
+      orderStatus: "processing",
+      deliveryMethod,
+      subtotal,
+      discount,
+      ...(coupon ? { coupon } : {}),
+      deliveryCharge,
+      totalAmount,
 
-    address: {
-      name: address.name,
-      addressLine1: address.addressLine1,
-      addressLine2: address.addressLine2,
-      city: address.city,
-      state: address.state,
-      zipCode: address.zipCode,
-      country: address.country,
-      phone: address.phone,
-    },
-  });
+      products: cart.products.map((item) => ({
+        product: (item.product as unknown as ProductRef)._id,
+        quantity: item.quantity,
+        price: item.discountPriceAtPurchase ?? item.priceAtPurchase,
+      })),
+
+      address: {
+        name: address.name,
+        addressLine1: address.addressLine1,
+        addressLine2: address.addressLine2,
+        city: address.city,
+        state: address.state,
+        zipCode: address.zipCode,
+        country: address.country,
+        phone: address.phone,
+      },
+    }),
+  );
 
   await decrementStock(
     cart.products.map((item) => ({
@@ -119,13 +127,8 @@ export const placeCODOrder = async (userId: string, body: CODRequestBody) => {
   await Cart.updateOne({ user: userId }, { $set: { products: [] } });
 
   return {
-    status: 200,
-    data: {
-      success: true,
-      message: "Order placed with Cash on Delivery",
-      orderId: newOrder._id,
-      redirectUrl: `${env.CLIENT_URL}/success?orderId=${newOrder._id}`,
-    },
+    orderId: newOrder._id,
+    redirectUrl: `${env.CLIENT_URL}/success?orderId=${newOrder._id}`,
   };
 };
 
@@ -138,17 +141,12 @@ export const getOrders = async (limit: number, page: number) => {
   ]);
 
   return {
-    status: 200,
-    data: {
-      success: true,
-      message: "Orders fetched successfully",
-      data: orders,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+    items: orders,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     },
   };
 };
@@ -166,17 +164,12 @@ export const getMyOrder = async (
   ]);
 
   return {
-    status: 200,
-    data: {
-      success: true,
-      message: "My orders fetched successfully",
-      data: orders,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+    items: orders,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     },
   };
 };
@@ -197,33 +190,21 @@ const isOrderAccessible = (
 export const getOrderById = async (id: string, user?: Express.User) => {
   const order = await orderRepository.findByIdPopulated(id);
 
-  if (!order)
-    return {
-      status: 404,
-      data: { success: false, message: "Orders not found" },
-    };
+  if (!order) throw new AppError("Orders not found", 404);
 
-  if (!isOrderAccessible(order, user))
-    return { status: 403, data: { success: false, message: "Access denied" } };
+  if (!isOrderAccessible(order, user)) throw new AppError("Access denied", 403);
 
-  return {
-    status: 200,
-    data: {
-      success: true,
-      message: "Order fetched successfully",
-      data: order,
-    },
-  };
+  return order;
 };
 
 export const placeGuestCODOrder = async (body: GuestCheckoutBody) => {
-  const { products, address, deliveryMethod, name, email, phone } = body;
+  const { products, address, deliveryMethod, name, email, phone, couponCode } =
+    body;
 
   if (!products || products.length === 0)
-    return { status: 400, data: { message: "Cart is empty" } };
+    throw new AppError("Cart is empty", 400);
 
-  if (!address)
-    return { status: 400, data: { message: "Address is required" } };
+  if (!address) throw new AppError("Address is required", 400);
 
   const productIds = products.map((p) => p.productId);
   const dbProducts = await Product.find({ _id: { $in: productIds } });
@@ -236,10 +217,10 @@ export const placeGuestCODOrder = async (body: GuestCheckoutBody) => {
   for (const item of products) {
     const prod = productMap.get(item.productId);
     if (!prod || !prod.publish)
-      return {
-        status: 400,
-        data: { message: `Product ${item.productId} not found or unavailable` },
-      };
+      throw new AppError(
+        `Product ${item.productId} not found or unavailable`,
+        400,
+      );
 
     const price = prod.discountPrice || prod.price;
     subtotal += price * item.quantity;
@@ -260,39 +241,49 @@ export const placeGuestCODOrder = async (body: GuestCheckoutBody) => {
     })),
   );
   if (stockError) {
-    return { status: 400, data: { success: false, message: stockError } };
+    throw new AppError(stockError, 400);
   }
 
   let deliveryCharge = 0;
   if (deliveryMethod === "express") deliveryCharge = 120;
   if (deliveryMethod === "same-day") deliveryCharge = 199;
 
-  const totalAmount = subtotal + deliveryCharge;
+  // Guests have no user id, so per-user limits cannot apply to them.
+  const coupon = couponCode
+    ? await couponService.evaluateCoupon(couponCode, subtotal, null)
+    : null;
+  const discount = coupon?.discount ?? 0;
 
-  const newOrder = await orderRepository.create({
-    user: null,
-    name,
-    email,
-    phone,
-    paymentType: "cod",
-    paymentStatus: "pending",
-    orderStatus: "processing",
-    deliveryMethod,
-    subtotal,
-    deliveryCharge,
-    totalAmount,
-    products: orderProducts,
-    address: {
-      name: address.name,
-      addressLine1: address.addressLine1,
-      addressLine2: address.addressLine2,
-      city: address.city,
-      state: address.state,
-      zipCode: address.zipCode,
-      country: address.country,
-      phone: address.phone,
-    },
-  });
+  const totalAmount = Math.max(0, subtotal - discount) + deliveryCharge;
+
+  const newOrder = await couponService.withCouponClaim(couponCode, () =>
+    orderRepository.create({
+      user: null,
+      name,
+      email,
+      phone,
+      paymentType: "cod",
+      paymentStatus: "pending",
+      orderStatus: "processing",
+      deliveryMethod,
+      subtotal,
+      discount,
+      ...(coupon ? { coupon } : {}),
+      deliveryCharge,
+      totalAmount,
+      products: orderProducts,
+      address: {
+        name: address.name,
+        addressLine1: address.addressLine1,
+        addressLine2: address.addressLine2,
+        city: address.city,
+        state: address.state,
+        zipCode: address.zipCode,
+        country: address.country,
+        phone: address.phone,
+      },
+    }),
+  );
 
   await decrementStock(
     products.map((p) => ({
@@ -304,13 +295,8 @@ export const placeGuestCODOrder = async (body: GuestCheckoutBody) => {
   );
 
   return {
-    status: 200,
-    data: {
-      success: true,
-      message: "Order placed with Cash on Delivery",
-      orderId: newOrder._id,
-      redirectUrl: `${env.CLIENT_URL}/success?orderId=${newOrder._id}`,
-    },
+    orderId: newOrder._id,
+    redirectUrl: `${env.CLIENT_URL}/success?orderId=${newOrder._id}`,
   };
 };
 
@@ -324,7 +310,7 @@ export const updateOrder = async (
     throw new AppError("Order not found", 404);
   }
 
-  return { message: "Order updated successfully", order };
+  return order;
 };
 
 export const deleteOrder = async (id: string) => {
@@ -334,7 +320,7 @@ export const deleteOrder = async (id: string) => {
     throw new AppError("Order not found", 404);
   }
 
-  return { message: "Order deleted successfully" };
+  return { deleted: true };
 };
 
 export const getOrderBySessionId = async (
@@ -343,21 +329,9 @@ export const getOrderBySessionId = async (
 ) => {
   const order = await orderRepository.findOnePopulated({ sessionId });
 
-  if (!order)
-    return {
-      status: 404,
-      data: { success: false, message: "Order doesn't exists" },
-    };
+  if (!order) throw new AppError("Order doesn't exists", 404);
 
-  if (!isOrderAccessible(order, user))
-    return { status: 403, data: { success: false, message: "Access denied" } };
+  if (!isOrderAccessible(order, user)) throw new AppError("Access denied", 403);
 
-  return {
-    status: 200,
-    data: {
-      success: true,
-      message: "Order fetched succesfully",
-      data: order,
-    },
-  };
+  return order;
 };

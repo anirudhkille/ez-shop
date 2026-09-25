@@ -13,7 +13,7 @@ export default function Login() {
       />
       <AuthLayout
         title="Welcome back"
-        description="Log in to your EZ Shop account"
+        description="Login to your EZ Shop account"
         redirect="/signup"
         question="Don't have an account?"
         redirectText="Create account"

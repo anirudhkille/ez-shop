@@ -26,6 +26,12 @@ export interface IOrder {
   };
   deliveryMethod?: string;
   subtotal?: number;
+  discount?: number;
+  coupon?: {
+    code: string;
+    type: string;
+    discount: number;
+  };
   deliveryCharge?: number;
   totalAmount?: number;
   paymentStatus?: string;
@@ -71,6 +77,12 @@ const orderSchema = new mongoose.Schema(
       default: "standard",
     },
     subtotal: Number,
+    discount: Number,
+    coupon: {
+      code: String,
+      type: String,
+      discount: Number,
+    },
     deliveryCharge: Number,
     totalAmount: Number,
     paymentStatus: {

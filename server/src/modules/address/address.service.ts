@@ -7,12 +7,12 @@ export const createAddress = async (
   body: Partial<IAddress>,
 ) => {
   const address = await addressRepository.create({ ...body, user: userId });
-  return { address, message: "Address created successfully" };
+  return address;
 };
 
 export const getAddressByUser = async (userId: string) => {
   const address = await addressRepository.findByUser(userId);
-  return { address, message: "Address fetched successfully" };
+  return address;
 };
 
 export const updateAddress = async (
@@ -21,10 +21,10 @@ export const updateAddress = async (
   body: UpdateQuery<IAddress>,
 ) => {
   const address = await addressRepository.findByIdAndUpdate(id, userId, body);
-  return { address, message: "Address updated successfully" };
+  return address;
 };
 
 export const deleteAddress = async (id: string, userId: string) => {
   const address = await addressRepository.findByIdAndDelete(id, userId);
-  return { address, message: "Address deleted successfully" };
+  return address;
 };

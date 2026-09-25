@@ -13,11 +13,13 @@ import { databaseConnection } from "./config/database";
 import { apiLimiter } from "./config/limiter";
 import passport from "./config/passport";
 import { errorHandler } from "./middlewares/errorHandler";
+import { sendResponse } from "./utils/response";
 
 import addressRoutes from "./modules/address/address.routes";
 import adminRoutes from "./modules/admin/admin.routes";
 import cartRoutes from "./modules/cart/cart.routes";
 import categoryRoutes from "./modules/category/category.routes";
+import couponRoutes from "./modules/coupon/coupon.routes";
 import newsletterRoutes from "./modules/newsletter/newsletter.routes";
 import orderRoutes from "./modules/order/order.routes";
 import paymentRoutes from "./modules/payment/payment.routes";
@@ -56,6 +58,7 @@ app.use("/api/address", addressRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/category", categoryRoutes);
+app.use("/api/coupon", couponRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/payment", paymentRoutes);
@@ -65,7 +68,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: "Route not found" });
+  return sendResponse(res, 404, "Route not found", { code: "NOT_FOUND" });
 });
 
 app.use(errorHandler);

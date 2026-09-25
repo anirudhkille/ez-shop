@@ -14,6 +14,7 @@ import {
   Phone,
   Plus,
   ShoppingCart,
+  TicketPercent,
   Truck,
   User,
 } from "lucide-react";
@@ -23,17 +24,23 @@ import type { TDeliveryMethod } from "@/types/order";
 
 import { formatPrice } from "@/lib/formatPrice";
 
+import type { TCouponQuote } from "@/api/coupon";
+
 import { useCartStore } from "@/store/cartStore";
 import useUserStore from "@/store/userStore";
 
 import { useAddresss } from "@/hooks/useAddress";
 import { useCart } from "@/hooks/useCart";
+import { useApplyCoupon } from "@/hooks/useCoupon";
 import {
   useGuestPayment,
   usePlaceCodOrder,
   usePlaceGuestCODOrder,
 } from "@/hooks/useOrder";
 import { usePayment } from "@/hooks/usePayment";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 import AddressModal from "@/features/account/address-modal";
 
@@ -48,6 +55,8 @@ type CartProduct = {
     name: string;
     image?: string;
     category?: string | { name?: string };
+    price?: number;
+    discountPrice?: number;
   };
   quantity: number;
   size?: string;
@@ -112,6 +121,11 @@ export default function Checkout() {
 
   const [step, setStep] = useState<CheckoutStep>(1);
   const [selectedAddressId, setSelectedAddressId] = useState("");
+  // The server validates and applies the coupon when the order is placed, so
+  // this is submitted with the order rather than checked as you type.
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<TCouponQuote | null>(null);
+  const { mutate: quoteCoupon, isPending: isCouponPending } = useApplyCoupon();
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] =
     useState<TDeliveryMethod>("standard");
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
@@ -128,12 +142,37 @@ export default function Checkout() {
   const [guestZip, setGuestZip] = useState("");
   const [guestCountry, setGuestCountry] = useState("India");
 
-  const cartProducts = (cart?.products ?? []) as CartProduct[];
+  const serverCartProducts = (cart?.products ?? []) as CartProduct[];
   const addresses = useMemo(
     () => (addressResponse?.data ?? []) as TAddress[],
     [addressResponse]
   );
   const guestCartItems = useCartStore((s) => s.cartItems);
+
+  // Guests keep their cart in local storage, so the order review has to read
+  // from there instead of the server cart.
+  const guestCartProducts = useMemo<CartProduct[]>(
+    () =>
+      guestCartItems.map((item) => ({
+        _id: item._id,
+        product: {
+          _id: item.product._id,
+          slug: item.product.slug,
+          name: item.product.name,
+          image: item.product.image,
+          category: item.product.category,
+          price: item.product.price,
+          discountPrice: item.product.discountPrice,
+        },
+        quantity: item.quantity,
+        size: item.size,
+        priceAtPurchase: item.priceAtPurchase,
+        discountPriceAtPurchase: item.discountPriceAtPurchase,
+      })),
+    [guestCartItems]
+  );
+
+  const cartProducts = token ? serverCartProducts : guestCartProducts;
 
   // Select the preferred address once addresses load (render-time adjustment)
   const [lastAddresses, setLastAddresses] = useState(addresses);
@@ -158,13 +197,35 @@ export default function Checkout() {
       ?.price ?? 0;
   const subtotal = cart?.subtotal ?? 0;
   const discount = cart?.discountTotal ?? 0;
-  const total = subtotal - discount + deliveryCharge;
+  // Previewed on the client only; the server recomputes it from the real cart
+  // when the order is placed, so this can never change what is charged.
+  const couponDiscount = appliedCoupon?.discount ?? 0;
+  const total =
+    Math.max(0, subtotal - discount - couponDiscount) + deliveryCharge;
   const isSubmitting =
     isStripePending ||
     isCodPending ||
     isGuestCodPending ||
     isGuestStripePending;
   const isBusy = cartLoading || addressLoading;
+
+  const handleApplyCoupon = () => {
+    const code = couponCode.trim();
+    if (!code) return;
+
+    quoteCoupon(
+      { code, subtotal },
+      {
+        onSuccess: (quote) => setAppliedCoupon(quote),
+        onError: () => setAppliedCoupon(null),
+      }
+    );
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+  };
 
   const handlePlaceOrder = () => {
     if (isSubmitting) return;
@@ -191,6 +252,7 @@ export default function Checkout() {
         name: guestName,
         email: guestEmail,
         phone: guestPhone,
+        ...(appliedCoupon ? { couponCode: appliedCoupon.code } : {}),
       };
 
       if (selectedPaymentMethod === "cod") {
@@ -207,6 +269,7 @@ export default function Checkout() {
     const payload = {
       addressId: selectedAddressId,
       deliveryMethod: selectedDeliveryMethod,
+      ...(appliedCoupon ? { couponCode: appliedCoupon.code } : {}),
     };
 
     if (selectedPaymentMethod === "cod") {
@@ -867,7 +930,11 @@ export default function Checkout() {
                       ? item.product.category
                       : item.product.category?.name;
                   const unitPrice =
-                    item.discountPriceAtPurchase ?? item.priceAtPurchase ?? 0;
+                    item.discountPriceAtPurchase ??
+                    item.priceAtPurchase ??
+                    item.product.discountPrice ??
+                    item.product.price ??
+                    0;
 
                   return (
                     <div
@@ -906,18 +973,81 @@ export default function Checkout() {
                 })}
               </div>
 
+              <div className="border-brand-border mt-6 border-t pt-5">
+                <label
+                  htmlFor="coupon-code"
+                  className="font-body text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-[0.2em] uppercase"
+                >
+                  <TicketPercent className="h-4 w-4" />
+                  Have a coupon?
+                </label>
+                <div className="mt-3 flex gap-2">
+                  <Input
+                    id="coupon-code"
+                    value={couponCode}
+                    onChange={(event) => {
+                      setCouponCode(event.target.value);
+                      if (appliedCoupon) setAppliedCoupon(null);
+                    }}
+                    placeholder="Enter code"
+                    autoComplete="off"
+                    disabled={isCouponPending}
+                    className="font-body uppercase"
+                  />
+                  {appliedCoupon ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleRemoveCoupon}
+                    >
+                      Remove
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      disabled={isCouponPending || !couponCode.trim()}
+                    >
+                      {isCouponPending ? "Applying…" : "Apply"}
+                    </Button>
+                  )}
+                </div>
+                {appliedCoupon ? (
+                  <p className="font-body mt-2 text-xs font-medium text-green-500">
+                    {appliedCoupon.code} applied — you saved{" "}
+                    {formatPrice(appliedCoupon.discount)}
+                  </p>
+                ) : (
+                  <p className="font-body text-muted-foreground mt-2 text-xs">
+                    {couponCode.trim()
+                      ? "Apply to see your discount."
+                      : "Have a code? Enter it to see your discount."}
+                  </p>
+                )}
+              </div>
+
               <div className="border-brand-border mt-6 space-y-3 border-t pt-5">
                 <div className="font-body flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span className="text-foreground">
                     {formatPrice(subtotal)}
                   </span>
-                </div>
+                </div>{" "}
                 {discount > 0 && (
                   <div className="font-body flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Discount</span>
                     <span className="text-green-500">
                       -{formatPrice(discount)}
+                    </span>
+                  </div>
+                )}
+                {couponDiscount > 0 && (
+                  <div className="font-body flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      Coupon ({appliedCoupon?.code})
+                    </span>
+                    <span className="text-green-500">
+                      -{formatPrice(couponDiscount)}
                     </span>
                   </div>
                 )}

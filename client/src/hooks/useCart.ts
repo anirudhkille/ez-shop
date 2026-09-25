@@ -113,6 +113,10 @@ export const useAddToCart = () => {
           quantity: payload.quantity || 1,
           size: payload.size,
           variantId: payload.variantId,
+          // Mirrors the server cart, which stores the price at purchase so a
+          // later price change cannot alter an existing cart's totals.
+          priceAtPurchase: payload.discountPrice ?? payload.price,
+          discountPriceAtPurchase: payload.discountPrice,
         });
         syncGuestCartToCache(queryClient);
         return Promise.resolve({ data: {} });

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { Link, useNavigate } from "react-router";
 
@@ -10,22 +10,24 @@ import {
   Heart,
   Lock,
   LogOut,
+  type LucideIcon,
   Mail,
   MapPin,
   Package,
   Phone,
   Save,
-  Settings,
   User,
   X,
 } from "lucide-react";
 
+import type { TAddress } from "@/types/address";
 import type { TProduct } from "@/types/product";
 
 import { formatPrice } from "@/lib/formatPrice";
 
 import useUserStore from "@/store/userStore";
 
+import { useAddresss } from "@/hooks/useAddress";
 import { useMyOrders } from "@/hooks/useOrder";
 import { useUpdateProfile } from "@/hooks/useUser";
 import { useToggleWishlist, useWishlistDetails } from "@/hooks/useWishlist";
@@ -45,6 +47,104 @@ interface OrderDoc {
   orderStatus: string;
   products?: unknown[];
   totalAmount: number;
+}
+
+function SettingsGroup({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <h2 className="font-body text-muted-foreground mb-3 text-sm font-medium">
+        {title}
+      </h2>
+      <div className="border-brand-border divide-brand-border divide-y overflow-hidden rounded-2xl border">
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function SettingsRow({
+  icon: Icon,
+  label,
+  value,
+  hint,
+  to,
+  onClick,
+  tone,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  hint?: string;
+  to?: string;
+  onClick?: () => void;
+  tone?: "danger";
+}) {
+  const body = (
+    <>
+      <span
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+          tone === "danger"
+            ? "text-destructive bg-destructive/10"
+            : "text-muted-foreground bg-brand-surface-raised"
+        }`}
+      >
+        <Icon size={16} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span
+          className={`font-body block text-sm font-medium ${
+            tone === "danger" ? "text-destructive" : "text-foreground"
+          }`}
+        >
+          {label}
+        </span>
+        {hint ? (
+          <span className="font-body text-muted-foreground mt-0.5 block text-xs">
+            {hint}
+          </span>
+        ) : null}
+      </span>
+      {value ? (
+        <span className="font-body text-muted-foreground shrink-0 text-sm">
+          {value}
+        </span>
+      ) : null}
+      {to ? (
+        <ChevronRight
+          size={16}
+          className="text-muted-foreground shrink-0"
+          aria-hidden
+        />
+      ) : null}
+    </>
+  );
+
+  const className =
+    "hover:bg-brand-surface-raised/60 flex w-full items-center gap-4 px-4 py-3.5 text-left transition-colors";
+
+  if (to) {
+    return (
+      <Link to={to} className={className}>
+        {body}
+      </Link>
+    );
+  }
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={className}>
+        {body}
+      </button>
+    );
+  }
+
+  return <div className="flex items-center gap-4 px-4 py-3.5">{body}</div>;
 }
 
 export default function Profile() {
@@ -70,7 +170,11 @@ export default function Profile() {
   const [saved, setSaved] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const [settingsSection, setSettingsSection] = useState<string | null>(null);
+  const { data: addressResponse } = useAddresss();
+  const addresses = useMemo(
+    () => (addressResponse?.data ?? []) as TAddress[],
+    [addressResponse]
+  );
 
   const handleSave = () => {
     updateProfile({ name: form.displayName });
@@ -131,7 +235,7 @@ export default function Profile() {
                   onClick={handleLogout}
                   className="border-brand-border font-body text-muted-foreground hover:border-destructive/40 hover:text-destructive flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition-colors duration-200"
                 >
-                  <LogOut size={14} /> Sign out
+                  <LogOut size={14} /> Logout
                 </button>
               </div>
             </div>
@@ -159,10 +263,7 @@ export default function Profile() {
             {tabs.map((tab) => (
               <button
                 key={tab}
-                onClick={() => {
-                  setActiveTab(tab);
-                  setSettingsSection(null);
-                }}
+                onClick={() => setActiveTab(tab)}
                 className={`font-body flex-1 rounded-xl px-5 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors duration-200 sm:flex-none ${
                   activeTab === tab
                     ? "bg-brand-orange text-primary-foreground"
@@ -492,154 +593,58 @@ export default function Profile() {
             </div>
           )}
 
-          {activeTab === "Settings" && !settingsSection && (
-            <div className="animate-fade-in-up grid grid-cols-1 gap-6 md:grid-cols-2">
-              {[
-                {
-                  icon: Mail,
-                  title: "Email Preferences",
-                  desc: "Manage newsletters and order alerts",
-                  key: "email",
-                },
-                {
-                  icon: MapPin,
-                  title: "Saved Addresses",
-                  desc: "Manage your shipping and billing addresses",
-                  key: "addresses",
-                },
-                {
-                  icon: Lock,
-                  title: "Security",
-                  desc: "Password and account security",
-                  key: "security",
-                },
-                {
-                  icon: Settings,
-                  title: "Account",
-                  desc: "Account preferences and data",
-                  key: "account",
-                },
-              ].map((item) => (
-                <button
-                  key={item.key}
-                  onClick={() => setSettingsSection(item.key)}
-                  className="bg-card border-brand-border hover:border-brand-orange/30 group flex w-full items-center gap-4 rounded-2xl border p-6 text-left transition-colors"
-                >
-                  <div className="bg-brand-surface-raised flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
-                    <item.icon size={20} className="text-brand-orange" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-body text-foreground font-semibold">
-                      {item.title}
-                    </h3>
-                    <p className="font-body text-muted-foreground mt-0.5 text-xs">
-                      {item.desc}
-                    </p>
-                  </div>
-                  <ChevronRight
-                    size={16}
-                    className="text-muted-foreground group-hover:text-brand-orange transition-[color,transform] duration-200 group-hover:translate-x-1"
-                  />
-                </button>
-              ))}
-            </div>
-          )}
+          {activeTab === "Settings" && (
+            <div className="max-w-2xl space-y-10">
+              <SettingsGroup title="Account">
+                <SettingsRow icon={User} label="Name" value={displayName} />
+                <SettingsRow
+                  icon={Mail}
+                  label="Email"
+                  value={email ?? ""}
+                  hint="Used for order updates and receipts."
+                />
+                <SettingsRow
+                  icon={Phone}
+                  label="Phone"
+                  value={phone || "Not added"}
+                  hint="Helps delivery updates reach you."
+                />
+              </SettingsGroup>
 
-          {activeTab === "Settings" && settingsSection === "addresses" && (
-            <div className="animate-fade-in-up">
-              <button
-                onClick={() => setSettingsSection(null)}
-                className="font-body text-brand-orange hover:text-brand-orange/80 mb-6 flex items-center gap-1 text-sm transition-colors"
-              >
-                <ChevronRight size={14} className="rotate-180" /> Back to
-                Settings
-              </button>
-              <div className="bg-card border-brand-border rounded-2xl border p-6">
-                <h2 className="font-display text-foreground mb-4 text-xl font-bold uppercase">
-                  Saved Addresses
-                </h2>
-                <p className="font-body text-muted-foreground text-sm">
-                  <Link
-                    to="/account/delivery-addresses"
-                    className="text-brand-orange hover:underline"
-                  >
-                    Manage your addresses here
-                  </Link>
-                </p>
-              </div>
-            </div>
-          )}
+              <SettingsGroup title="Shopping">
+                <SettingsRow
+                  icon={MapPin}
+                  label="Addresses"
+                  value={
+                    addresses.length === 0
+                      ? "None saved"
+                      : `${addresses.length} saved`
+                  }
+                  hint="Where your orders get delivered."
+                  to="/account/delivery-addresses"
+                />
+              </SettingsGroup>
 
-          {activeTab === "Settings" && settingsSection === "security" && (
-            <div className="animate-fade-in-up">
-              <button
-                onClick={() => setSettingsSection(null)}
-                className="font-body text-brand-orange hover:text-brand-orange/80 mb-6 flex items-center gap-1 text-sm transition-colors"
-              >
-                <ChevronRight size={14} className="rotate-180" /> Back to
-                Settings
-              </button>
-              <div className="bg-card border-brand-border rounded-2xl border p-6">
-                <h2 className="font-display text-foreground mb-4 text-xl font-bold uppercase">
-                  Security
-                </h2>
-                <p className="font-body text-muted-foreground mb-4 text-sm">
-                  Update your password and manage account security.
-                </p>
-                <Link
+              <SettingsGroup title="Security">
+                <SettingsRow
+                  icon={Lock}
+                  label="Password"
+                  value="Change"
+                  hint="Use a password you do not use anywhere else."
                   to="/account/update-password"
-                  className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
-                >
-                  <Lock size={14} /> Update Password
-                </Link>
-              </div>
-            </div>
-          )}
+                />
+              </SettingsGroup>
 
-          {activeTab === "Settings" && settingsSection === "email" && (
-            <div className="animate-fade-in-up">
-              <button
-                onClick={() => setSettingsSection(null)}
-                className="font-body text-brand-orange hover:text-brand-orange/80 mb-6 flex items-center gap-1 text-sm transition-colors"
-              >
-                <ChevronRight size={14} className="rotate-180" /> Back to
-                Settings
-              </button>
-              <div className="bg-card border-brand-border rounded-2xl border p-6">
-                <h2 className="font-display text-foreground mb-4 text-xl font-bold uppercase">
-                  Email Preferences
-                </h2>
-                <p className="font-body text-muted-foreground text-sm">
-                  Your email <strong>{email}</strong> is used for order updates
-                  and account notifications.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "Settings" && settingsSection === "account" && (
-            <div className="animate-fade-in-up">
-              <button
-                onClick={() => setSettingsSection(null)}
-                className="font-body text-brand-orange hover:text-brand-orange/80 mb-6 flex items-center gap-1 text-sm transition-colors"
-              >
-                <ChevronRight size={14} className="rotate-180" /> Back to
-                Settings
-              </button>
-              <div className="bg-card border-brand-border rounded-2xl border p-6">
-                <h2 className="font-display text-foreground mb-4 text-xl font-bold uppercase">
-                  Account
-                </h2>
-                <p className="font-body text-muted-foreground mb-4 text-sm">
-                  Manage your account preferences and data.
-                </p>
-                <button
+              <SettingsGroup title="Session">
+                <SettingsRow
+                  icon={LogOut}
+                  label="Sign out"
+                  value=""
+                  hint="You will need to sign in again."
                   onClick={handleLogout}
-                  className="border-destructive/30 text-destructive font-body hover:bg-destructive/5 inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-semibold transition-colors"
-                >
-                  <LogOut size={14} /> Sign Out
-                </button>
-              </div>
+                  tone="danger"
+                />
+              </SettingsGroup>
             </div>
           )}
         </div>

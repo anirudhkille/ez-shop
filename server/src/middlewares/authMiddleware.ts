@@ -4,6 +4,7 @@ import User from "@/modules/user/user.model";
 import Admin from "@/modules/admin/admin.model";
 import { env } from "@/config/env.config";
 import { asyncHandler } from "../utils/asyncHandler";
+import { sendResponse } from "@/utils/response";
 
 interface ITokenPayload extends JwtPayload {
   _id: string;
@@ -38,9 +39,9 @@ export const protect = asyncHandler(
     const user = await loadUser(req);
 
     if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Not authorized, no token" });
+      return sendResponse(res, 401, "Not authorized, no token", {
+        code: "UNAUTHORIZED",
+      });
     }
 
     req.user = user as unknown as Express.User;

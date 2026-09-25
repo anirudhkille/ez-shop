@@ -1,26 +1,31 @@
-import { useState } from "react";
-
 import { Link } from "react-router";
 
-import { ArrowRight, ShoppingBag, Tag } from "lucide-react";
+import { ArrowRight, ShoppingBag } from "lucide-react";
 
 import { formatPrice } from "@/lib/formatPrice";
+
+import { useCouponStore } from "@/store/couponStore";
 
 import { useCart } from "@/hooks/useCart";
 
 import CartProductCard, {
   type CartItem,
 } from "@/features/cart/cart-product-card";
+import CouponField from "@/features/cart/coupon-field";
 
 export default function Cart() {
   const { data: cartItems } = useCart();
-  const [coupon, setCoupon] = useState("");
-  const [couponApplied, setCouponApplied] = useState(false);
+  const couponQuote = useCouponStore((state) => state.quote);
 
   const subtotal = cartItems?.subtotal;
   const discount = cartItems?.discountTotal;
   const shipping = cartItems?.shipping || 0;
   const total = cartItems?.total;
+
+  // Clamped to the current subtotal so a stale quote can never show a discount
+  // larger than the cart. The server re-validates at checkout.
+  const couponDiscount = Math.min(couponQuote?.discount ?? 0, subtotal ?? 0);
+  const displayTotal = Math.max(0, (total ?? 0) - couponDiscount);
 
   return (
     <div className="mx-auto max-w-350 px-6 pt-20 pb-10 lg:px-10">
@@ -61,33 +66,7 @@ export default function Cart() {
               </h2>
 
               {/* Coupon */}
-              <div className="mb-6 flex gap-2">
-                <div className="relative flex-1">
-                  <Tag
-                    size={14}
-                    className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
-                  />
-                  <input
-                    value={coupon}
-                    onChange={(e) => setCoupon(e.target.value)}
-                    placeholder="Promo code"
-                    className="bg-background border-brand-border font-body text-foreground placeholder:text-muted-foreground focus:border-brand-orange w-full rounded-xl border py-2.5 pr-4 pl-9 text-sm transition-colors focus:outline-none"
-                  />
-                </div>
-                <button
-                  onClick={() => {
-                    if (coupon) setCouponApplied(true);
-                  }}
-                  className="bg-brand-orange/10 border-brand-orange/30 text-brand-orange font-body hover:bg-brand-orange hover:text-primary-foreground rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors duration-200"
-                >
-                  Apply
-                </button>
-              </div>
-              {couponApplied && (
-                <p className="font-body mb-4 text-xs text-green-400">
-                  ✓ 10% discount applied!
-                </p>
-              )}
+              <CouponField subtotal={subtotal ?? 0} className="mb-6" />
 
               <div className="space-y-3">
                 <div className="font-body flex justify-between text-sm">
@@ -101,6 +80,16 @@ export default function Cart() {
                     <span className="text-green-400">Discount</span>
                     <span className="text-green-400">
                       -{formatPrice(discount)}
+                    </span>
+                  </div>
+                )}
+                {couponDiscount > 0 && (
+                  <div className="font-body flex justify-between text-sm">
+                    <span className="text-green-400">
+                      Coupon ({couponQuote?.code})
+                    </span>
+                    <span className="text-green-400">
+                      -{formatPrice(couponDiscount)}
                     </span>
                   </div>
                 )}
@@ -125,7 +114,7 @@ export default function Cart() {
                     Total
                   </span>
                   <span className="font-display text-brand-orange text-2xl font-bold">
-                    {formatPrice(total)}
+                    {formatPrice(displayTotal)}
                   </span>
                 </div>
               </div>

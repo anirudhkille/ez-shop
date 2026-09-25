@@ -73,7 +73,7 @@ export default function ResetPasswordForm() {
         type="submit"
         disabled={isPending}
       >
-        Forgot password
+        Reset password
       </Button>
     </form>
   );
