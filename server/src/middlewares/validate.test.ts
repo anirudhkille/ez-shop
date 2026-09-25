@@ -108,6 +108,7 @@ describe("validate", () => {
     assert.equal(response.statusCode, 400);
     assert.deepEqual(response.body, {
       success: false,
+      message: "Invalid email",
       error: "Validation error",
       details: [{ field: "profile.email", message: "Invalid email" }],
     });

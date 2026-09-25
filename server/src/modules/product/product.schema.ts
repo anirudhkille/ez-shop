@@ -127,13 +127,13 @@ const productFields = {
   discountPrice: optionalNonNegativeNumberSchema,
   stock: stockSchema,
   category: objectIdSchema,
-  image: nonEmptyString.optional(),
+  image: optionalNonEmptyString,
   publish: booleanSchema,
   gender: z.enum(["men", "women", "unisex"]),
   isFeatured: booleanSchema,
   isBestSellers: booleanSchema,
   tag: z.enum(["Best Seller", "Trending", "Limited", "New", "Hot", "Sale"]),
-  slug: nonEmptyString.optional(),
+  slug: optionalNonEmptyString,
 };
 
 export const productCreateSchema = z.object({
