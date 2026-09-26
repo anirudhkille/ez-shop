@@ -7,7 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
-import { Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
+import { Check, Eye, EyeOff, Lock, ShieldCheck, X } from "lucide-react";
 
 import { getErrorMessage } from "@/lib/apiError";
 
@@ -34,6 +34,36 @@ const formSchema = z
   });
 
 type FormValues = z.infer<typeof formSchema>;
+
+/**
+ * Advisory only — the server is the authority on password policy. These give
+ * the user feedback before submitting rather than after a round trip.
+ */
+const requirements = [
+  {
+    id: "length",
+    label: "At least 8 characters",
+    test: (value: string) => value.length >= 8,
+  },
+  {
+    id: "case",
+    label: "Upper and lower case letters",
+    test: (value: string) => /[a-z]/.test(value) && /[A-Z]/.test(value),
+  },
+  {
+    id: "number",
+    label: "A number",
+    test: (value: string) => /\d/.test(value),
+  },
+];
+
+const strengthMeta = [
+  { label: "", bar: "bg-transparent", text: "text-transparent" },
+  { label: "Too weak", bar: "bg-destructive", text: "text-destructive" },
+  { label: "Too weak", bar: "bg-destructive", text: "text-destructive" },
+  { label: "Fair", bar: "bg-amber-400", text: "text-amber-400" },
+  { label: "Strong", bar: "bg-green-400", text: "text-green-400" },
+];
 
 /** Password field with a show/hide toggle, matching the auth form styling. */
 function PasswordField({
@@ -86,6 +116,13 @@ export default function UpdatePasswordForm() {
     },
   });
 
+  // Watched rather than read from an onChange prop: FormInput spreads caller
+  // props after react-hook-form's `field`, so an onChange would replace the
+  // field registration and silently break the form.
+  const newPassword = form.watch("newPassword");
+  const score = requirements.filter((rule) => rule.test(newPassword)).length;
+  const strength = strengthMeta[score];
+
   const onSubmit = (values: FormValues) => {
     updatePassword(
       {
@@ -126,6 +163,49 @@ export default function UpdatePasswordForm() {
           icon={<ShieldCheck size={16} />}
           autoComplete="new-password"
         />
+
+        {newPassword ? (
+          <div className="pt-2">
+            <div className="flex items-center gap-1.5" aria-hidden>
+              {requirements.map((rule, index) => (
+                <span
+                  key={rule.id}
+                  className={`h-1 flex-1 rounded-full ${
+                    index < score ? strength.bar : "bg-muted-foreground/20"
+                  }`}
+                />
+              ))}
+            </div>
+
+            <p
+              className={`font-body mt-2 text-[11px] font-semibold tracking-wider uppercase ${strength.text}`}
+            >
+              {strength.label}
+            </p>
+
+            <ul className="mt-2 space-y-1">
+              {requirements.map((rule) => {
+                const met = rule.test(newPassword);
+
+                return (
+                  <li
+                    key={rule.id}
+                    className={`font-body flex items-center gap-1.5 text-xs ${
+                      met ? "text-green-400" : "text-muted-foreground"
+                    }`}
+                  >
+                    {met ? (
+                      <Check size={12} aria-hidden />
+                    ) : (
+                      <X size={12} aria-hidden />
+                    )}
+                    {rule.label}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : null}
       </div>
 
       <div className="space-y-1.5">

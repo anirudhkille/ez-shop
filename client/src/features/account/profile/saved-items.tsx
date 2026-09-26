@@ -11,54 +11,53 @@ import { formatPrice } from "@/lib/formatPrice";
 export interface SavedItemsProps {
   products?: TProduct[];
   isLoading?: boolean;
+  /** 0 shows every item. */
   limit?: number;
-  showAllLink?: boolean;
+  /** Called with the product id; the parent owns the wishlist mutation. */
+  onRemove?: (productId: string) => void;
 }
 
 export const SavedItems: FC<SavedItemsProps> = ({
   products = [],
   isLoading = false,
   limit = 4,
-  showAllLink,
+  onRemove,
 }) => {
   const items = limit ? products.slice(0, limit) : products;
 
   if (isLoading) {
-    return Array.from({ length: limit }, (_, i) => (
-      <div key={i} className="animate-pulse space-y-2">
-        <div className="bg-muted-foreground/30 h-48 w-full rounded"></div>
-        <div className="bg-muted-foreground/30 h-4 w-3/4 rounded"></div>
+    return (
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4" aria-busy>
+        {Array.from({ length: limit }, (_, i) => (
+          <div
+            key={i}
+            className="bg-card border-brand-border animate-pulse rounded-2xl border p-4"
+          >
+            <div className="bg-muted-foreground/25 mb-3 aspect-square w-full rounded" />
+            <div className="bg-muted-foreground/25 h-4 w-3/4 rounded" />
+          </div>
+        ))}
       </div>
-    ));
+    );
   }
 
   if (!products.length) {
     return (
-      <div className="py-8 text-center">
-        <svg
-          width="48"
-          height="48"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M12 10V6M8 10H16M5 20H19V8H5v12z"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <p className="font-body text-muted-foreground mt-4">
-          Nothing saved yet
+      <div className="py-14 text-center">
+        <Heart
+          size={40}
+          className="text-muted-foreground/30 mx-auto mb-3"
+          aria-hidden
+        />
+        <p className="font-body text-muted-foreground text-sm">
+          Your wishlist is empty
         </p>
-        <a
-          href="/products"
-          className="bg-brand-orange text-primary-foreground font-body mt-4 inline-block rounded-full px-6 py-3"
+        <Link
+          to="/products"
+          className="bg-brand-orange text-primary-foreground font-body mt-5 inline-block rounded-full px-6 py-3 text-sm font-semibold"
         >
           Browse products
-        </a>
+        </Link>
       </div>
     );
   }
@@ -70,19 +69,23 @@ export const SavedItems: FC<SavedItemsProps> = ({
           key={p._id}
           className="group bg-card border-brand-border hover:border-brand-orange/40 relative overflow-hidden rounded-2xl border transition-[border-color,transform] duration-200 hover:-translate-y-1"
         >
-          <button
-            onClick={() => {
-              /* toggle handled by parent via hook */
-            }}
-            className="bg-background/80 absolute top-3 right-3 z-10 rounded-full p-1.5"
-          >
-            <Heart size={14} className="fill-red-500 text-red-500" />
-          </button>
+          {onRemove ? (
+            <button
+              type="button"
+              onClick={() => onRemove(p._id)}
+              aria-label={`Remove ${p.name} from wishlist`}
+              className="bg-background/80 absolute top-3 right-3 z-10 rounded-full p-1.5"
+            >
+              <Heart size={14} className="fill-red-500 text-red-500" />
+            </button>
+          ) : null}
+
           <Link to={`/${p.slug}/${p._id}`}>
             <div className="bg-brand-surface-raised flex aspect-square items-center justify-center p-6">
               <img
                 src={p.image}
                 alt={p.name}
+                loading="lazy"
                 className="h-full w-full object-contain transition-transform duration-200 ease-out group-hover:scale-[1.04]"
               />
             </div>
@@ -90,25 +93,13 @@ export const SavedItems: FC<SavedItemsProps> = ({
               <p className="font-display text-foreground truncate text-sm font-bold">
                 {p.name}
               </p>
-              <div className="mt-2 flex items-center justify-between">
-                <span className="font-display text-brand-orange font-bold">
-                  {formatPrice(p.discountPrice || p.price)}
-                </span>
-              </div>
+              <p className="font-display text-brand-orange mt-2 font-bold">
+                {formatPrice(p.discountPrice || p.price)}
+              </p>
             </div>
           </Link>
         </div>
       ))}
-      {showAllLink && (
-        <div className="col-span-full flex justify-center">
-          <Link
-            to="/wishlist"
-            className="text-brand-orange inline-flex items-center gap-2 text-sm font-semibold"
-          >
-            View all
-          </Link>
-        </div>
-      )}
     </div>
   );
 };

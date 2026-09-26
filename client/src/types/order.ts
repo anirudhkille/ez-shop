@@ -34,3 +34,23 @@ export type TOrderSummary = {
   products?: TOrderProduct[];
   coupon?: { code: string; type: string; discount: number };
 };
+
+/** Mirrors `IOrder.address` — the address is denormalised onto the order. */
+export type TOrderAddress = {
+  name: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  phone: string;
+};
+
+/** A single order as returned by the by-id endpoints, with its address. */
+export type TOrderDetail = TOrderSummary & {
+  address?: TOrderAddress;
+  name?: string;
+  email?: string;
+  phone?: string;
+};

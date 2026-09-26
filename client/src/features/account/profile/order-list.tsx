@@ -1,109 +1,175 @@
-import type { FC } from "react";
+import { useMemo, useState } from "react";
+
+import { Link } from "react-router";
+
+import { ChevronRight, Package } from "lucide-react";
+
+import type { TOrderSummary } from "@/types/order";
 
 import { formatPrice } from "@/lib/formatPrice";
 
-import { getOrderStatusMeta } from "./order-status";
-import type { TProfileOrder } from "./types";
+import { OrderLineItems, OrderStatusPill } from "./order-line-items";
+import {
+  matchesStatusFilter,
+  ORDER_STATUS_FILTERS,
+  type TOrderStatusFilter,
+} from "./order-status";
 
-export interface OrderListProps {
-  orders?: TProfileOrder[];
+/** Line items shown before the "+N more" toggle appears. */
+const COLLAPSED_ITEM_COUNT = 2;
+
+interface OrderListProps {
+  orders?: TOrderSummary[];
   isLoading?: boolean;
+  /** Hide the filter chips and force every line item open (overview panel). */
   compact?: boolean;
 }
 
-export const OrderList: FC<OrderListProps> = ({
+function shortOrderId(id: string) {
+  return id.slice(-6).toUpperCase();
+}
+
+function OrderCard({
+  order,
+  collapsible,
+}: {
+  order: TOrderSummary;
+  collapsible: boolean;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const items = order.products ?? [];
+  // Sum quantities rather than counting lines, so "Qty 2" reads as 2 items and
+  // matches the order detail page and the server's own itemCount aggregation.
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const isExpandable = collapsible && items.length > COLLAPSED_ITEM_COUNT;
+  const visibleItems =
+    isExpandable && !expanded ? items.slice(0, COLLAPSED_ITEM_COUNT) : items;
+  const hiddenCount = items.length - visibleItems.length;
+
+  return (
+    <article className="bg-card border-brand-border rounded-2xl border">
+      <header className="border-brand-border/40 flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4">
+        <div className="min-w-0">
+          <h3 className="font-display text-foreground text-base font-bold">
+            #{shortOrderId(order._id)}
+          </h3>
+          <p className="font-body text-muted-foreground mt-0.5 text-xs">
+            Placed {new Date(order.createdAt).toLocaleDateString("en-IN")} ·{" "}
+            {itemCount} item{itemCount === 1 ? "" : "s"}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <OrderStatusPill status={order.orderStatus} />
+          <p className="font-display text-brand-orange text-base font-bold whitespace-nowrap">
+            {formatPrice(order.totalAmount)}
+          </p>
+          <Link
+            to={`/account/orders/${order._id}`}
+            aria-label={`View details for order ${shortOrderId(order._id)}`}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ChevronRight size={16} aria-hidden />
+          </Link>
+        </div>
+      </header>
+
+      <OrderLineItems items={visibleItems} />
+
+      {isExpandable ? (
+        <button
+          type="button"
+          onClick={() => setExpanded((prev) => !prev)}
+          aria-expanded={expanded}
+          className="font-body text-brand-orange hover:text-brand-orange/80 w-full px-5 py-3 text-left text-xs font-semibold"
+        >
+          {expanded
+            ? "Show fewer items"
+            : `+ ${hiddenCount} more item${hiddenCount === 1 ? "" : "s"}`}
+        </button>
+      ) : null}
+    </article>
+  );
+}
+
+export function OrderList({
   orders = [],
   isLoading = false,
   compact = false,
-}) => {
-  const toShow = compact ? orders.slice(0, 3) : orders;
+}: OrderListProps) {
+  const [filter, setFilter] = useState<TOrderStatusFilter>("all");
 
-  const renderRow = (order: TProfileOrder) => (
-    <div
-      key={order._id}
-      className="border-brand-border/50 flex items-center justify-between border-b py-4 last:border-0"
-    >
-      <div className="flex items-center gap-3">
-        <div className="bg-brand-surface-raised flex h-10 w-10 items-center justify-center rounded-xl">
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M4 9v9h16V9H4zm2-2h12l-1-3H7l-1 3z" fill="currentColor" />
-          </svg>
-        </div>
-        <div>
-          <p className="font-body text-foreground text-sm font-semibold">
-            #{order._id?.slice(-6).toUpperCase()}
-          </p>
-          <p className="font-body text-muted-foreground text-xs">
-            {new Date(order.createdAt).toLocaleDateString()} ·{" "}
-            {order.products?.length ?? 0} item
-            {(order.products?.length ?? 0) > 1 ? "s" : ""}
-          </p>
-        </div>
-      </div>
-      <div className="text-right">
-        <p className="font-display text-brand-orange text-base font-bold">
-          {formatPrice(order.totalAmount)}
-        </p>
-        <span
-          className={`font-body rounded-full border px-2 py-0.5 text-[10px] font-semibold ${getOrderStatusMeta(order.orderStatus).className}`}
-        >
-          {getOrderStatusMeta(order.orderStatus).label}
-        </span>
-      </div>
-    </div>
+  const visibleOrders = useMemo(
+    () => orders.filter((order) => matchesStatusFilter(order, filter)),
+    [orders, filter]
   );
 
   if (isLoading) {
-    return Array.from({ length: 3 }, (_, i) => (
-      <div key={i} className="flex animate-pulse items-center gap-3 py-4">
-        <div className="bg-muted-foreground/30 h-10 w-10 rounded-xl"></div>
-        <div className="flex-1 space-y-2">
-          <div className="bg-muted-foreground/30 h-4 w-1/4 rounded"></div>
-          <div className="bg-muted-foreground/30 h-3 w-1/3 rounded"></div>
-        </div>
-        <div className="bg-muted-foreground/30 h-4 w-1/4 rounded"></div>
+    return (
+      <div className="space-y-3" aria-busy>
+        {Array.from({ length: compact ? 2 : 3 }, (_, i) => (
+          <div
+            key={i}
+            className="bg-card border-brand-border animate-pulse rounded-2xl border p-5"
+          >
+            <div className="bg-muted-foreground/25 mb-4 h-4 w-32 rounded" />
+            <div className="bg-muted-foreground/25 h-12 w-full rounded-lg" />
+          </div>
+        ))}
       </div>
-    ));
+    );
   }
 
   if (!orders.length) {
     return (
-      <div className="py-8 text-center">
-        <svg
-          width="48"
-          height="48"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+      <div className="py-14 text-center">
+        <Package size={40} className="text-muted-foreground/30 mx-auto mb-3" />
+        <p className="font-body text-muted-foreground text-sm">No orders yet</p>
+        <Link
+          to="/products"
+          className="bg-brand-orange text-primary-foreground font-body mt-5 inline-block rounded-full px-6 py-3 text-sm font-semibold"
         >
-          <path
-            d="M12 9v6m3-3h-6"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <p className="font-body text-muted-foreground mt-4">No orders yet</p>
-        <a
-          href="/products"
-          className="bg-brand-orange text-primary-foreground font-body mt-4 inline-block rounded-full px-6 py-3"
-        >
-          Browse products
-        </a>
+          Start shopping
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="border-brand-border divide-brand-border divide-y">
-      {toShow.map(renderRow)}
+    <div className="space-y-4">
+      {!compact && (
+        <div
+          role="group"
+          aria-label="Filter orders by status"
+          className="flex flex-wrap gap-2"
+        >
+          {ORDER_STATUS_FILTERS.map((status) => (
+            <button
+              key={status}
+              type="button"
+              onClick={() => setFilter(status)}
+              aria-pressed={filter === status}
+              className={`font-body rounded-full border px-3.5 py-1.5 text-xs font-semibold capitalize transition-colors ${
+                filter === status
+                  ? "border-brand-orange bg-brand-orange/10 text-brand-orange"
+                  : "border-brand-border text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {status}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {visibleOrders.length === 0 ? (
+        <p className="font-body text-muted-foreground py-10 text-center text-sm">
+          No orders with this status.
+        </p>
+      ) : (
+        visibleOrders.map((order) => (
+          <OrderCard key={order._id} order={order} collapsible={!compact} />
+        ))
+      )}
     </div>
   );
-};
+}

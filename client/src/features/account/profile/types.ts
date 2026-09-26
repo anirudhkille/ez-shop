@@ -1,14 +1,16 @@
-export const PROFILE_VIEWS = ["overview", "orders", "saved"] as const;
+/**
+ * The account area is route-driven: each panel is a child route of `/account`
+ * (see App.tsx). `/account` itself renders the overview panel via `<Outlet />`.
+ */
+export const PROFILE_VIEWS = [
+  "overview",
+  "orders",
+  "saved",
+  "settings",
+] as const;
 
-export type ProfileView = (typeof PROFILE_VIEWS)[0];
+export type ProfileView = (typeof PROFILE_VIEWS)[number];
 
-export type TProfileOrder = {
-  _id: string;
-  createdAt: string;
-  orderStatus?: string;
-  products?: unknown[];
-  totalAmount: number;
-};
-
-export const isProfileView = (value: string | null): value is ProfileView =>
-  PROFILE_VIEWS.some((view) => view === value);
+/** Absolute path for a view. The overview panel is the `/account` index. */
+export const profileViewPath = (view: ProfileView): string =>
+  view === "overview" ? "/account" : `/account/${view}`;

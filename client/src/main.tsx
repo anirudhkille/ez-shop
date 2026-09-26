@@ -5,9 +5,9 @@ import { BrowserRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { createRoot } from "react-dom/client";
-import { Toaster } from "sonner";
 
 import App from "./App";
+import AppToaster from "./components/shared/app-toaster";
 import "./index.css";
 
 const queryClient = new QueryClient({
@@ -21,6 +21,6 @@ createRoot(document.getElementById("root")!).render(
         <App />
       </BrowserRouter>
     </QueryClientProvider>
-    <Toaster position="top-center" />
+    <AppToaster />
   </StrictMode>
 );

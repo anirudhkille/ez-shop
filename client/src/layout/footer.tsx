@@ -5,7 +5,7 @@ import { Github, Instagram, Linkedin, Mail } from "lucide-react";
 const footerLinks = {
   Shop: [
     { label: "All Products", href: "/products" },
-    { label: "Wishlist", href: "/wishlist" },
+    { label: "Wishlist", href: "/account/saved" },
     { label: "Cart", href: "/cart" },
   ],
 

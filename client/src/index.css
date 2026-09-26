@@ -83,6 +83,87 @@
   );
 }
 
+/*
+ * Sonner theming. The toaster reads these custom properties, so the brand is
+ * applied here instead of fighting its inline styles from JSX.
+ */
+[data-sonner-toaster] {
+  /* Success/warning are literal HSL triples: the theme only defines a
+     destructive token, and Tailwind's green-400/amber-400 are not CSS vars. */
+  --toast-success: 142 71% 45%;
+  --toast-warning: 38 92% 50%;
+
+  --normal-bg: hsl(var(--card));
+  --normal-text: hsl(var(--foreground));
+  --normal-border: hsl(var(--brand-border));
+
+  --success-bg: hsl(var(--card));
+  --success-text: hsl(var(--foreground));
+  --success-border: hsl(var(--toast-success) / 0.4);
+
+  --error-bg: hsl(var(--card));
+  --error-text: hsl(var(--foreground));
+  --error-border: hsl(var(--destructive) / 0.45);
+
+  --warning-bg: hsl(var(--card));
+  --warning-text: hsl(var(--foreground));
+  --warning-border: hsl(var(--toast-warning) / 0.45);
+
+  --info-bg: hsl(var(--card));
+  --info-text: hsl(var(--foreground));
+  --info-border: hsl(var(--brand-border));
+
+  --loading-bg: hsl(var(--card));
+  --loading-text: hsl(var(--foreground));
+  --loading-border: hsl(var(--brand-border));
+
+  font-family: var(--font-body);
+}
+
+[data-sonner-toast] {
+  border-radius: calc(var(--radius) - 2px) !important;
+  font-weight: 500;
+  box-shadow: var(--shadow-card);
+}
+
+/* The leading status dot/icon carries the type colour, so keep it brand-aligned
+   for the neutral types and let success/error use their own hues. */
+[data-sonner-toast][data-type="success"] [data-icon] {
+  color: hsl(var(--toast-success));
+}
+
+[data-sonner-toast][data-type="error"] [data-icon] {
+  color: hsl(var(--destructive));
+}
+
+[data-sonner-toast][data-type="warning"] [data-icon] {
+  color: hsl(var(--toast-warning));
+}
+
+[data-sonner-toast][data-close-button] {
+  color: hsl(var(--muted-foreground));
+  background: transparent;
+}
+
+[data-sonner-toast][data-close-button]:hover {
+  color: hsl(var(--foreground));
+  background: hsl(var(--brand-surface-raised));
+}
+
+[data-sonner-toast] [data-title] {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+[data-sonner-toast] [data-description] {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Progress bar for `toast.promise` / loading toasts. */
+[data-sonner-toaster] [data-progress-bar] {
+  background: hsl(var(--brand-orange)) !important;
+}
+
 @layer base {
   *,
   ::after,

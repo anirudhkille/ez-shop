@@ -1,7 +1,5 @@
 import { Link } from "react-router";
 
-import { ShoppingBag } from "lucide-react";
-
 import { formatPrice } from "@/lib/formatPrice";
 
 import { useCouponStore } from "@/store/couponStore";
@@ -11,11 +9,15 @@ import { useCart } from "@/hooks/useCart";
 import CartProductCard, {
   type CartItem,
 } from "@/features/cart/cart-product-card";
+import CartSkeleton from "@/features/cart/cart-skeleton";
 import CouponField from "@/features/cart/coupon-field";
+import EmptyCart from "@/features/cart/empty-cart";
 
 export default function Cart() {
-  const { data: cartItems } = useCart();
+  const { data: cartItems, isLoading } = useCart();
   const couponQuote = useCouponStore((state) => state.quote);
+
+  const items = cartItems?.products ?? [];
 
   const subtotal = cartItems?.subtotal;
   const discount = cartItems?.discountTotal;
@@ -38,23 +40,14 @@ export default function Cart() {
         </h1>
       </div>
 
-      {cartItems?.products?.length === 0 ? (
-        <div className="flex flex-col items-center gap-6 py-32 text-center">
-          <ShoppingBag size={64} className="text-muted-foreground/20" />
-          <p className="font-display text-muted-foreground text-3xl uppercase">
-            Your cart is empty
-          </p>
-          <Link
-            to="/products"
-            className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-8 py-4 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
-          >
-            Start Shopping
-          </Link>
-        </div>
+      {isLoading ? (
+        <CartSkeleton />
+      ) : items.length === 0 ? (
+        <EmptyCart />
       ) : (
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="space-y-4 lg:col-span-2">
-            {cartItems?.products?.map((item: CartItem) => (
+            {items.map((item: CartItem) => (
               <CartProductCard key={item?._id} item={item} />
             ))}
           </div>
@@ -103,12 +96,6 @@ export default function Cart() {
                     {shipping === 0 ? "Free" : shipping}
                   </span>
                 </div>
-                {shipping > 0 && (
-                  <p className="font-body text-muted-foreground text-xs">
-                    Add {Math.max(0, 100 - (subtotal ?? 0))} more for free
-                    shipping
-                  </p>
-                )}
                 <div className="border-brand-border flex justify-between border-t pt-3">
                   <span className="font-display text-foreground text-lg font-bold uppercase">
                     Total

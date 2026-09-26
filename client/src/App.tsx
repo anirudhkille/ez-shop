@@ -24,16 +24,25 @@ const ForgotPassword = lazy(() => import("./pages/auth/forgot-password"));
 const ResetPassword = lazy(() => import("./pages/auth/reset-password"));
 const GoogleCallback = lazy(() => import("./pages/auth/google-callback"));
 
-const Wishlist = lazy(() => import("./pages/wishlist"));
-
 const Successful = lazy(() => import("./pages/payment/successful"));
 const Failure = lazy(() => import("./pages/payment/failure"));
 
 const NotFound = lazy(() => import("./pages/not-found"));
 const Profile = lazy(() => import("./pages/profile/profile"));
+const OverviewPanel = lazy(
+  () => import("./features/account/profile/overview-panel")
+);
+const OrdersPanel = lazy(
+  () => import("./features/account/profile/orders-panel")
+);
+const SavedPanel = lazy(() => import("./features/account/profile/saved-panel"));
+const SettingsPanel = lazy(
+  () => import("./features/account/profile/settings-panel")
+);
 const DeliveryAddresses = lazy(
   () => import("./pages/account/delivery-addresses")
 );
+const OrderDetail = lazy(() => import("./pages/account/order-detail"));
 const UpdatePassword = lazy(() => import("./pages/account/update-password"));
 const TrackOrder = lazy(() => import("./pages/orders/track-order"));
 const Returns = lazy(() => import("./pages/orders/returns"));
@@ -63,8 +72,16 @@ export default function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route element={<ProtectedRoute />}>
-              <Route path="/account" element={<Profile />} />
-              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/account" element={<Profile />}>
+                <Route index element={<OverviewPanel />} />
+                <Route path="orders" element={<OrdersPanel />} />
+                <Route path="saved" element={<SavedPanel />} />
+                <Route path="settings" element={<SettingsPanel />} />
+              </Route>
+              <Route
+                path="/account/orders/:orderId"
+                element={<OrderDetail />}
+              />
               <Route
                 path="/account/addresses"
                 element={<DeliveryAddresses />}

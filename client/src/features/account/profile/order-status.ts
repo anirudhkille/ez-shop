@@ -1,3 +1,19 @@
+import type { TOrderProduct, TOrderSummary } from "@/types/order";
+
+/**
+ * `orderStatus` is constrained by the server enum to
+ * processing | shipped | delivered (server/src/modules/order/order.model.ts),
+ * so the filter row only offers statuses an order can actually hold.
+ */
+export const ORDER_STATUS_FILTERS = [
+  "all",
+  "processing",
+  "shipped",
+  "delivered",
+] as const;
+
+export type TOrderStatusFilter = (typeof ORDER_STATUS_FILTERS)[number];
+
 const STATUS_META: Record<string, { label: string; className: string }> = {
   processing: {
     label: "Processing",
@@ -18,3 +34,16 @@ export const getOrderStatusMeta = (status?: string) =>
     label: status || "Unknown",
     className: "border-brand-border bg-muted/40 text-muted-foreground",
   };
+
+export const matchesStatusFilter = (
+  order: TOrderSummary,
+  filter: TOrderStatusFilter
+): boolean => filter === "all" || order.orderStatus === filter;
+
+/**
+ * `products[].product` is populated by the server
+ * (order.repository.ts -> findByUser), but a populate can still fail per
+ * document, so callers narrow it instead of assuming an object.
+ */
+export const getLineItemProduct = (product: TOrderProduct["product"]) =>
+  typeof product === "string" ? null : product;
