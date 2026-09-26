@@ -10,8 +10,6 @@ import {
   Wallet,
 } from "lucide-react";
 
-import { formatPrice } from "@/lib/formatPrice";
-
 import { useDownloadInvoice } from "@/hooks/useInvoice";
 import { useOrderDetail } from "@/hooks/useOrder";
 
@@ -22,6 +20,7 @@ import {
   OrderLineItems,
   OrderStatusPill,
 } from "@/features/account/profile/order-line-items";
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 const DELIVERY_LABELS: Record<string, string> = {
   standard: "Standard",

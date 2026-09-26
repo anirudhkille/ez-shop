@@ -6,8 +6,6 @@ import { toast } from "sonner";
 
 import type { TLogin, TSignup, TUser } from "@/types/user";
 
-import { getErrorMessage } from "@/lib/apiError";
-
 import {
   changePassword,
   forgotPassword,
@@ -20,6 +18,8 @@ import {
 } from "@/api/user";
 
 import useAuthStore from "@/store/userStore";
+
+import { getErrorMessage } from "@/shared/lib/apiError";
 
 export const useProfile = () => {
   const { token } = useAuthStore();

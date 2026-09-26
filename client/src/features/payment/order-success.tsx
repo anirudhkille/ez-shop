@@ -1,6 +1,6 @@
 import type { TAddress } from "@/types/address";
 
-import { formatPrice } from "@/lib/formatPrice";
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 type OrderProduct = {
   product: {

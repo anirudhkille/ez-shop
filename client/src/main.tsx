@@ -7,8 +7,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 
 import App from "./App";
-import AppToaster from "./components/shared/app-toaster";
 import "./index.css";
+import AppToaster from "./shared/components/app-toaster";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 5 * 60 * 1000 } },

@@ -10,7 +10,7 @@ import type { TAddress } from "@/types/address";
 
 import { usePostAddress, useUpdateAddress } from "@/hooks/useAddress";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -18,8 +18,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { FormInput, FormSelect } from "@/components/ui/form";
+} from "@/shared/components/ui/dialog";
+import { FormInput, FormSelect } from "@/shared/components/ui/form";
 
 type AddressModalProps = {
   isOpen: boolean;

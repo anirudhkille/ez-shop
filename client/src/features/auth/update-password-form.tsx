@@ -9,12 +9,11 @@ import { toast } from "sonner";
 
 import { Check, Eye, EyeOff, Lock, ShieldCheck, X } from "lucide-react";
 
-import { getErrorMessage } from "@/lib/apiError";
-
 import { useUpdatePassword } from "@/hooks/useUser";
 
-import { Button } from "@/components/ui/button";
-import { FormInputWithIcon, FormLabel } from "@/components/ui/form";
+import { Button } from "@/shared/components/ui/button";
+import { FormInputWithIcon, FormLabel } from "@/shared/components/ui/form";
+import { getErrorMessage } from "@/shared/lib/apiError";
 
 const formSchema = z
   .object({

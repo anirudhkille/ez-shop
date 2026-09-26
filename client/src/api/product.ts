@@ -1,4 +1,4 @@
-import axiosInstance from "@/lib/axiosInstance";
+import axiosInstance from "@/shared/lib/axiosInstance";
 
 export const searchProducts = async (name: string, limit = 20) => {
   const res = await axiosInstance.get(`/product/search`, {

@@ -1,7 +1,7 @@
-import type { TApiResponse } from "@/types/api";
 import type { TOrder, TOrderSummary } from "@/types/order";
 
-import axiosInstance from "@/lib/axiosInstance";
+import axiosInstance from "@/shared/lib/axiosInstance";
+import type { TApiResponse } from "@/shared/types/api";
 
 export const placeCodOrder = async (formData: TOrder) => {
   const res = await axiosInstance.post<TApiResponse<{ redirectUrl: string }>>(

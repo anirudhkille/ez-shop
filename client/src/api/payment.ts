@@ -1,6 +1,6 @@
 import type { TOrder } from "@/types/order";
 
-import axiosInstance from "@/lib/axiosInstance";
+import axiosInstance from "@/shared/lib/axiosInstance";
 
 export const createPayment = async (formData: TOrder) => {
   const res = await axiosInstance.post(

@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useVerifySignupOTP } from "@/hooks/useUser";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 
 const formSchema = z.object({
   otp: z.string().length(6, "OTP must be 6 digits"),

@@ -2,14 +2,13 @@ import { useState } from "react";
 
 import { Tag, TicketPercent } from "lucide-react";
 
-import { formatPrice } from "@/lib/formatPrice";
-
 import { useCouponStore } from "@/store/couponStore";
 
 import { useApplyCoupon } from "@/hooks/useCoupon";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 interface CouponFieldProps {
   subtotal: number;

@@ -10,8 +10,8 @@ import { Lock } from "lucide-react";
 
 import { useResetPassword } from "@/hooks/useUser";
 
-import { Button } from "@/components/ui/button";
-import { FormInputWithIcon, FormLabel } from "@/components/ui/form";
+import { Button } from "@/shared/components/ui/button";
+import { FormInputWithIcon, FormLabel } from "@/shared/components/ui/form";
 
 const formSchema = z
   .object({

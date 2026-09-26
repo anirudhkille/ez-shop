@@ -2,9 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import { getErrorMessage } from "@/lib/apiError";
-
 import { applyCoupon, type TCouponQuote } from "@/api/coupon";
+
+import { getErrorMessage } from "@/shared/lib/apiError";
 
 /**
  * Quotes a coupon for the current subtotal. The returned discount is a

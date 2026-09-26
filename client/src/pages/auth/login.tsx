@@ -3,6 +3,7 @@ import Head from "@/layout/head";
 
 import GoogleLogin from "@/features/auth/google-login";
 import LoginForm from "@/features/auth/login-form";
+import Divider from "@/shared/components/ui/divider";
 
 export default function Login() {
   return (
@@ -19,13 +20,7 @@ export default function Login() {
         redirectText="Create account"
       >
         <GoogleLogin />
-        <div className="my-6 flex items-center gap-3">
-          <div className="bg-brand-border h-px flex-1" />
-          <span className="font-body text-muted-foreground text-xs tracking-widest uppercase">
-            or
-          </span>
-          <div className="bg-brand-border h-px flex-1" />
-        </div>
+        <Divider />
         <LoginForm />
       </AuthLayout>
     </>

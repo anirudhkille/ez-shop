@@ -2,9 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import { getErrorMessage } from "@/lib/apiError";
-
 import { subscribeNewsletter } from "@/api/newsletter";
+
+import { getErrorMessage } from "@/shared/lib/apiError";
 
 export const useSubscribeNewsletter = () => {
   return useMutation({

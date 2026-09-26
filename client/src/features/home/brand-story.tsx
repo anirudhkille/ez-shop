@@ -1,9 +1,9 @@
 import { Award, Globe, Shield, Zap } from "lucide-react";
 
-import Fade from "@/components/shared/fade";
-import Image from "@/components/ui/img";
-
 import brandStory from "@/assets/brand-story.webp";
+
+import Fade from "@/shared/components/fade";
+import Image from "@/shared/components/ui/img";
 
 const pillars = [
   {

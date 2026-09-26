@@ -22,8 +22,6 @@ import {
 import type { TAddress } from "@/types/address";
 import type { TDeliveryMethod } from "@/types/order";
 
-import { formatPrice } from "@/lib/formatPrice";
-
 import { useCartStore } from "@/store/cartStore";
 import { useCouponStore } from "@/store/couponStore";
 import useUserStore from "@/store/userStore";
@@ -39,6 +37,7 @@ import { usePayment } from "@/hooks/usePayment";
 
 import AddressModal from "@/features/account/address-modal";
 import CouponField from "@/features/cart/coupon-field";
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 type CheckoutStep = 1 | 2 | 3;
 type PaymentMethod = "card" | "cod";

@@ -6,7 +6,7 @@ export default function ErrorPage() {
   return (
     <main className="pt-24 pb-20">
       <div className="mx-auto max-w-3xl px-6 lg:px-10">
-        <div className="bg-card border-brand-border rounded-[2rem] border p-8 text-center lg:p-12">
+        <div className="bg-card border-brand-border rounded-4xl border p-8 text-center lg:p-12">
           <div className="bg-destructive/10 mx-auto flex h-18 w-18 items-center justify-center rounded-full">
             <ShieldAlert className="text-destructive h-9 w-9" />
           </div>

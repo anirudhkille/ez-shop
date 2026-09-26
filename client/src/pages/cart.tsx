@@ -1,7 +1,5 @@
 import { Link } from "react-router";
 
-import { formatPrice } from "@/lib/formatPrice";
-
 import { useCouponStore } from "@/store/couponStore";
 
 import { useCart } from "@/hooks/useCart";
@@ -12,6 +10,7 @@ import CartProductCard, {
 import CartSkeleton from "@/features/cart/cart-skeleton";
 import CouponField from "@/features/cart/coupon-field";
 import EmptyCart from "@/features/cart/empty-cart";
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 export default function Cart() {
   const { data: cartItems, isLoading } = useCart();

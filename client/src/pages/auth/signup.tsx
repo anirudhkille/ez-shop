@@ -3,6 +3,7 @@ import Head from "@/layout/head";
 
 import GoogleLogin from "@/features/auth/google-login";
 import SignupForm from "@/features/auth/signup-form";
+import Divider from "@/shared/components/ui/divider";
 
 export default function Signup() {
   return (
@@ -19,13 +20,7 @@ export default function Signup() {
         redirectText="Login"
       >
         <GoogleLogin />
-        <div className="my-6 flex items-center gap-3">
-          <div className="bg-brand-border h-px flex-1" />
-          <span className="font-body text-muted-foreground text-xs tracking-widest uppercase">
-            or
-          </span>
-          <div className="bg-brand-border h-px flex-1" />
-        </div>
+        <Divider />
         <SignupForm />
       </AuthLayout>
     </>

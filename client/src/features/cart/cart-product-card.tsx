@@ -2,11 +2,10 @@ import { Link } from "react-router";
 
 import { Minus, Plus, X } from "lucide-react";
 
-import { formatPrice } from "@/lib/formatPrice";
-
 import { useRemoveCartItem, useUpdateCartQty } from "@/hooks/useCart";
 
-import Image from "@/components/ui/img";
+import Image from "@/shared/components/ui/img";
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 export type CartItem = {
   _id: string;

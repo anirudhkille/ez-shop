@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 
-import axiosInstance from "@/lib/axiosInstance";
+import axiosInstance from "@/shared/lib/axiosInstance";
 
 const DOWNLOAD_FALLBACK = "Could not download the invoice";
 

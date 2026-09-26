@@ -9,8 +9,6 @@ import { toast } from "sonner";
 
 import type { TAddress } from "@/types/address";
 
-import { getErrorMessage } from "@/lib/apiError";
-
 import {
   deleteAddress,
   getAddresses,
@@ -19,6 +17,8 @@ import {
 } from "@/api/address";
 
 import useUserStore from "@/store/userStore";
+
+import { getErrorMessage } from "@/shared/lib/apiError";
 
 export const useAddresss = () => {
   const { token } = useUserStore();

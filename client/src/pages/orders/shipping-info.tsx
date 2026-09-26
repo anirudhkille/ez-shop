@@ -1,7 +1,12 @@
 import Container from "@/layout/container";
 import Head from "@/layout/head";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
 
 export default function ShippingInfo() {
   return (

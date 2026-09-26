@@ -4,7 +4,7 @@ import { ImageOff } from "lucide-react";
 
 import type { TOrderProduct } from "@/types/order";
 
-import { formatPrice } from "@/lib/formatPrice";
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 import { getLineItemProduct, getOrderStatusMeta } from "./order-status";
 

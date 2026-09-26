@@ -2,8 +2,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import { getErrorMessage } from "@/lib/apiError";
-
 import {
   addToCart,
   getCart,
@@ -14,6 +12,8 @@ import {
 
 import { type GuestCartItem, useCartStore } from "@/store/cartStore";
 import useUserStore from "@/store/userStore";
+
+import { getErrorMessage } from "@/shared/lib/apiError";
 
 let guestIdCounter = 0;
 const nextGuestId = () => `guest_${Date.now()}_${++guestIdCounter}`;

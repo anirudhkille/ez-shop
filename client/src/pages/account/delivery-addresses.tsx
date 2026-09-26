@@ -15,9 +15,8 @@ import {
 import Container from "@/layout/container";
 import Head from "@/layout/head";
 
-import { Button } from "@/components/ui/button";
-
 import AddressModal from "@/features/account/address-modal";
+import { Button } from "@/shared/components/ui/button";
 
 export default function DeliveryAddresses() {
   const { data } = useAddresss();

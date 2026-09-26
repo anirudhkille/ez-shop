@@ -4,9 +4,9 @@ import { toast } from "sonner";
 
 import type { TOrder } from "@/types/order";
 
-import { getErrorMessage } from "@/lib/apiError";
-
 import { createPayment } from "@/api/payment";
+
+import { getErrorMessage } from "@/shared/lib/apiError";
 
 export const usePayment = () => {
   return useMutation({

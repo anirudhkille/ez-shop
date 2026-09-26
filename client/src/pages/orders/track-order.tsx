@@ -1,15 +1,19 @@
 import { useState } from "react";
 
-import { formatPrice } from "@/lib/formatPrice";
-
 import { useOrderById } from "@/hooks/useOrder";
 
 import Container from "@/layout/container";
 import Head from "@/layout/head";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/shared/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
+import { Input } from "@/shared/components/ui/input";
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 export default function TrackOrder() {
   const [orderInput, setOrderInput] = useState("");

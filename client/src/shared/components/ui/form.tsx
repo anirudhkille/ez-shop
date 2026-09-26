@@ -7,7 +7,7 @@ import {
   type Path,
 } from "react-hook-form";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 
 import { Field, FieldError, FieldLabel } from "./field";
 import { Input } from "./input";

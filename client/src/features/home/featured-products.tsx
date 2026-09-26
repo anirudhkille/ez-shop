@@ -4,7 +4,7 @@ import type { TProduct } from "@/types/product";
 
 import { useFeaturedProducts } from "@/hooks/useProduct";
 
-import Fade from "@/components/shared/fade";
+import Fade from "@/shared/components/fade";
 
 import ProductCard from "../product/product-card";
 

@@ -6,9 +6,9 @@ import { ArrowRight, Loader2, Search, Star, Tag, X } from "lucide-react";
 
 import type { TProduct } from "@/types/product";
 
-import { formatPrice } from "@/lib/formatPrice";
-
 import { useSearchProducts } from "@/hooks/useProduct";
+
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 interface SearchModalProps {
   open: boolean;

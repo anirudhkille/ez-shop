@@ -4,10 +4,7 @@ import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import type { TApiResponse } from "@/types/api";
 import type { TOrder, TOrderDetail } from "@/types/order";
-
-import { getErrorMessage } from "@/lib/apiError";
 
 import {
   createGuestCheckoutSession,
@@ -23,6 +20,9 @@ import {
 
 import { useCartStore } from "@/store/cartStore";
 import useUserStore from "@/store/userStore";
+
+import { getErrorMessage } from "@/shared/lib/apiError";
+import type { TApiResponse } from "@/shared/types/api";
 
 export const usePlaceCodOrder = () => {
   return useMutation({

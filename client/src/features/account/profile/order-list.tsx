@@ -6,7 +6,7 @@ import { ChevronRight, Package } from "lucide-react";
 
 import type { TOrderSummary } from "@/types/order";
 
-import { formatPrice } from "@/lib/formatPrice";
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 import { OrderLineItems, OrderStatusPill } from "./order-line-items";
 import {

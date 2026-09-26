@@ -1,7 +1,7 @@
-import Fade from "@/components/shared/fade";
-import Image from "@/components/ui/img";
-
 import promoBanner from "@/assets/promo-banner.webp";
+
+import Fade from "@/shared/components/fade";
+import Image from "@/shared/components/ui/img";
 
 export default function PromoBanner() {
   return (

@@ -7,13 +7,13 @@ import { Heart, Star } from "lucide-react";
 import type { TProduct } from "@/types/product";
 
 import { tagColors } from "@/lib/constants";
-import { formatPrice } from "@/lib/formatPrice";
 
 import useUserStore from "@/store/userStore";
 
 import { useToggleWishlist, useWishlists } from "@/hooks/useWishlist";
 
-import Image from "@/components/ui/img";
+import Image from "@/shared/components/ui/img";
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 interface ProductCardProps {
   product: TProduct;

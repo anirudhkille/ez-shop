@@ -4,8 +4,8 @@ import type { TCategory } from "@/types/category";
 
 import { useCategorys } from "@/hooks/useCategory";
 
-import Fade from "@/components/shared/fade";
-import Image from "@/components/ui/img";
+import Fade from "@/shared/components/fade";
+import Image from "@/shared/components/ui/img";
 
 export default function CategoriesSection() {
   const { data: categories } = useCategorys();

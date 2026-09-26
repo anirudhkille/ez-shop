@@ -2,8 +2,8 @@ import { lazy, Suspense } from "react";
 
 import { Route, Routes } from "react-router";
 
-import ErrorBoundary from "./components/shared/error-boundary";
-import { ScrollToTop } from "./components/shared/scroll-to-top";
+import ErrorBoundary from "./shared/components/error-boundary";
+import { ScrollToTop } from "./shared/components/scroll-to-top";
 
 const Layout = lazy(() => import("./layout/layout"));
 const RedirectIfAuthenticated = lazy(

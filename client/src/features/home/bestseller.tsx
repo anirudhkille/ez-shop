@@ -4,12 +4,11 @@ import { Star, TrendingUp } from "lucide-react";
 
 import type { TProduct } from "@/types/product";
 
-import { formatPrice } from "@/lib/formatPrice";
-
 import { useBestSellers } from "@/hooks/useProduct";
 
-import Fade from "@/components/shared/fade";
-import Image from "@/components/ui/img";
+import Fade from "@/shared/components/fade";
+import Image from "@/shared/components/ui/img";
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 export default function BestSellers() {
   const { data: bestSellers } = useBestSellers();

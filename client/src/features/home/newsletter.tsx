@@ -8,9 +8,9 @@ import { CheckCircle, Mail } from "lucide-react";
 
 import { useSubscribeNewsletter } from "@/hooks/useNewsletter";
 
-import Fade from "@/components/shared/fade";
-import { Button } from "@/components/ui/button";
-import { FormInputWithIcon } from "@/components/ui/form";
+import Fade from "@/shared/components/fade";
+import { Button } from "@/shared/components/ui/button";
+import { FormInputWithIcon } from "@/shared/components/ui/form";
 
 const formSchema = z.object({
   email: z.string().email({

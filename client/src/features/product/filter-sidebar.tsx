@@ -4,9 +4,9 @@ import { ChevronDown, Star, X } from "lucide-react";
 
 import type { TCategory } from "@/types/category";
 
-import { cn } from "@/lib/utils";
-
 import { useCategorys } from "@/hooks/useCategory";
+
+import { cn } from "@/shared/lib/utils";
 
 import { type FilterState } from "./filters";
 

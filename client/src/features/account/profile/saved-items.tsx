@@ -6,7 +6,7 @@ import { Heart } from "lucide-react";
 
 import type { TProduct } from "@/types/product";
 
-import { formatPrice } from "@/lib/formatPrice";
+import { formatPrice } from "@/shared/lib/formatPrice";
 
 export interface SavedItemsProps {
   products?: TProduct[];

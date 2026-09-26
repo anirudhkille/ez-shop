@@ -1,4 +1,4 @@
-import axiosInstance from "@/lib/axiosInstance";
+import axiosInstance from "@/shared/lib/axiosInstance";
 
 export const subscribeNewsletter = async (email: string) => {
   const res = await axiosInstance.post("/newsletter", { email: email });

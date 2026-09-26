@@ -84,7 +84,7 @@ export default function Profile() {
 
   return (
     <main className="pt-24 pb-20">
-      <div className="mx-auto max-w-[1200px] px-5 sm:px-10">
+      <div className="mx-auto max-w-300 px-5 sm:px-10">
         <div className="grid grid-cols-1 gap-7 lg:grid-cols-[272px_1fr]">
           {/* Side rail */}
           <aside className="lg:sticky lg:top-28 lg:self-start">
@@ -153,7 +153,7 @@ export default function Profile() {
                     <>
                       {isActive ? (
                         <span
-                          className="bg-brand-orange absolute top-2 bottom-2 left-0 hidden w-[3px] rounded-full lg:block"
+                          className="bg-brand-orange absolute top-2 bottom-2 left-0 hidden w-0.75 rounded-full lg:block"
                           aria-hidden
                         />
                       ) : null}

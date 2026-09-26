@@ -8,7 +8,6 @@ import type { TCategory } from "@/types/category";
 import type { TProduct } from "@/types/product";
 
 import { buildFilterParams } from "@/lib/buildFilterParams";
-import { cn } from "@/lib/utils";
 
 import { useCategorys } from "@/hooks/useCategory";
 import { useFilteredProducts } from "@/hooks/useProduct";
@@ -19,6 +18,7 @@ import FilterSidebar from "@/features/product/filter-sidebar";
 import { defaultFilters, type FilterState } from "@/features/product/filters";
 import ProductCard from "@/features/product/product-card";
 import ProductSkeleton from "@/features/product/product-skleton";
+import { cn } from "@/shared/lib/utils";
 
 const SORT_OPTIONS = [
   { value: "featured", label: "Featured" },
