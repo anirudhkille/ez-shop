@@ -140,7 +140,7 @@ export default function Header() {
                       </div>
                       <div className="py-1.5">
                         <Link
-                          to="/profile"
+                          to="/account"
                           className="font-body text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
                         >
                           <User size={14} /> My Profile
@@ -220,7 +220,7 @@ export default function Header() {
           {name ? (
             <>
               <Link
-                to="/profile"
+                to="/account"
                 className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors"
                 onClick={() => setMobileOpen(false)}
               >

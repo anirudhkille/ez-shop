@@ -63,16 +63,13 @@ export default function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route element={<ProtectedRoute />}>
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/account" element={<Profile />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route
-                path="/account/delivery-addresses"
+                path="/account/addresses"
                 element={<DeliveryAddresses />}
               />
-              <Route
-                path="/account/update-password"
-                element={<UpdatePassword />}
-              />
+              <Route path="/account/password" element={<UpdatePassword />} />
             </Route>
             <Route path="/success" element={<Successful />} />
             <Route path="/failure" element={<Failure />} />

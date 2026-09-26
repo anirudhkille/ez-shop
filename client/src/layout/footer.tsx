@@ -10,14 +10,14 @@ const footerLinks = {
   ],
 
   Account: [
-    { label: "Profile", href: "/profile" },
+    { label: "Account", href: "/account" },
     {
       label: "Delivery Addresses",
-      href: "/account/delivery-addresses",
+      href: "/account/addresses",
     },
     {
       label: "Update Password",
-      href: "/account/update-password",
+      href: "/account/password",
     },
   ],
 
