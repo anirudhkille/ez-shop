@@ -55,42 +55,64 @@ export default async function DashboardPage() {
   const cards = [
     {
       title: "Total Products",
-      value: stats.totalProducts,
+      value: stats.totalProducts.toLocaleString("en-IN"),
       icon: Package,
     },
     {
       title: "Total Orders",
-      value: stats.totalOrders,
+      value: stats.totalOrders.toLocaleString("en-IN"),
       icon: ShoppingCart,
     },
     {
       title: "Total Users",
-      value: stats.totalUsers,
+      value: stats.totalUsers.toLocaleString("en-IN"),
       icon: Users,
     },
     {
       title: "Total Revenue",
-      value: `₹${stats.totalRevenue.toFixed(2)}`,
+      value: `₹${stats.totalRevenue.toLocaleString("en-IN", {
+        maximumFractionDigits: 0,
+      })}`,
       icon: IndianRupee,
+      highlight: true,
     },
   ];
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+      <div>
+        <h2 className="font-display text-foreground text-3xl font-bold tracking-tight uppercase">
+          Dashboard
+        </h2>
+        <p className="font-body text-muted-foreground mt-1 text-sm">
+          Store performance at a glance.
+        </p>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => {
           const Icon = card.icon;
           return (
-            <Card key={card.title}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium">
+            <Card
+              key={card.title}
+              className="card-hover border-brand-border/70"
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="font-body text-muted-foreground text-xs font-medium tracking-wider uppercase">
                   {card.title}
                 </CardTitle>
-                <Icon className="w-4 h-4 text-muted-foreground" />
+                <span className="bg-brand-orange/10 text-brand-orange flex size-8 shrink-0 items-center justify-center rounded-lg">
+                  <Icon className="size-4" aria-hidden />
+                </span>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{card.value}</div>
+                <div
+                  className={`font-display text-2xl font-bold ${
+                    card.highlight ? "text-brand-orange" : "text-foreground"
+                  }`}
+                >
+                  {card.value}
+                </div>
               </CardContent>
             </Card>
           );

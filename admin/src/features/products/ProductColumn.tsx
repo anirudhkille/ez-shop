@@ -112,8 +112,15 @@ export const columns: ColumnDef<IProduct>[] = [
 
 const ProductActions = ({ product }: { product: IProduct }) => {
   const router = useRouter();
+  const [open, setOpen] = React.useState(false);
+
+  const handleView = () => {
+    setOpen(false);
+    router.push(`/dashboard/products/${product._id}`);
+  };
 
   const handleDelete = async () => {
+    setOpen(false);
     const response = await clientFetch(`/api/product/${product._id}`, {
       method: "DELETE",
     });
@@ -126,15 +133,20 @@ const ProductActions = ({ product }: { product: IProduct }) => {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="w-8 h-8 p-0">
+        <Button
+          variant="ghost"
+          className="w-8 h-8 p-0"
+          onClick={(event) => event.stopPropagation()}
+        >
           <span className="sr-only">Open menu</span>
           <MoreHorizontal />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuItem onSelect={handleView}>View</DropdownMenuItem>
         <DropdownMenuItem onSelect={handleDelete}>Delete</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

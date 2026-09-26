@@ -37,7 +37,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Logo from "../shared/Logo";
 import useAuthStore from "@/store/authStore";
@@ -81,8 +81,14 @@ const navMain = [
   },
 ];
 
+// `/dashboard` is the index route, so it only matches exactly; the rest stay
+// active on their nested detail routes (e.g. /dashboard/orders/<id>).
+const isNavActive = (pathname: string, url: string) =>
+  url === "/dashboard" ? pathname === url : pathname.startsWith(url);
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isMobile } = useSidebar();
   const { name, email, logout } = useAuthStore();
   const [open, setOpen] = React.useState(false);
@@ -98,13 +104,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <div className="flex items-center justify-center">
-          <div className="flex gap-2 py-2 text-sidebar-accent-foreground ">
-            <div className="flex items-center justify-center rounded-lg aspect-square size-8 bg-sidebar-primary text-sidebar-primary-foreground">
-              <Logo />
-            </div>
+          <div className="flex gap-2.5 py-2 text-sidebar-foreground">
+            <Logo size={32} className="rounded-lg" />
             <div className="grid flex-1 text-sm leading-tight text-left">
-              <span className="font-bold truncate">EZ SHOP</span>
-              <span className="text-xs truncate">admin dashboard</span>
+              <span className="font-display truncate font-bold tracking-wide">
+                EZ SHOP
+              </span>
+              <span className="text-muted-foreground truncate text-xs">
+                admin dashboard
+              </span>
             </div>
           </div>
         </div>
@@ -115,7 +123,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu>
             {navMain.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild tooltip={item.title}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isNavActive(pathname, item.url)}
+                  tooltip={item.title}
+                >
                   <Link href={item.url}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>

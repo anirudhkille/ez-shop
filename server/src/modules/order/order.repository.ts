@@ -13,12 +13,34 @@ export const countDocuments = async (filter?: FilterQuery<IOrder>) => {
   return await Order.countDocuments(filter);
 };
 
+/**
+ * Fields the account orders list renders. Deliberately excludes the
+ * denormalised guest PII (`name`, `email`, `phone`, `address`) and the payment
+ * internals (`paymentIntentId`, `sessionId`) — the list has no use for them and
+ * they are only needed by the single-order and invoice reads.
+ *
+ * `products` must stay in the projection or the populate below has nothing to
+ * attach to.
+ */
+const MY_ORDER_FIELDS =
+  "_id createdAt orderStatus paymentStatus paymentType deliveryMethod " +
+  "subtotal discount deliveryCharge totalAmount coupon products";
+
 export const findByUser = async (
   userId: string,
   skip: number,
   limit: number,
 ) => {
-  return await Order.find({ user: userId }).skip(skip).limit(limit);
+  // Newest first, and the product ref must be populated so the client can
+  // render line-item names and thumbnails without a second round trip.
+  // lean() skips hydration since this is a read-only listing.
+  return await Order.find({ user: userId })
+    .select(MY_ORDER_FIELDS)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .populate("products.product", "name image price slug")
+    .lean();
 };
 
 export const countByUser = async (userId: string) => {
