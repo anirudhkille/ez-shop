@@ -48,13 +48,13 @@ export default function DeliveryAddresses() {
       <Container className="max-w-4xl px-5 py-16 sm:px-8 md:px-10">
         <div className="mb-8">
           <Link
-            to="/profile"
+            to="/account"
             className="font-body text-brand-orange hover:text-brand-orange/80 mb-4 inline-flex items-center gap-1 text-sm transition-colors"
           >
             <ArrowLeft size={14} /> Back to Profile
           </Link>
           <div className="mt-2 flex items-center justify-between">
-            <h1 className="font-display text-foreground text-3xl font-bold tracking-tight">
+            <h1 className="font-display text-foreground text-3xl font-black uppercase">
               Delivery Addresses
             </h1>
             <Button
@@ -62,7 +62,7 @@ export default function DeliveryAddresses() {
                 setSelectedAddress(null);
                 setOpen("new");
               }}
-              className="bg-brand-orange hover:bg-brand-orange/90 gap-2 text-white"
+              className="bg-brand-orange hover:bg-brand-orange/90 gap-2 rounded-xl text-white"
             >
               <Plus size={16} /> Add New
             </Button>
@@ -78,7 +78,7 @@ export default function DeliveryAddresses() {
             <Button
               onClick={() => setOpen("new")}
               variant="outline"
-              className="gap-2"
+              className="gap-2 rounded-xl"
             >
               <Plus size={16} /> Add Address
             </Button>
@@ -122,6 +122,7 @@ export default function DeliveryAddresses() {
                       size="sm"
                       onClick={() => handleEdit(a)}
                       className="border-brand-border"
+                      aria-label={`Edit address for ${a.name}`}
                     >
                       <Edit2 size={16} />
                     </Button>
@@ -130,7 +131,7 @@ export default function DeliveryAddresses() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleSetDefault(a._id ?? "")}
-                        className="border-brand-border text-xs"
+                        className="border-brand-border rounded-xl text-xs"
                       >
                         Set Default
                       </Button>
@@ -139,7 +140,7 @@ export default function DeliveryAddresses() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDelete(a._id ?? "")}
-                      className="border-brand-border text-destructive hover:bg-destructive/10"
+                      className="border-brand-border text-destructive hover:bg-destructive/10 rounded-xl"
                     >
                       <Trash2 size={16} />
                     </Button>

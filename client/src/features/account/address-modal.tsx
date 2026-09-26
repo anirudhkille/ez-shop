@@ -162,10 +162,12 @@ export default function AddressModal({
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} className="rounded-xl">
               Cancel
             </Button>
-            <Button type="submit">Save Address</Button>
+            <Button type="submit" className="rounded-xl">
+              Save Address
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

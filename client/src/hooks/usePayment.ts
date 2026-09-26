@@ -13,7 +13,9 @@ export const usePayment = () => {
     mutationFn: (formData: TOrder) => createPayment(formData),
 
     onSuccess: (data) => {
-      window.location.href = data.url;
+      // createPayment returns the full envelope, so the checkout URL sits
+      // under data rather than on the root.
+      window.location.href = data.data.url;
     },
 
     onError: (error) => {

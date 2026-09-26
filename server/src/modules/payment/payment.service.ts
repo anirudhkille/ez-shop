@@ -7,6 +7,7 @@ import Product from "@/modules/product/product.model";
 import { env } from "@/config/env.config";
 import { AppError } from "@/utils/appError";
 import * as couponService from "@/modules/coupon/coupon.service";
+import * as invoiceService from "@/modules/invoice/invoice.service";
 import { decrementStock, verifyStock } from "@/modules/product/product.service";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
@@ -216,6 +217,8 @@ export const createCheckoutSession = async (
   newOrder.sessionId = session.id;
   await newOrder.save();
 
+  await invoiceService.issueInvoiceForOrder(newOrder);
+
   return {
     type: "card",
     url: session.url,
@@ -391,6 +394,8 @@ export const createGuestCheckoutSession = async (body: GuestCheckoutBody) => {
 
   newOrder.sessionId = session.id;
   await newOrder.save();
+
+  await invoiceService.issueInvoiceForOrder(newOrder);
 
   return {
     type: "card",

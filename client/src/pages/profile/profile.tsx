@@ -1,10 +1,9 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Link, useNavigate } from "react-router";
 
 import {
   Calendar,
-  Camera,
   ChevronRight,
   Edit3,
   Heart,
@@ -47,6 +46,15 @@ interface OrderDoc {
   orderStatus: string;
   products?: unknown[];
   totalAmount: number;
+}
+
+function HeroStat({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="text-center">
+      <p className="font-display text-foreground text-lg font-bold">{value}</p>
+      <p className="font-body text-muted-foreground text-[11px]">{label}</p>
+    </div>
+  );
 }
 
 function SettingsGroup({
@@ -170,7 +178,6 @@ export default function Profile() {
     dob: "",
   });
   const [saved, setSaved] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: addressResponse } = useAddresss();
   const addresses = useMemo(
@@ -196,67 +203,35 @@ export default function Profile() {
     <div className="text-foreground">
       <main className="pt-24 pb-20">
         <div className="mx-auto max-w-[1200px] px-5 sm:px-10">
-          {/* Profile hero */}
-          <div className="bg-card border-brand-border relative mb-8 overflow-hidden rounded-3xl border">
-            <div className="from-brand-orange/20 via-brand-orange/5 h-32 bg-gradient-to-r to-transparent" />
-
-            <div className="-mt-12 flex flex-col gap-4 px-6 pb-6 sm:flex-row sm:items-end sm:px-8">
-              <div className="relative shrink-0">
-                <div className="border-background bg-brand-surface-raised flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border-4">
-                  <span className="font-display text-brand-orange text-4xl font-black">
-                    {avatarInitial}
-                  </span>
-                </div>
-                <button
-                  onClick={() => fileRef.current?.click()}
-                  className="bg-brand-orange absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-xl shadow-lg transition-[background-color,transform] duration-150 active:scale-[0.98]"
-                >
-                  <Camera size={14} className="text-primary-foreground" />
-                </button>
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
+          {/* Profile card */}
+          <div className="bg-card border-brand-border mb-6 flex flex-wrap items-center gap-x-5 gap-y-4 rounded-2xl border px-5 py-4">
+            <div className="bg-brand-surface-raised flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl">
+              {profile?.avatar ? (
+                <img
+                  src={profile.avatar}
+                  alt={displayName}
+                  className="h-full w-full object-cover"
                 />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="font-display text-foreground text-3xl font-black uppercase">
-                    {displayName}
-                  </h1>
-                </div>
-                <p className="font-body text-muted-foreground mt-1 text-sm">
-                  {email}
-                </p>
-              </div>
-
-              <div className="flex shrink-0 gap-2">
-                <button
-                  onClick={handleLogout}
-                  className="border-brand-border font-body text-muted-foreground hover:border-destructive/40 hover:text-destructive flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition-colors duration-200"
-                >
-                  <LogOut size={14} /> Logout
-                </button>
-              </div>
+              ) : (
+                <span className="font-display text-brand-orange text-xl font-black">
+                  {avatarInitial}
+                </span>
+              )}
             </div>
 
-            <div className="border-brand-border divide-brand-border grid grid-cols-3 divide-x border-t">
-              {[
-                { label: "Orders", value: orders?.length ?? 0 },
-                { label: "Wishlist", value: wishlistProducts.length },
-                { label: "Reviews", value: 0 },
-              ].map((s) => (
-                <div key={s.label} className="py-4 text-center">
-                  <p className="font-display text-foreground text-2xl font-bold">
-                    {s.value}
-                  </p>
-                  <p className="font-body text-muted-foreground mt-0.5 text-xs">
-                    {s.label}
-                  </p>
-                </div>
-              ))}
+            <div className="min-w-0 flex-1">
+              <h1 className="font-display text-foreground truncate text-xl font-bold">
+                {displayName}
+              </h1>
+              <p className="font-body text-muted-foreground truncate text-sm">
+                {email}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-5 sm:gap-7">
+              <HeroStat value={orders?.length ?? 0} label="Orders" />
+              <HeroStat value={wishlistProducts.length} label="Wishlist" />
+              <HeroStat value={addresses.length} label="Addresses" />
             </div>
           </div>
 
@@ -623,7 +598,7 @@ export default function Profile() {
                       : `${addresses.length} saved`
                   }
                   hint="Where your orders get delivered."
-                  to="/account/delivery-addresses"
+                  to="/account/addresses"
                 />
               </SettingsGroup>
 
@@ -633,16 +608,16 @@ export default function Profile() {
                   label="Password"
                   value="Change"
                   hint="Use a password you do not use anywhere else."
-                  to="/account/update-password"
+                  to="/account/password"
                 />
               </SettingsGroup>
 
               <SettingsGroup title="Session">
                 <SettingsRow
                   icon={LogOut}
-                  label="Sign out"
+                  label="Log out"
                   value=""
-                  hint="You will need to sign in again."
+                  hint="You will need to log in again."
                   onClick={handleLogout}
                   tone="danger"
                 />

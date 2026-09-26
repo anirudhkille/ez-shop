@@ -8,6 +8,7 @@ import * as orderRepository from "@/modules/order/order.repository";
 import { IOrder, IOrderProduct } from "@/modules/order/order.model";
 import { AppError } from "@/utils/appError";
 import * as couponService from "@/modules/coupon/coupon.service";
+import * as invoiceService from "@/modules/invoice/invoice.service";
 
 type ProductRef = {
   _id: mongoose.Types.ObjectId;
@@ -125,6 +126,8 @@ export const placeCODOrder = async (userId: string, body: CODRequestBody) => {
   );
 
   await Cart.updateOne({ user: userId }, { $set: { products: [] } });
+
+  await invoiceService.issueInvoiceForOrder(newOrder);
 
   return {
     orderId: newOrder._id,
@@ -293,6 +296,8 @@ export const placeGuestCODOrder = async (body: GuestCheckoutBody) => {
       quantity: p.quantity,
     })),
   );
+
+  await invoiceService.issueInvoiceForOrder(newOrder);
 
   return {
     orderId: newOrder._id,

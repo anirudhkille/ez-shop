@@ -26,6 +26,10 @@ export const findById = async (id: string | Types.ObjectId) => {
   return await Product.findById(id).populate("category");
 };
 
+export const findByIds = async (ids: (string | Types.ObjectId)[]) => {
+  return await Product.find({ _id: { $in: ids } });
+};
+
 export const findByIdAndUpdate = async (
   id: string | Types.ObjectId,
   data: UpdateQuery<IProduct>,

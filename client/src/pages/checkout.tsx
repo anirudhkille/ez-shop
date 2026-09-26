@@ -289,7 +289,7 @@ export default function Checkout() {
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
                 to="/products"
-                className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-7 py-4 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
+                className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-xl px-7 py-4 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
               >
                 Browse Products <ArrowRight size={16} />
               </Link>
@@ -339,13 +339,13 @@ export default function Checkout() {
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
                 to="/products"
-                className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-7 py-4 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
+                className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-xl px-7 py-4 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
               >
                 Explore Products <ArrowRight size={16} />
               </Link>
               <Link
                 to="/cart"
-                className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-7 py-4 text-sm tracking-wider uppercase transition-colors duration-150"
+                className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-xl border px-7 py-4 text-sm tracking-wider uppercase transition-colors duration-150"
               >
                 Back to Cart
               </Link>
@@ -412,7 +412,7 @@ export default function Checkout() {
                   <button
                     type="button"
                     onClick={() => setIsAddressModalOpen(true)}
-                    className="border-brand-border text-muted-foreground hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold tracking-[0.18em] uppercase transition-colors duration-150"
+                    className="border-brand-border text-muted-foreground hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-semibold tracking-[0.18em] uppercase transition-colors duration-150"
                   >
                     <Plus size={14} />
                     Add Address
@@ -444,7 +444,7 @@ export default function Checkout() {
                       <button
                         type="button"
                         onClick={() => setIsAddressModalOpen(true)}
-                        className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
+                        className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow mt-6 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
                       >
                         <Plus size={14} />
                         Add Address
@@ -480,7 +480,7 @@ export default function Checkout() {
                                     {address.label}
                                   </p>
                                   {address.isDefault && (
-                                    <span className="bg-brand-orange text-primary-foreground rounded-full px-2.5 py-1 text-[10px] font-semibold tracking-[0.18em] uppercase">
+                                    <span className="bg-brand-orange text-primary-foreground rounded-xl px-2.5 py-1 text-[10px] font-semibold tracking-[0.18em] uppercase">
                                       Default
                                     </span>
                                   )}
@@ -648,7 +648,7 @@ export default function Checkout() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   to="/cart"
-                  className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm tracking-wider uppercase transition-colors duration-150"
+                  className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-xl border px-6 py-3 text-sm tracking-wider uppercase transition-colors duration-150"
                 >
                   <ArrowLeft size={16} />
                   Back to Cart
@@ -668,7 +668,7 @@ export default function Checkout() {
                         !guestZip ||
                         !guestCountry
                   }
-                  className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Continue to Delivery
                   <ArrowRight size={16} />
@@ -762,7 +762,7 @@ export default function Checkout() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm tracking-wider uppercase transition-colors duration-150"
+                  className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-xl border px-6 py-3 text-sm tracking-wider uppercase transition-colors duration-150"
                 >
                   <ArrowLeft size={16} />
                   Back
@@ -771,7 +771,7 @@ export default function Checkout() {
                   type="button"
                   onClick={() => setStep(3)}
                   disabled={token ? !selectedAddressId : !guestAddressLine1}
-                  className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Continue to Payment
                   <ArrowRight size={16} />
@@ -793,7 +793,7 @@ export default function Checkout() {
                     Payment Method
                   </h2>
                 </div>
-                <div className="text-muted-foreground border-brand-border inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs tracking-[0.18em] uppercase">
+                <div className="text-muted-foreground border-brand-border inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs tracking-[0.18em] uppercase">
                   <Lock size={14} />
                   Encrypted
                 </div>
@@ -866,7 +866,7 @@ export default function Checkout() {
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm tracking-wider uppercase transition-colors duration-150"
+                  className="border-brand-border text-muted-foreground font-body hover:border-brand-orange/40 hover:text-foreground inline-flex items-center gap-2 rounded-xl border px-6 py-3 text-sm tracking-wider uppercase transition-colors duration-150"
                 >
                   <ArrowLeft size={16} />
                   Back
@@ -877,7 +877,7 @@ export default function Checkout() {
                   disabled={
                     token ? !selectedAddressId || isSubmitting : isSubmitting
                   }
-                  className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Lock size={16} />
                   {isSubmitting

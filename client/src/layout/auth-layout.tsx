@@ -9,6 +9,8 @@ type AuthLayoutProps = {
   question: string;
   redirect: string;
   redirectText: string;
+  /** Drops the margin-based spacing when a page supplies its own rhythm. */
+  flush?: boolean;
 };
 
 export default function AuthLayout({
@@ -18,6 +20,7 @@ export default function AuthLayout({
   question,
   redirect,
   redirectText,
+  flush = false,
 }: AuthLayoutProps) {
   return (
     <div className="flex h-screen items-center justify-center px-3">
@@ -26,13 +29,23 @@ export default function AuthLayout({
           <h1 className="font-display text-foreground text-4xl font-black uppercase">
             {title}
           </h1>
-          <p className="font-body text-muted-foreground mt-2 text-sm">
+          <p
+            className={`font-body text-muted-foreground text-sm ${
+              flush ? "" : "mt-2"
+            }`}
+          >
             {description}
           </p>
         </div>
-        <div>{children}</div>
+        <div className={flush ? "flex flex-col gap-6" : undefined}>
+          {children}
+        </div>
         <div className="text-center">
-          <p className="font-body text-muted-foreground mt-6 text-center text-sm">
+          <p
+            className={`font-body text-muted-foreground text-center text-sm ${
+              flush ? "pt-6" : "mt-6"
+            }`}
+          >
             {question}
             {"  "}
             <Link

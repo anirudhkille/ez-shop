@@ -4,7 +4,7 @@ import z from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { ArrowRight, CheckCircle, Mail } from "lucide-react";
+import { CheckCircle, Mail } from "lucide-react";
 
 import { useSubscribeNewsletter } from "@/hooks/useNewsletter";
 
@@ -110,10 +110,7 @@ function NewsletterForm() {
             icon={<Mail size={16} />}
           />
 
-          <Button type="submit">
-            Subscribe Now
-            <ArrowRight size={16} />
-          </Button>
+          <Button type="submit">Subscribe Now</Button>
           <p className="font-body text-muted-foreground/60 text-center text-[11px]">
             By subscribing, you agree to our Privacy Policy. Unsubscribe
             anytime.
