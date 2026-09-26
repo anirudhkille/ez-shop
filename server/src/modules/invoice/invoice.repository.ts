@@ -23,8 +23,10 @@ export const nextInvoiceNumber = async (): Promise<string> => {
   return `${prefix}${String(next).padStart(6, "0")}`;
 };
 
+/** Returns a plain object so callers can spread it, like every read above. */
 export const create = async (data: Partial<IInvoice>) => {
-  return await Invoice.create(data);
+  const invoice = await Invoice.create(data);
+  return invoice.toObject();
 };
 
 export const findByOrder = async (orderId: string) => {

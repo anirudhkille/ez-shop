@@ -1,6 +1,6 @@
-import Product from "@/modules/product/product.model";
 import { AppError } from "@/utils/appError";
 import * as cartRepository from "@/modules/cart/cart.repository";
+import * as productRepository from "@/modules/product/product.repository";
 
 type VariantSize = {
   size?: string;
@@ -79,7 +79,7 @@ export const addToCart = async (
 ) => {
   const { productId, variantId, size, quantity } = body;
 
-  const product = await Product.findById(productId);
+  const product = await productRepository.findById(productId);
   if (!product) {
     throw new AppError("Product not found", 404);
   }

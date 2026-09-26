@@ -89,6 +89,14 @@ export const recentByUser = async (userId: string, limit = 10) => {
     .populate("products.product", "name image price slug");
 };
 
+export const findById = async (id: string) => {
+  return await Order.findById(id);
+};
+
+export const findByIdLean = async (id: string) => {
+  return await Order.findById(id).lean();
+};
+
 export const findByIdPopulated = async (id: string) => {
   return await Order.findById(id).populate(
     "products.product",

@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import User from "@/modules/user/user.model";
-import Admin from "@/modules/admin/admin.model";
+import * as userRepository from "@/modules/user/user.repository";
+import * as adminRepository from "@/modules/admin/admin.repository";
 import { env } from "@/config/env.config";
 import { asyncHandler } from "../utils/asyncHandler";
 import { sendResponse } from "@/utils/response";
@@ -23,9 +23,9 @@ const loadUser = async (req: Request) => {
     const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET) as ITokenPayload;
 
     if (decoded.role === "User") {
-      return await User.findById(decoded._id).select("-password");
+      return await userRepository.findById(decoded._id, "-password");
     } else if (decoded.role === "Admin") {
-      return await Admin.findById(decoded._id).select("-password");
+      return await adminRepository.findById(decoded._id, "-password");
     }
 
     return null;

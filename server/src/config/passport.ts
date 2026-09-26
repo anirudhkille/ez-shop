@@ -1,6 +1,6 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import User from "@/modules/user/user.model";
+import * as userRepository from "@/modules/user/user.repository";
 import { env } from "@/config/env.config";
 
 passport.use(
@@ -12,13 +12,22 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        let user = await User.findOne({ email: profile.emails?.[0].value });
+        const email = profile.emails?.[0]?.value;
+
+        if (!email) {
+          return done(
+            new Error("Google account did not provide an email"),
+            false,
+          );
+        }
+
+        let user = await userRepository.findByEmail(email);
 
         if (!user) {
-          user = await User.create({
+          user = await userRepository.createUser({
             googleId: profile.id,
             name: profile.displayName,
-            email: profile.emails?.[0].value,
+            email,
             avatar: profile.photos?.[0].value,
             password: null,
           });
@@ -38,7 +47,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (_id: string, done) => {
   try {
-    const user = await User.findById(_id);
+    const user = await userRepository.findById(_id);
     done(null, user as unknown as Express.User);
   } catch (err) {
     done(err, null);

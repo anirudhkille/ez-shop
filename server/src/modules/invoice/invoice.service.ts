@@ -1,4 +1,5 @@
 import { AppError } from "@/utils/appError";
+import * as orderRepository from "@/modules/order/order.repository";
 import * as invoiceRepository from "@/modules/invoice/invoice.repository";
 import * as productRepository from "@/modules/product/product.repository";
 import type { IInvoiceProduct } from "@/modules/invoice/invoice.model";
@@ -68,13 +69,20 @@ export const issueInvoiceForOrder = async (order: OrderLike) => {
   const couponCode =
     typeof order.coupon === "string" ? order.coupon : order.coupon?.code;
 
+  // Signed-in orders only denormalise the address, not name/phone at the top
+  // level, so fall back to it rather than printing a blank bill-to.
+  const snapshotAddress = order.address as
+    | { name?: string; phone?: string }
+    | null
+    | undefined;
+
   return await invoiceRepository.create({
     invoiceNumber: await invoiceRepository.nextInvoiceNumber(),
     order: orderId,
     user: order.user ? String(order.user) : null,
-    customerName: order.name ?? undefined,
+    customerName: order.name ?? snapshotAddress?.name,
     customerEmail: order.email ?? undefined,
-    customerPhone: order.phone ?? undefined,
+    customerPhone: order.phone ?? snapshotAddress?.phone,
     address: order.address as never,
     products,
     subtotal: order.subtotal ?? 0,
@@ -111,6 +119,21 @@ const resolveProductNames = async (products: IInvoiceProduct[]) => {
   });
 };
 
+/** An invoice carries customer PII, so the order owner must be proven first. */
+const loadOwnedOrder = async (orderId: string, userId: string) => {
+  const order = await orderRepository.findByIdLean(orderId);
+
+  if (!order) {
+    throw new AppError("Order not found", 404);
+  }
+
+  if (String(order.user ?? "") !== userId) {
+    throw new AppError("Access denied", 403);
+  }
+
+  return order as unknown as OrderLike;
+};
+
 export const getInvoiceForOrder = async (
   orderId: string,
   userId?: string | null,
@@ -119,11 +142,19 @@ export const getInvoiceForOrder = async (
     throw new AppError("Invalid order", 400);
   }
 
-  const invoice = await invoiceRepository.findForUser(orderId, userId);
-
-  if (!invoice) {
-    throw new AppError("Invoice not found for this order", 404);
+  // findForUser drops its user filter when userId is falsy, which would read
+  // any order's invoice. Fail closed instead.
+  if (!userId) {
+    throw new AppError("Not authorized", 401);
   }
+
+  const existing = await invoiceRepository.findForUser(orderId, userId);
+
+  // Orders predating invoicing have no stored invoice; issue one on demand.
+  // issueInvoiceForOrder is idempotent, so repeat clicks are safe.
+  const invoice =
+    existing ??
+    (await issueInvoiceForOrder(await loadOwnedOrder(orderId, userId)));
 
   return {
     ...invoice,

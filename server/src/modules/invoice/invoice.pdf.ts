@@ -1,5 +1,3 @@
-import PDFDocument from "pdfkit";
-
 import { env } from "@/config/env.config";
 import type { IInvoice } from "@/modules/invoice/invoice.model";
 

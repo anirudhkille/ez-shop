@@ -31,3 +31,7 @@ export const findOneAndUpdate = async (
 ) => {
   return await Cart.findOneAndUpdate(filter, data);
 };
+
+export const clearProducts = async (userId: string) => {
+  return await Cart.updateOne({ user: userId }, { $set: { products: [] } });
+};

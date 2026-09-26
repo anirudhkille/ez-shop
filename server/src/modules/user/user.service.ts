@@ -13,7 +13,7 @@ import {
 import { sendEmail } from "@/services/emailService";
 import { resetPasswordTemplate } from "@/templates/resetEmailTemplate";
 import { verifyEmailTemplate } from "@/templates/verifyEmailTemplate";
-import Session from "./session..model";
+import * as sessionRepository from "@/modules/user/session.repository";
 import * as orderRepository from "@/modules/order/order.repository";
 import * as wishlistRepository from "@/modules/wishlist/wishlist.repository";
 import * as addressRepository from "@/modules/address/address.repository";
@@ -24,13 +24,10 @@ import type { IUser } from "@/modules/user/user.model";
 const REFRESH_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 const saveRefreshSession = async (userId: string, refreshToken: string) => {
-  await Session.findOneAndUpdate(
-    { key: `refresh:${userId}` },
-    {
-      value: refreshToken,
-      expiresAt: new Date(Date.now() + REFRESH_TTL_MS),
-    },
-    { upsert: true, new: true },
+  await sessionRepository.upsert(
+    `refresh:${userId}`,
+    refreshToken,
+    new Date(Date.now() + REFRESH_TTL_MS),
   );
 };
 
@@ -42,11 +39,11 @@ export const signUp = async (email: string, password: string) => {
 
   const otp = generateOtp();
 
-  await Session.create({
-    key: `signup:${email}`,
-    value: JSON.stringify({ email, password, otp }),
-    expiresAt: new Date(Date.now() + 10 * 60 * 1000),
-  });
+  await sessionRepository.upsert(
+    `signup:${email}`,
+    JSON.stringify({ email, password, otp }),
+    new Date(Date.now() + 10 * 60 * 1000),
+  );
 
   await sendEmail({
     to: email,
@@ -58,7 +55,7 @@ export const signUp = async (email: string, password: string) => {
 };
 
 export const verifySignupOTP = async (email: string, otp: string) => {
-  const session = await Session.findOne({ key: `signup:${email}` });
+  const session = await sessionRepository.findByKey(`signup:${email}`);
 
   if (!session) {
     throw new AppError("OTP expired", 400);
@@ -80,7 +77,7 @@ export const verifySignupOTP = async (email: string, otp: string) => {
     isEmailVerified: true,
   });
 
-  await session.deleteOne();
+  await sessionRepository.deleteByKey(`signup:${email}`);
 
   const accessToken = generateAccessToken({
     _id: String(newUser._id),
@@ -147,7 +144,7 @@ export const forgotPassword = async (email: string) => {
   const token = createResetToken();
   const sessionKey = resetSessionKey(token);
 
-  await Session.create({
+  await sessionRepository.create({
     key: sessionKey,
     value: String(user._id),
     expiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MS),
@@ -166,10 +163,7 @@ export const forgotPassword = async (email: string) => {
 
 export const resetPassword = async (token: string, newPassword: string) => {
   const sessionKey = resetSessionKey(token);
-  const session = await Session.findOneAndDelete({
-    key: sessionKey,
-    expiresAt: { $gt: new Date() },
-  });
+  const session = await sessionRepository.consumeUnexpired(sessionKey);
 
   if (!session) {
     throw new AppError("Invalid or expired reset token", 400);
@@ -184,7 +178,7 @@ export const resetPassword = async (token: string, newPassword: string) => {
   user.password = newPassword;
   await user.save();
 
-  await Session.deleteOne({ key: `refresh:${user._id}` });
+  await sessionRepository.deleteByKey(`refresh:${user._id}`);
 
   return { reset: true };
 };
@@ -267,17 +261,11 @@ export const refreshToken = async (token: string) => {
     decoded as unknown as { _id: string; role: string },
   );
 
-  const session = await Session.findOneAndUpdate(
-    {
-      key: `refresh:${userId}`,
-      value: token,
-      expiresAt: { $gt: new Date() },
-    },
-    {
-      value: newRefreshToken,
-      expiresAt: new Date(Date.now() + REFRESH_TTL_MS),
-    },
-    { new: true },
+  const session = await sessionRepository.rotate(
+    `refresh:${userId}`,
+    token,
+    newRefreshToken,
+    new Date(Date.now() + REFRESH_TTL_MS),
   );
 
   if (!session) {
@@ -291,7 +279,7 @@ export const logout = async (token: string) => {
   if (token) {
     try {
       const decoded = jwt.verify(token, env.JWT_REFRESH_SECRET) as JwtPayload;
-      await Session.findOneAndDelete({ key: `refresh:${decoded._id}` });
+      await sessionRepository.consume(`refresh:${decoded._id}`);
     } catch {
       // ignore
     }

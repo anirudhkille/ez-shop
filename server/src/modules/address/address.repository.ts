@@ -5,6 +5,10 @@ export const create = async (data: Partial<IAddress>) => {
   return await Address.create(data);
 };
 
+export const findById = async (id: string) => {
+  return await Address.findById(id);
+};
+
 export const findByUser = async (userId: string) => {
   return await Address.find({ user: userId });
 };

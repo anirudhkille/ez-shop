@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-interface ISession extends Document {
+export interface ISession {
   key: string;
   value: string;
   expiresAt: Date;
@@ -15,6 +15,7 @@ const sessionSchema = new Schema<ISession>(
   { timestamps: true },
 );
 
+// Mongo removes expired sessions on its own, so no cleanup job is needed.
 sessionSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 const Session = mongoose.model<ISession>("Session", sessionSchema);

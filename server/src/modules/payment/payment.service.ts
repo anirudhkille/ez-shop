@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 import Stripe from "stripe";
-import Cart from "@/modules/cart/cart.model";
-import Address from "@/modules/address/address.model";
-import Order, { IOrderProduct } from "@/modules/order/order.model";
-import Product from "@/modules/product/product.model";
+import * as cartRepository from "@/modules/cart/cart.repository";
+import * as addressRepository from "@/modules/address/address.repository";
+import * as orderRepository from "@/modules/order/order.repository";
+import { IOrderProduct } from "@/modules/order/order.model";
+import * as productRepository from "@/modules/product/product.repository";
 import { env } from "@/config/env.config";
 import { AppError } from "@/utils/appError";
 import * as couponService from "@/modules/coupon/coupon.service";
@@ -55,14 +56,12 @@ export const createCheckoutSession = async (
 ) => {
   const { addressId, deliveryMethod, couponCode } = body;
 
-  const cart = await Cart.findOne({ user: userId }).populate(
-    "products.product",
-  );
+  const cart = await cartRepository.findOnePopulated({ user: userId });
 
   if (!cart || cart.products.length === 0)
     throw new AppError("Cart is empty", 400);
 
-  const shippingAddress = await Address.findById(addressId);
+  const shippingAddress = await addressRepository.findById(addressId);
   if (!shippingAddress) throw new AppError("Invalid address", 400);
 
   const stockError = await verifyStock(
@@ -94,7 +93,7 @@ export const createCheckoutSession = async (
   const total = Math.max(0, subtotal - discount) + deliveryCharge;
 
   const newOrder = await couponService.withCouponClaim(couponCode, () =>
-    Order.create({
+    orderRepository.create({
       user: userId,
       paymentType: "card",
       paymentStatus: "pending",
@@ -201,7 +200,7 @@ export const createCheckoutSession = async (
       },
     });
   } catch (error) {
-    await Order.findByIdAndDelete(newOrder._id);
+    await orderRepository.deleteById(String(newOrder._id));
     throw error;
   }
 
@@ -235,7 +234,7 @@ export const createGuestCheckoutSession = async (body: GuestCheckoutBody) => {
   if (!address) throw new AppError("Address is required", 400);
 
   const productIds = products.map((p) => p.productId);
-  const dbProducts = await Product.find({ _id: { $in: productIds } });
+  const dbProducts = await productRepository.findByIds(productIds);
 
   const productMap = new Map(dbProducts.map((p) => [String(p._id), p]));
 
@@ -329,7 +328,7 @@ export const createGuestCheckoutSession = async (body: GuestCheckoutBody) => {
   }
 
   const newOrder = await couponService.withCouponClaim(couponCode, () =>
-    Order.create({
+    orderRepository.create({
       user: null,
       name,
       email,
@@ -379,7 +378,7 @@ export const createGuestCheckoutSession = async (body: GuestCheckoutBody) => {
       },
     });
   } catch (error) {
-    await Order.findByIdAndDelete(newOrder._id);
+    await orderRepository.deleteById(String(newOrder._id));
     throw error;
   }
 

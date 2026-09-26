@@ -2,7 +2,7 @@ import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
 import { AppError } from "@/utils/appError";
 import slugify from "slugify";
 import mongoose from "mongoose";
-import Product, { IProduct, IVariant } from "@/modules/product/product.model";
+import { IProduct, IVariant } from "@/modules/product/product.model";
 import * as productRepository from "@/modules/product/product.repository";
 import type { FilterQuery } from "mongoose";
 
@@ -74,7 +74,7 @@ export const decrementStock = async (
     if (!item.quantity || item.quantity <= 0) continue;
 
     if (item.variantId && item.size) {
-      const product = await Product.findById(item.product);
+      const product = await productRepository.findById(item.product);
       if (!product) continue;
 
       const variant = product.variants.find(
@@ -87,10 +87,7 @@ export const decrementStock = async (
         await product.save();
       }
     } else {
-      await Product.updateOne(
-        { _id: item.product },
-        { $inc: { stock: -item.quantity } },
-      );
+      await productRepository.decrementStock(item.product, item.quantity);
     }
   }
 };
@@ -106,7 +103,7 @@ export const verifyStock = async (
   for (const item of items) {
     if (!item.quantity || item.quantity <= 0) continue;
 
-    const product = await Product.findById(item.product);
+    const product = await productRepository.findById(item.product);
     if (!product || !product.publish) {
       return "One or more products are no longer available";
     }

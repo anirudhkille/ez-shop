@@ -1,7 +1,7 @@
 import Stripe from "stripe";
-import Order from "@/modules/order/order.model";
 import express, { Request, Response } from "express";
-import Cart from "@/modules/cart/cart.model";
+import * as orderRepository from "@/modules/order/order.repository";
+import * as cartRepository from "@/modules/cart/cart.repository";
 import { env } from "@/config/env.config";
 
 const router = express.Router();
@@ -27,12 +27,15 @@ router.post(
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as unknown as {
-        metadata: { orderId?: string };
+        metadata?: { orderId?: string };
         payment_intent?: string;
       };
 
+      const orderId = session.metadata?.orderId;
+      if (!orderId) return res.status(200).send("OK");
+
       try {
-        const order = await Order.findById(session.metadata.orderId);
+        const order = await orderRepository.findById(orderId);
         if (!order) return res.status(200).send("OK");
 
         if (order.paymentStatus === "paid") return res.status(200).send("OK");
@@ -41,10 +44,7 @@ router.post(
         order.paymentIntentId = session.payment_intent;
         order.orderStatus = "processing";
         if (order.user) {
-          await Cart.updateOne(
-            { user: order.user },
-            { $set: { products: [] } },
-          );
+          await cartRepository.clearProducts(String(order.user));
         }
 
         await order.save();

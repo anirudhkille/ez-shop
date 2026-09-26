@@ -30,6 +30,14 @@ export const findByIds = async (ids: (string | Types.ObjectId)[]) => {
   return await Product.find({ _id: { $in: ids } });
 };
 
+/** Atomic decrement, bypassing the update validators. */
+export const decrementStock = async (
+  id: string | Types.ObjectId,
+  quantity: number,
+) => {
+  return await Product.updateOne({ _id: id }, { $inc: { stock: -quantity } });
+};
+
 export const findByIdAndUpdate = async (
   id: string | Types.ObjectId,
   data: UpdateQuery<IProduct>,

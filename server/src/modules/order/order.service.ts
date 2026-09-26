@@ -1,6 +1,6 @@
-import Cart from "@/modules/cart/cart.model";
-import Address from "@/modules/address/address.model";
-import Product from "@/modules/product/product.model";
+import * as cartRepository from "@/modules/cart/cart.repository";
+import * as addressRepository from "@/modules/address/address.repository";
+import * as productRepository from "@/modules/product/product.repository";
 import mongoose from "mongoose";
 import { env } from "@/config/env.config";
 import { decrementStock, verifyStock } from "@/modules/product/product.service";
@@ -47,13 +47,11 @@ interface GuestCheckoutBody {
 export const placeCODOrder = async (userId: string, body: CODRequestBody) => {
   const { addressId, deliveryMethod, couponCode } = body;
 
-  const cart = await Cart.findOne({ user: userId }).populate(
-    "products.product",
-  );
+  const cart = await cartRepository.findOnePopulated({ user: userId });
   if (!cart || cart.products.length === 0)
     throw new AppError("Cart is empty", 400);
 
-  const address = await Address.findById(addressId);
+  const address = await addressRepository.findById(addressId);
   if (!address) throw new AppError("Invalid address", 400);
 
   const stockError = await verifyStock(
@@ -125,7 +123,7 @@ export const placeCODOrder = async (userId: string, body: CODRequestBody) => {
     })),
   );
 
-  await Cart.updateOne({ user: userId }, { $set: { products: [] } });
+  await cartRepository.clearProducts(userId);
 
   await invoiceService.issueInvoiceForOrder(newOrder);
 
@@ -210,7 +208,7 @@ export const placeGuestCODOrder = async (body: GuestCheckoutBody) => {
   if (!address) throw new AppError("Address is required", 400);
 
   const productIds = products.map((p) => p.productId);
-  const dbProducts = await Product.find({ _id: { $in: productIds } });
+  const dbProducts = await productRepository.findByIds(productIds);
 
   const productMap = new Map(dbProducts.map((p) => [String(p._id), p]));
 
