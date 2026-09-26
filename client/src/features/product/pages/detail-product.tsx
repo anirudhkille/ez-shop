@@ -1,0 +1,479 @@
+import { useState } from "react";
+
+import { Link, useParams } from "react-router";
+
+import { toast } from "sonner";
+
+import {
+  ChevronLeft,
+  ChevronRight,
+  Heart,
+  Minus,
+  Plus,
+  RotateCcw,
+  Shield,
+  ShoppingCart,
+  Star,
+  Truck,
+} from "lucide-react";
+
+import useUserStore from "@/store/userStore";
+
+import { useAddToCart } from "@/features/cart";
+import { useToggleWishlist, useWishlists } from "@/features/wishlist";
+import { formatPrice } from "@/shared/lib/formatPrice";
+import type { TProduct, TVariant } from "@/shared/types/product";
+
+import ProductCard from "../components/product-card";
+import { useProduct, useSimilarProducts } from "../hooks/useProduct";
+import { tagColors } from "../lib/constants";
+
+function ProductDetailSkeleton() {
+  return (
+    <main className="pt-20">
+      <div className="mx-auto grid max-w-350 grid-cols-1 gap-12 px-6 pb-20 lg:grid-cols-2 lg:gap-20 lg:px-10">
+        {/* Image skeleton */}
+        <div className="flex flex-col gap-4">
+          <div className="bg-brand-surface-raised aspect-square animate-pulse rounded-3xl" />
+          <div className="flex gap-3">
+            {[...Array(3)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-brand-surface-raised h-20 w-20 shrink-0 animate-pulse rounded-xl"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Info skeleton */}
+        <div className="flex flex-col justify-center gap-4">
+          <div className="bg-brand-surface-raised h-3 w-24 animate-pulse rounded-full" />
+          <div className="bg-brand-surface-raised h-12 w-3/4 animate-pulse rounded-xl" />
+          <div className="bg-brand-surface-raised h-4 w-32 animate-pulse rounded-full" />
+          <div className="bg-brand-surface-raised h-10 w-40 animate-pulse rounded-xl" />
+          <div className="space-y-2">
+            <div className="bg-brand-surface-raised h-3 w-full animate-pulse rounded-full" />
+            <div className="bg-brand-surface-raised h-3 w-5/6 animate-pulse rounded-full" />
+            <div className="bg-brand-surface-raised h-3 w-4/6 animate-pulse rounded-full" />
+          </div>
+          <div className="mt-4 flex gap-2">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-brand-surface-raised h-9 w-9 animate-pulse rounded-full"
+              />
+            ))}
+          </div>
+          <div className="mt-2 flex gap-2">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-brand-surface-raised h-10 w-12 animate-pulse rounded-lg"
+              />
+            ))}
+          </div>
+          <div className="bg-brand-surface-raised mt-4 h-12 w-full animate-pulse rounded-xl" />
+        </div>
+      </div>
+    </main>
+  );
+}
+
+export default function ProductDetail() {
+  const { token } = useUserStore();
+  const { slug, id } = useParams();
+  const { data: product, isLoading } = useProduct(slug ?? "", id ?? "");
+  const { data: related } = useSimilarProducts(id ?? "");
+  const { data: wishlist } = useWishlists();
+  const { mutate: toggleWishlist } = useToggleWishlist();
+  const { mutate: addToCart } = useAddToCart();
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColorIdx, setSelectedColorIdx] = useState(0);
+  const [selectedImageIdx, setSelectedImageIdx] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+
+  const wishlistSet = new Set(wishlist?.products || []);
+  const liked = wishlistSet.has(id);
+
+  const handleWishlist = () => {
+    if (!token) {
+      toast.error("Login to save wishlist");
+      return;
+    }
+    if (!product) return;
+    toggleWishlist(product._id);
+  };
+
+  const handleAddToCart = () => {
+    if (!selectedSize) return;
+    if (!product) return;
+    addToCart({
+      productId: product._id,
+      size: selectedSize ?? undefined,
+      quantity,
+      name: product.name,
+      image: product.image,
+      price: product.discountPrice || product.price,
+      discountPrice: product.discountPrice,
+      slug: product.slug,
+      category:
+        typeof product.category === "string"
+          ? product.category
+          : product.category?.name,
+    });
+  };
+
+  if (isLoading) {
+    return <ProductDetailSkeleton />;
+  }
+
+  if (!product) {
+    return (
+      <div className="bg-background flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <p className="font-display text-muted-foreground text-4xl uppercase">
+            Product not found
+          </p>
+          <Link
+            to="/products"
+            className="font-body text-brand-orange mt-4 inline-block hover:underline"
+          >
+            Back to products
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const activeVariant = product?.variants?.[selectedColorIdx];
+  const activeImages = activeVariant?.images ?? [product.image];
+  const activeImage = activeImages[selectedImageIdx] ?? activeImages[0];
+  const sizes = activeVariant?.sizes || [];
+
+  const handleColorChange = (idx: number) => {
+    setSelectedColorIdx(idx);
+    setSelectedImageIdx(0);
+  };
+
+  return (
+    <main className="pt-20">
+      <div className="mx-auto grid max-w-350 grid-cols-1 gap-12 px-6 pb-20 lg:grid-cols-2 lg:gap-20 lg:px-10">
+        {/* Image Panel */}
+        <div className="flex flex-col gap-4">
+          <div className="bg-brand-surface-raised relative flex aspect-square items-center justify-center overflow-hidden rounded-3xl p-12">
+            <div className="bg-gradient-radial-dark absolute inset-0 opacity-60" />
+            <img
+              key={activeImage}
+              src={activeImage}
+              alt={`${product.name} – ${activeVariant?.color ?? ""}`}
+              className="relative z-10 h-full w-full object-contain transition-opacity duration-300"
+            />
+            <span
+              className={`font-body absolute top-5 left-5 z-20 rounded-full px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase ${tagColors[product.tag] ?? "bg-muted text-muted-foreground"}`}
+            >
+              {product.tag}
+            </span>
+
+            {activeImages.length > 1 && (
+              <>
+                <button
+                  onClick={() =>
+                    setSelectedImageIdx(
+                      (selectedImageIdx - 1 + activeImages.length) %
+                        activeImages.length
+                    )
+                  }
+                  className="bg-background/80 hover:bg-brand-orange hover:text-primary-foreground absolute left-4 z-20 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-colors duration-150"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  onClick={() =>
+                    setSelectedImageIdx(
+                      (selectedImageIdx + 1) % activeImages.length
+                    )
+                  }
+                  className="bg-background/80 hover:bg-brand-orange hover:text-primary-foreground absolute right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur transition-colors duration-150"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </>
+            )}
+          </div>
+
+          {activeImages.length > 1 && (
+            <div className="flex gap-3 overflow-x-auto pb-1">
+              {activeImages.map((img: string, i: number) => (
+                <button
+                  key={i}
+                  onClick={() => setSelectedImageIdx(i)}
+                  className={`h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-colors duration-200 ${
+                    selectedImageIdx === i
+                      ? "border-brand-orange"
+                      : "border-brand-border hover:border-brand-orange/50"
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`View ${i + 1}`}
+                    className="bg-brand-surface-raised h-full w-full object-contain p-2"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Info Panel */}
+        <div className="flex flex-col justify-center">
+          <span className="font-body text-brand-orange text-xs font-semibold tracking-widest uppercase">
+            {product.category?.name}
+          </span>
+          <h1 className="font-display text-foreground mt-2 text-5xl leading-tight font-black uppercase lg:text-6xl">
+            {product.name}
+          </h1>
+
+          <div className="mt-4 flex items-center gap-3">
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  size={14}
+                  className={
+                    i < Math.floor(product.rating)
+                      ? "fill-amber-400 text-amber-400"
+                      : "text-muted-foreground/30"
+                  }
+                />
+              ))}
+            </div>
+            <span className="font-body text-muted-foreground text-sm">
+              {product.rating} ({product.reviewsCount} reviews)
+            </span>
+          </div>
+
+          <div className="mt-5 flex items-baseline gap-3">
+            <span className="font-display text-brand-orange text-4xl font-bold">
+              {formatPrice(product.discountPrice || product.price)}
+            </span>
+            {product.discountPrice && (
+              <span className="font-body text-muted-foreground text-lg line-through">
+                {formatPrice(product.price)}
+              </span>
+            )}
+            {product.discountPrice && (
+              <span className="font-body text-sm font-semibold text-green-400">
+                Save {formatPrice(product.price - product.discountPrice)}
+              </span>
+            )}
+          </div>
+
+          <p className="font-body text-muted-foreground mt-5 leading-relaxed">
+            {product.description}
+          </p>
+
+          {/* Color */}
+          <div className="mt-8">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="font-body text-foreground text-sm font-semibold">
+                Color
+              </span>
+              <span className="font-body text-brand-orange text-xs font-medium">
+                {activeVariant?.color}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {product?.variants?.map((v: TVariant, i: number) => (
+                <button
+                  key={i}
+                  onClick={() => handleColorChange(i)}
+                  className={`h-9 w-9 rounded-full border-2 transition-colors duration-200 ${
+                    selectedColorIdx === i
+                      ? "border-brand-orange scale-110"
+                      : "border-brand-border"
+                  }`}
+                  style={{ backgroundColor: v.colorCode }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Size */}
+          <div className="mt-6">
+            <span className="font-body text-foreground text-sm font-semibold">
+              Size (US)
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {sizes.map((s: { size: string; stock: number }) => (
+                <button
+                  key={s.size}
+                  onClick={() => setSelectedSize(s.size)}
+                  className={`font-body h-10 w-12 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    selectedSize === s.size
+                      ? "bg-brand-orange text-primary-foreground"
+                      : "border-brand-border text-muted-foreground hover:border-brand-orange/50 hover:text-foreground border"
+                  }`}
+                >
+                  {s.size}
+                </button>
+              ))}
+            </div>
+            {!selectedSize && (
+              <p className="font-body text-muted-foreground mt-2 text-xs">
+                Please select a size
+              </p>
+            )}
+          </div>
+
+          {/* Actions — desktop only */}
+          <div className="mt-8 hidden items-center gap-4 lg:flex">
+            <div className="border-brand-border flex items-center overflow-hidden rounded-xl border">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="text-muted-foreground hover:text-foreground flex h-12 w-10 items-center justify-center transition-colors"
+              >
+                <Minus size={14} />
+              </button>
+              <span className="font-body text-foreground w-10 text-center font-semibold">
+                {quantity}
+              </span>
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                className="text-muted-foreground hover:text-foreground flex h-12 w-10 items-center justify-center transition-colors"
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+
+            <button
+              onClick={handleAddToCart}
+              disabled={!selectedSize}
+              className={`font-body flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold tracking-wider uppercase transition-colors duration-300 ${
+                selectedSize
+                  ? "bg-brand-orange text-primary-foreground hover:bg-brand-orange-glow"
+                  : "bg-muted text-muted-foreground cursor-not-allowed"
+              }`}
+            >
+              <ShoppingCart size={16} />
+              Add to Cart
+            </button>
+
+            <button
+              className={`flex h-12 w-12 items-center justify-center rounded-xl border transition-colors duration-200 ${liked ? "border-red-500/40 bg-red-500/10" : "border-brand-border hover:border-brand-orange/40"}`}
+              onClick={handleWishlist}
+            >
+              <Heart
+                size={16}
+                className={
+                  liked ? "fill-red-500 text-red-500" : "text-muted-foreground"
+                }
+              />
+            </button>
+          </div>
+
+          {/* Badges */}
+          <div className="border-brand-border mt-8 grid grid-cols-3 gap-3 border-t pt-8">
+            {[
+              {
+                icon: Truck,
+                label: "Free shipping",
+                sub: "Orders over ₹8,000",
+              },
+              { icon: RotateCcw, label: "Easy returns", sub: "30-day policy" },
+              { icon: Shield, label: "Authentic", sub: "100% genuine" },
+            ].map((badge) => (
+              <div
+                key={badge.label}
+                className="flex flex-col items-center gap-2 text-center"
+              >
+                <badge.icon size={20} className="text-brand-orange" />
+                <div>
+                  <p className="font-body text-foreground text-xs font-semibold">
+                    {badge.label}
+                  </p>
+                  <p className="font-body text-muted-foreground text-[10px]">
+                    {badge.sub}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile sticky action bar */}
+      <div className="bg-background/95 border-brand-border fixed right-0 bottom-0 left-0 z-50 border-t px-4 py-3 backdrop-blur-md lg:hidden">
+        <div className="flex items-center gap-3">
+          {/* Quantity */}
+          <div className="border-brand-border flex items-center overflow-hidden rounded-xl border">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="text-muted-foreground hover:text-foreground flex h-11 w-9 items-center justify-center transition-colors"
+            >
+              <Minus size={13} />
+            </button>
+            <span className="font-body text-foreground w-8 text-center text-sm font-semibold">
+              {quantity}
+            </span>
+            <button
+              onClick={() => setQuantity(quantity + 1)}
+              className="text-muted-foreground hover:text-foreground flex h-11 w-9 items-center justify-center transition-colors"
+            >
+              <Plus size={13} />
+            </button>
+          </div>
+
+          {/* Add to cart */}
+          <button
+            onClick={handleAddToCart}
+            disabled={!selectedSize}
+            className={`font-body flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold tracking-wider uppercase transition-colors duration-300 ${
+              selectedSize
+                ? "bg-brand-orange text-primary-foreground hover:bg-brand-orange-glow"
+                : "bg-muted text-muted-foreground cursor-not-allowed"
+            }`}
+          >
+            <ShoppingCart size={15} />
+            {selectedSize ? "Add to Cart" : "Select Size"}
+          </button>
+
+          {/* Wishlist */}
+          <button
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors duration-200 ${
+              liked
+                ? "border-red-500/40 bg-red-500/10"
+                : "border-brand-border hover:border-brand-orange/40"
+            }`}
+            onClick={handleWishlist}
+          >
+            <Heart
+              size={16}
+              className={
+                liked ? "fill-red-500 text-red-500" : "text-muted-foreground"
+              }
+            />
+          </button>
+        </div>
+      </div>
+
+      {/* Related Products */}
+      <div className="bg-card/40 py-20 pb-32 lg:pb-20">
+        <div className="mx-auto max-w-350 px-6 lg:px-10">
+          <div className="mb-10">
+            <span className="font-body text-brand-orange text-xs font-semibold tracking-widest uppercase">
+              You may also like
+            </span>
+            <h2 className="font-display text-foreground mt-1 text-4xl font-black uppercase lg:text-5xl">
+              Related <span className="text-gradient-orange">Products</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-6">
+            {related?.map((p: TProduct, i: number) => (
+              <ProductCard key={p._id} product={p} delay={i * 80} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}

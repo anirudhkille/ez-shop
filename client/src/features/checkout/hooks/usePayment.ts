@@ -1,0 +1,26 @@
+import { useMutation } from "@tanstack/react-query";
+
+import { toast } from "sonner";
+
+import type { TOrder } from "@/features/order";
+import { getErrorMessage } from "@/shared/lib/apiError";
+
+import { createPayment } from "../api/payment";
+
+export const usePayment = () => {
+  return useMutation({
+    mutationFn: (formData: TOrder) => createPayment(formData),
+
+    onSuccess: (data) => {
+      // createPayment returns the full envelope, so the checkout URL sits
+      // under data rather than on the root.
+      window.location.href = data.data.url;
+    },
+
+    onError: (error) => {
+      toast.error(
+        getErrorMessage(error, "An error occurred while creating payment")
+      );
+    },
+  });
+};

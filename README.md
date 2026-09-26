@@ -63,7 +63,50 @@ download, plus role-gated store management for staff.
 └── readme/   Screenshots used above
 ```
 
-Each server feature lives in its own module under `src/modules/<feature>/` and
+### Storefront (`client/src`)
+
+Organised by feature rather than by file type. A feature owns its pages,
+components, data layer and types, and exposes a public surface through a barrel.
+
+```
+src/
+├── app/            router + app shell
+│   ├── App.tsx         error boundary, suspense
+│   ├── routes.tsx      maps paths to page components — wiring only
+│   ├── layout.tsx      header + footer + <Outlet/>
+│   ├── header.tsx  footer.tsx  not-found.tsx
+├── content/        static pages (terms, privacy, cookies) — no logic
+├── features/
+│   └── <feature>/
+│       ├── pages/       page components for this feature
+│       ├── components/  feature-specific components
+│       ├── hooks/       react-query hooks
+│       ├── api/         raw HTTP calls
+│       ├── store/       zustand stores (where a feature needs one)
+│       ├── types.ts
+│       └── index.ts     the only surface other code may import
+└── shared/
+    ├── components/      used by 2+ features (ui/, container, head, toaster)
+    ├── lib/             axios instance, formatters, helpers
+    └── types/           types shared across features
+```
+
+Rules this layout keeps:
+
+- **Pages live inside their owning feature.** `pages/` only exists where a route
+  belongs to exactly one feature.
+- **Barrels are the public surface.** Anything not exported from
+  `features/<f>/index.ts` is private to that feature, so refactors stay local.
+  `knip` enforces this — an export nothing outside the feature imports is
+  reported as unused.
+- **`shared/` is for code 2+ features actually use.** Nothing is promoted
+  pre-emptively; `shared/hooks/` is absent because every hook today is a feature
+  data hook.
+- **`routes.tsx` wires paths to page components and holds no logic.**
+
+### API (`server/src`)
+
+Each feature lives in its own module under `src/modules/<feature>/` and
 follows the same layering:
 
 ```

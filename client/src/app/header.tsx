@@ -1,0 +1,267 @@
+import { lazy, Suspense, useEffect, useState } from "react";
+
+import { Link, useLocation, useNavigate } from "react-router";
+
+import { LogOut, Menu, Search, ShoppingCart, User, X } from "lucide-react";
+
+import useUserStore from "@/store/userStore";
+
+import { useGetCartCount } from "@/features/cart";
+
+const SearchModal = lazy(() =>
+  import("@/features/product").then((m) => ({ default: m.SearchModal }))
+);
+
+const navLinks = [
+  { label: "Men", href: "/products?category=men" },
+  { label: "Women", href: "/products?category=women" },
+  { label: "Kids", href: "/products?category=kids" },
+  { label: "Shoes", href: "/products?category=shoes" },
+  { label: "Clothing", href: "/products?category=clothing" },
+  { label: "Accessories", href: "/products?category=accessories" },
+];
+
+export default function Header() {
+  const { data: cartCount } = useGetCartCount();
+
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { name, email, logout } = useUserStore();
+
+  const isHomePage = location.pathname === "/";
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Close menus on route change (state adjustment during render)
+  const [lastPath, setLastPath] = useState(location.pathname);
+  if (location.pathname !== lastPath) {
+    setLastPath(location.pathname);
+    setProfileMenuOpen(false);
+    setMobileOpen(false);
+  }
+
+  const solidBg = !isHomePage || scrolled;
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
+  const avatarInitial = name?.[0] ?? email?.[0] ?? "";
+
+  return (
+    <header
+      className={`fixed top-0 right-0 left-0 z-50 transition-[background-color,border-color,box-shadow] duration-300 ${
+        solidBg
+          ? "bg-background/95 border-brand-border border-b shadow-lg backdrop-blur-lg"
+          : "bg-transparent"
+      }`}
+    >
+      <div className="mx-auto flex h-16 max-w-350 items-center justify-between px-6 lg:px-10">
+        <Link to="/" className="group flex items-center gap-2">
+          <div className="">
+            <img
+              src="/logo.svg"
+              alt="EZ Shop Logo"
+              loading="eager"
+              className="size-6 object-contain"
+            />
+          </div>
+          <span className="font-display text-foreground text-2xl font-bold tracking-wider">
+            EZ Shop
+          </span>
+        </Link>
+
+        <nav className="hidden items-center gap-8 md:flex">
+          {navLinks.map((link) => (
+            <Link
+              key={link.label}
+              to={link.href}
+              className="font-body text-muted-foreground hover:text-foreground group relative text-sm font-medium transition-colors duration-200"
+            >
+              {link.label}
+              <span className="bg-brand-orange absolute -bottom-1 left-0 h-0.5 w-full origin-left scale-x-0 transition-transform duration-200 group-hover:scale-x-100" />
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="text-muted-foreground hover:text-foreground hover:bg-muted hidden h-9 w-9 items-center justify-center rounded-full transition-colors duration-150 md:flex"
+            aria-label="Open search"
+          >
+            <Search size={18} />
+          </button>
+
+          <Link
+            to="/cart"
+            aria-label="Shopping Cart"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted relative flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150"
+          >
+            <ShoppingCart size={18} />
+            {cartCount > 0 && (
+              <span className="bg-brand-orange text-primary-foreground absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+
+          <div className="relative hidden md:block">
+            {email ? (
+              <>
+                <button
+                  onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                  className="bg-brand-orange/10 border-brand-orange/30 font-display text-brand-orange hover:bg-brand-orange/20 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-black uppercase transition-colors duration-150"
+                >
+                  {avatarInitial}
+                </button>
+
+                {profileMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setProfileMenuOpen(false)}
+                    />
+                    <div className="bg-card border-brand-border absolute top-12 right-0 z-50 w-52 overflow-hidden rounded-2xl border shadow-[0_20px_60px_-10px_hsl(0_0%_0%/0.8)]">
+                      <div className="border-brand-border border-b px-4 py-3">
+                        <p className="font-body text-foreground truncate text-sm font-semibold">
+                          {name}
+                        </p>
+                        <p className="font-body text-muted-foreground truncate text-xs">
+                          {email}
+                        </p>
+                      </div>
+                      <div className="py-1.5">
+                        <Link
+                          to="/account"
+                          className="font-body text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
+                        >
+                          <User size={14} /> My Account
+                        </Link>
+                        <Link
+                          to="/cart"
+                          className="font-body text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
+                        >
+                          <ShoppingCart size={14} /> My Cart
+                        </Link>
+                      </div>
+                      <div className="border-brand-border border-t py-1.5">
+                        <button
+                          onClick={handleLogout}
+                          className="font-body text-destructive hover:bg-destructive/5 flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors"
+                        >
+                          <LogOut size={14} /> Logout
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <Link
+                to="/login"
+                aria-label="Login"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150"
+              >
+                <User size={18} />
+              </Link>
+            )}
+          </div>
+
+          <button
+            className="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150 md:hidden"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle mobile menu"
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+      </div>
+
+      <div
+        className={`overflow-hidden transition-[max-height,opacity] duration-300 md:hidden ${
+          mobileOpen ? "max-h-120 opacity-100" : "max-h-0 opacity-0"
+        } bg-card border-brand-border border-b`}
+      >
+        <nav className="flex flex-col gap-1 px-6 py-4">
+          <button
+            onClick={() => {
+              setSearchOpen(true);
+              setMobileOpen(false);
+            }}
+            className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 flex items-center gap-3 border-b py-2.5 text-sm font-medium transition-colors"
+          >
+            <Search size={14} /> Search products
+          </button>
+          {navLinks.map((link) => (
+            <Link
+              key={link.label}
+              to={link.href}
+              className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors last:border-0"
+              onClick={() => setMobileOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <Link
+            to="/cart"
+            className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors"
+            onClick={() => setMobileOpen(false)}
+          >
+            Cart {cartCount}
+          </Link>
+          {name ? (
+            <>
+              <Link
+                to="/account"
+                className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                My Account ({name})
+              </Link>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setMobileOpen(false);
+                }}
+                className="font-body text-destructive hover:text-destructive/80 py-2.5 text-left text-sm font-medium transition-colors"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                className="font-body text-brand-orange hover:text-brand-orange/80 py-2.5 text-sm font-medium transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                Create account
+              </Link>
+            </>
+          )}
+        </nav>
+      </div>
+
+      <Suspense fallback={null}>
+        <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+      </Suspense>
+    </header>
+  );
+}
