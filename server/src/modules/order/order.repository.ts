@@ -31,9 +31,7 @@ export const findByUser = async (
   skip: number,
   limit: number,
 ) => {
-  // Newest first, and the product ref must be populated so the client can
-  // render line-item names and thumbnails without a second round trip.
-  // lean() skips hydration since this is a read-only listing.
+  // Newest first. lean() skips hydration on this read-only listing.
   return await Order.find({ user: userId })
     .select(MY_ORDER_FIELDS)
     .sort({ createdAt: -1 })

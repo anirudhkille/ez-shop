@@ -67,10 +67,7 @@ export interface OrderLineItemsProps {
   items?: TOrderProduct[];
 }
 
-/**
- * Nested line items for an order, shared by the account orders list and the
- * order detail page so both render thumbnails identically.
- */
+/** Shared by the account orders list and the order detail page. */
 export const OrderLineItems: FC<OrderLineItemsProps> = ({ items }) => {
   if (!items?.length) {
     return (

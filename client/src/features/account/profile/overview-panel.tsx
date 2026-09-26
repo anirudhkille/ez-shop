@@ -21,9 +21,6 @@ export default function OverviewPanel() {
   const displayName = profile?.name || name || "User";
   const savedPhone = profile?.phone ?? "";
 
-  // Read-only values render straight from the profile query, so they stay
-  // fresh. The drafts only exist to hold in-flight edits and are seeded from
-  // the profile each time editing begins.
   const [editing, setEditing] = useState(false);
   const [draftName, setDraftName] = useState("");
   const [draftPhone, setDraftPhone] = useState("");

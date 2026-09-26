@@ -38,8 +38,6 @@ function OrderCard({
 }) {
   const [expanded, setExpanded] = useState(false);
   const items = order.products ?? [];
-  // Sum quantities rather than counting lines, so "Qty 2" reads as 2 items and
-  // matches the order detail page and the server's own itemCount aggregation.
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const isExpandable = collapsible && items.length > COLLAPSED_ITEM_COUNT;
   const visibleItems =

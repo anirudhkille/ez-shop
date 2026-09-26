@@ -69,8 +69,6 @@ export const issueInvoiceForOrder = async (order: OrderLike) => {
   const couponCode =
     typeof order.coupon === "string" ? order.coupon : order.coupon?.code;
 
-  // Signed-in orders only denormalise the address, not name/phone at the top
-  // level, so fall back to it rather than printing a blank bill-to.
   const snapshotAddress = order.address as
     | { name?: string; phone?: string }
     | null
@@ -142,15 +140,13 @@ export const getInvoiceForOrder = async (
     throw new AppError("Invalid order", 400);
   }
 
-  // findForUser drops its user filter when userId is falsy, which would read
-  // any order's invoice. Fail closed instead.
+  // findForUser drops its user filter when userId is falsy, so fail closed.
   if (!userId) {
     throw new AppError("Not authorized", 401);
   }
 
   const existing = await invoiceRepository.findForUser(orderId, userId);
 
-  // Orders predating invoicing have no stored invoice; issue one on demand.
   // issueInvoiceForOrder is idempotent, so repeat clicks are safe.
   const invoice =
     existing ??

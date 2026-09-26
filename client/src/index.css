@@ -83,13 +83,9 @@
   );
 }
 
-/*
- * Sonner theming. The toaster reads these custom properties, so the brand is
- * applied here instead of fighting its inline styles from JSX.
- */
+/* Sonner reads these custom properties for its colours. */
 [data-sonner-toaster] {
-  /* Success/warning are literal HSL triples: the theme only defines a
-     destructive token, and Tailwind's green-400/amber-400 are not CSS vars. */
+  /* Literal HSL: the theme has no green/amber token to reference. */
   --toast-success: 142 71% 45%;
   --toast-warning: 38 92% 50%;
 
@@ -126,8 +122,7 @@
   box-shadow: var(--shadow-card);
 }
 
-/* The leading status dot/icon carries the type colour, so keep it brand-aligned
-   for the neutral types and let success/error use their own hues. */
+/* The leading status icon carries the type colour. */
 [data-sonner-toast][data-type="success"] [data-icon] {
   color: hsl(var(--toast-success));
 }

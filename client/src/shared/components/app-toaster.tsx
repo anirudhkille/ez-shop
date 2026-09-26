@@ -1,11 +1,6 @@
 import { Toaster } from "sonner";
 
-/**
- * Sonner reads its colours from the `--normal-*` / `--success-*` / `--error-*`
- * custom properties, which are themed in index.css. `richColors` stays off so
- * those win, and the theme is pinned to dark to match the app's single dark
- * palette.
- */
+/** `richColors` stays off so the custom properties in index.css win. */
 export default function AppToaster() {
   return (
     <Toaster

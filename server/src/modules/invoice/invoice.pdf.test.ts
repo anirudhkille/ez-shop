@@ -6,7 +6,7 @@ import PDFDocument from "pdfkit";
 import Invoice from "@/modules/invoice/invoice.model.js";
 import { buildInvoicePdf } from "@/modules/invoice/invoice.pdf.js";
 
-/** Captures the strings the PDF actually renders, independent of font encoding. */
+/** Captures the strings the PDF renders, independent of font encoding. */
 const renderText = (invoice: unknown) => {
   const doc = new PDFDocument({ size: "A4", margin: 50, compress: false });
   const seen: string[] = [];

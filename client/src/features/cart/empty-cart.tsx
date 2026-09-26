@@ -4,7 +4,6 @@ import { Banknote, Heart, ShoppingBag, Tag } from "lucide-react";
 
 import useUserStore from "@/store/userStore";
 
-/** Reassurance points, each backed by a real feature in the codebase. */
 const perks = [
   { icon: Tag, label: "Coupon codes at checkout" },
   { icon: Banknote, label: "Cash on delivery" },

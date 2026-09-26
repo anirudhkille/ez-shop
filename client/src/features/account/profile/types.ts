@@ -1,7 +1,4 @@
-/**
- * The account area is route-driven: each panel is a child route of `/account`
- * (see App.tsx). `/account` itself renders the overview panel via `<Outlet />`.
- */
+/** Each panel is a child route of `/account`; see App.tsx. */
 export const PROFILE_VIEWS = [
   "overview",
   "orders",
