@@ -159,6 +159,7 @@ export const useAddToCart = () => {
     onSettled: () => {
       if (token) {
         queryClient.invalidateQueries({ queryKey: ["cart"] });
+        queryClient.invalidateQueries({ queryKey: ["cartCount"] });
       }
     },
 
@@ -185,6 +186,7 @@ export const useUpdateCartQty = () => {
     onSuccess: () => {
       if (token) {
         queryClient.invalidateQueries({ queryKey: ["cart"] });
+        queryClient.invalidateQueries({ queryKey: ["cartCount"] });
         toast.success("Cart updated");
       }
     },
@@ -213,6 +215,7 @@ export const useRemoveCartItem = () => {
     onSuccess: () => {
       if (token) {
         queryClient.invalidateQueries({ queryKey: ["cart"] });
+        queryClient.invalidateQueries({ queryKey: ["cartCount"] });
         toast.success("Item removed from cart");
       }
     },

@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-import { ArrowRight, ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 
 import { formatPrice } from "@/lib/formatPrice";
 
@@ -48,7 +48,7 @@ export default function Cart() {
             to="/products"
             className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow inline-flex items-center gap-2 rounded-full px-8 py-4 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
           >
-            Start Shopping <ArrowRight size={16} />
+            Start Shopping
           </Link>
         </div>
       ) : (
@@ -123,7 +123,7 @@ export default function Cart() {
                 to="/checkout"
                 className="bg-brand-orange text-primary-foreground font-body hover:bg-brand-orange-glow mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold tracking-wider uppercase transition-[background-color,transform] duration-150 active:scale-[0.98]"
               >
-                Checkout <ArrowRight size={16} />
+                Checkout
               </Link>
 
               <Link

@@ -45,28 +45,26 @@ export default function DeliveryAddresses() {
   return (
     <>
       <Head title="Delivery Addresses | EZ Shop" />
-      <Container className="max-w-4xl px-5 py-16 sm:px-8 md:px-10">
-        <div className="mb-8">
-          <Link
-            to="/account"
-            className="font-body text-brand-orange hover:text-brand-orange/80 mb-4 inline-flex items-center gap-1 text-sm transition-colors"
+      <Container className="mt-10 max-w-4xl space-y-5 px-5 py-16 sm:px-8 md:space-y-8 md:px-10">
+        <Link
+          to="/account"
+          className="font-body text-brand-orange hover:text-brand-orange/80 inline-flex items-center gap-1 text-sm transition-colors"
+        >
+          <ArrowLeft size={14} /> Back to Account
+        </Link>
+        <div className="mt-2 flex items-center justify-between">
+          <h1 className="font-display text-foreground text-3xl font-black uppercase">
+            Delivery Addresses
+          </h1>
+          <Button
+            onClick={() => {
+              setSelectedAddress(null);
+              setOpen("new");
+            }}
+            className="bg-brand-orange hover:bg-brand-orange/90 gap-2 rounded-xl text-white"
           >
-            <ArrowLeft size={14} /> Back to Profile
-          </Link>
-          <div className="mt-2 flex items-center justify-between">
-            <h1 className="font-display text-foreground text-3xl font-black uppercase">
-              Delivery Addresses
-            </h1>
-            <Button
-              onClick={() => {
-                setSelectedAddress(null);
-                setOpen("new");
-              }}
-              className="bg-brand-orange hover:bg-brand-orange/90 gap-2 rounded-xl text-white"
-            >
-              <Plus size={16} /> Add New
-            </Button>
-          </div>
+            <Plus size={16} /> Add New
+          </Button>
         </div>
 
         {addresses.length === 0 ? (

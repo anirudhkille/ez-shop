@@ -143,7 +143,7 @@ export default function Header() {
                           to="/account"
                           className="font-body text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
                         >
-                          <User size={14} /> My Profile
+                          <User size={14} /> My Account
                         </Link>
                         <Link
                           to="/cart"
@@ -224,7 +224,7 @@ export default function Header() {
                 className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
-                My Profile ({name})
+                My Account ({name})
               </Link>
               <button
                 onClick={() => {
