@@ -5,7 +5,9 @@ import { z } from "zod";
 import { logger } from "./logger.js";
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
   PORT: z.coerce.number().default(8080),
 
   MONGO_URI: z.string().min(1, "MONGO_URI is required"),
@@ -46,6 +48,14 @@ const envSchema = z.object({
 
   STRIPE_SECRET_KEY: z.string().min(1, "STRIPE_SECRET_KEY is required"),
   STRIPE_WEBHOOK_SECRET: z.string().min(1, "STRIPE_WEBHOOK_SECRET is required"),
+
+  SENTRY_DSN: z
+    .string()
+    .default("")
+    .transform((value) => (value ? value : undefined)),
+  SENTRY_ENVIRONMENT: z.string().optional(),
+  SENTRY_RELEASE: z.string().optional(),
+  SENTRY_TRACES_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0),
 });
 
 const result = envSchema.safeParse(process.env);

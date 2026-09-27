@@ -7,6 +7,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@sentry/node": "^11.0.0",
     "@types/pdfkit": "^0.17.6",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.9.0",

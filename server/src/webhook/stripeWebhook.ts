@@ -3,6 +3,7 @@ import express, { Request, Response } from "express";
 import * as orderRepository from "@/modules/order/order.repository";
 import * as cartRepository from "@/modules/cart/cart.repository";
 import { env } from "@/config/env.config";
+import { Sentry, sentryEnabled } from "@/config/sentry";
 
 const router = express.Router();
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
@@ -49,6 +50,17 @@ router.post(
 
         await order.save();
       } catch (err) {
+        // This route replies to Stripe directly instead of going through the
+        // errorHandler, so without this a dropped payment event is silent.
+        if (sentryEnabled) {
+          Sentry.withScope((scope) => {
+            scope.setTag("route", "/webhook");
+            scope.setTag("stripeEventType", event.type);
+            scope.setTag("orderId", orderId);
+            Sentry.captureException(err);
+          });
+        }
+
         return res
           .status(500)
           .send(`Webhook processing error: ${(err as Error).message}`);
