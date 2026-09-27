@@ -3,11 +3,6 @@ import { sendResponse } from "@/utils/response";
 import { Request, Response } from "express";
 import * as couponService from "@/modules/coupon/coupon.service";
 
-/**
- * Quotes a coupon against a subtotal so the cart can show the discount before
- * the order is placed. This never claims a use and never becomes the amount
- * charged: the order paths recompute the discount from the real cart.
- */
 export const applyCoupon = asyncHandler(async (req: Request, res: Response) => {
   const { code, subtotal } = req.body;
   const userId = req.user?._id?.toString();
