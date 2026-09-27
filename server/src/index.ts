@@ -1,5 +1,3 @@
-// Imported first so the Sentry client is initialised before any other module
-// runs, which is what lets it capture failures that happen during startup.
 import { flushSentry } from "./config/sentry";
 
 import { env } from "./config/env.config";
@@ -89,8 +87,6 @@ const startServer = async () => {
   } catch (error) {
     logger.error(error, "Failed to start server");
 
-    // Buffered events are dropped on exit, and a boot failure is precisely the
-    // thing worth having in Sentry, so give the client a moment to send.
     await flushSentry(2000);
 
     process.exit(1);

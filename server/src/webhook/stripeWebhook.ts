@@ -50,8 +50,6 @@ router.post(
 
         await order.save();
       } catch (err) {
-        // This route replies to Stripe directly instead of going through the
-        // errorHandler, so without this a dropped payment event is silent.
         if (sentryEnabled) {
           Sentry.withScope((scope) => {
             scope.setTag("route", "/webhook");

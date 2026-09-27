@@ -10,6 +10,11 @@ if (sentryEnabled) {
     environment: env.SENTRY_ENVIRONMENT ?? env.NODE_ENV,
     release: env.SENTRY_RELEASE,
     tracesSampleRate: env.SENTRY_TRACES_SAMPLE_RATE,
+    integrations: [
+      Sentry.pinoIntegration({
+        log: { levels: ["info", "warn", "error", "fatal"] },
+      }),
+    ],
   });
 }
 
