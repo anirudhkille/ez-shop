@@ -1,5 +1,5 @@
 import mongoose, { Document } from "mongoose";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import crypto from "crypto";
 
 export interface IAdmin extends Document {
