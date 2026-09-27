@@ -1,18 +1,19 @@
 import * as cartRepository from "@/modules/cart/cart.repository";
-import * as addressRepository from "@/modules/address/address.repository";
-import * as productRepository from "@/modules/product/product.repository";
 import mongoose from "mongoose";
 import { env } from "@/config/env.config";
-import { decrementStock, verifyStock } from "@/modules/product/product.service";
 import * as orderRepository from "@/modules/order/order.repository";
-import { IOrder, IOrderProduct } from "@/modules/order/order.model";
+import {
+  claimStock,
+  createPricedOrder,
+  priceCart,
+  priceGuestLines,
+  requireGuestAddress,
+  resolveSavedAddress,
+  type GuestCheckoutBody,
+} from "@/modules/order/order.intent";
+import { IOrder } from "@/modules/order/order.model";
 import { AppError } from "@/utils/appError";
-import * as couponService from "@/modules/coupon/coupon.service";
 import * as invoiceService from "@/modules/invoice/invoice.service";
-
-type ProductRef = {
-  _id: mongoose.Types.ObjectId;
-};
 
 interface CODRequestBody {
   addressId: string;
@@ -20,116 +21,28 @@ interface CODRequestBody {
   couponCode?: string;
 }
 
-interface GuestCheckoutBody {
-  products: Array<{
-    productId: string;
-    variantId?: string;
-    size?: string;
-    quantity: number;
-  }>;
-  address: {
-    name: string;
-    addressLine1: string;
-    addressLine2?: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-    phone: string;
-  };
-  deliveryMethod: string;
-  name: string;
-  email: string;
-  phone: string;
-  couponCode?: string;
-}
-
 export const placeCODOrder = async (userId: string, body: CODRequestBody) => {
   const { addressId, deliveryMethod, couponCode } = body;
 
-  const cart = await cartRepository.findOnePopulated({ user: userId });
-  if (!cart || cart.products.length === 0)
-    throw new AppError("Cart is empty", 400);
+  const lines = await priceCart(userId);
+  const address = await resolveSavedAddress(addressId);
 
-  const address = await addressRepository.findById(addressId);
-  if (!address) throw new AppError("Invalid address", 400);
+  const { order } = await createPricedOrder({
+    lines,
+    buyer: { kind: "user", userId },
+    address,
+    deliveryMethod,
+    couponCode,
+    paymentType: "cod",
+  });
 
-  const stockError = await verifyStock(
-    cart.products.map((item) => ({
-      product: (item.product as unknown as ProductRef)._id.toString(),
-      variantId: item.variantId ? String(item.variantId) : undefined,
-      size: item.size,
-      quantity: item.quantity,
-    })),
-  );
-  if (stockError) {
-    throw new AppError(stockError, 400);
-  }
-
-  const subtotal = cart.products.reduce((sum, item) => {
-    const price = item.discountPriceAtPurchase ?? item.priceAtPurchase;
-    return sum + price * item.quantity;
-  }, 0);
-
-  let deliveryCharge = 0;
-  if (deliveryMethod === "express") deliveryCharge = 120;
-  if (deliveryMethod === "same-day") deliveryCharge = 199;
-
-  const coupon = couponCode
-    ? await couponService.evaluateCoupon(couponCode, subtotal, userId)
-    : null;
-  const discount = coupon?.discount ?? 0;
-
-  const totalAmount = Math.max(0, subtotal - discount) + deliveryCharge;
-
-  const newOrder = await couponService.withCouponClaim(couponCode, () =>
-    orderRepository.create({
-      user: userId,
-      paymentType: "cod",
-      paymentStatus: "pending",
-      orderStatus: "processing",
-      deliveryMethod,
-      subtotal,
-      discount,
-      ...(coupon ? { coupon } : {}),
-      deliveryCharge,
-      totalAmount,
-
-      products: cart.products.map((item) => ({
-        product: (item.product as unknown as ProductRef)._id,
-        quantity: item.quantity,
-        price: item.discountPriceAtPurchase ?? item.priceAtPurchase,
-      })),
-
-      address: {
-        name: address.name,
-        addressLine1: address.addressLine1,
-        addressLine2: address.addressLine2,
-        city: address.city,
-        state: address.state,
-        zipCode: address.zipCode,
-        country: address.country,
-        phone: address.phone,
-      },
-    }),
-  );
-
-  await decrementStock(
-    cart.products.map((item) => ({
-      product: (item.product as unknown as ProductRef)._id.toString(),
-      variantId: item.variantId ? String(item.variantId) : undefined,
-      size: item.size,
-      quantity: item.quantity,
-    })),
-  );
-
+  await claimStock(lines);
   await cartRepository.clearProducts(userId);
-
-  await invoiceService.issueInvoiceForOrder(newOrder);
+  await invoiceService.issueInvoiceForOrder(order);
 
   return {
-    orderId: newOrder._id,
-    redirectUrl: `${env.CLIENT_URL}/success?orderId=${newOrder._id}`,
+    orderId: order._id,
+    redirectUrl: `${env.CLIENT_URL}/success?orderId=${order._id}`,
   };
 };
 
@@ -202,104 +115,24 @@ export const placeGuestCODOrder = async (body: GuestCheckoutBody) => {
   const { products, address, deliveryMethod, name, email, phone, couponCode } =
     body;
 
-  if (!products || products.length === 0)
-    throw new AppError("Cart is empty", 400);
+  const shippingAddress = requireGuestAddress(address);
+  const lines = await priceGuestLines(products);
 
-  if (!address) throw new AppError("Address is required", 400);
+  const { order } = await createPricedOrder({
+    lines,
+    buyer: { kind: "guest", name, email, phone },
+    address: shippingAddress,
+    deliveryMethod,
+    couponCode,
+    paymentType: "cod",
+  });
 
-  const productIds = products.map((p) => p.productId);
-  const dbProducts = await productRepository.findByIds(productIds);
-
-  const productMap = new Map(dbProducts.map((p) => [String(p._id), p]));
-
-  let subtotal = 0;
-  const orderProducts: IOrderProduct[] = [];
-
-  for (const item of products) {
-    const prod = productMap.get(item.productId);
-    if (!prod || !prod.publish)
-      throw new AppError(
-        `Product ${item.productId} not found or unavailable`,
-        400,
-      );
-
-    const price = prod.discountPrice || prod.price;
-    subtotal += price * item.quantity;
-
-    orderProducts.push({
-      product: item.productId,
-      quantity: item.quantity,
-      price,
-    });
-  }
-
-  const stockError = await verifyStock(
-    products.map((p) => ({
-      product: p.productId,
-      variantId: p.variantId,
-      size: p.size,
-      quantity: p.quantity,
-    })),
-  );
-  if (stockError) {
-    throw new AppError(stockError, 400);
-  }
-
-  let deliveryCharge = 0;
-  if (deliveryMethod === "express") deliveryCharge = 120;
-  if (deliveryMethod === "same-day") deliveryCharge = 199;
-
-  // Guests have no user id, so per-user limits cannot apply to them.
-  const coupon = couponCode
-    ? await couponService.evaluateCoupon(couponCode, subtotal, null)
-    : null;
-  const discount = coupon?.discount ?? 0;
-
-  const totalAmount = Math.max(0, subtotal - discount) + deliveryCharge;
-
-  const newOrder = await couponService.withCouponClaim(couponCode, () =>
-    orderRepository.create({
-      user: null,
-      name,
-      email,
-      phone,
-      paymentType: "cod",
-      paymentStatus: "pending",
-      orderStatus: "processing",
-      deliveryMethod,
-      subtotal,
-      discount,
-      ...(coupon ? { coupon } : {}),
-      deliveryCharge,
-      totalAmount,
-      products: orderProducts,
-      address: {
-        name: address.name,
-        addressLine1: address.addressLine1,
-        addressLine2: address.addressLine2,
-        city: address.city,
-        state: address.state,
-        zipCode: address.zipCode,
-        country: address.country,
-        phone: address.phone,
-      },
-    }),
-  );
-
-  await decrementStock(
-    products.map((p) => ({
-      product: p.productId,
-      variantId: p.variantId,
-      size: p.size,
-      quantity: p.quantity,
-    })),
-  );
-
-  await invoiceService.issueInvoiceForOrder(newOrder);
+  await claimStock(lines);
+  await invoiceService.issueInvoiceForOrder(order);
 
   return {
-    orderId: newOrder._id,
-    redirectUrl: `${env.CLIENT_URL}/success?orderId=${newOrder._id}`,
+    orderId: order._id,
+    redirectUrl: `${env.CLIENT_URL}/success?orderId=${order._id}`,
   };
 };
 

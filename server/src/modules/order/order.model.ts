@@ -59,6 +59,11 @@ const orderSchema = new mongoose.Schema(
         },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
+        // IOrderProduct has always declared these, and the invoice snapshots
+        // them, but the schema omitted them — Mongoose strict mode stripped
+        // them on write, so no order ever recorded which variant was bought.
+        variantId: { type: String },
+        size: { type: String },
       },
     ],
     address: {

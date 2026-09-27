@@ -15,8 +15,8 @@ type OrderLike = {
     product: unknown;
     quantity: number;
     price: number;
-    variantId?: string;
-    size?: string;
+    variantId?: string | null;
+    size?: string | null;
   }[];
   address?: Record<string, unknown> | null;
   subtotal?: number | null;
