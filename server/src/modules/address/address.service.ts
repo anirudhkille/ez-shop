@@ -1,5 +1,6 @@
 import { UpdateQuery } from "mongoose";
 import * as addressRepository from "@/modules/address/address.repository";
+import { AppError } from "@/utils/appError";
 import { IAddress } from "@/modules/address/address.model";
 
 export const createAddress = async (
@@ -21,10 +22,20 @@ export const updateAddress = async (
   body: UpdateQuery<IAddress>,
 ) => {
   const address = await addressRepository.findByIdAndUpdate(id, userId, body);
+
+  if (!address) {
+    throw new AppError("Address not found", 404);
+  }
+
   return address;
 };
 
 export const deleteAddress = async (id: string, userId: string) => {
   const address = await addressRepository.findByIdAndDelete(id, userId);
+
+  if (!address) {
+    throw new AppError("Address not found", 404);
+  }
+
   return address;
 };

@@ -27,12 +27,6 @@ export const updateAddress = asyncHandler(
       req.body,
     );
 
-    if (!address) {
-      return sendResponse(res, 404, "Address not found", {
-        code: "ADDRESS_NOT_FOUND",
-      });
-    }
-
     return sendResponse(res, 200, "Address updated successfully", address);
   },
 );
@@ -43,12 +37,6 @@ export const deleteAddress = asyncHandler(
       req.params.id,
       req.user!._id,
     );
-
-    if (!address) {
-      return sendResponse(res, 404, "Address not found", {
-        code: "ADDRESS_NOT_FOUND",
-      });
-    }
 
     return sendResponse(res, 200, "Address deleted successfully", address);
   },
