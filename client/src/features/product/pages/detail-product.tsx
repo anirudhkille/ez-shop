@@ -17,8 +17,7 @@ import {
   Truck,
 } from "lucide-react";
 
-import useUserStore from "@/store/userStore";
-
+import useUserStore from "@/features/auth/store/userStore";
 import { useAddToCart } from "@/features/cart";
 import { useToggleWishlist, useWishlists } from "@/features/wishlist";
 import { formatPrice } from "@/shared/lib/formatPrice";

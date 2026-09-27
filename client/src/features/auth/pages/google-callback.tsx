@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { useNavigate, useSearchParams } from "react-router";
 
-import useUserStore from "@/store/userStore";
+import useUserStore from "../store/userStore";
 
 export default function GoogleCallback() {
   const [searchParams] = useSearchParams();

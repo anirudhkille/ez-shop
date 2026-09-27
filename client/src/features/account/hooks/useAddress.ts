@@ -7,8 +7,7 @@ import {
 
 import { toast } from "sonner";
 
-import useUserStore from "@/store/userStore";
-
+import useUserStore from "@/features/auth/store/userStore";
 import { getErrorMessage } from "@/shared/lib/apiError";
 import type { TAddress } from "@/shared/types/address";
 

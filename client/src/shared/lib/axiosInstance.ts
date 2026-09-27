@@ -4,7 +4,24 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 
-import useAuthStore from "@/store/userStore";
+/**
+ * The auth session lives in a feature store, but this module is shared
+ * infrastructure and must not depend on a feature. The owning feature injects
+ * a bridge at startup (see main.tsx) instead.
+ */
+export interface AuthBridge {
+  getToken: () => string | null;
+  /** Persists a rotated access token after a successful refresh. */
+  setToken: (token: string) => void;
+  /** Clears the session when a refresh fails. */
+  clearSession: () => void;
+}
+
+let auth: AuthBridge | null = null;
+
+export function setAuthBridge(bridge: AuthBridge): void {
+  auth = bridge;
+}
 
 interface RefreshEnvelope {
   success: boolean;
@@ -44,14 +61,12 @@ const subscribeTokenRefresh = (
 
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const authState = useAuthStore.getState();
-    const token = authState.token;
+    const token = auth?.getToken();
 
-    if (token) {
-      if (!config.url?.includes("/refresh")) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+    if (token && !config.url?.includes("/refresh")) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error: AxiosError) => Promise.reject(error)
@@ -62,14 +77,13 @@ axiosInstance.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig;
     const { status } = error.response || {};
-    const authStore = useAuthStore.getState();
 
     // Only 401 means the token is no longer valid. A 403 is a legitimate
     // "authenticated but not allowed" response, and treating it as an expiry
     // signs the user out for hitting a route they cannot access.
-    if (status === 401 && authStore.token) {
+    if (status === 401 && auth?.getToken()) {
       if (originalRequest.url?.includes("/refresh")) {
-        authStore.logout();
+        auth.clearSession();
         return Promise.reject(error);
       }
 
@@ -101,14 +115,12 @@ axiosInstance.interceptors.response.use(
               if (!newAccessToken) {
                 throw new Error("Refresh response did not include a token");
               }
-              authStore.setUser({
-                token: newAccessToken,
-              });
+              auth?.setToken(newAccessToken);
 
               processQueue(newAccessToken);
             })
             .catch((err: AxiosError) => {
-              authStore.logout();
+              auth?.clearSession();
               failedQueue.forEach((prom) => prom.reject(err));
               failedQueue = [];
               return Promise.reject(err);

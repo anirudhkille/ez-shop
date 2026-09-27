@@ -4,9 +4,8 @@ import { Link } from "react-router";
 
 import { Check, Pencil, X } from "lucide-react";
 
-import useUserStore from "@/store/userStore";
-
 import { useProfile, useUpdateProfile } from "@/features/auth";
+import useUserStore from "@/features/auth/store/userStore";
 import { useMyOrdersList } from "@/features/order";
 import { OrderList } from "@/features/order";
 

@@ -9,9 +9,8 @@ import {
   User,
 } from "lucide-react";
 
-import useUserStore from "@/store/userStore";
-
 import { useProfile } from "@/features/auth";
+import useUserStore from "@/features/auth/store/userStore";
 import { useMyOrders } from "@/features/order";
 import { useWishlistDetails } from "@/features/wishlist";
 import type { TAddress } from "@/shared/types/address";

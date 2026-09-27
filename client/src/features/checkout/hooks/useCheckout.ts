@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 
-import useUserStore from "@/store/userStore";
-
 import { useAddresss } from "@/features/account";
+import useUserStore from "@/features/auth/store/userStore";
 import { useCart, useCartStore } from "@/features/cart";
 import type { GuestCartItem } from "@/features/cart/store/cartStore";
 import { useCouponStore } from "@/features/coupon";

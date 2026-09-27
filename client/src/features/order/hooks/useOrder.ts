@@ -4,8 +4,7 @@ import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import useUserStore from "@/store/userStore";
-
+import useUserStore from "@/features/auth/store/userStore";
 import { useCartStore } from "@/features/cart";
 import {
   createGuestCheckoutSession,

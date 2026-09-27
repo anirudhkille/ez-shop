@@ -4,8 +4,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import useAuthStore from "@/store/userStore";
-
 import { getErrorMessage } from "@/shared/lib/apiError";
 
 import {
@@ -18,6 +16,7 @@ import {
   updateProfile,
   verifySignupOTP,
 } from "../api/user";
+import useAuthStore from "../store/userStore";
 import type { TLogin, TSignup, TUser } from "../types";
 
 export const useProfile = () => {

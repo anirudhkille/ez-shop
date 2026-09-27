@@ -4,8 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 
 import { LogOut, Menu, Search, ShoppingCart, User, X } from "lucide-react";
 
-import useUserStore from "@/store/userStore";
-
+import useUserStore from "@/features/auth/store/userStore";
 import { useGetCartCount } from "@/features/cart";
 
 const SearchModal = lazy(() =>
