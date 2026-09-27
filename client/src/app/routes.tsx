@@ -52,9 +52,9 @@ const TrackOrder = lazy(() => import("@/features/order/pages/track-order"));
 const Returns = lazy(() => import("@/features/order/pages/returns"));
 const ShippingInfo = lazy(() => import("@/features/order/pages/shipping-info"));
 
-const CookiePolicy = lazy(() => import("@/content/CookiePolicyPage"));
-const TermsOfUse = lazy(() => import("@/content/TermsPage"));
-const PrivacyPolicy = lazy(() => import("@/content/PrivacyPolicyPage"));
+const CookiePolicy = lazy(() => import("@/content/cookie-policy"));
+const TermsOfUse = lazy(() => import("@/content/terms"));
+const PrivacyPolicy = lazy(() => import("@/content/privacy"));
 
 export default function AppRoutes() {
   return (

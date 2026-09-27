@@ -1,0 +1,196 @@
+import type { ReactNode } from "react";
+
+import { Mail, Phone, User } from "lucide-react";
+
+import type { GuestDetails } from "../types";
+
+const inputClass =
+  "bg-background border-brand-border font-body text-foreground placeholder:text-muted-foreground focus:border-brand-orange w-full rounded-xl border py-3 text-sm transition-colors focus:outline-none";
+
+function Label({
+  htmlFor,
+  children,
+  required,
+}: {
+  htmlFor: string;
+  children: ReactNode;
+  required?: boolean;
+}) {
+  return (
+    <label
+      htmlFor={htmlFor}
+      className="font-body text-foreground mb-1.5 block text-xs font-semibold tracking-[0.18em] uppercase"
+    >
+      {children} {required && <span className="text-red-500">*</span>}
+    </label>
+  );
+}
+
+function IconInput({
+  id,
+  icon,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+}: {
+  id: string;
+  icon: ReactNode;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  type?: string;
+}) {
+  return (
+    <div className="relative">
+      <span className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2">
+        {icon}
+      </span>
+      <input
+        id={id}
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={`${inputClass} pr-4 pl-9`}
+      />
+    </div>
+  );
+}
+
+type Props = {
+  guest: GuestDetails;
+  onChange: (field: keyof GuestDetails, value: string) => void;
+};
+
+export function GuestContactForm({ guest, onChange }: Props) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label htmlFor="guest-name" required>
+          Full Name
+        </Label>
+        <IconInput
+          id="guest-name"
+          icon={<User size={14} />}
+          value={guest.name}
+          onChange={(v) => onChange("name", v)}
+          placeholder="John Doe"
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="guest-email" required>
+          Email
+        </Label>
+        <IconInput
+          id="guest-email"
+          type="email"
+          icon={<Mail size={14} />}
+          value={guest.email}
+          onChange={(v) => onChange("email", v)}
+          placeholder="john@example.com"
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="guest-phone" required>
+          Phone
+        </Label>
+        <IconInput
+          id="guest-phone"
+          icon={<Phone size={14} />}
+          value={guest.phone}
+          onChange={(v) => onChange("phone", v)}
+          placeholder="+91 98765 43210"
+        />
+      </div>
+
+      <div className="border-brand-border pt-4">
+        <p className="font-body text-muted-foreground mb-4 text-xs font-semibold tracking-[0.18em] uppercase">
+          Delivery Address
+        </p>
+
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="guest-line1" required>
+              Address Line 1
+            </Label>
+            <input
+              id="guest-line1"
+              value={guest.addressLine1}
+              onChange={(e) => onChange("addressLine1", e.target.value)}
+              placeholder="123 Main Street"
+              className={`${inputClass} px-4`}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="guest-line2">Address Line 2</Label>
+            <input
+              id="guest-line2"
+              value={guest.addressLine2}
+              onChange={(e) => onChange("addressLine2", e.target.value)}
+              placeholder="Apartment, suite, etc."
+              className={`${inputClass} px-4`}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="guest-city" required>
+                City
+              </Label>
+              <input
+                id="guest-city"
+                value={guest.city}
+                onChange={(e) => onChange("city", e.target.value)}
+                placeholder="Mumbai"
+                className={`${inputClass} px-4`}
+              />
+            </div>
+            <div>
+              <Label htmlFor="guest-state" required>
+                State
+              </Label>
+              <input
+                id="guest-state"
+                value={guest.state}
+                onChange={(e) => onChange("state", e.target.value)}
+                placeholder="Maharashtra"
+                className={`${inputClass} px-4`}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="guest-zip" required>
+                ZIP Code
+              </Label>
+              <input
+                id="guest-zip"
+                value={guest.zipCode}
+                onChange={(e) => onChange("zipCode", e.target.value)}
+                placeholder="400001"
+                className={`${inputClass} px-4`}
+              />
+            </div>
+            <div>
+              <Label htmlFor="guest-country" required>
+                Country
+              </Label>
+              <input
+                id="guest-country"
+                value={guest.country}
+                onChange={(e) => onChange("country", e.target.value)}
+                placeholder="India"
+                className={`${inputClass} px-4`}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
