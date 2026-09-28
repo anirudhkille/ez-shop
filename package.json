@@ -1,6 +1,7 @@
 {
   "name": "ez-shop",
   "private": true,
+  "packageManager": "bun@1.4.2",
   "devDependencies": {
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7"

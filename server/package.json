@@ -1,5 +1,6 @@
 {
   "name": "ez-shop-backend",
+  "packageManager": "bun@1.4.2",
   "author": {
     "name": "Anirudh Kille"
   },

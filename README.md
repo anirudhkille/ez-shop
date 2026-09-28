@@ -127,19 +127,20 @@ projections, lean reads and indexes are changed in one place.
 
 ### Prerequisites
 
-- Node.js 24+
+- [Bun](https://bun.sh) 1.4+ — the package manager for all four projects
+- Node.js 22+ — the runtime (Bun installs dependencies; Node runs the code)
 - A MongoDB instance (local or hosted)
 
-Each workspace is installed and run independently — the root `package.json` only
-holds Husky and lint-staged.
+Each project is installed and run independently — the root `package.json` only
+holds Husky and lint-staged, and each directory keeps its own `bun.lock`.
 
 ### 1. API
 
 ```bash
 cd server
-npm install
+bun install
 cp .env .env        # then fill in the values below
-npm run dev         # tsx watch, http://localhost:8080
+bun run dev         # tsx watch, http://localhost:8080
 ```
 
 `server/.env` is validated at boot by a Zod schema, so a missing value fails
@@ -167,7 +168,7 @@ fast with a logged reason instead of surfacing later as a runtime error.
 
 ```bash
 cd client
-npm install
+bun install
 ```
 
 `client/.env`:
@@ -177,14 +178,14 @@ npm install
 | `VITE_API_BASE_URL` | API base URL, e.g. `http://localhost:8080/api` |
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 ### 3. Admin dashboard
 
 ```bash
 cd admin
-npm install
+bun install
 cp .env.example .env
 ```
 
@@ -197,7 +198,7 @@ cp .env.example .env
 | `NEXT_PUBLIC_UPLOAD_PRESET` | Cloudinary unsigned upload preset |
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 Admin routes are gated by `authorize(["Admin"])`, so a `User` token receives a
@@ -208,18 +209,18 @@ deliberately treated as different failures.
 
 | Workspace | Command | Does |
 | --- | --- | --- |
-| `server` | `npm run dev` | Watch mode via `tsx` |
-| | `npm run build` | Compile with `tsc` + rewrite path aliases |
-| | `npm start` | Run the compiled build |
-| | `npm test` | Unit tests (`node:test`, no DB required) |
-| | `npm run lint` / `npm run format` | ESLint / Prettier |
-| `client` | `npm run dev` | Vite dev server |
-| | `npm run build` | Type-check then build |
-| | `npm run lint` / `npm run format` | ESLint / Prettier |
-| | `npx knip` | Unused files, dependencies and exports |
-| `admin` | `npm run dev` | Next.js dev server (Turbopack) |
-| | `npm run build` / `npm start` | Production build and serve |
-| | `npm run lint` | ESLint |
+| `server` | `bun run dev` | Watch mode via `tsx` |
+| | `bun run build` | Compile with `tsc` + rewrite path aliases |
+| | `bun start` | Run the compiled build |
+| | `bun run test` | Unit tests (`node:test`, no DB required) |
+| | `bun run lint` / `bun run format` | ESLint / Prettier |
+| `client` | `bun run dev` | Vite dev server |
+| | `bun run build` | Type-check then build |
+| | `bun run lint` / `bun run format` | ESLint / Prettier |
+| | `bunx knip` | Unused files, dependencies and exports |
+| `admin` | `bun run dev` | Next.js dev server (Turbopack) |
+| | `bun run build` / `bun run start` | Production build and serve |
+| | `bun run lint` | ESLint |
 
 ## API conventions
 
