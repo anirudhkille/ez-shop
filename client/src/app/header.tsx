@@ -1,60 +1,47 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense } from "react";
 
 import { Link, useLocation, useNavigate } from "react-router";
 
-import { LogOut, Menu, Search, ShoppingCart, User, X } from "lucide-react";
+import { Menu, Search, ShoppingCart, X } from "lucide-react";
 
 import useUserStore from "@/features/auth/store/userStore";
 import { useGetCartCount } from "@/features/cart";
+
+import MobileNav from "./components/mobile-nav";
+import ProfileMenu from "./components/profile-menu";
+import { useHeaderOverlays } from "./hooks/use-header-overlays";
+import { useScrolled } from "./hooks/use-scrolled";
+import { navLinks } from "./lib/nav-links";
 
 const SearchModal = lazy(() =>
   import("@/features/product").then((m) => ({ default: m.SearchModal }))
 );
 
-const navLinks = [
-  { label: "Men", href: "/products?category=men" },
-  { label: "Women", href: "/products?category=women" },
-  { label: "Kids", href: "/products?category=kids" },
-  { label: "Shoes", href: "/products?category=shoes" },
-  { label: "Clothing", href: "/products?category=clothing" },
-  { label: "Accessories", href: "/products?category=accessories" },
-];
-
 export default function Header() {
   const { data: cartCount } = useGetCartCount();
-
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const location = useLocation();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
   const { name, email, logout } = useUserStore();
 
-  const isHomePage = location.pathname === "/";
+  const scrolled = useScrolled(40);
+  const {
+    searchOpen,
+    openSearch,
+    closeSearch,
+    mobileOpen,
+    setMobileOpen,
+    closeMobile,
+    profileMenuOpen,
+    toggleProfile,
+    closeProfile,
+  } = useHeaderOverlays();
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Close menus on route change (state adjustment during render)
-  const [lastPath, setLastPath] = useState(location.pathname);
-  if (location.pathname !== lastPath) {
-    setLastPath(location.pathname);
-    setProfileMenuOpen(false);
-    setMobileOpen(false);
-  }
-
-  const solidBg = !isHomePage || scrolled;
+  const solidBg = pathname !== "/" || scrolled;
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
-
-  const avatarInitial = name?.[0] ?? email?.[0] ?? "";
 
   return (
     <header
@@ -66,7 +53,7 @@ export default function Header() {
     >
       <div className="mx-auto flex h-16 max-w-350 items-center justify-between px-6 lg:px-10">
         <Link to="/" className="group flex items-center gap-2">
-          <div className="">
+          <div>
             <img
               src="/logo.svg"
               alt="EZ Shop Logo"
@@ -94,7 +81,7 @@ export default function Header() {
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setSearchOpen(true)}
+            onClick={openSearch}
             className="text-muted-foreground hover:text-foreground hover:bg-muted hidden h-9 w-9 items-center justify-center rounded-full transition-colors duration-150 md:flex"
             aria-label="Open search"
           >
@@ -115,151 +102,38 @@ export default function Header() {
           </Link>
 
           <div className="relative hidden md:block">
-            {email ? (
-              <>
-                <button
-                  onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                  className="bg-brand-orange/10 border-brand-orange/30 font-display text-brand-orange hover:bg-brand-orange/20 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-black uppercase transition-colors duration-150"
-                >
-                  {avatarInitial}
-                </button>
-
-                {profileMenuOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => setProfileMenuOpen(false)}
-                    />
-                    <div className="bg-card border-brand-border absolute top-12 right-0 z-50 w-52 overflow-hidden rounded-2xl border shadow-[0_20px_60px_-10px_hsl(0_0%_0%/0.8)]">
-                      <div className="border-brand-border border-b px-4 py-3">
-                        <p className="font-body text-foreground truncate text-sm font-semibold">
-                          {name}
-                        </p>
-                        <p className="font-body text-muted-foreground truncate text-xs">
-                          {email}
-                        </p>
-                      </div>
-                      <div className="py-1.5">
-                        <Link
-                          to="/account"
-                          className="font-body text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
-                        >
-                          <User size={14} /> My Account
-                        </Link>
-                        <Link
-                          to="/cart"
-                          className="font-body text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
-                        >
-                          <ShoppingCart size={14} /> My Cart
-                        </Link>
-                      </div>
-                      <div className="border-brand-border border-t py-1.5">
-                        <button
-                          onClick={handleLogout}
-                          className="font-body text-destructive hover:bg-destructive/5 flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors"
-                        >
-                          <LogOut size={14} /> Logout
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </>
-            ) : (
-              <Link
-                to="/login"
-                aria-label="Login"
-                className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150"
-              >
-                <User size={18} />
-              </Link>
-            )}
+            <ProfileMenu
+              name={name}
+              email={email}
+              isOpen={profileMenuOpen}
+              onToggle={toggleProfile}
+              onClose={closeProfile}
+              onLogout={handleLogout}
+            />
           </div>
 
           <button
             className="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle mobile menu"
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
 
-      <div
-        className={`overflow-hidden transition-[max-height,opacity] duration-300 md:hidden ${
-          mobileOpen ? "max-h-120 opacity-100" : "max-h-0 opacity-0"
-        } bg-card border-brand-border border-b`}
-      >
-        <nav className="flex flex-col gap-1 px-6 py-4">
-          <button
-            onClick={() => {
-              setSearchOpen(true);
-              setMobileOpen(false);
-            }}
-            className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 flex items-center gap-3 border-b py-2.5 text-sm font-medium transition-colors"
-          >
-            <Search size={14} /> Search products
-          </button>
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              to={link.href}
-              className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors last:border-0"
-              onClick={() => setMobileOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <Link
-            to="/cart"
-            className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors"
-            onClick={() => setMobileOpen(false)}
-          >
-            Cart {cartCount}
-          </Link>
-          {name ? (
-            <>
-              <Link
-                to="/account"
-                className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors"
-                onClick={() => setMobileOpen(false)}
-              >
-                My Account ({name})
-              </Link>
-              <button
-                onClick={() => {
-                  handleLogout();
-                  setMobileOpen(false);
-                }}
-                className="font-body text-destructive hover:text-destructive/80 py-2.5 text-left text-sm font-medium transition-colors"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="font-body text-muted-foreground hover:text-foreground border-brand-border/50 border-b py-2.5 text-sm font-medium transition-colors"
-                onClick={() => setMobileOpen(false)}
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="font-body text-brand-orange hover:text-brand-orange/80 py-2.5 text-sm font-medium transition-colors"
-                onClick={() => setMobileOpen(false)}
-              >
-                Create account
-              </Link>
-            </>
-          )}
-        </nav>
-      </div>
+      <MobileNav
+        isOpen={mobileOpen}
+        name={name}
+        cartCount={cartCount}
+        onOpenSearch={openSearch}
+        onClose={closeMobile}
+        onLogout={handleLogout}
+      />
 
       <Suspense fallback={null}>
-        <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+        <SearchModal open={searchOpen} onClose={closeSearch} />
       </Suspense>
     </header>
   );
