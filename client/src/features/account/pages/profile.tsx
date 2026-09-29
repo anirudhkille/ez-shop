@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 import { useProfile } from "@/features/auth";
-import useUserStore from "@/features/auth/store/userStore";
+import { useUserStore } from "@/features/auth";
 import { useMyOrders } from "@/features/order";
 import { useWishlistDetails } from "@/features/wishlist";
 import type { TAddress } from "@/shared/types/address";

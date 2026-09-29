@@ -1,9 +1,9 @@
 import { Link } from "react-router";
 
+import StarRating from "@/shared/components/star-rating";
 import { formatRating, reviewCountLabel } from "@/shared/lib/formatRating";
 
 import type { TReview } from "../types";
-import { StarRating } from "./star-rating";
 
 const timeAgo = (iso: string): string => {
   const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);

@@ -1,8 +1,9 @@
 import { Link } from "react-router";
 
 import { OrderList, useMyOrdersList } from "@/features/order";
+import PanelHeader from "@/shared/components/panel-header";
 
-import { PanelCard, PanelHeader } from "../components/panel";
+import { PanelCard } from "../components/panel";
 import { ProfileCard } from "../components/profile-form";
 import { useProfileGreeting } from "../hooks/use-profile-form";
 

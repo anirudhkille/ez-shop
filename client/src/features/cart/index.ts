@@ -1,2 +1,2 @@
-export { useAddToCart, useCart, useGetCartCount } from "./hooks/useCart";
-export { useCartStore } from "./store/cartStore";
+﻿export { useAddToCart, useCart, useGetCartCount } from "./hooks/useCart";
+export { useCartStore, type GuestCartItem } from "./store/cartStore";

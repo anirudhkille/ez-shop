@@ -7,7 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useProfile, useUpdateProfile } from "@/features/auth";
-import useUserStore from "@/features/auth/store/userStore";
+import { useUserStore } from "@/features/auth";
 
 const profileSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),

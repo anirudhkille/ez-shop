@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 import { Heart, Star } from "lucide-react";
 
-import useUserStore from "@/features/auth/store/userStore";
+import { useUserStore } from "@/features/auth";
 import { useToggleWishlist, useWishlists } from "@/features/wishlist";
 import Image from "@/shared/components/ui/img";
 import { formatPrice } from "@/shared/lib/formatPrice";

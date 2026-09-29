@@ -1,16 +1,12 @@
 import { useMemo, useState } from "react";
 
 import { useAddresss } from "@/features/account";
-import useUserStore from "@/features/auth/store/userStore";
+import { useUserStore } from "@/features/auth";
 import { useCart, useCartStore } from "@/features/cart";
-import type { GuestCartItem } from "@/features/cart/store/cartStore";
+import type { GuestCartItem } from "@/features/cart";
 import { useCouponStore } from "@/features/coupon";
 import type { TDeliveryMethod } from "@/features/order";
-import {
-  useGuestPayment,
-  usePlaceCodOrder,
-  usePlaceGuestCODOrder,
-} from "@/features/order";
+import { usePlaceCodOrder } from "@/features/order";
 import type { TAddress } from "@/shared/types/address";
 
 import {
@@ -23,6 +19,7 @@ import {
   isGuestContactComplete,
   type PaymentMethod,
 } from "../types";
+import { useGuestPayment, usePlaceGuestCODOrder } from "./use-guest-order";
 import { usePayment } from "./usePayment";
 
 const toCheckoutItems = (items: GuestCartItem[]): CheckoutCartItem[] =>

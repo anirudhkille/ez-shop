@@ -1,4 +1,4 @@
-import { PanelHeader } from "@/features/account";
+import PanelHeader from "@/shared/components/panel-header";
 import { useInfiniteScroll } from "@/shared/hooks/use-infinite-scroll";
 
 import { OrderList } from "../components/order-list";

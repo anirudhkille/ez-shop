@@ -2,10 +2,11 @@ import { Link, useParams } from "react-router";
 
 import { toast } from "sonner";
 
-import useUserStore from "@/features/auth/store/userStore";
+import { useUserStore } from "@/features/auth";
 import { useAddToCart } from "@/features/cart";
-import { ReviewSection, StarRating } from "@/features/review";
+import { ReviewSection } from "@/features/review";
 import { useToggleWishlist, useWishlists } from "@/features/wishlist";
+import StarRating from "@/shared/components/star-rating";
 import { formatRating, reviewCountLabel } from "@/shared/lib/formatRating";
 import type { TProduct } from "@/shared/types/product";
 

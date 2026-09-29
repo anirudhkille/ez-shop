@@ -1,6 +1,6 @@
 import { useToggleWishlist, useWishlistDetails } from "@/features/wishlist";
+import PanelHeader from "@/shared/components/panel-header";
 
-import { PanelHeader } from "../components/panel";
 import { SavedItems } from "../components/saved-items";
 
 export default function SavedPanel() {

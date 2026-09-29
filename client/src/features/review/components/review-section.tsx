@@ -1,4 +1,4 @@
-import useUserStore from "@/features/auth/store/userStore";
+import { useUserStore } from "@/features/auth";
 
 import {
   useDeleteReview,

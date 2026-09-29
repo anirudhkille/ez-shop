@@ -14,10 +14,10 @@ import {
 } from "lucide-react";
 
 import { useProfile } from "@/features/auth";
-import useUserStore from "@/features/auth/store/userStore";
+import { useUserStore } from "@/features/auth";
+import PanelHeader from "@/shared/components/panel-header";
 import type { TAddress } from "@/shared/types/address";
 
-import { PanelHeader } from "../components/panel";
 import { useAddresss } from "../hooks/useAddress";
 
 const SettingsGroup: FC<{ title: string; children: ReactNode }> = ({

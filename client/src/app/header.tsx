@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 
 import { Menu, Search, ShoppingCart, X } from "lucide-react";
 
-import useUserStore from "@/features/auth/store/userStore";
+import { useUserStore } from "@/features/auth";
 import { useGetCartCount } from "@/features/cart";
 
 import MobileNav from "./components/mobile-nav";

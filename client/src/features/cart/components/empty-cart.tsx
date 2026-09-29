@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 import { Banknote, Heart, ShoppingBag, Tag } from "lucide-react";
 
-import useUserStore from "@/features/auth/store/userStore";
+import { useUserStore } from "@/features/auth";
 
 const perks = [
   { icon: Tag, label: "Coupon codes at checkout" },

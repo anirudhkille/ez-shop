@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import useUserStore from "@/features/auth/store/userStore";
+import { useUserStore } from "@/features/auth";
 
 import {
   getWishlistDetails,

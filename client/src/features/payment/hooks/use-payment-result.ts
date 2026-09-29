@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router";
 
 import { useQueryClient } from "@tanstack/react-query";
 
-import useUserStore from "@/features/auth/store/userStore";
+import { useUserStore } from "@/features/auth";
 import { useCartStore } from "@/features/cart";
 import { useOrderById, useOrderBySessionId } from "@/features/order";
 

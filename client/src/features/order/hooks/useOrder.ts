@@ -4,13 +4,7 @@ import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import useUserStore from "@/features/auth/store/userStore";
-import { useCartStore } from "@/features/cart";
-import {
-  createGuestCheckoutSession,
-  placeGuestCODOrder,
-  type TGuestOrderPayload,
-} from "@/features/checkout/api/guest-order";
+import { useUserStore } from "@/features/auth";
 import { getErrorMessage } from "@/shared/lib/apiError";
 import type { TApiResponse } from "@/shared/types/api";
 
@@ -67,38 +61,6 @@ export const useOrderBySessionId = (sessionId: string) => {
     queryFn: () => getOrderBySessionId(sessionId),
     queryKey: ["order", "session", sessionId],
     enabled: !!sessionId,
-  });
-};
-
-export const usePlaceGuestCODOrder = () => {
-  const clearCart = useCartStore((s) => s.clearCart);
-
-  return useMutation({
-    mutationFn: (payload: TGuestOrderPayload) => placeGuestCODOrder(payload),
-    onSuccess: (data) => {
-      clearCart();
-      window.location.href = data.data.redirectUrl;
-    },
-    onError: (error) => {
-      toast.error(
-        getErrorMessage(error, "An error occurred while creating order")
-      );
-    },
-  });
-};
-
-export const useGuestPayment = () => {
-  return useMutation({
-    mutationFn: (payload: TGuestOrderPayload) =>
-      createGuestCheckoutSession(payload),
-    onSuccess: (data) => {
-      window.location.href = data.data.url;
-    },
-    onError: (error) => {
-      toast.error(
-        getErrorMessage(error, "An error occurred while creating payment")
-      );
-    },
   });
 };
 
