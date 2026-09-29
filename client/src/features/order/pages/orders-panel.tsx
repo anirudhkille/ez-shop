@@ -1,6 +1,5 @@
-import { useEffect, useRef } from "react";
-
 import { PanelHeader } from "@/features/account";
+import { useInfiniteScroll } from "@/shared/hooks/use-infinite-scroll";
 
 import { OrderList } from "../components/order-list";
 import { useMyOrdersList } from "../hooks/useOrder";
@@ -9,24 +8,10 @@ export default function OrdersPanel() {
   const { orders, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useMyOrdersList();
 
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!loadMoreRef.current || !hasNextPage) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1, rootMargin: "200px" }
-    );
-
-    observer.observe(loadMoreRef.current);
-
-    return () => observer.disconnect();
-  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
+  const loadMoreRef = useInfiniteScroll(
+    fetchNextPage,
+    !!hasNextPage && !isFetchingNextPage
+  );
 
   return (
     <>

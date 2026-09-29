@@ -1,33 +1,18 @@
-import { useState } from "react";
-
 import Container from "@/shared/components/container";
 import Head from "@/shared/components/head";
-import { Button } from "@/shared/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { Input } from "@/shared/components/ui/input";
 import { formatPrice } from "@/shared/lib/formatPrice";
 
-import { useOrderById } from "../hooks/useOrder";
+import { TrackOrderForm } from "../components/track-order-form";
+import { useTrackOrder } from "../hooks/use-track-order";
 
 export default function TrackOrder() {
-  const [orderInput, setOrderInput] = useState("");
-  const [searchedId, setSearchedId] = useState("");
-
-  const { data: orderData, isLoading, isError } = useOrderById(searchedId);
-
-  const order = orderData?.data;
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (orderInput.trim()) {
-      setSearchedId(orderInput.trim());
-    }
-  };
+  const { order, isLoading, isError, search } = useTrackOrder();
 
   return (
     <>
@@ -50,31 +35,7 @@ export default function TrackOrder() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form className="space-y-4" onSubmit={handleSubmit}>
-                <div>
-                  <label
-                    htmlFor="order-id"
-                    className="text-foreground mb-2 block text-sm font-medium"
-                  >
-                    Order ID
-                  </label>
-                  <Input
-                    id="order-id"
-                    type="text"
-                    value={orderInput}
-                    onChange={(e) => setOrderInput(e.target.value)}
-                    placeholder="Paste your Order ID here"
-                    className="bg-background w-full"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  disabled={!orderInput.trim() || isLoading}
-                  className="bg-brand-orange hover:bg-brand-orange/90 mt-4 w-full text-white"
-                >
-                  {isLoading ? "Searching..." : "Track Package"}
-                </Button>
-              </form>
+              <TrackOrderForm isLoading={isLoading} onSearch={search} />
             </CardContent>
           </Card>
 
