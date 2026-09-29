@@ -14,15 +14,37 @@ export const create = async (data: {
   return await review.save();
 };
 
+/**
+ * An absent comment is unset rather than skipped. Mongoose strips undefined
+ * keys from $set, so omitting it would silently leave the reviewer's previous
+ * comment attached to a new rating.
+ */
+export const reviewUpdate = (data: {
+  rating?: number;
+  comment?: string;
+}): UpdateQuery<IReview> => {
+  const update: UpdateQuery<IReview> = { $set: {} };
+
+  if (data.rating !== undefined) update.$set!.rating = data.rating;
+
+  if (data.comment) {
+    update.$set!.comment = data.comment;
+  } else {
+    update.$unset = { comment: 1 };
+  }
+
+  return update;
+};
+
 export const upsertForUser = async (
   userId: string,
   data: { product: string; rating: number; comment?: string },
 ) => {
   return await Review.findOneAndUpdate(
     { product: data.product, user: userId },
-    { $set: { rating: data.rating, comment: data.comment } },
+    reviewUpdate(data),
     { upsert: true, new: true },
-  );
+  ).populate("user", "name");
 };
 
 export const findByProduct = async (
@@ -76,11 +98,13 @@ export const findOwnedByProductAndUser = async (
 export const findByIdAndUpdate = async (
   id: string | Types.ObjectId,
   userId: string,
-  data: UpdateQuery<IReview>,
+  data: { rating?: number; comment?: string },
 ) => {
-  return await Review.findByIdAndUpdate({ _id: id, user: userId }, data, {
-    new: true,
-  }).populate("user", "name");
+  return await Review.findByIdAndUpdate(
+    { _id: id, user: userId },
+    reviewUpdate(data),
+    { new: true },
+  ).populate("user", "name");
 };
 
 export const findByIdAndDelete = async (id: string, userId: string) => {
