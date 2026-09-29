@@ -19,7 +19,6 @@ export const reviewCreateSchema = z.object({
 
 export const reviewUpdateSchema = z
   .object({
-    productId: objectIdSchema.optional(),
     rating: z
       .number()
       .int("Rating must be an integer")

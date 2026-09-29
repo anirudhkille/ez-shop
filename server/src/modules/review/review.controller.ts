@@ -9,6 +9,15 @@ export const postReview = asyncHandler(async (req: Request, res: Response) => {
   return sendResponse(res, 201, "Review created successfully", review);
 });
 
+export const getMyReview = asyncHandler(async (req: Request, res: Response) => {
+  const review = await reviewService.getMyReview(
+    req.params.productId,
+    req.user!._id,
+  );
+
+  return sendResponse(res, 200, "Your review fetched successfully", review);
+});
+
 export const getReviewByProduct = asyncHandler(
   async (req: Request, res: Response) => {
     const limit = Number(req.query.limit) || 10;

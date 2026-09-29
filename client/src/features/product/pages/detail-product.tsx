@@ -13,14 +13,15 @@ import {
   RotateCcw,
   Shield,
   ShoppingCart,
-  Star,
   Truck,
 } from "lucide-react";
 
 import useUserStore from "@/features/auth/store/userStore";
 import { useAddToCart } from "@/features/cart";
+import { ReviewSection, StarRating } from "@/features/review";
 import { useToggleWishlist, useWishlists } from "@/features/wishlist";
 import { formatPrice } from "@/shared/lib/formatPrice";
+import { formatRating, reviewCountLabel } from "@/shared/lib/formatRating";
 import type { TProduct, TVariant } from "@/shared/types/product";
 
 import ProductCard from "../components/product-card";
@@ -233,22 +234,25 @@ export default function ProductDetail() {
           </h1>
 
           <div className="mt-4 flex items-center gap-3">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={14}
-                  className={
-                    i < Math.floor(product.rating)
-                      ? "fill-amber-400 text-amber-400"
-                      : "text-muted-foreground/30"
-                  }
-                />
-              ))}
-            </div>
-            <span className="font-body text-muted-foreground text-sm">
-              {product.rating} ({product.reviewsCount} reviews)
-            </span>
+            {product.reviewsCount > 0 ? (
+              <>
+                <StarRating rating={product.rating} size={14} />
+                <span className="font-body text-muted-foreground text-sm">
+                  {formatRating(product.rating)} (
+                  {reviewCountLabel(product.reviewsCount)})
+                </span>
+              </>
+            ) : (
+              <span className="font-body text-muted-foreground text-sm">
+                No reviews yet
+              </span>
+            )}
+            <a
+              href="#reviews"
+              className="font-body text-muted-foreground hover:text-brand-orange ml-auto text-xs underline-offset-4 transition-colors hover:underline"
+            >
+              Read reviews
+            </a>
           </div>
 
           <div className="mt-5 flex items-baseline gap-3">
@@ -454,6 +458,12 @@ export default function ProductDetail() {
           </button>
         </div>
       </div>
+
+      <ReviewSection
+        productId={product._id}
+        rating={product.rating}
+        reviewsCount={product.reviewsCount}
+      />
 
       {/* Related Products */}
       <div className="bg-card/40 py-20 pb-32 lg:pb-20">

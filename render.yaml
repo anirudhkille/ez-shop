@@ -3,9 +3,11 @@ services:
     name: ez-shop-api
     runtime: node
     rootDir: server
-    buildCommand: npm ci && npm run build
-    startCommand: npm start
+    buildCommand: 'export BUN_INSTALL="$HOME/.bun" && curl -fsSL https://bun.sh/install | bash && export PATH="$BUN_INSTALL/bin:$PATH" && bun install --frozen-lockfile && bun run build'
+    startCommand: node dist/index.js
     healthCheckPath: /
     envVars:
       - key: NODE_VERSION
         value: 24.14.1
+      - key: SENTRY_DSN
+        sync: false

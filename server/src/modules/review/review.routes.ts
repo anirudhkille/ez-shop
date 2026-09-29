@@ -13,10 +13,17 @@ import {
   updateReview,
   deleteReview,
   getReviewByProduct,
+  getMyReview,
 } from "@/modules/review/review.controller";
 
 const router = express.Router();
 
+router.get(
+  "/mine/:productId",
+  protect,
+  validate(reviewProductParamSchema, "params"),
+  getMyReview,
+);
 router.get(
   "/:productId",
   validate(reviewProductParamSchema, "params"),

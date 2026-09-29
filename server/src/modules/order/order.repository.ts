@@ -45,6 +45,18 @@ export const countByUser = async (userId: string) => {
   return await Order.countDocuments({ user: userId });
 };
 
+export const hasPurchased = async (
+  userId: string,
+  productId: string,
+): Promise<boolean> => {
+  const found = await Order.exists({
+    user: userId,
+    "products.product": productId,
+  });
+
+  return found !== null;
+};
+
 export const countByUserAndCoupon = async (userId: string, code: string) => {
   return await Order.countDocuments({
     user: userId,
