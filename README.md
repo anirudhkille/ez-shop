@@ -176,6 +176,9 @@ bun install
 | Variable | Purpose |
 | --- | --- |
 | `VITE_API_BASE_URL` | API base URL, e.g. `http://localhost:8080/api` |
+| `VITE_SENTRY_DSN` | Error reporting. Optional — omit it and Sentry stays inert |
+| `VITE_SENTRY_ENVIRONMENT`, `VITE_SENTRY_RELEASE` | Overrides for the Sentry environment/release tags |
+| `VITE_SENTRY_TRACES_SAMPLE_RATE` | Performance sampling, `0`–`1` (default `0`, errors only) |
 
 ```bash
 bun run dev
