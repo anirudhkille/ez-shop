@@ -53,8 +53,11 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get("/", (req, res) => {
-  res.send("Api is running");
+app.get("/api/health", (req, res) => {
+  sendResponse(res, 200, "Server is running", {
+    status: "ok",
+    uptime: process.uptime(),
+  });
 });
 
 app.use("/api/address", addressRoutes);
