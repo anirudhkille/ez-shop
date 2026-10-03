@@ -13,7 +13,9 @@ export const getReviews = async (
   return { reviews: res.data.data, pagination: res.data.pagination };
 };
 
-export const getMyReview = async (productId: string): Promise<TReview | null> =>
+export const getMyReview = async (
+  productId: string
+): Promise<{ review: TReview | null; canReview: boolean }> =>
   (await axiosInstance.get(`/review/mine/${productId}`)).data.data;
 
 export const submitReview = async (

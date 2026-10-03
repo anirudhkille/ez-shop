@@ -105,3 +105,23 @@ export function ReviewLoginPrompt() {
     </p>
   );
 }
+
+export function ReviewNotEligible() {
+  return (
+    <div className="border-brand-border/60 rounded-2xl border border-dashed p-6">
+      <h3 className="font-body text-foreground text-sm font-semibold">
+        Reviews are for verified buyers
+      </h3>
+      <p className="font-body text-muted-foreground mt-1.5 text-sm leading-relaxed">
+        You need an order containing this product before you can review it. This
+        keeps ratings tied to people who actually bought it.
+      </p>
+      <Link
+        to="/products"
+        className="font-body text-brand-orange hover:text-brand-orange/80 mt-4 inline-block text-sm font-semibold hover:underline"
+      >
+        Continue shopping
+      </Link>
+    </div>
+  );
+}

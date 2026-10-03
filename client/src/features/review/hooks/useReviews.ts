@@ -26,6 +26,9 @@ export const useMyReview = (productId: string) => {
     queryKey: ["my-review", productId],
     queryFn: () => getMyReview(productId),
     enabled: !!token && !!productId,
+    // Eligibility changes the moment an order is placed, and the app-wide
+    // default would otherwise hold a stale "not eligible" for five minutes.
+    staleTime: 0,
   });
 };
 

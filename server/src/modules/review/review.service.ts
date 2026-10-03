@@ -89,12 +89,15 @@ export const getReviewByProduct = async (
 };
 
 export const getMyReview = async (productId: string, userId: string) => {
-  const review = await reviewRepository.findOwnedByProductAndUser(
-    productId,
-    userId,
-  );
+  const [review, canReview] = await Promise.all([
+    reviewRepository.findOwnedByProductAndUser(productId, userId),
+    orderRepository.hasPurchased(userId, productId),
+  ]);
 
-  return review ? toPublicReview(review) : null;
+  return {
+    review: review ? toPublicReview(review) : null,
+    canReview,
+  };
 };
 
 export const updateReview = async (

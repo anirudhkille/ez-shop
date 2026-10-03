@@ -10,12 +10,12 @@ export const postReview = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const getMyReview = asyncHandler(async (req: Request, res: Response) => {
-  const review = await reviewService.getMyReview(
+  const result = await reviewService.getMyReview(
     req.params.productId,
     req.user!._id,
   );
 
-  return sendResponse(res, 200, "Your review fetched successfully", review);
+  return sendResponse(res, 200, "Your review fetched successfully", result);
 });
 
 export const getReviewByProduct = asyncHandler(

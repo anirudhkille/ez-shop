@@ -1,4 +1,4 @@
-import { useUserStore } from "@/features/auth";
+import useUserStore from "@/features/auth/store/userStore";
 
 import {
   useDeleteReview,
@@ -7,7 +7,11 @@ import {
   useSubmitReview,
 } from "../hooks/useReviews";
 import { ReviewForm } from "./review-form";
-import { ReviewList, ReviewLoginPrompt } from "./review-list";
+import {
+  ReviewList,
+  ReviewLoginPrompt,
+  ReviewNotEligible,
+} from "./review-list";
 
 interface ReviewSectionProps {
   productId: string;
@@ -22,9 +26,38 @@ export function ReviewSection({
 }: ReviewSectionProps) {
   const { token } = useUserStore();
   const { data, isLoading } = useReviews(productId);
-  const { data: mine } = useMyReview(productId);
+  const { data: mine, isLoading: mineLoading } = useMyReview(productId);
   const submit = useSubmitReview(productId);
   const remove = useDeleteReview(productId);
+
+  const renderPanel = () => {
+    if (!token) return <ReviewLoginPrompt />;
+
+    if (mineLoading) {
+      return (
+        <div className="space-y-3">
+          <div className="bg-brand-surface-raised h-8 w-32 animate-pulse rounded-full" />
+          <div className="bg-brand-surface-raised h-24 w-full animate-pulse rounded-xl" />
+        </div>
+      );
+    }
+
+    if (!mine?.canReview) return <ReviewNotEligible />;
+
+    return (
+      <ReviewForm
+        key={mine.review?.id ?? "new"}
+        initialRating={mine.review?.rating ?? 0}
+        initialComment={mine.review?.comment ?? ""}
+        isExisting={!!mine.review}
+        submitting={submit.isPending}
+        onSubmit={(draft) => submit.mutate(draft)}
+        onDelete={
+          mine.review ? () => remove.mutate(mine.review!.id) : undefined
+        }
+      />
+    );
+  };
 
   return (
     <section id="reviews" className="mx-auto max-w-350 px-6 py-20 lg:px-10">
@@ -46,19 +79,7 @@ export function ReviewSection({
         />
 
         <div className="border-brand-border/60 border-t pt-8 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-20">
-          {token ? (
-            <ReviewForm
-              key={mine?.id ?? "new"}
-              initialRating={mine?.rating ?? 0}
-              initialComment={mine?.comment ?? ""}
-              isExisting={!!mine}
-              submitting={submit.isPending}
-              onSubmit={(draft) => submit.mutate(draft)}
-              onDelete={mine ? () => remove.mutate(mine.id) : undefined}
-            />
-          ) : (
-            <ReviewLoginPrompt />
-          )}
+          {renderPanel()}
         </div>
       </div>
     </section>
