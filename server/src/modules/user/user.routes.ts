@@ -28,6 +28,7 @@ import {
   verifySignupOTPSchema,
 } from "@/modules/user/user.schema";
 import { authLimiter } from "@/config/limiter";
+import { env } from "@/config/env.config";
 import { protect } from "@/middlewares/authMiddleware";
 import { authorize } from "@/middlewares/authorize";
 import { validate } from "@/middlewares/validate";
@@ -35,9 +36,6 @@ import passport from "@/config/passport";
 
 const router = express.Router();
 
-// Literal paths must be registered before the "/:id" routes below. Express
-// matches in registration order, so "/profile" would otherwise be captured by
-// "/:id" and rejected with 403 for non-admin users.
 router.get("/profile", protect, getProfile);
 router.get("/refresh", refreshToken);
 
@@ -76,10 +74,11 @@ router.get(
 );
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/auth/login-failed" }),
+  passport.authenticate("google", {
+    failureRedirect: `${env.CLIENT_URL}/login?error=google`,
+  }),
   googleLogin,
 );
-router.get("/login-failed", (req, res) => res.send("Google login failed"));
 router.post("/signup", authLimiter, validate(signupSchema), signUp);
 router.post(
   "/verify-signup-otp",

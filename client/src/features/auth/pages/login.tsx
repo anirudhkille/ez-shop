@@ -1,3 +1,5 @@
+import { useSearchParams } from "react-router";
+
 import Head from "@/shared/components/head";
 import Divider from "@/shared/components/ui/divider";
 
@@ -6,6 +8,9 @@ import GoogleLogin from "../components/google-login";
 import LoginForm from "../components/login-form";
 
 export default function Login() {
+  const [searchParams] = useSearchParams();
+  const error = searchParams.get("error");
+
   return (
     <>
       <Head
@@ -19,6 +24,15 @@ export default function Login() {
         question="Don't have an account?"
         redirectText="Create account"
       >
+        {error === "google" && (
+          <p
+            role="alert"
+            className="font-body mb-3 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-sm text-red-400"
+          >
+            Google sign-in did not complete. Please try again, or use your email
+            and password.
+          </p>
+        )}
         <GoogleLogin />
         <Divider />
         <LoginForm />
