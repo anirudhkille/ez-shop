@@ -107,7 +107,7 @@ export const findByIdLean = async (id: string) => {
   return await Order.findById(id).lean();
 };
 
-export const findByIdPopulated = async (id: string) => {
+export const findByIdPopulated = async (id: string | Types.ObjectId) => {
   return await Order.findById(id).populate(
     "products.product",
     "name image price slug",

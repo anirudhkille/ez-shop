@@ -14,6 +14,7 @@ import {
 import { IOrder } from "@/modules/order/order.model";
 import { AppError } from "@/utils/appError";
 import * as invoiceService from "@/modules/invoice/invoice.service";
+import { sendOrderConfirmation } from "@/modules/order/order-email";
 
 interface CODRequestBody {
   addressId: string;
@@ -39,6 +40,7 @@ export const placeCODOrder = async (userId: string, body: CODRequestBody) => {
   await claimStock(lines);
   await cartRepository.clearProducts(userId);
   await invoiceService.issueInvoiceForOrder(order);
+  await sendOrderConfirmation(order._id);
 
   return {
     orderId: order._id,
@@ -129,6 +131,7 @@ export const placeGuestCODOrder = async (body: GuestCheckoutBody) => {
 
   await claimStock(lines);
   await invoiceService.issueInvoiceForOrder(order);
+  await sendOrderConfirmation(order._id);
 
   return {
     orderId: order._id,
