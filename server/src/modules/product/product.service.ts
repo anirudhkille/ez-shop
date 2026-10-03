@@ -371,25 +371,7 @@ export const getFilteredProducts = async (query: FilteredProductsQuery) => {
     dbQuery.rating = { $gte: Number(minRating) };
   }
 
-  let sortOption: Record<string, 1 | -1> = { createdAt: -1 };
-
-  switch (sort) {
-    case "price-low":
-      sortOption = { discountPrice: 1, price: 1 };
-      break;
-    case "price-high":
-      sortOption = { discountPrice: -1, price: -1 };
-      break;
-    case "newest":
-      sortOption = { createdAt: -1 };
-      break;
-    case "featured":
-      sortOption = { isFeatured: -1 };
-      break;
-    case "rating":
-      sortOption = { rating: -1 };
-      break;
-  }
+  const sortOption = resolveSort(sort);
 
   const pageNumber = Number(page);
   const limitNumber = Number(limit);
@@ -409,6 +391,39 @@ export const getFilteredProducts = async (query: FilteredProductsQuery) => {
       totalPages: Math.ceil(total / limitNumber),
     },
   };
+};
+
+type SortOption = Record<string, 1 | -1>;
+
+/**
+ * Every sort ends on `_id`. Without a unique tiebreaker the ordering is not
+ * deterministic, and skip/limit over a non-deterministic order does not
+ * partition the result set: consecutive pages repeat documents and silently
+ * drop others. `featured` tied on isFeatured, `rating` tied on rating for every
+ * product, and `price-*` led on discountPrice, which most products do not have.
+ */
+export const resolveSort = (sort?: string): SortOption => {
+  let option: SortOption = { createdAt: -1 };
+
+  switch (sort) {
+    case "price-low":
+      option = { price: 1, discountPrice: 1 };
+      break;
+    case "price-high":
+      option = { price: -1, discountPrice: -1 };
+      break;
+    case "newest":
+      option = { createdAt: -1 };
+      break;
+    case "featured":
+      option = { isFeatured: -1 };
+      break;
+    case "rating":
+      option = { rating: -1 };
+      break;
+  }
+
+  return { ...option, _id: 1 };
 };
 
 export const getFeaturedProducts = async () => {
