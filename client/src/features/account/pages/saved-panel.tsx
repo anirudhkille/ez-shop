@@ -1,5 +1,5 @@
 import { useToggleWishlist, useWishlistDetails } from "@/features/wishlist";
-import PanelHeader from "@/shared/components/panel-header";
+import { PanelHeader } from "@/shared/components/panel-header";
 
 import { SavedItems } from "../components/saved-items";
 

@@ -4,10 +4,10 @@ import { Tag, TicketPercent } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
-import { formatPrice } from "@/shared/lib/formatPrice";
+import { formatPrice } from "@/shared/lib/format-price";
 
-import { useApplyCoupon } from "../hooks/useCoupon";
-import { useCouponStore } from "../store/couponStore";
+import { useApplyCoupon } from "../hooks/use-coupon";
+import { useCouponStore } from "../store/coupon-store";
 
 interface CouponFieldProps {
   subtotal: number;
@@ -19,7 +19,7 @@ interface CouponFieldProps {
  * server, so an invalid or ineligible code shows an error instead of a
  * fabricated discount.
  */
-export default function CouponField({ subtotal, className }: CouponFieldProps) {
+export function CouponField({ subtotal, className }: CouponFieldProps) {
   const [code, setCode] = useState("");
   const { quote, setQuote, clear } = useCouponStore();
   const { mutate, isPending } = useApplyCoupon();

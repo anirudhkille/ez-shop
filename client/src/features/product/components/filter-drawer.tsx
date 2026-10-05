@@ -3,10 +3,10 @@ import { useState } from "react";
 import { ChevronDown, SlidersHorizontal, Star, X } from "lucide-react";
 
 import { useCategorys } from "@/features/category";
+import type { TCategory } from "@/features/category";
 import { cn } from "@/shared/lib/utils";
-import type { TCategory } from "@/shared/types/category";
 
-import { defaultFilters, type FilterState } from "./filters";
+import { defaultFilters, type FilterState } from "../lib/filters";
 
 const ALL_SIZES = ["XS", "S", "M", "L", "XL", "7", "8", "9", "10", "11", "12"];
 const ALL_COLORS = [
@@ -61,7 +61,7 @@ interface FilterDrawerProps {
   activeCount: number;
 }
 
-export default function FilterDrawer({
+export function FilterDrawer({
   filters,
   onApply,
   activeCount,

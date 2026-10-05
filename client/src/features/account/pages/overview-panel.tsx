@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 
 import { OrderList, useMyOrdersList } from "@/features/order";
-import PanelHeader from "@/shared/components/panel-header";
+import { PanelHeader } from "@/shared/components/panel-header";
 
 import { PanelCard } from "../components/panel";
 import { ProfileCard } from "../components/profile-form";

@@ -1,4 +1,4 @@
-import type { TProduct, TVariant } from "@/shared/types/product";
+import type { TProduct, TVariant } from "@/features/product";
 
 interface VariantPickerProps {
   product: TProduct;
@@ -10,7 +10,7 @@ interface VariantPickerProps {
   onSelectSize: (size: string) => void;
 }
 
-export default function VariantPicker({
+export function VariantPicker({
   product,
   activeVariant,
   selectedColorIdx,

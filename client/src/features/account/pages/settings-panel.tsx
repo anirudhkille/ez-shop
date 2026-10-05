@@ -13,12 +13,12 @@ import {
   User,
 } from "lucide-react";
 
+import type { TAddress } from "@/features/account";
 import { useProfile } from "@/features/auth";
 import { useUserStore } from "@/features/auth";
-import PanelHeader from "@/shared/components/panel-header";
-import type { TAddress } from "@/shared/types/address";
+import { PanelHeader } from "@/shared/components/panel-header";
 
-import { useAddresss } from "../hooks/useAddress";
+import { useAddresss } from "../hooks/use-address";
 
 const SettingsGroup: FC<{ title: string; children: ReactNode }> = ({
   title,

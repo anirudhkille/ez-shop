@@ -1,6 +1,6 @@
 import { ArrowLeft, CheckCircle2, CreditCard, Lock, Truck } from "lucide-react";
 
-import { formatPrice } from "@/shared/lib/formatPrice";
+import { formatPrice } from "@/shared/lib/format-price";
 
 import {
   DELIVERY_OPTIONS,

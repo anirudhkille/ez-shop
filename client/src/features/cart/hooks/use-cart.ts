@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useUserStore } from "@/features/auth";
-import { getErrorMessage } from "@/shared/lib/apiError";
+import { getErrorMessage } from "@/shared/lib/api-error";
 
 import {
   addToCart,
@@ -12,7 +12,7 @@ import {
   removeFromCart,
   updateCartQuantity,
 } from "../api/cart";
-import { type GuestCartItem, useCartStore } from "../store/cartStore";
+import { type GuestCartItem, useCartStore } from "../store/cart-store";
 
 let guestIdCounter = 0;
 const nextGuestId = () => `guest_${Date.now()}_${++guestIdCounter}`;

@@ -9,7 +9,7 @@ import { Mail } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { FormInputWithIcon, FormLabel } from "@/shared/components/ui/form";
 
-import { useForgotPassword } from "../hooks/useUser";
+import { useForgotPassword } from "../hooks/use-user";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -17,7 +17,7 @@ const formSchema = z.object({
   }),
 });
 
-export default function ForgotPasswordForm() {
+export function ForgotPasswordForm() {
   const { mutate, isPending } = useForgotPassword();
 
   const form = useForm<z.infer<typeof formSchema>>({

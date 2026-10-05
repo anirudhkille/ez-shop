@@ -1,11 +1,11 @@
-import useUserStore from "@/features/auth/store/userStore";
+import { useUserStore } from "@/features/auth";
 
 import {
   useDeleteReview,
   useMyReview,
   useReviews,
   useSubmitReview,
-} from "../hooks/useReviews";
+} from "../hooks/use-reviews";
 import { ReviewForm } from "./review-form";
 import {
   ReviewList,

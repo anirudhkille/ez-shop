@@ -1,11 +1,11 @@
 import { useInfiniteScroll } from "@/shared/hooks/use-infinite-scroll";
 
-import ActiveFilterChips from "../components/active-filter-chips";
-import EmptyState from "../components/empty-state";
-import FilterSidebar from "../components/filter-sidebar";
-import ProductCard from "../components/product-card";
-import ProductSkeleton from "../components/product-skleton";
-import ProductToolbar from "../components/product-toolbar";
+import { ActiveFilterChips } from "../components/active-filter-chips";
+import { EmptyState } from "../components/empty-state";
+import { FilterSidebar } from "../components/filter-sidebar";
+import { ProductCard } from "../components/product-card";
+import { ProductSkeleton } from "../components/product-skleton";
+import { ProductToolbar } from "../components/product-toolbar";
 import { useProductFilters } from "../hooks/use-product-filters";
 
 export default function Products() {

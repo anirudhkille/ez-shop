@@ -3,8 +3,8 @@ import { ChevronDown, Settings2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
 import { SORT_OPTIONS } from "../hooks/use-product-filters";
-import FilterDrawer from "./filter-drawer";
-import type { FilterState } from "./filters";
+import type { FilterState } from "../lib/filters";
+import { FilterDrawer } from "./filter-drawer";
 
 interface ProductToolbarProps {
   heading: string;
@@ -21,7 +21,7 @@ interface ProductToolbarProps {
   activeSortLabel: string;
 }
 
-export default function ProductToolbar({
+export function ProductToolbar({
   heading,
   total,
   filters,

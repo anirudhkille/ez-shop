@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import { getErrorMessage } from "@/shared/lib/apiError";
+import { getErrorMessage } from "@/shared/lib/api-error";
 
 import {
   changePassword,
@@ -16,11 +16,11 @@ import {
   updateProfile,
   verifySignupOTP,
 } from "../api/user";
-import useAuthStore from "../store/userStore";
+import { useUserStore } from "../store/user-store";
 import type { TLogin, TSignup, TUser } from "../types";
 
 export const useProfile = () => {
-  const { token } = useAuthStore();
+  const { token } = useUserStore();
 
   return useQuery({
     queryKey: ["profile"],
@@ -51,7 +51,7 @@ export const useSignup = () => {
 };
 
 export const useVerifySignupOTP = () => {
-  const { setUser } = useAuthStore();
+  const { setUser } = useUserStore();
   const navigate = useNavigate();
 
   return useMutation({
@@ -76,7 +76,7 @@ export const useVerifySignupOTP = () => {
 };
 
 export const useLogin = () => {
-  const { setUser } = useAuthStore();
+  const { setUser } = useUserStore();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (formData: TLogin) => postLogin(formData),
@@ -145,7 +145,7 @@ export const useUpdatePassword = () => {
 };
 
 export const useUpdateProfile = () => {
-  const { setUser } = useAuthStore();
+  const { setUser } = useUserStore();
   return useMutation({
     mutationFn: (formData: Partial<TUser>) => updateProfile(formData),
     onSuccess: (res) => {

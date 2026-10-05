@@ -8,7 +8,7 @@ import { OrderSummary } from "../components/order-summary";
 import { StepContact } from "../components/step-contact";
 import { StepDelivery } from "../components/step-delivery";
 import { StepPayment } from "../components/step-payment";
-import { useCheckout } from "../hooks/useCheckout";
+import { useCheckout } from "../hooks/use-checkout";
 
 export default function Checkout() {
   const checkout = useCheckout();

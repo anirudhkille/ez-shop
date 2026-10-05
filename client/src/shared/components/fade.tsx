@@ -14,7 +14,7 @@ type FadeProps = {
   className?: string;
 };
 
-export default function Fade({
+export function Fade({
   children,
   direction = "up",
   delay = 0,

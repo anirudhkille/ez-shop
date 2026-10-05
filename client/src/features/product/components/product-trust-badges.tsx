@@ -6,7 +6,7 @@ const BADGES = [
   { icon: Shield, label: "Authentic", sub: "100% genuine" },
 ];
 
-export default function ProductTrustBadges() {
+export function ProductTrustBadges() {
   return (
     <div className="border-brand-border mt-8 grid grid-cols-3 gap-3 border-t pt-8">
       {BADGES.map((badge) => (

@@ -1,7 +1,7 @@
-import Head from "@/shared/components/head";
+import { Head } from "@/shared/components/head";
 
-import AuthLayout from "../components/auth-layout";
-import VerifyEmailForm from "../components/verify-email";
+import { AuthLayout } from "../components/auth-layout";
+import { VerifyEmailForm } from "../components/verify-email";
 
 export default function VerifyEmail() {
   return (

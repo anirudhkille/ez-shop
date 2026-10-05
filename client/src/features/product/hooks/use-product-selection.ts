@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { TProduct } from "@/shared/types/product";
+import type { TProduct } from "@/features/product";
 
 export const useProductSelection = (product: TProduct) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);

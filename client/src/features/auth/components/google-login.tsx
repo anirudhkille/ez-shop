@@ -1,6 +1,6 @@
 import { Button } from "@/shared/components/ui/button";
 
-export default function GoogleLogin() {
+export function GoogleLogin() {
   const handleGoogleLogin = () => {
     window.location.href = `${import.meta.env.VITE_API_BASE_URL}/user/google`;
   };

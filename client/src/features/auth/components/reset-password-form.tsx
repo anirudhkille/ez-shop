@@ -11,7 +11,7 @@ import { Lock } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { FormInputWithIcon, FormLabel } from "@/shared/components/ui/form";
 
-import { useResetPassword } from "../hooks/useUser";
+import { useResetPassword } from "../hooks/use-user";
 
 const formSchema = z
   .object({
@@ -25,7 +25,7 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
-export default function ResetPasswordForm() {
+export function ResetPasswordForm() {
   const { mutate, isPending } = useResetPassword();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");

@@ -1,5 +1,5 @@
-import axiosInstance from "@/shared/lib/axiosInstance";
-import type { TApiResponse } from "@/shared/types/api";
+import type { TApiResponse } from "@/shared/lib/api-response";
+import { axiosInstance } from "@/shared/lib/axios-instance";
 
 import type { TOrder, TOrderSummary } from "../types";
 

@@ -4,7 +4,7 @@ type EmptyStateProps = {
   handleClearFilters: () => void;
 };
 
-export default function EmptyState({ handleClearFilters }: EmptyStateProps) {
+export function EmptyState({ handleClearFilters }: EmptyStateProps) {
   return (
     <div className="border-brand-border bg-card animate-fade-in-up flex flex-col items-center justify-center gap-6 rounded-3xl border py-24 text-center">
       <div className="bg-brand-surface-raised flex h-20 w-20 items-center justify-center rounded-full">

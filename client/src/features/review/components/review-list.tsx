@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 
-import StarRating from "@/shared/components/star-rating";
-import { formatRating, reviewCountLabel } from "@/shared/lib/formatRating";
+import { StarRating } from "@/shared/components/star-rating";
+import { formatRating, reviewCountLabel } from "@/shared/lib/format-rating";
 
 import type { TReview } from "../types";
 

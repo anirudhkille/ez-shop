@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
-import type { TProduct } from "@/shared/types/product";
+import type { TProduct } from "@/features/product";
 
 import {
   getBestSellersProducts,

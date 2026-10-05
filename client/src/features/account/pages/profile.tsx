@@ -9,13 +9,13 @@ import {
   User,
 } from "lucide-react";
 
+import type { TAddress } from "@/features/account";
 import { useProfile } from "@/features/auth";
 import { useUserStore } from "@/features/auth";
 import { useMyOrders } from "@/features/order";
 import { useWishlistDetails } from "@/features/wishlist";
-import type { TAddress } from "@/shared/types/address";
 
-import { useAddresss } from "../hooks/useAddress";
+import { useAddresss } from "../hooks/use-address";
 import { type ProfileView, profileViewPath } from "../types";
 
 type NavItem = {

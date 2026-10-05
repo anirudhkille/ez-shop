@@ -1,7 +1,7 @@
 import { Toaster } from "sonner";
 
 /** `richColors` stays off so the custom properties in index.css win. */
-export default function AppToaster() {
+export function AppToaster() {
   return (
     <Toaster
       position="top-center"

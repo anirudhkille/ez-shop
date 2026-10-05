@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useCartStore } from "@/features/cart";
-import { getErrorMessage } from "@/shared/lib/apiError";
+import { getErrorMessage } from "@/shared/lib/api-error";
 
 import {
   createGuestCheckoutSession,

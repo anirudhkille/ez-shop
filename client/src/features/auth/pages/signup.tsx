@@ -1,9 +1,9 @@
-import Head from "@/shared/components/head";
-import Divider from "@/shared/components/ui/divider";
+import { Head } from "@/shared/components/head";
+import { Divider } from "@/shared/components/ui/divider";
 
-import AuthLayout from "../components/auth-layout";
-import GoogleLogin from "../components/google-login";
-import SignupForm from "../components/signup-form";
+import { AuthLayout } from "../components/auth-layout";
+import { GoogleLogin } from "../components/google-login";
+import { SignupForm } from "../components/signup-form";
 
 export default function Signup() {
   return (

@@ -1,12 +1,12 @@
-import Container from "@/shared/components/container";
-import Head from "@/shared/components/head";
+import { Container } from "@/shared/components/container";
+import { Head } from "@/shared/components/head";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { formatPrice } from "@/shared/lib/formatPrice";
+import { formatPrice } from "@/shared/lib/format-price";
 
 import { TrackOrderForm } from "../components/track-order-form";
 import { useTrackOrder } from "../hooks/use-track-order";

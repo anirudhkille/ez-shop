@@ -1,4 +1,4 @@
-import axiosInstance from "@/shared/lib/axiosInstance";
+import { axiosInstance } from "@/shared/lib/axios-instance";
 
 import type { TPagination, TReview, TReviewDraft } from "../types";
 

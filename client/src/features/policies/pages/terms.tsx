@@ -1,4 +1,4 @@
-import { PolicyPage, PolicySection } from "./components/policy-page";
+import { PolicyPage, PolicySection } from "@/shared/components/policy-page";
 
 export default function TermsPage() {
   return (

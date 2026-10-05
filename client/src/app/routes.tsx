@@ -4,8 +4,8 @@ import { Route, Routes } from "react-router";
 
 import { ProtectedRoute, RedirectIfAuthenticated } from "@/features/auth";
 
-import Layout from "./layout";
-import NotFound from "./not-found";
+import { Layout } from "./layout";
+import { NotFound } from "./not-found";
 
 const Home = lazy(() => import("@/features/home/pages/home"));
 const Products = lazy(() => import("@/features/product/pages/products"));
@@ -49,14 +49,18 @@ const DeliveryAddresses = lazy(
 const OrdersPanel = lazy(() => import("@/features/order/pages/orders-panel"));
 const OrderDetail = lazy(() => import("@/features/order/pages/order-detail"));
 const TrackOrder = lazy(() => import("@/features/order/pages/track-order"));
-const Returns = lazy(() => import("@/features/order/pages/returns"));
-const ShippingInfo = lazy(() => import("@/features/order/pages/shipping-info"));
+const Returns = lazy(() => import("@/features/policies/pages/returns"));
+const ShippingInfo = lazy(
+  () => import("@/features/policies/pages/shipping-info")
+);
 
-const CookiePolicy = lazy(() => import("@/content/cookie-policy"));
-const TermsOfUse = lazy(() => import("@/content/terms"));
-const PrivacyPolicy = lazy(() => import("@/content/privacy"));
+const CookiePolicy = lazy(
+  () => import("@/features/policies/pages/cookie-policy")
+);
+const TermsOfUse = lazy(() => import("@/features/policies/pages/terms"));
+const PrivacyPolicy = lazy(() => import("@/features/policies/pages/privacy"));
 
-export default function AppRoutes() {
+export function AppRoutes() {
   return (
     <Routes>
       <Route path="/auth/google-callback" element={<GoogleCallback />} />

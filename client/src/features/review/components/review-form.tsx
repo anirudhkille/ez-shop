@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Trash2 } from "lucide-react";
 
-import StarInput from "./star-input";
+import { StarInput } from "./star-input";
 
 interface ReviewFormProps {
   initialRating: number;

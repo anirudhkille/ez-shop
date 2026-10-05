@@ -1,4 +1,4 @@
-import axiosInstance from "@/shared/lib/axiosInstance";
+import { axiosInstance } from "@/shared/lib/axios-instance";
 
 export const toggleWishlist = async (productId: string) => {
   const res = await axiosInstance.post("/wishlist/toggle", {

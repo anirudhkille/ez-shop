@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useUserStore } from "@/features/auth";
-import { getErrorMessage } from "@/shared/lib/apiError";
+import { getErrorMessage } from "@/shared/lib/api-error";
 
 import {
   deleteReview,

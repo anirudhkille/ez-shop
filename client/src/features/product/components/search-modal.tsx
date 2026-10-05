@@ -4,17 +4,17 @@ import { Link } from "react-router";
 
 import { ArrowRight, Loader2, Search, Star, Tag, X } from "lucide-react";
 
-import { formatPrice } from "@/shared/lib/formatPrice";
-import type { TProduct } from "@/shared/types/product";
+import type { TProduct } from "@/features/product";
+import { formatPrice } from "@/shared/lib/format-price";
 
-import { useSearchProducts } from "../hooks/useProduct";
+import { useSearchProducts } from "../hooks/use-product";
 
 interface SearchModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-export default function SearchModal({ open, onClose }: SearchModalProps) {
+export function SearchModal({ open, onClose }: SearchModalProps) {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);

@@ -13,7 +13,7 @@ type AuthLayoutProps = {
   flush?: boolean;
 };
 
-export default function AuthLayout({
+export function AuthLayout({
   title,
   description,
   children,

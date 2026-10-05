@@ -4,7 +4,7 @@ import { Link } from "react-router";
 
 import { ChevronRight, Package } from "lucide-react";
 
-import { formatPrice } from "@/shared/lib/formatPrice";
+import { formatPrice } from "@/shared/lib/format-price";
 
 import {
   OrderLineItems,
@@ -14,7 +14,7 @@ import {
   matchesStatusFilter,
   ORDER_STATUS_FILTERS,
   type TOrderStatusFilter,
-} from "../components/order-status";
+} from "../lib/order-status";
 import type { TOrderSummary } from "../types";
 
 /** Line items shown before the "+N more" toggle appears. */

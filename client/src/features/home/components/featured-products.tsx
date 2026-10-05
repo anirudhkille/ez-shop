@@ -2,10 +2,10 @@ import { Link } from "react-router";
 
 import { useFeaturedProducts } from "@/features/product";
 import { ProductCard } from "@/features/product";
-import Fade from "@/shared/components/fade";
-import type { TProduct } from "@/shared/types/product";
+import type { TProduct } from "@/features/product";
+import { Fade } from "@/shared/components/fade";
 
-export default function FeaturedProducts() {
+export function FeaturedProducts() {
   const { data } = useFeaturedProducts();
 
   return (

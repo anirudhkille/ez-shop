@@ -2,14 +2,15 @@ import { Link } from "react-router";
 
 import { useCouponStore } from "@/features/coupon";
 import { CouponField } from "@/features/coupon";
-import { formatPrice } from "@/shared/lib/formatPrice";
+import { formatPrice } from "@/shared/lib/format-price";
 
-import CartProductCard, {
+import {
   type CartItem,
+  CartProductCard,
 } from "../components/cart-product-card";
-import CartSkeleton from "../components/cart-skeleton";
-import EmptyCart from "../components/empty-cart";
-import { useCart } from "../hooks/useCart";
+import { CartSkeleton } from "../components/cart-skeleton";
+import { EmptyCart } from "../components/empty-cart";
+import { useCart } from "../hooks/use-cart";
 
 export default function Cart() {
   const { data: cartItems, isLoading } = useCart();

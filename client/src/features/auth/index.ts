@@ -1,4 +1,13 @@
-﻿export { default as ProtectedRoute } from "./components/protected-route";
-export { default as RedirectIfAuthenticated } from "./components/redirect-if-authenticated";
-export { useProfile, useUpdateProfile } from "./hooks/useUser";
-export { default as useUserStore } from "./store/userStore";
+export { AuthLayout } from "./components/auth-layout";
+export { ForgotPasswordForm } from "./components/forgot-password-form";
+export { GoogleLogin } from "./components/google-login";
+export { LoginForm } from "./components/login-form";
+export { ProtectedRoute } from "./components/protected-route";
+export { RedirectIfAuthenticated } from "./components/redirect-if-authenticated";
+export { ResetPasswordForm } from "./components/reset-password-form";
+export { SignupForm } from "./components/signup-form";
+export { UpdatePasswordForm } from "./components/update-password-form";
+export { VerifyEmailForm } from "./components/verify-email";
+export { useProfile, useUpdateProfile } from "./hooks/use-user";
+export { useUserStore } from "./store/user-store";
+export type { TLogin, TSignup, TUser, TVerifyEmail } from "./types";

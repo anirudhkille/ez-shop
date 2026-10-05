@@ -1,4 +1,4 @@
-export default function Divider() {
+export function Divider() {
   return (
     <div className="my-6 flex items-center gap-3">
       <div className="bg-brand-border h-px flex-1" />

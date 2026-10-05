@@ -1,7 +1,7 @@
-import { formatPrice } from "@/shared/lib/formatPrice";
-import type { TProduct } from "@/shared/types/product";
+import type { TProduct } from "@/features/product";
+import { formatPrice } from "@/shared/lib/format-price";
 
-export default function ProductPrice({ product }: { product: TProduct }) {
+export function ProductPrice({ product }: { product: TProduct }) {
   const onSale = product.discountPrice > 0;
 
   return (

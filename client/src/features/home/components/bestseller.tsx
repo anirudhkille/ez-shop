@@ -3,12 +3,12 @@ import { Link } from "react-router";
 import { Star, TrendingUp } from "lucide-react";
 
 import { useBestSellers } from "@/features/product";
-import Fade from "@/shared/components/fade";
-import Image from "@/shared/components/ui/img";
-import { formatPrice } from "@/shared/lib/formatPrice";
-import type { TProduct } from "@/shared/types/product";
+import type { TProduct } from "@/features/product";
+import { Fade } from "@/shared/components/fade";
+import { Image } from "@/shared/components/ui/img";
+import { formatPrice } from "@/shared/lib/format-price";
 
-export default function BestSellers() {
+export function BestSellers() {
   const { data: bestSellers } = useBestSellers();
   return (
     <section className="bg-background py-24">

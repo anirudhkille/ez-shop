@@ -1,11 +1,11 @@
 import { Link } from "react-router";
 
 import { useCategorys } from "@/features/category";
-import Fade from "@/shared/components/fade";
-import Image from "@/shared/components/ui/img";
-import type { TCategory } from "@/shared/types/category";
+import type { TCategory } from "@/features/category";
+import { Fade } from "@/shared/components/fade";
+import { Image } from "@/shared/components/ui/img";
 
-export default function CategoriesSection() {
+export function CategoriesSection() {
   const { data: categories } = useCategorys();
 
   return (

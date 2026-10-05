@@ -1,4 +1,4 @@
-import type { FilterState } from "../components/filters";
+import type { FilterState } from "./filters";
 
 const sortMap: Record<string, string> = {
   "price-asc": "price-low",

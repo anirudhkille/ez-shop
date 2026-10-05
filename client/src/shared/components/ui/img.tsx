@@ -9,7 +9,7 @@ type ImageProps = {
   className?: string;
 } & ImgHTMLAttributes<HTMLImageElement>;
 
-export default function Image({
+export function Image({
   src,
   alt,
   loading = "lazy",

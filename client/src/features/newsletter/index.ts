@@ -1,1 +1,1 @@
-export { useSubscribeNewsletter } from "./hooks/useNewsletter";
+export { useSubscribeNewsletter } from "./hooks/use-newsletter";

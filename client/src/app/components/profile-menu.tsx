@@ -11,7 +11,7 @@ interface ProfileMenuProps {
   onLogout: () => void;
 }
 
-export default function ProfileMenu({
+export function ProfileMenu({
   name,
   email,
   isOpen,

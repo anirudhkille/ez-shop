@@ -1,5 +1,5 @@
-import { formatPrice } from "@/shared/lib/formatPrice";
-import type { TAddress } from "@/shared/types/address";
+import type { TAddress } from "@/features/account";
+import { formatPrice } from "@/shared/lib/format-price";
 
 type OrderProduct = {
   product: {
@@ -65,7 +65,7 @@ function shortDate(value: string | number | undefined) {
   });
 }
 
-export default function OrderSuccess({
+export function OrderSuccess({
   order,
   email,
   allowShowFull = false,

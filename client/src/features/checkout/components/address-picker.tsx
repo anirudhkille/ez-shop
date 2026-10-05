@@ -1,6 +1,6 @@
 import { MapPin, Plus } from "lucide-react";
 
-import type { TAddress } from "@/shared/types/address";
+import type { TAddress } from "@/features/account";
 
 type Props = {
   addresses: TAddress[];

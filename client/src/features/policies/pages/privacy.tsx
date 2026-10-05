@@ -1,4 +1,4 @@
-import { PolicyPage, PolicySection } from "./components/policy-page";
+import { PolicyPage, PolicySection } from "@/shared/components/policy-page";
 
 export default function PrivacyPolicyPage() {
   return (
@@ -32,8 +32,8 @@ export default function PrivacyPolicyPage() {
           We may share the information we collect about you as described in this
           Policy or as described at the time of collection or sharing, including
           selectively with external business partners and service providers that
-          perform services for us. These services include payment processing,
-          shipping providers, and data analytics platforms.
+          perform services on our behalf. These services include payment
+          processing, shipping providers, and data analytics platforms.
         </p>
       </PolicySection>
 

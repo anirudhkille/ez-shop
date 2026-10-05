@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle, Mail } from "lucide-react";
 
 import { useSubscribeNewsletter } from "@/features/newsletter";
-import Fade from "@/shared/components/fade";
+import { Fade } from "@/shared/components/fade";
 import { Button } from "@/shared/components/ui/button";
 import { FormInputWithIcon } from "@/shared/components/ui/form";
 
@@ -17,7 +17,7 @@ const formSchema = z.object({
   }),
 });
 
-export default function Newsletter() {
+export function Newsletter() {
   return (
     <section className="bg-card/40 py-24">
       <div className="mx-auto max-w-350 px-6 lg:px-10">

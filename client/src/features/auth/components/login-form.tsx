@@ -11,7 +11,7 @@ import { Lock, Mail } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { FormInputWithIcon, FormLabel } from "@/shared/components/ui/form";
 
-import { useLogin } from "../hooks/useUser";
+import { useLogin } from "../hooks/use-user";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -22,7 +22,7 @@ const formSchema = z.object({
   }),
 });
 
-export default function LoginForm() {
+export function LoginForm() {
   const { mutate, isPending } = useLogin();
 
   const form = useForm<z.infer<typeof formSchema>>({

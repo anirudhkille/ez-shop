@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import { getErrorMessage } from "@/shared/lib/apiError";
+import { getErrorMessage } from "@/shared/lib/api-error";
 
 import { applyCoupon, type TCouponQuote } from "../api/coupon";
 

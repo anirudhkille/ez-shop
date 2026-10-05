@@ -1,13 +1,11 @@
 import { Navigate, Outlet } from "react-router";
 
-import useAuthStore from "../store/userStore";
+import { useUserStore } from "../store/user-store";
 
-const RedirectIfAuthenticated = () => {
-  const { token } = useAuthStore();
+export const RedirectIfAuthenticated = () => {
+  const { token } = useUserStore();
 
   if (token) return <Navigate to="/" />;
 
   return <Outlet />;
 };
-
-export default RedirectIfAuthenticated;

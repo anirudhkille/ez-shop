@@ -2,9 +2,9 @@ import { Link } from "react-router";
 
 import { TicketPercent } from "lucide-react";
 
+import type { TAddress } from "@/features/account";
 import { CouponField } from "@/features/coupon";
-import { formatPrice } from "@/shared/lib/formatPrice";
-import type { TAddress } from "@/shared/types/address";
+import { formatPrice } from "@/shared/lib/format-price";
 
 import {
   categoryLabelFor,

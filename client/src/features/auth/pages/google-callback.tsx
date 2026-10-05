@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { Link, useNavigate, useSearchParams } from "react-router";
 
-import useUserStore from "../store/userStore";
+import { useUserStore } from "../store/user-store";
 
 const TIMEOUT_MS = 12_000;
 

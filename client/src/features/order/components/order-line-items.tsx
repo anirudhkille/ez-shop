@@ -2,12 +2,9 @@ import type { FC } from "react";
 
 import { ImageOff } from "lucide-react";
 
-import { formatPrice } from "@/shared/lib/formatPrice";
+import { formatPrice } from "@/shared/lib/format-price";
 
-import {
-  getLineItemProduct,
-  getOrderStatusMeta,
-} from "../components/order-status";
+import { getLineItemProduct, getOrderStatusMeta } from "../lib/order-status";
 import type { TOrderProduct } from "../types";
 
 export const OrderStatusPill: FC<{ status?: string }> = ({ status }) => {

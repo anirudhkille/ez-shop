@@ -7,9 +7,9 @@ import {
 
 import { toast } from "sonner";
 
+import type { TAddress } from "@/features/account";
 import { useUserStore } from "@/features/auth";
-import { getErrorMessage } from "@/shared/lib/apiError";
-import type { TAddress } from "@/shared/types/address";
+import { getErrorMessage } from "@/shared/lib/api-error";
 
 import {
   deleteAddress,

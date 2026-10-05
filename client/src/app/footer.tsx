@@ -57,7 +57,7 @@ const socials = [
   },
 ];
 
-export default function Footer() {
+export function Footer() {
   return (
     <footer className="border-brand-border bg-card border-t">
       <div className="mx-auto max-w-350 px-6 lg:px-10">

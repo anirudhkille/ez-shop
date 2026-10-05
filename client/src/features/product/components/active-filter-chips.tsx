@@ -7,7 +7,7 @@ interface ActiveFilterChipsProps {
   onClearAll: () => void;
 }
 
-export default function ActiveFilterChips({
+export function ActiveFilterChips({
   chips,
   onClearAll,
 }: ActiveFilterChipsProps) {

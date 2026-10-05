@@ -10,16 +10,16 @@ import {
   Wallet,
 } from "lucide-react";
 
-import Container from "@/shared/components/container";
-import Head from "@/shared/components/head";
-import { formatPrice } from "@/shared/lib/formatPrice";
+import { Container } from "@/shared/components/container";
+import { Head } from "@/shared/components/head";
+import { formatPrice } from "@/shared/lib/format-price";
 
 import {
   OrderLineItems,
   OrderStatusPill,
 } from "../components/order-line-items";
-import { useDownloadInvoice } from "../hooks/useInvoice";
-import { useOrderDetail } from "../hooks/useOrder";
+import { useDownloadInvoice } from "../hooks/use-invoice";
+import { useOrderDetail } from "../hooks/use-order";
 
 const DELIVERY_LABELS: Record<string, string> = {
   standard: "Standard",

@@ -3,10 +3,10 @@ import { useState } from "react";
 import { ChevronDown, Star, X } from "lucide-react";
 
 import { useCategorys } from "@/features/category";
+import type { TCategory } from "@/features/category";
 import { cn } from "@/shared/lib/utils";
-import type { TCategory } from "@/shared/types/category";
 
-import { type FilterState } from "./filters";
+import { type FilterState } from "../lib/filters";
 
 interface FilterSidebarProps {
   filters: FilterState;
@@ -65,7 +65,7 @@ function CollapsibleSection({
   );
 }
 
-export default function FilterSidebar({
+export function FilterSidebar({
   filters,
   onChange,
   onClear,

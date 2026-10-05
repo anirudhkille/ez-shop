@@ -1,6 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 
-import { Sentry, sentryEnabled } from "@/app/sentry";
+import { Sentry, sentryEnabled } from "./sentry";
 
 interface Props {
   children: ReactNode;
@@ -12,7 +12,7 @@ interface State {
   error?: Error;
 }
 
-export default class ErrorBoundary extends Component<Props, State> {
+export class ErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false };
 
   static getDerivedStateFromError(error: Error): State {

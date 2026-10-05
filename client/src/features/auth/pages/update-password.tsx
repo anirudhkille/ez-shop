@@ -2,10 +2,10 @@ import { Link } from "react-router";
 
 import { ArrowLeft, Lock } from "lucide-react";
 
-import Container from "@/shared/components/container";
-import Head from "@/shared/components/head";
+import { Container } from "@/shared/components/container";
+import { Head } from "@/shared/components/head";
 
-import UpdatePasswordForm from "../components/update-password-form";
+import { UpdatePasswordForm } from "../components/update-password-form";
 
 export default function UpdatePassword() {
   return (

@@ -1,11 +1,11 @@
 import { useSearchParams } from "react-router";
 
-import Head from "@/shared/components/head";
-import Divider from "@/shared/components/ui/divider";
+import { Head } from "@/shared/components/head";
+import { Divider } from "@/shared/components/ui/divider";
 
-import AuthLayout from "../components/auth-layout";
-import GoogleLogin from "../components/google-login";
-import LoginForm from "../components/login-form";
+import { AuthLayout } from "../components/auth-layout";
+import { GoogleLogin } from "../components/google-login";
+import { LoginForm } from "../components/login-form";
 
 export default function Login() {
   const [searchParams] = useSearchParams();

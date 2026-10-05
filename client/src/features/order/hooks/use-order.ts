@@ -5,8 +5,8 @@ import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useUserStore } from "@/features/auth";
-import { getErrorMessage } from "@/shared/lib/apiError";
-import type { TApiResponse } from "@/shared/types/api";
+import { getErrorMessage } from "@/shared/lib/api-error";
+import type { TApiResponse } from "@/shared/lib/api-response";
 
 import {
   getMyOrders,

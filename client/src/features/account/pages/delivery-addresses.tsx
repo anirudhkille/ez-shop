@@ -4,17 +4,17 @@ import { Link } from "react-router";
 
 import { ArrowLeft, Edit2, MapPin, Plus, Trash2 } from "lucide-react";
 
-import Container from "@/shared/components/container";
-import Head from "@/shared/components/head";
+import type { TAddress } from "@/features/account";
+import { Container } from "@/shared/components/container";
+import { Head } from "@/shared/components/head";
 import { Button } from "@/shared/components/ui/button";
-import type { TAddress } from "@/shared/types/address";
 
-import AddressModal from "../components/address-modal";
+import { AddressModal } from "../components/address-modal";
 import {
   useAddresss,
   useDeleteAddress,
   useUpdateAddress,
-} from "../hooks/useAddress";
+} from "../hooks/use-address";
 
 export default function DeliveryAddresses() {
   const { data } = useAddresss();

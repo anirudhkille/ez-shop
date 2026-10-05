@@ -16,7 +16,7 @@ interface MobileNavProps {
 const rowClass =
   "font-body text-muted-foreground hover:text-foreground border-brand-border/50 flex items-center gap-3 border-b py-2.5 text-sm font-medium transition-colors";
 
-export default function MobileNav({
+export function MobileNav({
   isOpen,
   name,
   cartCount,

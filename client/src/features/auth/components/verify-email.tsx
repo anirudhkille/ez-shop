@@ -10,13 +10,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/shared/components/ui/button";
 
-import { useVerifySignupOTP } from "../hooks/useUser";
+import { useVerifySignupOTP } from "../hooks/use-user";
 
 const formSchema = z.object({
   otp: z.string().length(6, "OTP must be 6 digits"),
 });
 
-export default function VerifyEmailForm() {
+export function VerifyEmailForm() {
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const [code, setCode] = useState<string[]>(Array(6).fill(""));
 

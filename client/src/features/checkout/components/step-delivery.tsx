@@ -1,8 +1,8 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
+import type { TAddress } from "@/features/account";
 import type { TDeliveryMethod } from "@/features/order";
-import { formatPrice } from "@/shared/lib/formatPrice";
-import type { TAddress } from "@/shared/types/address";
+import { formatPrice } from "@/shared/lib/format-price";
 
 import { DELIVERY_OPTIONS, type GuestDetails } from "../types";
 

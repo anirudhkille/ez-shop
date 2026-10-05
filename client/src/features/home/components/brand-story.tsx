@@ -2,8 +2,8 @@ import { Award, Globe, Shield, Zap } from "lucide-react";
 
 import brandStory from "@/assets/brand-story.webp";
 
-import Fade from "@/shared/components/fade";
-import Image from "@/shared/components/ui/img";
+import { Fade } from "@/shared/components/fade";
+import { Image } from "@/shared/components/ui/img";
 
 const pillars = [
   {
@@ -28,7 +28,7 @@ const pillars = [
   },
 ];
 
-export default function BrandStory() {
+export function BrandStory() {
   return (
     <section className="overflow-hidden py-24">
       <div className="mx-auto max-w-350 px-6 lg:px-10">

@@ -2,4 +2,4 @@ export {
   useToggleWishlist,
   useWishlistDetails,
   useWishlists,
-} from "./hooks/useWishlist";
+} from "./hooks/use-wishlist";

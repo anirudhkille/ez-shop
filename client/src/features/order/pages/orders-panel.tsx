@@ -1,8 +1,8 @@
-import PanelHeader from "@/shared/components/panel-header";
+import { PanelHeader } from "@/shared/components/panel-header";
 import { useInfiniteScroll } from "@/shared/hooks/use-infinite-scroll";
 
 import { OrderList } from "../components/order-list";
-import { useMyOrdersList } from "../hooks/useOrder";
+import { useMyOrdersList } from "../hooks/use-order";
 
 export default function OrdersPanel() {
   const { orders, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =

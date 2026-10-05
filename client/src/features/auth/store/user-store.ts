@@ -10,7 +10,7 @@ type UserState = {
   logout: () => void;
 };
 
-const useUserStore = create<UserState>()(
+export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
       token: null,
@@ -39,5 +39,3 @@ const useUserStore = create<UserState>()(
     }
   )
 );
-
-export default useUserStore;

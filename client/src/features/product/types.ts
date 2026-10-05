@@ -1,4 +1,4 @@
-import type { TCategory } from "./category";
+import type { TCategory } from "@/features/category";
 
 export type TVariant = {
   color: string;

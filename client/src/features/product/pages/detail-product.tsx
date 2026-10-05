@@ -4,24 +4,24 @@ import { toast } from "sonner";
 
 import { useUserStore } from "@/features/auth";
 import { useAddToCart } from "@/features/cart";
+import type { TProduct } from "@/features/product";
 import { ReviewSection } from "@/features/review";
 import { useToggleWishlist, useWishlists } from "@/features/wishlist";
-import StarRating from "@/shared/components/star-rating";
-import { formatRating, reviewCountLabel } from "@/shared/lib/formatRating";
-import type { TProduct } from "@/shared/types/product";
+import { StarRating } from "@/shared/components/star-rating";
+import { formatRating, reviewCountLabel } from "@/shared/lib/format-rating";
 
 import {
   ProductActions,
   ProductMobileBar,
 } from "../components/product-actions";
-import ProductDetailSkeleton from "../components/product-detail-skeleton";
-import ProductGallery from "../components/product-gallery";
-import ProductPrice from "../components/product-price";
-import ProductTrustBadges from "../components/product-trust-badges";
-import RelatedProducts from "../components/related-products";
-import VariantPicker from "../components/variant-picker";
+import { ProductDetailSkeleton } from "../components/product-detail-skeleton";
+import { ProductGallery } from "../components/product-gallery";
+import { ProductPrice } from "../components/product-price";
+import { ProductTrustBadges } from "../components/product-trust-badges";
+import { RelatedProducts } from "../components/related-products";
+import { VariantPicker } from "../components/variant-picker";
+import { useProduct, useSimilarProducts } from "../hooks/use-product";
 import { useProductSelection } from "../hooks/use-product-selection";
-import { useProduct, useSimilarProducts } from "../hooks/useProduct";
 
 function NotFound() {
   return (

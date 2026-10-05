@@ -1,6 +1,6 @@
 import { Star } from "lucide-react";
 
-import { formatRating } from "@/shared/lib/formatRating";
+import { formatRating } from "@/shared/lib/format-rating";
 
 interface StarRatingProps {
   rating: number;
@@ -8,11 +8,7 @@ interface StarRatingProps {
   showValue?: boolean;
 }
 
-export default function StarRating({
-  rating,
-  size = 14,
-  showValue,
-}: StarRatingProps) {
+export function StarRating({ rating, size = 14, showValue }: StarRatingProps) {
   const clamped = Math.max(0, Math.min(5, rating || 0));
 
   return (

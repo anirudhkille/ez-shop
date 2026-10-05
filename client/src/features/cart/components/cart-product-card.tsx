@@ -2,10 +2,10 @@ import { Link } from "react-router";
 
 import { Minus, Plus, X } from "lucide-react";
 
-import Image from "@/shared/components/ui/img";
-import { formatPrice } from "@/shared/lib/formatPrice";
+import { Image } from "@/shared/components/ui/img";
+import { formatPrice } from "@/shared/lib/format-price";
 
-import { useRemoveCartItem, useUpdateCartQty } from "../hooks/useCart";
+import { useRemoveCartItem, useUpdateCartQty } from "../hooks/use-cart";
 
 export type CartItem = {
   _id: string;
@@ -23,7 +23,7 @@ export type CartItem = {
   variantId?: string;
 };
 
-export default function CartProductCard({ item }: { item: CartItem }) {
+export function CartProductCard({ item }: { item: CartItem }) {
   const { mutate: removeCartItem } = useRemoveCartItem();
   const { mutate: updateCartQty } = useUpdateCartQty();
 

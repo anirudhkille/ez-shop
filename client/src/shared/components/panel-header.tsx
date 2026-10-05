@@ -1,7 +1,7 @@
 import type { FC, ReactNode } from "react";
 
 /** Matches the `.panel-head` block from the ez-shop-profile.html reference. */
-const PanelHeader: FC<{
+export const PanelHeader: FC<{
   title: string;
   subtitle?: string;
   action?: ReactNode;
@@ -20,5 +20,3 @@ const PanelHeader: FC<{
     {action}
   </div>
 );
-
-export default PanelHeader;

@@ -6,6 +6,7 @@ import z from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import type { TAddress } from "@/features/account";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -16,9 +17,8 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { FormInput, FormSelect } from "@/shared/components/ui/form";
-import type { TAddress } from "@/shared/types/address";
 
-import { usePostAddress, useUpdateAddress } from "../hooks/useAddress";
+import { usePostAddress, useUpdateAddress } from "../hooks/use-address";
 
 type AddressModalProps = {
   isOpen: boolean;
@@ -39,11 +39,7 @@ const formSchema = z.object({
   isDefault: z.boolean(),
 });
 
-export default function AddressModal({
-  isOpen,
-  onClose,
-  address,
-}: AddressModalProps) {
+export function AddressModal({ isOpen, onClose, address }: AddressModalProps) {
   const { mutate: create } = usePostAddress();
   const { mutate: update } = useUpdateAddress();
 

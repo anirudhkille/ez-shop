@@ -24,7 +24,7 @@ const item: Variants = {
   },
 };
 
-export default function HeroSection() {
+export function HeroSection() {
   return (
     <section className="bg-background relative flex min-h-screen items-center overflow-hidden">
       <div className="mx-auto grid w-full max-w-350 grid-cols-1 items-center gap-12 px-6 pt-24 pb-16 lg:grid-cols-2 lg:px-10">

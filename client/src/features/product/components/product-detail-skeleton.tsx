@@ -1,4 +1,4 @@
-export default function ProductDetailSkeleton() {
+export function ProductDetailSkeleton() {
   return (
     <main className="pt-20">
       <div className="mx-auto grid max-w-350 grid-cols-1 gap-12 px-6 pb-20 lg:grid-cols-2 lg:gap-20 lg:px-10">

@@ -1,9 +1,9 @@
 import promoBanner from "@/assets/promo-banner.webp";
 
-import Fade from "@/shared/components/fade";
-import Image from "@/shared/components/ui/img";
+import { Fade } from "@/shared/components/fade";
+import { Image } from "@/shared/components/ui/img";
 
-export default function PromoBanner() {
+export function PromoBanner() {
   return (
     <section className="px-6 py-10 lg:px-10">
       <Fade className="mx-auto max-w-350">

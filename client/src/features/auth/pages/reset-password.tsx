@@ -1,7 +1,7 @@
-import Head from "@/shared/components/head";
+import { Head } from "@/shared/components/head";
 
-import AuthLayout from "../components/auth-layout";
-import ResetPasswordForm from "../components/reset-password-form";
+import { AuthLayout } from "../components/auth-layout";
+import { ResetPasswordForm } from "../components/reset-password-form";
 
 export default function TResetPassword() {
   return (

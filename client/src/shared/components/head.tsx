@@ -11,7 +11,7 @@ type HeadProps = {
   noIndex?: boolean;
 };
 
-export default function Head({
+export function Head({
   title = "EZ Shop",
   description = "EZ Shop - Your one-stop online store for a seamless shopping experience. Discover a wide range of products, exclusive deals, and fast shipping. Created by Anirudh Kille, this e-commerce platform offers convenience at your fingertips.",
   keywords = "EZ Shop, E Commerce, Anirudh Kille, anirudhkille, kille, mern stack",

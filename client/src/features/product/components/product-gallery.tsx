@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import type { TProduct, TVariant } from "@/shared/types/product";
+import type { TProduct, TVariant } from "@/features/product";
 
 import { tagColors } from "../lib/constants";
 
@@ -14,7 +14,7 @@ interface ProductGalleryProps {
   onStepImage: (delta: number) => void;
 }
 
-export default function ProductGallery({
+export function ProductGallery({
   product,
   activeImage,
   activeImages,

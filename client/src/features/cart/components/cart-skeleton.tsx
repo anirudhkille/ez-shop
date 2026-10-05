@@ -1,5 +1,5 @@
 /** Mirrors the filled-cart layout so the page does not jump when data lands. */
-export default function CartSkeleton() {
+export function CartSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3" aria-busy>
       <div className="space-y-4 lg:col-span-2">

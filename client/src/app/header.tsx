@@ -7,8 +7,8 @@ import { Menu, Search, ShoppingCart, X } from "lucide-react";
 import { useUserStore } from "@/features/auth";
 import { useGetCartCount } from "@/features/cart";
 
-import MobileNav from "./components/mobile-nav";
-import ProfileMenu from "./components/profile-menu";
+import { MobileNav } from "./components/mobile-nav";
+import { ProfileMenu } from "./components/profile-menu";
 import { useHeaderOverlays } from "./hooks/use-header-overlays";
 import { useScrolled } from "./hooks/use-scrolled";
 import { navLinks } from "./lib/nav-links";
@@ -17,7 +17,7 @@ const SearchModal = lazy(() =>
   import("@/features/product").then((m) => ({ default: m.SearchModal }))
 );
 
-export default function Header() {
+export function Header() {
   const { data: cartCount } = useGetCartCount();
   const { pathname } = useLocation();
   const navigate = useNavigate();

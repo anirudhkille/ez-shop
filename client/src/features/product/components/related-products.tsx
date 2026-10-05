@@ -1,12 +1,8 @@
-import type { TProduct } from "@/shared/types/product";
+import type { TProduct } from "@/features/product";
 
-import ProductCard from "./product-card";
+import { ProductCard } from "./product-card";
 
-export default function RelatedProducts({
-  products,
-}: {
-  products: TProduct[];
-}) {
+export function RelatedProducts({ products }: { products: TProduct[] }) {
   if (products.length === 0) return null;
 
   return (

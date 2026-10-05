@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from "react-router";
 
-import useAuthStore from "../store/userStore";
+import { useUserStore } from "../store/user-store";
 
-export default function ProtectedRoute() {
-  const { token } = useAuthStore();
+export function ProtectedRoute() {
+  const { token } = useUserStore();
 
   if (!token) return <Navigate to="/" replace />;
 

@@ -11,9 +11,9 @@ import { Check, Eye, EyeOff, Lock, ShieldCheck, X } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 import { FormInputWithIcon, FormLabel } from "@/shared/components/ui/form";
-import { getErrorMessage } from "@/shared/lib/apiError";
+import { getErrorMessage } from "@/shared/lib/api-error";
 
-import { useUpdatePassword } from "../hooks/useUser";
+import { useUpdatePassword } from "../hooks/use-user";
 
 const formSchema = z
   .object({
@@ -103,7 +103,7 @@ function PasswordField({
   );
 }
 
-export default function UpdatePasswordForm() {
+export function UpdatePasswordForm() {
   const { mutate: updatePassword, isPending } = useUpdatePassword();
 
   const form = useForm<FormValues>({

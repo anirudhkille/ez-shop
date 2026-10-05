@@ -5,10 +5,10 @@ import { toast } from "sonner";
 import { Heart, Star } from "lucide-react";
 
 import { useUserStore } from "@/features/auth";
+import type { TProduct } from "@/features/product";
 import { useToggleWishlist, useWishlists } from "@/features/wishlist";
-import Image from "@/shared/components/ui/img";
-import { formatPrice } from "@/shared/lib/formatPrice";
-import type { TProduct } from "@/shared/types/product";
+import { Image } from "@/shared/components/ui/img";
+import { formatPrice } from "@/shared/lib/format-price";
 
 import { tagColors } from "../lib/constants";
 
@@ -18,10 +18,7 @@ interface ProductCardProps {
   className?: string;
 }
 
-export default function ProductCard({
-  product,
-  className = "",
-}: ProductCardProps) {
+export function ProductCard({ product, className = "" }: ProductCardProps) {
   const { token } = useUserStore();
   const { data: wishlist } = useWishlists();
   const { mutate } = useToggleWishlist();

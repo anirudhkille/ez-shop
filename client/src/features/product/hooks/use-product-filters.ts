@@ -3,12 +3,12 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 
 import { useCategorys } from "@/features/category";
-import type { TCategory } from "@/shared/types/category";
-import type { TProduct } from "@/shared/types/product";
+import type { TCategory } from "@/features/category";
+import type { TProduct } from "@/features/product";
 
-import { defaultFilters, type FilterState } from "../components/filters";
-import { buildFilterParams } from "../lib/buildFilterParams";
-import { useFilteredProducts } from "./useProduct";
+import { buildFilterParams } from "../lib/build-filter-params";
+import { defaultFilters, type FilterState } from "../lib/filters";
+import { useFilteredProducts } from "./use-product";
 
 export const SORT_OPTIONS = [
   { value: "featured", label: "Featured" },

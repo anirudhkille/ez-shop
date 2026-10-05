@@ -10,7 +10,7 @@ const perks = [
   { icon: ShoppingBag, label: "Cart saved between visits" },
 ];
 
-export default function EmptyCart() {
+export function EmptyCart() {
   const { token } = useUserStore();
 
   return (

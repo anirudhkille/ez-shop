@@ -1,4 +1,4 @@
-import OrderSuccess from "../components/order-success";
+import { OrderSuccess } from "../components/order-success";
 import { usePaymentResult } from "../hooks/use-payment-result";
 
 export default function SuccessPage() {

@@ -4,8 +4,8 @@ import { Link } from "react-router";
 
 import { Heart } from "lucide-react";
 
-import { formatPrice } from "@/shared/lib/formatPrice";
-import type { TProduct } from "@/shared/types/product";
+import type { TProduct } from "@/features/product";
+import { formatPrice } from "@/shared/lib/format-price";
 
 export interface SavedItemsProps {
   products?: TProduct[];

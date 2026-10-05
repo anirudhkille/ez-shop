@@ -34,7 +34,7 @@ interface FailedRequest {
   reject: (error: AxiosError) => void;
 }
 
-const axiosInstance: AxiosInstance = axios.create({
+export const axiosInstance: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL as string,
   headers: {
     "Content-Type": "application/json",
@@ -135,5 +135,3 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export default axiosInstance;

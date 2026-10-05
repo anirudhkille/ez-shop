@@ -1,7 +1,7 @@
-import Head from "@/shared/components/head";
+import { Head } from "@/shared/components/head";
 
-import AuthLayout from "../components/auth-layout";
-import ForgotPasswordForm from "../components/forgot-password-form";
+import { AuthLayout } from "../components/auth-layout";
+import { ForgotPasswordForm } from "../components/forgot-password-form";
 
 export default function ForgotPassword() {
   return (

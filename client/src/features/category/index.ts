@@ -1,1 +1,2 @@
-export { useCategorys } from "./hooks/useCategory";
+export { useCategorys } from "./hooks/use-category";
+export type { TCategory } from "./types";

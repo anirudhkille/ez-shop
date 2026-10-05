@@ -1,4 +1,4 @@
-export default function ProductSkeleton() {
+export function ProductSkeleton() {
   return (
     <div className="border-brand-border bg-card animate-pulse overflow-hidden rounded-2xl border">
       <div className="bg-brand-surface-raised aspect-square" />
