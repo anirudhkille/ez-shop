@@ -13,3 +13,8 @@ export const defaultFilters: FilterState = {
   colors: [],
   minRating: 0,
 };
+
+export const toggleInList = <T>(list: T[], value: T): T[] =>
+  list.includes(value)
+    ? list.filter((item) => item !== value)
+    : [...list, value];
