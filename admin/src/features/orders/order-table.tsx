@@ -20,16 +20,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pagination } from "@/components/shared/Pagination";
-import { IProduct, IPagination } from "@/types";
-import { columns } from "./ProductColumn";
+import { Pagination } from "@/components/shared/pagination";
+import { IOrder, IPagination } from "@/types";
+import { columns } from "./order-column";
 
-interface ProductTableProps {
-  data: IProduct[];
+interface OrderTableProps {
+  data: IOrder[];
   pagination?: IPagination;
 }
 
-export function ProductTable({ data, pagination }: ProductTableProps) {
+export function OrderTable({ data, pagination }: OrderTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -101,7 +101,7 @@ export function ProductTable({ data, pagination }: ProductTableProps) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  No orders found.
                 </TableCell>
               </TableRow>
             )}

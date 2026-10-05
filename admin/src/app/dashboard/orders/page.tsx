@@ -1,6 +1,6 @@
-import { PageHeading } from "@/components/shared/PageHeading";
+import { PageHeading } from "@/components/shared/page-heading";
 import { Separator } from "@/components/ui/separator";
-import { OrderTable } from "@/features/orders/OrderTable";
+import { OrderTable } from "@/features/orders/order-table";
 import { serverFetch } from "@/lib/server-api";
 import { IPaginatedResponse, IOrder } from "@/types";
 import React from "react";

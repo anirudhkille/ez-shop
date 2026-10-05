@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { PageHeading } from "@/components/shared/PageHeading";
+import { PageHeading } from "@/components/shared/page-heading";
 import { Separator } from "@/components/ui/separator";
-import CouponForm from "@/features/coupon/CouponForm";
+import CouponForm from "@/features/coupon/coupon-form";
 import { serverFetch } from "@/lib/server-api";
 import React from "react";
 

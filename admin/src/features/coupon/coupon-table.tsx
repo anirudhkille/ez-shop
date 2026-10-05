@@ -20,19 +20,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pagination } from "@/components/shared/Pagination";
-import { ICategory, IPagination } from "@/types";
-import { columns } from "./CategoryColumn";
+import { Pagination } from "@/components/shared/pagination";
+import { ICoupon, IPagination } from "@/types";
+import { columns } from "./coupon-column";
 
-interface CategoryTableProps {
-  data: ICategory[];
+interface CouponTableProps {
+  data: ICoupon[];
   pagination?: IPagination;
 }
 
-export default function CategoryTable({
-  data,
-  pagination,
-}: CategoryTableProps) {
+export default function CouponTable({ data, pagination }: CouponTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ImageUpload } from "@/components/shared/ImageUpload";
+import { ImageUpload } from "@/components/shared/image-upload";
 import { clientFetch } from "@/lib/client-api";
 import { generateSlug } from "@/lib/slug";
 import { ICategory } from "@/types";

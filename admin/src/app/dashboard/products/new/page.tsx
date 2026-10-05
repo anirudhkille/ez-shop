@@ -1,6 +1,6 @@
-import { PageHeading } from "@/components/shared/PageHeading";
+import { PageHeading } from "@/components/shared/page-heading";
 import { Separator } from "@/components/ui/separator";
-import ProductForm from "@/features/products/ProductForm";
+import ProductForm from "@/features/products/product-form";
 import React from "react";
 
 export const metadata = {

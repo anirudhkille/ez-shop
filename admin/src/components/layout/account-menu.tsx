@@ -13,7 +13,7 @@ import { BadgeCheck, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import useAuthStore from "@/store/authStore";
+import useAuthStore from "@/store/auth-store";
 import { removeAuthToken } from "@/lib/client-api";
 
 export default function AccountMenu() {

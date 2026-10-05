@@ -1,6 +1,6 @@
-import { PageHeading } from "@/components/shared/PageHeading";
+import { PageHeading } from "@/components/shared/page-heading";
 import { Separator } from "@/components/ui/separator";
-import CategoryTable from "@/features/category/CategoryTable";
+import CategoryTable from "@/features/category/category-table";
 import { serverFetch } from "@/lib/server-api";
 import { IPaginatedResponse, ICategory } from "@/types";
 import React from "react";

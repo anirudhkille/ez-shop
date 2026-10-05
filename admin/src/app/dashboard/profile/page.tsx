@@ -1,8 +1,8 @@
-import { PageHeading } from "@/components/shared/PageHeading";
+import { PageHeading } from "@/components/shared/page-heading";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import ProfileForm from "./ProfileForm";
+import ProfileForm from "./profile-form";
 import { serverFetch } from "@/lib/server-api";
 
 export const metadata = {

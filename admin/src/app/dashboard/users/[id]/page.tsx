@@ -1,6 +1,6 @@
-import { PageHeading } from "@/components/shared/PageHeading";
+import { PageHeading } from "@/components/shared/page-heading";
 import { Separator } from "@/components/ui/separator";
-import UserDetail from "@/features/users/UserDetail";
+import UserDetail from "@/features/users/user-detail";
 import { serverFetch } from "@/lib/server-api";
 import { IUserAdminDetail } from "@/types";
 import React from "react";

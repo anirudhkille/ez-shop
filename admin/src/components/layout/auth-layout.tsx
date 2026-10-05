@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardContent,
 } from "../ui/card";
-import Logo from "../shared/Logo";
+import Logo from "../shared/logo";
 interface AuthProps {
   title: string;
   description: string;

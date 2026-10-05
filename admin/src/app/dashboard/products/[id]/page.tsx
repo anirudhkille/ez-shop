@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { PageHeading } from "@/components/shared/PageHeading";
+import { PageHeading } from "@/components/shared/page-heading";
 import { Separator } from "@/components/ui/separator";
-import ProductForm from "@/features/products/ProductForm";
+import ProductForm from "@/features/products/product-form";
 import { serverFetch } from "@/lib/server-api";
 import { IPaginatedResponse, IProduct } from "@/types";
 import React from "react";

@@ -20,19 +20,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pagination } from "@/components/shared/Pagination";
-import { INewsletterSubscriber, IPagination } from "@/types";
-import { columns } from "./SubscriberColumn";
+import { Pagination } from "@/components/shared/pagination";
+import { ICategory, IPagination } from "@/types";
+import { columns } from "./category-column";
 
-interface SubscriberTableProps {
-  data: INewsletterSubscriber[];
+interface CategoryTableProps {
+  data: ICategory[];
   pagination?: IPagination;
 }
 
-export default function SubscriberTable({
+export default function CategoryTable({
   data,
   pagination,
-}: SubscriberTableProps) {
+}: CategoryTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -66,16 +66,18 @@ export default function SubscriberTable({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>
@@ -102,7 +104,7 @@ export default function SubscriberTable({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No subscribers yet.
+                  No results.
                 </TableCell>
               </TableRow>
             )}

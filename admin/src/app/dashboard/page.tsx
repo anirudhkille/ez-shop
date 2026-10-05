@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, ShoppingCart, Users, IndianRupee } from "lucide-react";
 import { serverFetch } from "@/lib/server-api";
-import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
+import { DashboardCharts } from "@/features/dashboard/dashboard-charts";
 import { IPaginatedResponse, IOrder, IProduct } from "@/types";
 
 export const metadata = {

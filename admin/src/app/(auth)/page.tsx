@@ -1,5 +1,5 @@
-import LoginForm from "@/features/auth/LoginForm";
-import AuthLayout from "@/components/layout/AuthLayout";
+import LoginForm from "@/features/auth/login-form";
+import AuthLayout from "@/components/layout/auth-layout";
 
 export const metadata = {
   title: "Login | EZ Shop Admin",

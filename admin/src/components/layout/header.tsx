@@ -1,8 +1,8 @@
 "use client";
 import { SidebarTrigger } from "../ui/sidebar";
-import ThemeToggle from "./ThemeToggle";
-import AccountMenu from "./AccountMenu";
-import BreadCrumbs from "../shared/Breadcrumbs";
+import ThemeToggle from "./theme-toggle";
+import AccountMenu from "./account-menu";
+import BreadCrumbs from "../shared/breadcrumbs";
 import { Separator } from "../ui/separator";
 
 export default function Header() {

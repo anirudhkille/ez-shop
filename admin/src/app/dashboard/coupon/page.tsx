@@ -1,6 +1,6 @@
-import { PageHeading } from "@/components/shared/PageHeading";
+import { PageHeading } from "@/components/shared/page-heading";
 import { Separator } from "@/components/ui/separator";
-import CouponTable from "@/features/coupon/CouponTable";
+import CouponTable from "@/features/coupon/coupon-table";
 import { serverFetch } from "@/lib/server-api";
 import { IPaginatedResponse, ICoupon } from "@/types";
 import React from "react";

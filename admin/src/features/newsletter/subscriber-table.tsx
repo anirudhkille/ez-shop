@@ -20,16 +20,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pagination } from "@/components/shared/Pagination";
-import { ICoupon, IPagination } from "@/types";
-import { columns } from "./CouponColumn";
+import { Pagination } from "@/components/shared/pagination";
+import { INewsletterSubscriber, IPagination } from "@/types";
+import { columns } from "./subscriber-column";
 
-interface CouponTableProps {
-  data: ICoupon[];
+interface SubscriberTableProps {
+  data: INewsletterSubscriber[];
   pagination?: IPagination;
 }
 
-export default function CouponTable({ data, pagination }: CouponTableProps) {
+export default function SubscriberTable({
+  data,
+  pagination,
+}: SubscriberTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -63,18 +66,16 @@ export default function CouponTable({ data, pagination }: CouponTableProps) {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -101,7 +102,7 @@ export default function CouponTable({ data, pagination }: CouponTableProps) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  No subscribers yet.
                 </TableCell>
               </TableRow>
             )}

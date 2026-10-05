@@ -20,8 +20,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import PublishDropdown from "@/components/shared/PublishDropdown";
-import { ImageUpload } from "@/components/shared/ImageUpload";
+import PublishDropdown from "@/components/shared/publish-dropdown";
+import { ImageUpload } from "@/components/shared/image-upload";
 import { clientFetch } from "@/lib/client-api";
 import { ICategory, IProduct } from "@/types";
 

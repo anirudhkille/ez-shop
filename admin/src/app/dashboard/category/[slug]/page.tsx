@@ -1,6 +1,6 @@
-import { PageHeading } from "@/components/shared/PageHeading";
+import { PageHeading } from "@/components/shared/page-heading";
 import { Separator } from "@/components/ui/separator";
-import CategoryForm from "@/features/category/CategoryForm";
+import CategoryForm from "@/features/category/category-form";
 import { serverFetch } from "@/lib/server-api";
 import { ICategory } from "@/types";
 import React from "react";

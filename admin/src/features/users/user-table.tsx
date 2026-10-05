@@ -20,9 +20,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pagination } from "@/components/shared/Pagination";
+import { Pagination } from "@/components/shared/pagination";
 import { IUser, IPagination } from "@/types";
-import { columns } from "./UserColumn";
+import { columns } from "./user-column";
 
 interface UserTableProps {
   data: IUser[];

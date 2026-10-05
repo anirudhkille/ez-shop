@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Barlow_Condensed, Outfit } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/context/ThemeContext";
+import { ThemeProvider } from "@/context/theme-context";
 
 // Same families and weights the storefront loads in client/index.html, but
 // self-hosted by next/font instead of a render-blocking <link>.

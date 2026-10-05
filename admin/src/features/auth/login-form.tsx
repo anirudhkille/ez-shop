@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast, Toaster } from "sonner";
 import { setAuthToken } from "@/lib/client-api";
-import useAuthStore from "@/store/authStore";
+import useAuthStore from "@/store/auth-store";
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 

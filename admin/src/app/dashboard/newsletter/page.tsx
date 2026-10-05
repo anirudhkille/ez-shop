@@ -1,6 +1,6 @@
-import { PageHeading } from "@/components/shared/PageHeading";
+import { PageHeading } from "@/components/shared/page-heading";
 import { Separator } from "@/components/ui/separator";
-import SubscriberTable from "@/features/newsletter/SubscriberTable";
+import SubscriberTable from "@/features/newsletter/subscriber-table";
 import { serverFetch } from "@/lib/server-api";
 import { IPaginatedResponse, INewsletterSubscriber } from "@/types";
 import React from "react";
