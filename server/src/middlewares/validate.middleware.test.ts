@@ -4,7 +4,7 @@ import { describe, it, mock } from "node:test";
 import type { Request, Response } from "express";
 import { z } from "zod";
 
-import { validate } from "./validate.js";
+import { validate } from "./validate.middleware.js";
 
 class MockResponse {
   statusCode?: number;

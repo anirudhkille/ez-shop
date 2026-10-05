@@ -1,12 +1,12 @@
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import { AppError } from "@/utils/appError";
+import { AppError } from "@/utils/app-error";
 import { env } from "@/config/env.config";
-import { resetPasswordTemplate } from "@/templates/resetEmailTemplate";
+import { resetPasswordTemplate } from "@/templates/reset-email.template";
 import {
   generateAccessToken,
   generateRefreshToken,
-} from "@/utils/generateToken";
+} from "@/utils/generate-token";
 import * as adminRepository from "@/modules/admin/admin.repository";
 import type { IAdmin } from "@/modules/admin/admin.model";
 

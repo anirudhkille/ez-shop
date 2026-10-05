@@ -13,8 +13,8 @@ import {
   adminResetPasswordSchema,
 } from "@/modules/admin/admin.schema";
 import { authLimiter } from "@/config/limiter";
-import { protect } from "@/middlewares/authMiddleware";
-import { validate } from "@/middlewares/validate";
+import { protect } from "@/middlewares/auth.middleware";
+import { validate } from "@/middlewares/validate.middleware";
 
 const router = express.Router();
 

@@ -6,7 +6,7 @@ import {
   createResetToken,
   hashResetToken,
   resetSessionKey,
-} from "./passwordReset.js";
+} from "./password-reset.js";
 
 describe("password reset tokens", () => {
   it("creates random tokens with a bounded lifetime", () => {

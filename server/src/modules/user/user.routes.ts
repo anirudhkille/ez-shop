@@ -29,9 +29,9 @@ import {
 } from "@/modules/user/user.schema";
 import { authLimiter } from "@/config/limiter";
 import { env } from "@/config/env.config";
-import { protect } from "@/middlewares/authMiddleware";
-import { authorize } from "@/middlewares/authorize";
-import { validate } from "@/middlewares/validate";
+import { protect } from "@/middlewares/auth.middleware";
+import { authorize } from "@/middlewares/authorize.middleware";
+import { validate } from "@/middlewares/validate.middleware";
 import passport from "@/config/passport";
 
 const router = express.Router();

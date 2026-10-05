@@ -3,21 +3,21 @@ import { env } from "@/config/env.config";
 import {
   generateAccessToken,
   generateRefreshToken,
-} from "@/utils/generateToken";
-import { generateOtp } from "@/utils/generateOtp";
+} from "@/utils/generate-token";
+import { generateOtp } from "@/utils/generate-otp";
 import {
   createResetToken,
   RESET_TOKEN_TTL_MS,
   resetSessionKey,
-} from "@/utils/passwordReset";
-import { sendEmail } from "@/services/emailService";
-import { resetPasswordTemplate } from "@/templates/resetEmailTemplate";
-import { verifyEmailTemplate } from "@/templates/verifyEmailTemplate";
+} from "@/utils/password-reset";
+import { sendEmail } from "@/services/email.service";
+import { resetPasswordTemplate } from "@/templates/reset-email.template";
+import { verifyEmailTemplate } from "@/templates/verify-email.template";
 import * as sessionRepository from "@/modules/user/session.repository";
 import * as orderRepository from "@/modules/order/order.repository";
 import * as wishlistRepository from "@/modules/wishlist/wishlist.repository";
 import * as addressRepository from "@/modules/address/address.repository";
-import { AppError } from "@/utils/appError";
+import { AppError } from "@/utils/app-error";
 import * as userRepository from "@/modules/user/user.repository";
 import type { IUser } from "@/modules/user/user.model";
 

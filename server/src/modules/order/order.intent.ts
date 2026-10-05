@@ -6,7 +6,7 @@ import * as orderRepository from "@/modules/order/order.repository";
 import * as productRepository from "@/modules/product/product.repository";
 import { decrementStock, verifyStock } from "@/modules/product/product.service";
 import { IOrder, IOrderProduct } from "@/modules/order/order.model";
-import { AppError } from "@/utils/appError";
+import { AppError } from "@/utils/app-error";
 
 /** A line as submitted by a guest, who has no persisted cart. */
 export interface GuestLineInput {

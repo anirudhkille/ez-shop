@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "@/utils/asyncHandler";
+import { asyncHandler } from "@/utils/async-handler";
 import { env } from "@/config/env.config";
 import * as userService from "@/modules/user/user.service";
 import { sendResponse } from "@/utils/response";

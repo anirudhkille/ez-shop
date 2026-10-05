@@ -1,6 +1,6 @@
 import express from "express";
-import { protect } from "@/middlewares/authMiddleware";
-import { validate } from "@/middlewares/validate";
+import { protect } from "@/middlewares/auth.middleware";
+import { validate } from "@/middlewares/validate.middleware";
 import {
   categoryCreateSchema,
   categoryIdParamSchema,
@@ -13,8 +13,8 @@ import {
   updateCategory,
   deleteCategory,
 } from "@/modules/category/category.controller";
-import { authorize } from "@/middlewares/authorize";
-import { upload } from "@/middlewares/upload";
+import { authorize } from "@/middlewares/authorize.middleware";
+import { upload } from "@/middlewares/upload.middleware";
 
 const router = express.Router();
 

@@ -1,4 +1,4 @@
-import { AppError } from "@/utils/appError";
+import { AppError } from "@/utils/app-error";
 import * as couponRepository from "@/modules/coupon/coupon.repository";
 import * as orderRepository from "@/modules/order/order.repository";
 import type { ICoupon } from "@/modules/coupon/coupon.model";

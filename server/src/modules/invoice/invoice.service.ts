@@ -1,4 +1,4 @@
-import { AppError } from "@/utils/appError";
+import { AppError } from "@/utils/app-error";
 import * as orderRepository from "@/modules/order/order.repository";
 import * as invoiceRepository from "@/modules/invoice/invoice.repository";
 import * as productRepository from "@/modules/product/product.repository";

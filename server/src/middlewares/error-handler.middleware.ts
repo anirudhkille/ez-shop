@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { logger } from "@/config/logger";
 import { Sentry, sentryEnabled } from "@/config/sentry";
-import { AppError } from "@/utils/appError";
+import { AppError } from "@/utils/app-error";
 import { sendResponse } from "@/utils/response";
 
 export const errorHandler = (

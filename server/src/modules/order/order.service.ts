@@ -12,9 +12,9 @@ import {
   type GuestCheckoutBody,
 } from "@/modules/order/order.intent";
 import { IOrder } from "@/modules/order/order.model";
-import { AppError } from "@/utils/appError";
+import { AppError } from "@/utils/app-error";
 import * as invoiceService from "@/modules/invoice/invoice.service";
-import { sendOrderConfirmation } from "@/modules/order/order-email";
+import { sendOrderConfirmation } from "@/modules/order/order.email";
 
 interface CODRequestBody {
   addressId: string;

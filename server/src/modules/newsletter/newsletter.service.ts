@@ -1,4 +1,4 @@
-import { AppError } from "@/utils/appError";
+import { AppError } from "@/utils/app-error";
 import * as newsletterRepository from "@/modules/newsletter/newsletter.repository";
 
 export const subscribeNewsletter = async (email: string) => {

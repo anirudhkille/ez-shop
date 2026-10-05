@@ -1,5 +1,5 @@
-import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
-import { AppError } from "@/utils/appError";
+import { uploadToCloudinary } from "@/utils/upload-to-cloudinary";
+import { AppError } from "@/utils/app-error";
 import slugify from "slugify";
 import mongoose from "mongoose";
 import { IProduct, IVariant } from "@/modules/product/product.model";

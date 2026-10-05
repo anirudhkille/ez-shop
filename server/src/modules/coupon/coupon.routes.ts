@@ -1,8 +1,8 @@
 import express from "express";
 
-import { optionalAuth, protect } from "@/middlewares/authMiddleware";
-import { authorize } from "@/middlewares/authorize";
-import { validate } from "@/middlewares/validate";
+import { optionalAuth, protect } from "@/middlewares/auth.middleware";
+import { authorize } from "@/middlewares/authorize.middleware";
+import { validate } from "@/middlewares/validate.middleware";
 import {
   couponCreateSchema,
   couponIdParamSchema,

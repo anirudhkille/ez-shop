@@ -1,10 +1,10 @@
 import { env } from "@/config/env.config";
 import { logger } from "@/config/logger";
 import type { Types } from "mongoose";
-import { orderConfirmationTemplate } from "@/templates/orderConfirmationTemplate";
+import { orderConfirmationTemplate } from "@/templates/order-confirmation.template";
 import * as orderRepository from "@/modules/order/order.repository";
 import * as userRepository from "@/modules/user/user.repository";
-import { sendEmail } from "@/services/emailService";
+import { sendEmail } from "@/services/email.service";
 
 const productName = (product: unknown): string => {
   if (product && typeof product === "object") {

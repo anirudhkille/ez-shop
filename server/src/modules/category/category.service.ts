@@ -1,6 +1,6 @@
 import cloudinary from "@/config/cloudinary";
-import { uploadToCloudinary } from "@/utils/uploadToCloudinary";
-import { AppError } from "@/utils/appError";
+import { uploadToCloudinary } from "@/utils/upload-to-cloudinary";
+import { AppError } from "@/utils/app-error";
 import * as categoryRepository from "@/modules/category/category.repository";
 
 const extractCloudinaryPublicId = (imageUrl: string) => {

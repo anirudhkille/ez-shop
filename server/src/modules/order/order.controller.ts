@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "@/utils/asyncHandler";
+import { asyncHandler } from "@/utils/async-handler";
 import { sendResponse } from "@/utils/response";
 import * as orderService from "@/modules/order/order.service";
 

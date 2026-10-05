@@ -7,8 +7,8 @@ import {
   addressDeliverySchema,
   guestCheckoutSchema,
 } from "@/modules/order/order.schema";
-import { protect } from "@/middlewares/authMiddleware";
-import { validate } from "@/middlewares/validate";
+import { protect } from "@/middlewares/auth.middleware";
+import { validate } from "@/middlewares/validate.middleware";
 
 const router = express.Router();
 

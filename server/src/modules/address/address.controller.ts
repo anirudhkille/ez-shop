@@ -1,4 +1,4 @@
-import { asyncHandler } from "@/utils/asyncHandler";
+import { asyncHandler } from "@/utils/async-handler";
 import { sendResponse } from "@/utils/response";
 import { Request, Response } from "express";
 import * as addressService from "@/modules/address/address.service";

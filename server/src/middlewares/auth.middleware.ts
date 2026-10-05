@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import * as userRepository from "@/modules/user/user.repository";
 import * as adminRepository from "@/modules/admin/admin.repository";
 import { env } from "@/config/env.config";
-import { asyncHandler } from "../utils/asyncHandler";
+import { asyncHandler } from "../utils/async-handler";
 import { sendResponse } from "@/utils/response";
 
 interface ITokenPayload extends JwtPayload {

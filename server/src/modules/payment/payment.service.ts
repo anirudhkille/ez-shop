@@ -12,7 +12,7 @@ import {
 } from "@/modules/order/order.intent";
 import { env } from "@/config/env.config";
 import * as invoiceService from "@/modules/invoice/invoice.service";
-import { sendOrderConfirmation } from "@/modules/order/order-email";
+import { sendOrderConfirmation } from "@/modules/order/order.email";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 

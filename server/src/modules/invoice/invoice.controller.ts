@@ -1,6 +1,6 @@
 import PDFDocument from "pdfkit";
 
-import { asyncHandler } from "@/utils/asyncHandler";
+import { asyncHandler } from "@/utils/async-handler";
 import { buildInvoicePdf } from "@/modules/invoice/invoice.pdf";
 import * as invoiceService from "@/modules/invoice/invoice.service";
 import { Request, Response } from "express";

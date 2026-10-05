@@ -1,6 +1,6 @@
 import { UpdateQuery } from "mongoose";
 import * as addressRepository from "@/modules/address/address.repository";
-import { AppError } from "@/utils/appError";
+import { AppError } from "@/utils/app-error";
 import { IAddress } from "@/modules/address/address.model";
 
 export const createAddress = async (

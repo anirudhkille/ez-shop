@@ -10,11 +10,11 @@ import helmet from "helmet";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import { shouldCompress } from "./config/compression";
-import { corsOptions } from "./config/corsOptions";
+import { corsOptions } from "./config/cors-options";
 import { databaseConnection } from "./config/database";
 import { apiLimiter } from "./config/limiter";
 import passport from "./config/passport";
-import { errorHandler } from "./middlewares/errorHandler";
+import { errorHandler } from "./middlewares/error-handler.middleware";
 import { sendResponse } from "./utils/response";
 
 import addressRoutes from "./modules/address/address.routes";
@@ -30,7 +30,7 @@ import productRoutes from "./modules/product/product.routes";
 import reviewRoutes from "./modules/review/review.routes";
 import userRoutes from "./modules/user/user.routes";
 import wishlistRoutes from "./modules/wishlist/wishlist.routes";
-import stripeWebhook from "./webhook/stripeWebhook";
+import stripeWebhook from "./webhook/stripe.webhook";
 
 const app = express();
 

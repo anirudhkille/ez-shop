@@ -1,6 +1,6 @@
 import express from "express";
-import { protect } from "@/middlewares/authMiddleware";
-import { validate } from "@/middlewares/validate";
+import { protect } from "@/middlewares/auth.middleware";
+import { validate } from "@/middlewares/validate.middleware";
 import { wishlistSchema } from "@/modules/wishlist/wishlist.schema";
 import {
   toggleWishlist,

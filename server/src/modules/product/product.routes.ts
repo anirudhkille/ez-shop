@@ -1,5 +1,5 @@
 import express from "express";
-import { protect } from "@/middlewares/authMiddleware";
+import { protect } from "@/middlewares/auth.middleware";
 import {
   filteredProductQuerySchema,
   productCreateSchema,
@@ -22,9 +22,9 @@ import {
   getBestSellers,
   getSimilarProducts,
 } from "@/modules/product/product.controller";
-import { authorize } from "@/middlewares/authorize";
-import { validate } from "@/middlewares/validate";
-import { upload } from "@/middlewares/upload";
+import { authorize } from "@/middlewares/authorize.middleware";
+import { validate } from "@/middlewares/validate.middleware";
+import { upload } from "@/middlewares/upload.middleware";
 
 const router = express.Router();
 
