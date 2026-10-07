@@ -13,7 +13,8 @@ import {
   signUp,
   updatePassword,
   updateProfile,
-  googleLogin,
+  googleAuth,
+  googleCallback,
   verifySignupOTP,
 } from "@/modules/user/user.controller";
 import {
@@ -28,16 +29,47 @@ import {
   verifySignupOTPSchema,
 } from "@/modules/user/user.schema";
 import { authLimiter } from "@/config/limiter";
-import { env } from "@/config/env.config";
 import { protect } from "@/middlewares/auth.middleware";
 import { authorize } from "@/middlewares/authorize.middleware";
 import { validate } from "@/middlewares/validate.middleware";
-import passport from "@/config/passport";
 
 const router = express.Router();
 
 router.get("/profile", protect, getProfile);
 router.get("/refresh", refreshToken);
+
+router.get("/google", googleAuth);
+router.get("/google/callback", googleCallback);
+
+router.post("/signup", authLimiter, validate(signupSchema), signUp);
+router.post(
+  "/verify-signup-otp",
+  authLimiter,
+  validate(verifySignupOTPSchema),
+  verifySignupOTP,
+);
+router.post("/login", authLimiter, validate(loginSchema), login);
+router.post("/logout", logout);
+router.post(
+  "/forgot-password",
+  authLimiter,
+  validate(forgotPasswordSchema),
+  forgotPassword,
+);
+router.put(
+  "/reset-password",
+  authLimiter,
+  validate(resetPasswordSchema),
+  resetPassword,
+);
+
+router.patch("/", protect, validate(profileUpdateSchema), updateProfile);
+router.put(
+  "/password",
+  protect,
+  validate(passwordUpdateSchema),
+  updatePassword,
+);
 
 router.get(
   "/",
@@ -46,6 +78,7 @@ router.get(
   validate(userPaginationQuerySchema, "query"),
   getAllUsers,
 );
+
 router.get(
   "/:id/dashboard",
   protect,
@@ -66,45 +99,6 @@ router.delete(
   authorize(["Admin"]),
   validate(userIdParamSchema, "params"),
   deleteUserById,
-);
-
-router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] }),
-);
-router.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: `${env.CLIENT_URL}/login?error=google`,
-  }),
-  googleLogin,
-);
-router.post("/signup", authLimiter, validate(signupSchema), signUp);
-router.post(
-  "/verify-signup-otp",
-  validate(verifySignupOTPSchema),
-  verifySignupOTP,
-);
-router.post("/login", authLimiter, validate(loginSchema), login);
-router.post("/logout", protect, logout);
-router.post(
-  "/forgot-password",
-  authLimiter,
-  validate(forgotPasswordSchema),
-  forgotPassword,
-);
-router.put(
-  "/reset-password",
-  authLimiter,
-  validate(resetPasswordSchema),
-  resetPassword,
-);
-router.patch("/", protect, validate(profileUpdateSchema), updateProfile);
-router.put(
-  "/password",
-  protect,
-  validate(passwordUpdateSchema),
-  updatePassword,
 );
 
 export default router;

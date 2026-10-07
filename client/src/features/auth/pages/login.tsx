@@ -24,7 +24,7 @@ export default function Login() {
         question="Don't have an account?"
         redirectText="Create account"
       >
-        {error === "google" && (
+        {(error === "google" || error === "google_auth_failed") && (
           <p
             role="alert"
             className="font-body mb-3 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-sm text-red-400"

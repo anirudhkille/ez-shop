@@ -24,11 +24,11 @@ const ForgotPassword = lazy(
 const ResetPassword = lazy(
   () => import("@/features/auth/pages/reset-password")
 );
-const GoogleCallback = lazy(
-  () => import("@/features/auth/pages/google-callback")
-);
 const UpdatePassword = lazy(
   () => import("@/features/auth/pages/update-password")
+);
+const GoogleCallback = lazy(
+  () => import("@/features/auth/pages/google-callback")
 );
 
 const Successful = lazy(() => import("@/features/payment/pages/successful"));
@@ -63,7 +63,6 @@ const PrivacyPolicy = lazy(() => import("@/features/policies/pages/privacy"));
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/auth/google-callback" element={<GoogleCallback />} />
       <Route element={<RedirectIfAuthenticated />}>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -98,6 +97,7 @@ export function AppRoutes() {
         <Route path="/cookie-policy" element={<CookiePolicy />} />
         <Route path="/terms" element={<TermsOfUse />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/auth/callback" element={<GoogleCallback />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>

@@ -2,8 +2,20 @@ import { Request, Response } from "express";
 import { asyncHandler } from "@/utils/async-handler";
 import { env } from "@/config/env.config";
 import * as userService from "@/modules/user/user.service";
+import { getGoogleTokens, getGoogleUser } from "@/modules/user/user.google";
 import { sendResponse } from "@/utils/response";
 import { refreshCookieOptions } from "@/utils/cookies";
+import crypto from "crypto";
+
+const OAUTH_STATE_COOKIE = "oauth_state";
+
+const oauthStateCookieOptions = () => ({
+  httpOnly: true,
+  secure: env.NODE_ENV === "production",
+  sameSite: "lax" as const,
+  maxAge: 10 * 60 * 1000,
+  path: "/",
+});
 
 export const signUp = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -149,20 +161,36 @@ export const deleteUserById = asyncHandler(
   },
 );
 
-export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
-  const googleUser = req.user as unknown as {
-    email?: string;
-    name?: string;
-    googleId: string;
-    avatar?: string;
-  };
-
-  const result = await userService.googleLogin(googleUser);
-
-  const frontendURL = env.CLIENT_URL;
-  const redirectURL = `${frontendURL}/auth/google-callback?token=${encodeURIComponent(result.accessToken)}&name=${encodeURIComponent(result.user.name || "")}&email=${encodeURIComponent(result.user.email || "")}`;
-
-  return res
-    .cookie("refreshToken", result.refreshToken, refreshCookieOptions())
-    .redirect(redirectURL);
+export const googleAuth = asyncHandler(async (_req: Request, res: Response) => {
+  return res.redirect(userService.googleAuthURL());
 });
+
+export const googleCallback = asyncHandler(
+  async (req: Request, res: Response) => {
+    const code = String(req.query.code ?? "");
+
+    if (!code) {
+      return res.redirect(`${env.CLIENT_URL}/login?error=google_auth_failed`);
+    }
+
+    const tokens = await getGoogleTokens(code);
+    const profile = await getGoogleUser(tokens.access_token);
+
+    const result = await userService.googleLogin({
+      email: profile.email,
+      name: profile.name,
+      googleId: profile.id,
+      avatar: profile.picture,
+    });
+
+    res.cookie("refreshToken", result.refreshToken, refreshCookieOptions());
+
+    const params = new URLSearchParams({
+      accessToken: result.accessToken,
+      name: result.user.name ?? "",
+      email: result.user.email ?? "",
+    });
+
+    return res.redirect(`${env.CLIENT_URL}/auth/callback?${params}`);
+  },
+);

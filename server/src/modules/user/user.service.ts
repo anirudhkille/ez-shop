@@ -20,6 +20,7 @@ import * as addressRepository from "@/modules/address/address.repository";
 import { AppError } from "@/utils/app-error";
 import * as userRepository from "@/modules/user/user.repository";
 import type { IUser } from "@/modules/user/user.model";
+import { getGoogleAuthURL } from "./user.google";
 
 const REFRESH_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -378,6 +379,10 @@ export const deleteUserById = async (id: string) => {
   }
 
   return { deleted: true };
+};
+
+export const googleAuthURL = () => {
+  return getGoogleAuthURL();
 };
 
 export const googleLogin = async (googleUser: {
