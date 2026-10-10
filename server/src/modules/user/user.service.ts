@@ -381,8 +381,8 @@ export const deleteUserById = async (id: string) => {
   return { deleted: true };
 };
 
-export const googleAuthURL = () => {
-  return getGoogleAuthURL();
+export const googleAuthURL = (state?: string) => {
+  return getGoogleAuthURL(state);
 };
 
 export const googleLogin = async (googleUser: {

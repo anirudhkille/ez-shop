@@ -33,20 +33,11 @@ export function TrackOrderForm({ isLoading, onSearch }: TrackOrderFormProps) {
           control={form.control}
           name="orderId"
           placeholder="Paste your Order ID here"
-          className="bg-background mt-2 w-full"
+          className="mt-2 w-full rounded-xl"
         />
-        {form.formState.errors.orderId && (
-          <p className="font-body mt-1.5 text-xs text-red-400">
-            {form.formState.errors.orderId.message}
-          </p>
-        )}
       </div>
-      <Button
-        type="submit"
-        disabled={isLoading}
-        className="bg-brand-orange hover:bg-brand-orange/90 mt-4 w-full text-white"
-      >
-        {isLoading ? "Searching..." : "Track Package"}
+      <Button type="submit" disabled={isLoading} className="w-full rounded-xl">
+        {isLoading ? "Searching…" : "Track Package"}
       </Button>
     </form>
   );

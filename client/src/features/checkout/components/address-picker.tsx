@@ -11,7 +11,7 @@ type Props = {
 
 const cardClass = (selected: boolean) =>
   selected
-    ? "border-brand-orange bg-brand-orange/8 shadow-[0_18px_50px_-35px_rgba(255,122,24,0.8)]"
+    ? "border-brand-orange bg-brand-orange/8"
     : "border-brand-border hover:border-brand-orange/35 hover:bg-brand-surface-raised/40";
 
 export function AddressPicker({

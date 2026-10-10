@@ -38,11 +38,20 @@ describe("address schemas", () => {
       addressCreateSchema.safeParse({ ...validAddress, city: " " }).success,
       false,
     );
-    const { addressLine2: _addressLine2, ...missingAddressLine2 } =
-      validAddress;
+  });
+
+  it("treats addressLine2 as optional, including a blank string", () => {
+    const { addressLine2: _addressLine2, ...withoutLine2 } = validAddress;
+    assert.equal(addressCreateSchema.safeParse(withoutLine2).success, true);
     assert.equal(
-      addressCreateSchema.safeParse(missingAddressLine2).success,
-      false,
+      addressCreateSchema.safeParse({ ...validAddress, addressLine2: "" })
+        .success,
+      true,
+    );
+    assert.equal(
+      addressCreateSchema.safeParse({ ...validAddress, addressLine2: "   " })
+        .success,
+      true,
     );
   });
 

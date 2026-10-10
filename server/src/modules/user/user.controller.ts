@@ -2,7 +2,11 @@ import { Request, Response } from "express";
 import { asyncHandler } from "@/utils/async-handler";
 import { env } from "@/config/env.config";
 import * as userService from "@/modules/user/user.service";
-import { getGoogleTokens, getGoogleUser } from "@/modules/user/user.google";
+import {
+  getGoogleTokens,
+  getGoogleUser,
+  isAllowedPostAuthRedirect,
+} from "@/modules/user/user.google";
 import { sendResponse } from "@/utils/response";
 import { refreshCookieOptions } from "@/utils/cookies";
 import crypto from "crypto";
@@ -161,13 +165,23 @@ export const deleteUserById = asyncHandler(
   },
 );
 
-export const googleAuth = asyncHandler(async (_req: Request, res: Response) => {
-  return res.redirect(userService.googleAuthURL());
+export const googleAuth = asyncHandler(async (req: Request, res: Response) => {
+  const state = isAllowedPostAuthRedirect(req.query.redirect_uri)
+    ? req.query.redirect_uri
+    : undefined;
+
+  return res.redirect(userService.googleAuthURL(state));
 });
 
 export const googleCallback = asyncHandler(
   async (req: Request, res: Response) => {
     const code = String(req.query.code ?? "");
+
+    // The native app passes its scheme through Google's `state`; the web client
+    // sends nothing and keeps the existing behaviour.
+    const target = isAllowedPostAuthRedirect(req.query.state)
+      ? req.query.state
+      : `${env.CLIENT_URL}/auth/callback`;
 
     if (!code) {
       return res.redirect(`${env.CLIENT_URL}/login?error=google_auth_failed`);
@@ -191,6 +205,6 @@ export const googleCallback = asyncHandler(
       email: result.user.email ?? "",
     });
 
-    return res.redirect(`${env.CLIENT_URL}/auth/callback?${params}`);
+    return res.redirect(`${target}?${params}`);
   },
 );

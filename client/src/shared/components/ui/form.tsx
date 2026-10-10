@@ -30,12 +30,14 @@ function FormInput<T extends FieldValues>({
   control,
   label,
   placeholder,
+  optional,
   ...props
 }: {
   name: Path<T>;
   control: Control<T>;
   label?: string;
   placeholder?: string;
+  optional?: boolean;
 } & React.ComponentProps<typeof Input>) {
   return (
     <Controller
@@ -43,7 +45,16 @@ function FormInput<T extends FieldValues>({
       name={name}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
-          {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
+          {label && (
+            <FieldLabel htmlFor={name}>
+              {label}
+              {optional && (
+                <span className="text-muted-foreground text-xs font-normal">
+                  optional
+                </span>
+              )}
+            </FieldLabel>
+          )}
 
           <Input
             id={name}
@@ -100,6 +111,7 @@ function FormSelect<T extends FieldValues>({
   options,
   placeholder = "Select an option",
   disabled = false,
+  className,
 }: {
   name: Path<T>;
   control: Control<T>;
@@ -107,6 +119,7 @@ function FormSelect<T extends FieldValues>({
   options: Option[];
   placeholder?: string;
   disabled?: boolean;
+  className?: string;
 }) {
   return (
     <Controller
@@ -121,7 +134,13 @@ function FormSelect<T extends FieldValues>({
             value={field.value || ""}
             disabled={disabled}
           >
-            <SelectTrigger id={name}>
+            <SelectTrigger
+              id={name}
+              className={cn(
+                "border-brand-border bg-background text-foreground font-body focus:border-brand-orange h-auto w-full rounded-xl px-4 py-4 text-sm shadow-none focus-visible:ring-0 data-[size=default]:h-auto",
+                className
+              )}
+            >
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
 

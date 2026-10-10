@@ -22,7 +22,20 @@ export interface GoogleProfile {
   picture?: string;
 }
 
-export const getGoogleAuthURL = () => {
+const MOBILE_REDIRECT_PATTERN = /^ezshop:\/\/[a-zA-Z0-9/_-]*$/;
+
+/**
+ * The native app completes sign-in through its own scheme rather than the web
+ * client. Only the final hop differs, so the app's redirect travels in Google's
+ * `state` param and the `redirect_uri` sent to Google stays the registered one.
+ *
+ * Anything not matching the app scheme is rejected, so a crafted `state` cannot
+ * turn the callback into an open redirect.
+ */
+export const isAllowedPostAuthRedirect = (value: unknown): value is string =>
+  typeof value === "string" && MOBILE_REDIRECT_PATTERN.test(value);
+
+export const getGoogleAuthURL = (state?: string) => {
   const params = new URLSearchParams({
     client_id: env.GOOGLE_CLIENT_ID,
     redirect_uri: env.GOOGLE_CALLBACK_URL,
@@ -31,6 +44,10 @@ export const getGoogleAuthURL = () => {
     access_type: "offline",
     prompt: "consent",
   });
+
+  if (state) {
+    params.set("state", state);
+  }
 
   return `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
 };

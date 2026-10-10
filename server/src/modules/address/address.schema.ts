@@ -1,13 +1,17 @@
 import { z } from "zod";
 
-import { idParamSchema, nonEmptyString } from "@/validation/common.schema";
+import {
+  idParamSchema,
+  nonEmptyString,
+  optionalNonEmptyString,
+} from "@/validation/common.schema";
 
 const addressFields = {
   label: z.enum(["Home", "Work", "Other"]),
   name: nonEmptyString,
   phone: nonEmptyString,
   addressLine1: nonEmptyString,
-  addressLine2: nonEmptyString,
+  addressLine2: optionalNonEmptyString,
   zipCode: nonEmptyString,
   state: nonEmptyString,
   city: nonEmptyString,

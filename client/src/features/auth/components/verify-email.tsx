@@ -131,7 +131,7 @@ export function VerifyEmailForm() {
       </div>
 
       {form.formState.errors.otp && (
-        <p className="text-center text-sm text-red-500">
+        <p className="text-destructive text-center text-sm">
           {form.formState.errors.otp.message}
         </p>
       )}

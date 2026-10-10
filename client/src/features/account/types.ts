@@ -4,7 +4,7 @@ export type TAddress = {
   name: string;
   phone: string;
   addressLine1: string;
-  addressLine2: string;
+  addressLine2?: string;
   zipCode: string;
   state: string;
   city: string;

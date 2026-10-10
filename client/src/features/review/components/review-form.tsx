@@ -45,7 +45,7 @@ export function ReviewForm({
         <div className="mt-2 flex items-center gap-3">
           <StarInput value={rating} onChange={setRating} />
           {showRatingError && (
-            <span className="font-body text-xs text-red-400">
+            <span className="font-body text-destructive text-xs">
               Pick a rating
             </span>
           )}

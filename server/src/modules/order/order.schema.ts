@@ -5,6 +5,7 @@ import {
   idParamSchema,
   nonEmptyString,
   objectIdSchema,
+  optionalNonEmptyString,
   paginationQuerySchema,
 } from "@/validation/common.schema";
 
@@ -13,16 +14,10 @@ export const deliveryMethodSchema = z.enum(
   { message: "Invalid delivery method" },
 );
 
-const optionalAddressLine2 = z.preprocess(
-  (value) =>
-    typeof value === "string" && value.trim() === "" ? undefined : value,
-  nonEmptyString.optional(),
-);
-
 export const checkoutAddressSchema = z.object({
   name: nonEmptyString,
   addressLine1: nonEmptyString,
-  addressLine2: optionalAddressLine2,
+  addressLine2: optionalNonEmptyString,
   city: nonEmptyString,
   state: nonEmptyString,
   zipCode: nonEmptyString,

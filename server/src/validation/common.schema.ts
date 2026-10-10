@@ -29,6 +29,12 @@ export const nonEmptyString = z
   .trim()
   .min(1, "This field is required");
 
+export const optionalNonEmptyString = z.preprocess(
+  (value) =>
+    typeof value === "string" && value.trim() === "" ? undefined : value,
+  nonEmptyString.optional(),
+);
+
 export const emailSchema = z
   .string()
   .trim()

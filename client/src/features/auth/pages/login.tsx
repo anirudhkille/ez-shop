@@ -27,7 +27,7 @@ export default function Login() {
         {(error === "google" || error === "google_auth_failed") && (
           <p
             role="alert"
-            className="font-body mb-3 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-sm text-red-400"
+            className="font-body border-destructive/30 bg-destructive/10 text-destructive mb-3 rounded-lg border px-3 py-2.5 text-sm"
           >
             Google sign-in did not complete. Please try again, or use your email
             and password.

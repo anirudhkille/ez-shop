@@ -1,4 +1,10 @@
 export { AddressModal } from "./components/address-modal";
+export {
+  AddressAutocompleteInput,
+  type TResolvedAddressFields,
+} from "./components/address-autocomplete-input";
+export { isMapboxEnabled } from "./api/mapbox-geocode";
+export { useAddressAutocomplete } from "./hooks/use-address-autocomplete";
 export { PanelCard } from "./components/panel";
 export { ProfileCard } from "./components/profile-form";
 export { SavedItems } from "./components/saved-items";
