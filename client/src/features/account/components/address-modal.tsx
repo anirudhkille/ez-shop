@@ -17,6 +17,11 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { FormInput, FormSelect } from "@/shared/components/ui/form";
+import {
+  NAME_PATTERN,
+  PHONE_PATTERN,
+  ZIP_PATTERN,
+} from "@/shared/lib/validation-patterns";
 
 import { usePostAddress, useUpdateAddress } from "../hooks/use-address";
 import { AddressAutocompleteInput } from "./address-autocomplete-input";
@@ -29,11 +34,26 @@ type AddressModalProps = {
 
 const formSchema = z.object({
   label: z.enum(["Home", "Work", "Other"]),
-  name: z.string().min(1, "Name can't be empty"),
-  phone: z.string().min(1, "Mobile Number can't be empty"),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Name can't be empty")
+    .regex(NAME_PATTERN, "Name can only contain letters")
+    .max(80, "Name is too long"),
+  phone: z
+    .string()
+    .trim()
+    .min(1, "Mobile Number can't be empty")
+    .regex(PHONE_PATTERN, "Phone number can only contain digits")
+    .min(6, "Enter a valid mobile number"),
   addressLine1: z.string().min(1, "Address Line 1 can't be empty"),
   addressLine2: z.string().optional(),
-  zipCode: z.string().min(1, "Zip code can't be empty"),
+  zipCode: z
+    .string()
+    .trim()
+    .min(1, "Zip code can't be empty")
+    .regex(ZIP_PATTERN, "Zip code can only contain digits")
+    .min(4, "Enter a valid zip code"),
   state: z.string().min(1, "State can't be empty"),
   city: z.string().min(1, "City can't be empty"),
   country: z.string().min(1, "Country can't be empty"),

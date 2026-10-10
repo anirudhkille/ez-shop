@@ -3,10 +3,13 @@ import { z } from "zod";
 import {
   emailSchema,
   idParamSchema,
+  nameSchema,
   nonEmptyString,
   objectIdSchema,
   optionalNonEmptyString,
   paginationQuerySchema,
+  phoneSchema,
+  zipSchema,
 } from "@/validation/common.schema";
 
 export const deliveryMethodSchema = z.enum(
@@ -15,14 +18,14 @@ export const deliveryMethodSchema = z.enum(
 );
 
 export const checkoutAddressSchema = z.object({
-  name: nonEmptyString,
+  name: nameSchema,
   addressLine1: nonEmptyString,
   addressLine2: optionalNonEmptyString,
   city: nonEmptyString,
   state: nonEmptyString,
-  zipCode: nonEmptyString,
+  zipCode: zipSchema,
   country: nonEmptyString,
-  phone: nonEmptyString,
+  phone: phoneSchema,
 });
 
 export const addressDeliverySchema = z.object({
@@ -49,9 +52,9 @@ export const guestCheckoutSchema = z.object({
     .min(1, "At least one product is required"),
   address: checkoutAddressSchema,
   deliveryMethod: deliveryMethodSchema,
-  name: nonEmptyString,
+  name: nameSchema,
   email: emailSchema,
-  phone: nonEmptyString,
+  phone: phoneSchema,
 });
 
 export const orderStatusUpdateSchema = z

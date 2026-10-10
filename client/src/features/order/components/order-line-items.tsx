@@ -1,5 +1,7 @@
 import type { FC } from "react";
 
+import { Link } from "react-router";
+
 import { ImageOff } from "lucide-react";
 
 import { formatPrice } from "@/shared/lib/format-price";
@@ -19,12 +21,18 @@ export const OrderStatusPill: FC<{ status?: string }> = ({ status }) => {
   );
 };
 
-const LineItem: FC<{ item: TOrderProduct }> = ({ item }) => {
+const LineItem: FC<{ item: TOrderProduct; reviewable: boolean }> = ({
+  item,
+  reviewable,
+}) => {
   const product = getLineItemProduct(item.product);
   const meta = [item.size, `Qty ${item.quantity}`].filter(Boolean).join(" · ");
+  const reviewHref = product?._id
+    ? `/${product.slug ?? "product"}/${product._id}#reviews`
+    : null;
 
   return (
-    <li className="border-brand-border/40 flex items-center gap-3 border-t py-3 first:border-t-0">
+    <li className="border-brand-border/40 flex flex-wrap items-center gap-3 border-t py-3 first:border-t-0">
       <div className="bg-brand-surface-raised flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg">
         {product?.image ? (
           <img
@@ -51,6 +59,15 @@ const LineItem: FC<{ item: TOrderProduct }> = ({ item }) => {
         </p>
       </div>
 
+      {reviewable && reviewHref && (
+        <Link
+          to={reviewHref}
+          className="font-body text-brand-orange hover:text-brand-orange/80 shrink-0 text-xs font-semibold"
+        >
+          Write a review
+        </Link>
+      )}
+
       {/* `price` is the unit price at purchase; the server sums
           `price * quantity`, so a bare value would read as a line total. */}
       <p className="font-body text-foreground shrink-0 text-sm font-semibold">
@@ -64,10 +81,16 @@ const LineItem: FC<{ item: TOrderProduct }> = ({ item }) => {
 
 export interface OrderLineItemsProps {
   items?: TOrderProduct[];
+  orderStatus?: string;
 }
 
 /** Shared by the account orders list and the order detail page. */
-export const OrderLineItems: FC<OrderLineItemsProps> = ({ items }) => {
+export const OrderLineItems: FC<OrderLineItemsProps> = ({
+  items,
+  orderStatus,
+}) => {
+  const reviewable = orderStatus === "delivered";
+
   if (!items?.length) {
     return (
       <p className="font-body text-muted-foreground px-5 py-4 text-sm">
@@ -82,6 +105,7 @@ export const OrderLineItems: FC<OrderLineItemsProps> = ({ items }) => {
         <LineItem
           key={getLineItemProduct(item.product)?._id ?? index}
           item={item}
+          reviewable={reviewable}
         />
       ))}
     </ul>

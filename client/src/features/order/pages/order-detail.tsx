@@ -213,7 +213,7 @@ export default function OrderDetail() {
                 {itemCount} item{itemCount === 1 ? "" : "s"}
               </span>
             </div>
-            <OrderLineItems items={items} />
+            <OrderLineItems items={items} orderStatus={order.orderStatus} />
           </section>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

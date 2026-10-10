@@ -74,7 +74,7 @@ function OrderCard({
         </div>
       </header>
 
-      <OrderLineItems items={visibleItems} />
+      <OrderLineItems items={visibleItems} orderStatus={order.orderStatus} />
 
       {isExpandable ? (
         <button

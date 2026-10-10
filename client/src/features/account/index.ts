@@ -1,8 +1,8 @@
 export { AddressModal } from "./components/address-modal";
 export {
-  AddressAutocompleteInput,
+  AddressAutocompleteCombobox,
   type TResolvedAddressFields,
-} from "./components/address-autocomplete-input";
+} from "./components/address-autocomplete-combobox";
 export { isMapboxEnabled } from "./api/mapbox-geocode";
 export { useAddressAutocomplete } from "./hooks/use-address-autocomplete";
 export { PanelCard } from "./components/panel";

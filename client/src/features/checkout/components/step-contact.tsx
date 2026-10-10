@@ -19,6 +19,7 @@ type Props = {
   onOpenAddressModal: () => void;
   guest: GuestDetails;
   onGuestChange: (field: keyof GuestDetails, value: string) => void;
+  showGuestErrors: boolean;
   canContinue: boolean;
   onContinue: () => void;
 };
@@ -34,6 +35,7 @@ export function StepContact({
   onOpenAddressModal,
   guest,
   onGuestChange,
+  showGuestErrors,
   canContinue,
   onContinue,
 }: Props) {
@@ -84,7 +86,11 @@ export function StepContact({
           />
         </>
       ) : (
-        <GuestContactForm guest={guest} onChange={onGuestChange} />
+        <GuestContactForm
+          guest={guest}
+          onChange={onGuestChange}
+          showErrors={showGuestErrors}
+        />
       )}
 
       <div className="mt-6 flex flex-wrap gap-3">

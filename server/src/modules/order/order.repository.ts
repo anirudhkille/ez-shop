@@ -82,6 +82,7 @@ export const hasPurchased = async (
   const found = await Order.exists({
     user: userId,
     "products.product": productId,
+    paymentStatus: "paid",
   });
 
   return found !== null;

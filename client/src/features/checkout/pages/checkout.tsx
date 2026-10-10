@@ -55,8 +55,9 @@ export default function Checkout() {
               onOpenAddressModal={() => checkout.setIsAddressModalOpen(true)}
               guest={checkout.guest}
               onGuestChange={checkout.updateGuest}
-              canContinue={checkout.canLeaveContact}
-              onContinue={() => checkout.setStep(2)}
+              showGuestErrors={checkout.showGuestErrors}
+              canContinue={isSignedIn ? checkout.canLeaveContact : true}
+              onContinue={checkout.advanceFromContact}
             />
 
             <StepDelivery

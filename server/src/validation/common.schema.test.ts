@@ -5,9 +5,12 @@ import {
   emailSchema,
   idParamSchema,
   loginPasswordSchema,
+  nameSchema,
   objectIdSchema,
   paginationQuerySchema,
   passwordSchema,
+  phoneSchema,
+  zipSchema,
 } from "./common.schema.js";
 
 const validObjectId = "507f1f77bcf86cd799439011";
@@ -45,5 +48,31 @@ describe("common schemas", () => {
     assert.equal(passwordSchema.safeParse("a".repeat(129)).success, false);
     assert.equal(loginPasswordSchema.safeParse("short").success, true);
     assert.equal(loginPasswordSchema.safeParse("").success, false);
+  });
+
+  it("rejects digits in names but keeps non-Latin scripts working", () => {
+    assert.equal(nameSchema.safeParse("Ada Lovelace").success, true);
+    assert.equal(nameSchema.safeParse("O'Brien-Smith Jr.").success, true);
+    assert.equal(nameSchema.safeParse("田中 花子").success, true);
+    assert.equal(nameSchema.safeParse("John123").success, false);
+    assert.equal(nameSchema.safeParse("1234").success, false);
+    assert.equal(nameSchema.safeParse("").success, false);
+  });
+
+  it("rejects letters in phone numbers but allows dialling punctuation", () => {
+    assert.equal(phoneSchema.safeParse("9999999999").success, true);
+    assert.equal(phoneSchema.safeParse("+91 98765 43210").success, true);
+    assert.equal(phoneSchema.safeParse("(020) 7946-0018").success, true);
+    assert.equal(phoneSchema.safeParse("98765abc").success, false);
+    assert.equal(phoneSchema.safeParse("12345").success, false);
+    assert.equal(phoneSchema.safeParse("").success, false);
+  });
+
+  it("rejects letters in zip codes but allows grouping", () => {
+    assert.equal(zipSchema.safeParse("400001").success, true);
+    assert.equal(zipSchema.safeParse("1234-567").success, true);
+    assert.equal(zipSchema.safeParse("abcde").success, false);
+    assert.equal(zipSchema.safeParse("12").success, false);
+    assert.equal(zipSchema.safeParse("").success, false);
   });
 });

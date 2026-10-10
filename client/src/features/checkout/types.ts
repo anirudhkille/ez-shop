@@ -1,5 +1,10 @@
 import type { TDeliveryMethod } from "@/features/order";
 
+import {
+  isGuestAddressValid,
+  isGuestContactValid,
+} from "./lib/guest-validation";
+
 export type CheckoutStep = 1 | 2 | 3;
 
 export type PaymentMethod = "card" | "cod";
@@ -102,20 +107,11 @@ export const EMPTY_GUEST_DETAILS: GuestDetails = {
 
 /** Every guest field marked required in the form, for step gating. */
 export const isGuestContactComplete = (guest: GuestDetails): boolean =>
-  Boolean(
-    guest.name &&
-    guest.email &&
-    guest.phone &&
-    guest.addressLine1 &&
-    guest.city &&
-    guest.state &&
-    guest.zipCode &&
-    guest.country
-  );
+  isGuestContactValid(guest) && isGuestAddressValid(guest);
 
 /** Address fields needed before the order can be placed. */
 export const isGuestAddressComplete = (guest: GuestDetails): boolean =>
-  Boolean(guest.addressLine1);
+  isGuestAddressValid(guest);
 
 export const unitPriceFor = (item: CheckoutCartItem): number =>
   item.discountPriceAtPurchase ??

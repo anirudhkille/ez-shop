@@ -64,9 +64,20 @@ export function useCheckout() {
     useState<PaymentMethod>("card");
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [guest, setGuest] = useState<GuestDetails>(EMPTY_GUEST_DETAILS);
+  const [showGuestErrors, setShowGuestErrors] = useState(false);
 
   const updateGuest = (field: keyof GuestDetails, value: string) =>
-    setGuest((prev) => ({ ...prev, [field]: value }));
+    setGuest((prev) => {
+      const next = { ...prev, [field]: value };
+
+      // Clear the visible errors once everything passes, rather than in an
+      // effect — deriving it here avoids the cascading render the linter flags.
+      if (showGuestErrors && isGuestContactComplete(next)) {
+        setShowGuestErrors(false);
+      }
+
+      return next;
+    });
 
   const addresses = useMemo(
     () => (addressResponse?.data ?? []) as TAddress[],
@@ -123,6 +134,23 @@ export function useCheckout() {
   const hasShippingDetails = Boolean(
     selectedAddress ?? (!token && guest.addressLine1)
   );
+
+  const advanceFromContact = () => {
+    if (token) {
+      setStep(2);
+      return;
+    }
+
+    // Surface the field-level messages instead of silently refusing to advance,
+    // then hold the step until the schema passes.
+    if (!isGuestContactComplete(guest)) {
+      setShowGuestErrors(true);
+      return;
+    }
+
+    setShowGuestErrors(false);
+    setStep(2);
+  };
 
   const placeOrder = () => {
     if (isSubmitting) return;
@@ -198,6 +226,8 @@ export function useCheckout() {
     // guest
     guest,
     updateGuest,
+    showGuestErrors,
+    advanceFromContact,
     // delivery + payment
     selectedDeliveryMethod,
     setSelectedDeliveryMethod,

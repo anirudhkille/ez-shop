@@ -2,6 +2,12 @@ import type { ReactNode } from "react";
 
 import { Mail, Phone, User } from "lucide-react";
 
+import {
+  AddressAutocompleteCombobox,
+  type TResolvedAddressFields,
+} from "@/features/account";
+
+import { guestErrors } from "../lib/guest-validation";
 import type { GuestDetails } from "../types";
 
 const inputClass =
@@ -10,7 +16,7 @@ const inputClass =
 function Label({
   htmlFor,
   children,
-  required,
+  required: isRequired,
 }: {
   htmlFor: string;
   children: ReactNode;
@@ -21,8 +27,18 @@ function Label({
       htmlFor={htmlFor}
       className="font-body text-foreground mb-1.5 block text-xs font-semibold tracking-[0.18em] uppercase"
     >
-      {children} {required && <span className="text-red-500">*</span>}
+      {children} {isRequired && <span className="text-red-500">*</span>}
     </label>
+  );
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+
+  return (
+    <p role="alert" className="text-destructive mt-1.5 text-xs">
+      {message}
+    </p>
   );
 }
 
@@ -33,6 +49,7 @@ function IconInput({
   onChange,
   placeholder,
   type = "text",
+  error,
 }: {
   id: string;
   icon: ReactNode;
@@ -40,20 +57,25 @@ function IconInput({
   onChange: (value: string) => void;
   placeholder: string;
   type?: string;
+  error?: string;
 }) {
   return (
-    <div className="relative">
-      <span className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2">
-        {icon}
-      </span>
-      <input
-        id={id}
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className={`${inputClass} pr-4 pl-9`}
-      />
+    <div>
+      <div className="relative">
+        <span className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2">
+          {icon}
+        </span>
+        <input
+          id={id}
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          aria-invalid={Boolean(error)}
+          className={`${inputClass} pr-4 pl-9`}
+        />
+      </div>
+      <FieldError message={error} />
     </div>
   );
 }
@@ -61,9 +83,21 @@ function IconInput({
 type Props = {
   guest: GuestDetails;
   onChange: (field: keyof GuestDetails, value: string) => void;
+  showErrors: boolean;
 };
 
-export function GuestContactForm({ guest, onChange }: Props) {
+export function GuestContactForm({ guest, onChange, showErrors }: Props) {
+  const contactErrors = showErrors ? guestErrors(guest, "contact") : {};
+  const addressErrors = showErrors ? guestErrors(guest, "address") : {};
+
+  const onSelectAddress = (resolved: TResolvedAddressFields) => {
+    onChange("addressLine1", resolved.addressLine1);
+    if (resolved.city) onChange("city", resolved.city);
+    if (resolved.state) onChange("state", resolved.state);
+    if (resolved.zipCode) onChange("zipCode", resolved.zipCode);
+    if (resolved.country) onChange("country", resolved.country);
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -76,6 +110,7 @@ export function GuestContactForm({ guest, onChange }: Props) {
           value={guest.name}
           onChange={(v) => onChange("name", v)}
           placeholder="John Doe"
+          error={contactErrors.name}
         />
       </div>
 
@@ -90,6 +125,7 @@ export function GuestContactForm({ guest, onChange }: Props) {
           value={guest.email}
           onChange={(v) => onChange("email", v)}
           placeholder="john@example.com"
+          error={contactErrors.email}
         />
       </div>
 
@@ -103,6 +139,7 @@ export function GuestContactForm({ guest, onChange }: Props) {
           value={guest.phone}
           onChange={(v) => onChange("phone", v)}
           placeholder="+91 98765 43210"
+          error={contactErrors.phone}
         />
       </div>
 
@@ -116,13 +153,16 @@ export function GuestContactForm({ guest, onChange }: Props) {
             <Label htmlFor="guest-line1" required>
               Address Line 1
             </Label>
-            <input
+            <AddressAutocompleteCombobox
               id="guest-line1"
               value={guest.addressLine1}
-              onChange={(e) => onChange("addressLine1", e.target.value)}
+              onChange={(v) => onChange("addressLine1", v)}
+              onSelectAddress={onSelectAddress}
               placeholder="123 Main Street"
-              className={`${inputClass} px-4`}
+              invalid={Boolean(addressErrors.addressLine1)}
+              className="rounded-xl py-3"
             />
+            <FieldError message={addressErrors.addressLine1} />
           </div>
 
           <div>
@@ -146,8 +186,10 @@ export function GuestContactForm({ guest, onChange }: Props) {
                 value={guest.city}
                 onChange={(e) => onChange("city", e.target.value)}
                 placeholder="Mumbai"
+                aria-invalid={Boolean(addressErrors.city)}
                 className={`${inputClass} px-4`}
               />
+              <FieldError message={addressErrors.city} />
             </div>
             <div>
               <Label htmlFor="guest-state" required>
@@ -158,8 +200,10 @@ export function GuestContactForm({ guest, onChange }: Props) {
                 value={guest.state}
                 onChange={(e) => onChange("state", e.target.value)}
                 placeholder="Maharashtra"
+                aria-invalid={Boolean(addressErrors.state)}
                 className={`${inputClass} px-4`}
               />
+              <FieldError message={addressErrors.state} />
             </div>
           </div>
 
@@ -173,8 +217,10 @@ export function GuestContactForm({ guest, onChange }: Props) {
                 value={guest.zipCode}
                 onChange={(e) => onChange("zipCode", e.target.value)}
                 placeholder="400001"
+                aria-invalid={Boolean(addressErrors.zipCode)}
                 className={`${inputClass} px-4`}
               />
+              <FieldError message={addressErrors.zipCode} />
             </div>
             <div>
               <Label htmlFor="guest-country" required>
@@ -185,8 +231,10 @@ export function GuestContactForm({ guest, onChange }: Props) {
                 value={guest.country}
                 onChange={(e) => onChange("country", e.target.value)}
                 placeholder="India"
+                aria-invalid={Boolean(addressErrors.country)}
                 className={`${inputClass} px-4`}
               />
+              <FieldError message={addressErrors.country} />
             </div>
           </div>
         </div>
