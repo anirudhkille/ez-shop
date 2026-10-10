@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/table";
 import { IUserAdminDetail } from "@/types";
 import { clientFetch } from "@/lib/client-api";
+import { formatDate } from "@/lib/format-date";
 
 interface UserDetailProps {
   detail: IUserAdminDetail;
@@ -45,9 +46,6 @@ const formatPrice = (value: number) =>
     currency: "INR",
     maximumFractionDigits: 2,
   }).format(value ?? 0);
-
-const formatDate = (value?: string | null) =>
-  value ? new Date(value).toLocaleDateString("en-IN") : "—";
 
 const effectivePrice = (price: number, discountPrice?: number) =>
   discountPrice ?? price;

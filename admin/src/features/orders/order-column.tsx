@@ -14,6 +14,7 @@ import {
 import { IOrder } from "@/types";
 import { useRouter } from "next/navigation";
 import { clientFetch } from "@/lib/client-api";
+import { formatDate } from "@/lib/format-date";
 import { toast } from "sonner";
 
 export const columns: ColumnDef<IOrder>[] = [
@@ -124,10 +125,9 @@ export const columns: ColumnDef<IOrder>[] = [
   {
     accessorKey: "createdAt",
     header: "Date",
-    cell: ({ row }) => {
-      const date = row.getValue("createdAt") as string;
-      return <div>{new Date(date).toLocaleDateString()}</div>;
-    },
+    cell: ({ row }) => (
+      <div>{formatDate(row.getValue("createdAt") as string)}</div>
+    ),
   },
   {
     id: "actions",

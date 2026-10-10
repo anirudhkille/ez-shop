@@ -104,7 +104,9 @@ const isOrderAccessible = (
 };
 
 export const getOrderById = async (id: string, user?: Express.User) => {
-  const order = await orderRepository.findByIdPopulated(id);
+  const order = await orderRepository.findByIdPopulated(id, {
+    includeBuyer: user?.role === "Admin",
+  });
 
   if (!order) throw new AppError("Orders not found", 404);
 

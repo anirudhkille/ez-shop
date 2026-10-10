@@ -13,6 +13,7 @@ import {
 import { ICoupon } from "@/types";
 import { useRouter } from "next/navigation";
 import { clientFetch } from "@/lib/client-api";
+import { formatDate } from "@/lib/format-date";
 import { toast } from "sonner";
 
 const isExpired = (coupon: ICoupon) =>
@@ -108,13 +109,9 @@ export const columns: ColumnDef<ICoupon>[] = [
   {
     accessorKey: "expiresAt",
     header: "Expires",
-    cell: ({ row }) => {
-      const expiresAt = row.getValue("expiresAt") as string | undefined;
-      if (!expiresAt) return <span className="text-muted-foreground">—</span>;
-      return (
-        <span>{new Date(expiresAt).toLocaleDateString("en-IN")}</span>
-      );
-    },
+    cell: ({ row }) => (
+      <span>{formatDate(row.getValue("expiresAt") as string | undefined)}</span>
+    ),
   },
   {
     id: "actions",

@@ -5,8 +5,38 @@ export const create = async (data: Partial<IOrder>) => {
   return await Order.create(data);
 };
 
+const BUYER_FIELDS = "name email phone";
+
+const withResolvedBuyer = <
+  T extends {
+    name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+  },
+>(
+  order: T,
+) => {
+  const buyer = (order as { user?: unknown }).user as
+    | { name?: string; email?: string; phone?: string }
+    | null
+    | undefined;
+
+  return {
+    ...order,
+    name: order.name ?? buyer?.name,
+    email: order.email ?? buyer?.email,
+    phone: order.phone ?? buyer?.phone,
+  };
+};
+
 export const find = async (skip: number, limit: number) => {
-  return await Order.find().skip(skip).limit(limit);
+  const orders = await Order.find()
+    .populate("user", BUYER_FIELDS)
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  return orders.map(withResolvedBuyer);
 };
 
 export const countDocuments = async (filter?: FilterQuery<IOrder>) => {
@@ -107,11 +137,20 @@ export const findByIdLean = async (id: string) => {
   return await Order.findById(id).lean();
 };
 
-export const findByIdPopulated = async (id: string | Types.ObjectId) => {
-  return await Order.findById(id).populate(
+export const findByIdPopulated = async (
+  id: string | Types.ObjectId,
+  { includeBuyer = false }: { includeBuyer?: boolean } = {},
+) => {
+  const base = Order.findById(id).populate(
     "products.product",
     "name image price slug",
   );
+
+  if (!includeBuyer) return await base;
+
+  const order = await base.populate("user", BUYER_FIELDS).lean();
+
+  return order ? withResolvedBuyer(order) : null;
 };
 
 export const findOnePopulated = async (filter: FilterQuery<IOrder>) => {

@@ -4,10 +4,8 @@ import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { INewsletterSubscriber } from "@/types";
+import { formatDate } from "@/lib/format-date";
 import { toast } from "sonner";
-
-const formatDate = (value?: string) =>
-  value ? new Date(value).toLocaleDateString("en-IN") : null;
 
 export const columns: ColumnDef<INewsletterSubscriber>[] = [
   {
@@ -41,10 +39,10 @@ export const columns: ColumnDef<INewsletterSubscriber>[] = [
     accessorKey: "createdAt",
     header: "Subscribed",
     cell: ({ row }) => {
-      const date = formatDate(row.getValue("createdAt") as string | undefined);
+      const value = row.getValue("createdAt") as string | undefined;
       return (
-        <span className={date ? undefined : "text-muted-foreground"}>
-          {date ?? "Unknown"}
+        <span className={value ? undefined : "text-muted-foreground"}>
+          {formatDate(value, "Unknown")}
         </span>
       );
     },

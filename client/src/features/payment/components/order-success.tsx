@@ -74,7 +74,6 @@ export function OrderSuccess({
   email: string | undefined;
   allowShowFull: boolean | undefined;
 }) {
-  const displayId = `EZ-ORD-${order._id.slice(-6).toUpperCase()}`;
   const shipping = order.address || ({} as TAddress);
   const visibleEmail = email || order.email || "";
   const maskedEmail = allowShowFull ? visibleEmail : maskEmail(visibleEmail);
@@ -97,10 +96,6 @@ export function OrderSuccess({
         <p className="text-muted-foreground mx-auto mt-3 max-w-2xl text-sm leading-6">
           We&apos;ve received your order and sent a confirmation to
           <strong> {maskedEmail || "your email"}</strong>.
-        </p>
-        <p className="text-muted-foreground mt-3 text-xs tracking-[0.18em] uppercase">
-          Order reference:{" "}
-          <span className="text-foreground font-semibold">{displayId}</span>
         </p>
       </section>
 
@@ -219,7 +214,10 @@ export function OrderSuccess({
             </h3>
             <div className="text-muted-foreground mt-2 space-y-1 text-xs">
               <div>
-                Order ID: <span className="font-medium">{order._id}</span>
+                Order ID:{" "}
+                <span className="text-foreground font-medium break-all">
+                  {order._id}
+                </span>
               </div>
               <div>
                 Placed:{" "}

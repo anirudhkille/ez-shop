@@ -15,6 +15,7 @@ import { IUser } from "@/types";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { clientFetch } from "@/lib/client-api";
+import { formatDate } from "@/lib/format-date";
 import { toast } from "sonner";
 
 export const columns: ColumnDef<IUser>[] = [
@@ -103,10 +104,9 @@ export const columns: ColumnDef<IUser>[] = [
   {
     accessorKey: "createdAt",
     header: "Joined",
-    cell: ({ row }) => {
-      const date = row.getValue("createdAt") as string;
-      return <div>{new Date(date).toLocaleDateString()}</div>;
-    },
+    cell: ({ row }) => (
+      <div>{formatDate(row.getValue("createdAt") as string)}</div>
+    ),
   },
   {
     id: "actions",
