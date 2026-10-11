@@ -29,8 +29,12 @@ const withResolvedBuyer = <
   };
 };
 
-export const find = async (skip: number, limit: number) => {
-  const orders = await Order.find()
+export const find = async (
+  skip: number,
+  limit: number,
+  filter: FilterQuery<IOrder> = {},
+) => {
+  const orders = await Order.find(filter)
     .populate("user", BUYER_FIELDS)
     .skip(skip)
     .limit(limit)
@@ -39,7 +43,7 @@ export const find = async (skip: number, limit: number) => {
   return orders.map(withResolvedBuyer);
 };
 
-export const countDocuments = async (filter?: FilterQuery<IOrder>) => {
+export const countDocuments = async (filter: FilterQuery<IOrder> = {}) => {
   return await Order.countDocuments(filter);
 };
 

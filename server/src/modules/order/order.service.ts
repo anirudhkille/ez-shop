@@ -15,6 +15,8 @@ import { IOrder } from "@/modules/order/order.model";
 import { AppError } from "@/utils/app-error";
 import * as invoiceService from "@/modules/invoice/invoice.service";
 import { sendOrderConfirmation } from "@/modules/order/order.email";
+import { escapeRegex } from "@/validation/common.schema";
+import type { FilterQuery } from "mongoose";
 
 interface CODRequestBody {
   addressId: string;
@@ -48,12 +50,37 @@ export const placeCODOrder = async (userId: string, body: CODRequestBody) => {
   };
 };
 
-export const getOrders = async (limit: number, page: number) => {
+export const getOrders = async (
+  limit: number,
+  page: number,
+  query: { search?: string; orderStatus?: string; paymentStatus?: string } = {},
+) => {
   const skip = (page - 1) * limit;
 
+  const filter: FilterQuery<IOrder> = {};
+
+  if (query.orderStatus) {
+    filter.orderStatus = query.orderStatus;
+  }
+
+  if (query.paymentStatus) {
+    filter.paymentStatus = query.paymentStatus;
+  }
+
+  const search = query.search?.trim();
+  if (search) {
+    const pattern = new RegExp(escapeRegex(search), "i");
+    filter.$or = [
+      { name: pattern },
+      { email: pattern },
+      { "address.city": pattern },
+      { "address.zipCode": pattern },
+    ];
+  }
+
   const [orders, total] = await Promise.all([
-    orderRepository.find(skip, limit),
-    orderRepository.countDocuments(),
+    orderRepository.find(skip, limit, filter),
+    orderRepository.countDocuments(filter),
   ]);
 
   return {

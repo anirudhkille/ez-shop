@@ -4,6 +4,7 @@ import {
   idParamSchema,
   nonEmptyString,
   objectIdSchema,
+  searchQuerySchema as searchQuery,
 } from "@/validation/common.schema";
 
 const cleanNumberInput = (value: unknown) => {
@@ -171,9 +172,12 @@ const productBooleanQuerySchema = z.enum(["true", "false"]);
 export const productQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
+  search: searchQuery,
   publish: productBooleanQuerySchema.optional(),
   isFeatured: productBooleanQuerySchema.optional(),
   isNewArrival: productBooleanQuerySchema.optional(),
+  gender: z.enum(["men", "women", "unisex"]).optional(),
+  category: z.string().trim().optional(),
 });
 
 export const searchQuerySchema = z.object({

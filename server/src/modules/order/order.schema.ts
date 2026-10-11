@@ -9,6 +9,7 @@ import {
   optionalNonEmptyString,
   paginationQuerySchema,
   phoneSchema,
+  searchQuerySchema,
   zipSchema,
 } from "@/validation/common.schema";
 
@@ -65,7 +66,13 @@ export const orderStatusUpdateSchema = z
     message: "At least one order status field is required",
   });
 
-export const orderPaginationQuerySchema = paginationQuerySchema;
+export const orderPaginationQuerySchema = paginationQuerySchema.extend({
+  search: searchQuerySchema,
+  orderStatus: z
+    .enum(["processing", "shipped", "delivered", "cancelled"])
+    .optional(),
+  paymentStatus: z.enum(["pending", "paid", "failed"]).optional(),
+});
 export const orderIdParamSchema = idParamSchema;
 export const sessionIdParamSchema = z.object({
   sessionId: nonEmptyString,

@@ -4,6 +4,7 @@ import slugify from "slugify";
 import mongoose from "mongoose";
 import { IProduct, IVariant } from "@/modules/product/product.model";
 import * as productRepository from "@/modules/product/product.repository";
+import { escapeRegex } from "@/validation/common.schema";
 import type { FilterQuery } from "mongoose";
 
 interface VariantImageMap {
@@ -33,6 +34,9 @@ interface ProductQuery {
   publish?: string;
   isFeatured?: string;
   isNewArrival?: string;
+  search?: string;
+  gender?: string;
+  category?: string;
   page?: number;
   limit?: number;
 }
@@ -194,6 +198,20 @@ export const getProducts = async (query: ProductQuery) => {
 
   if (query.isNewArrival) {
     filter.isNewArrival = query.isNewArrival === "true";
+  }
+
+  if (query.gender) {
+    filter.gender = query.gender;
+  }
+
+  if (query.category) {
+    filter.category = query.category;
+  }
+
+  const search = query.search?.trim();
+  if (search) {
+    const pattern = new RegExp(escapeRegex(search), "i");
+    filter.$or = [{ name: pattern }, { slug: pattern }, { tag: pattern }];
   }
 
   const page = Number(query.page) || 1;

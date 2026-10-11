@@ -17,7 +17,10 @@ describe("category schemas", () => {
   });
 
   it("requires a non-empty partial update", () => {
-    assert.equal(categoryUpdateSchema.safeParse({ name: "Sneakers" }).success, true);
+    assert.equal(
+      categoryUpdateSchema.safeParse({ name: "Sneakers" }).success,
+      true,
+    );
     assert.equal(categoryUpdateSchema.safeParse({}).success, false);
   });
 });

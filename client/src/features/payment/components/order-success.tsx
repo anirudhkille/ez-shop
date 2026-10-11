@@ -105,7 +105,7 @@ export function OrderSuccess({
             Order Summary
           </h2>
 
-          <div className="divide-y divide-[var(--color-brand-border)]">
+          <div className="divide-brand-border divide-y">
             {order.products.map((item) => (
               <div
                 key={item._id || item.product._id}

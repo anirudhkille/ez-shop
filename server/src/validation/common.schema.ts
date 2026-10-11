@@ -27,6 +27,12 @@ export const nonEmptyString = z
   .trim()
   .min(1, "This field is required");
 
+export const searchQuerySchema = z.string().trim().max(120).optional();
+
+/** Escapes user input so a `%` or `_` in a search box is matched literally. */
+export const escapeRegex = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export const optionalNonEmptyString = z.preprocess(
   (value) =>
     typeof value === "string" && value.trim() === "" ? undefined : value,
