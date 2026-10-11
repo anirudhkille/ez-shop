@@ -15,7 +15,17 @@ export const getOrders = asyncHandler(async (req: Request, res: Response) => {
   const limit = Number(req.query.limit) || 10;
   const page = Number(req.query.page) || 1;
 
-  const result = await orderService.getOrders(limit, page);
+  const result = await orderService.getOrders(limit, page, {
+    search: typeof req.query.search === "string" ? req.query.search : undefined,
+    orderStatus:
+      typeof req.query.orderStatus === "string"
+        ? req.query.orderStatus
+        : undefined,
+    paymentStatus:
+      typeof req.query.paymentStatus === "string"
+        ? req.query.paymentStatus
+        : undefined,
+  });
 
   return sendResponse(
     res,

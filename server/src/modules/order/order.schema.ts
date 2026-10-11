@@ -68,9 +68,7 @@ export const orderStatusUpdateSchema = z
 
 export const orderPaginationQuerySchema = paginationQuerySchema.extend({
   search: searchQuerySchema,
-  orderStatus: z
-    .enum(["processing", "shipped", "delivered", "cancelled"])
-    .optional(),
+  orderStatus: z.enum(["processing", "shipped", "delivered"]).optional(),
   paymentStatus: z.enum(["pending", "paid", "failed"]).optional(),
 });
 export const orderIdParamSchema = idParamSchema;

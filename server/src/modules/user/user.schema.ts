@@ -7,6 +7,7 @@ import {
   nonEmptyString,
   paginationQuerySchema,
   passwordSchema,
+  searchQuerySchema,
 } from "@/validation/common.schema";
 
 export const signupSchema = z.object({
@@ -51,5 +52,8 @@ export const passwordUpdateSchema = z.object({
   newPassword: passwordSchema,
 });
 
-export const userPaginationQuerySchema = paginationQuerySchema;
+export const userPaginationQuerySchema = paginationQuerySchema.extend({
+  search: searchQuerySchema,
+  role: z.enum(["User", "Admin"]).optional(),
+});
 export const userIdParamSchema = idParamSchema;

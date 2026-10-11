@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pagination } from "@/components/shared/pagination";
+import { TableToolbar } from "@/components/shared/table-toolbar";
 import { IOrder, IPagination } from "@/types";
 import { columns } from "./order-column";
 
@@ -57,7 +58,33 @@ export function OrderTable({ data, pagination }: OrderTableProps) {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-3">
+      <TableToolbar
+        searchPlaceholder="Search name, email, city or ZIP"
+        filters={[
+          {
+            key: "orderStatus",
+            label: "Order status",
+            allLabel: "All statuses",
+            options: [
+              { label: "Processing", value: "processing" },
+              { label: "Shipped", value: "shipped" },
+              { label: "Delivered", value: "delivered" },
+            ],
+          },
+          {
+            key: "paymentStatus",
+            label: "Payment status",
+            allLabel: "All payments",
+            options: [
+              { label: "Pending", value: "pending" },
+              { label: "Paid", value: "paid" },
+              { label: "Failed", value: "failed" },
+            ],
+          },
+        ]}
+      />
+
       <div className="border rounded-md">
         <Table>
           <TableHeader>

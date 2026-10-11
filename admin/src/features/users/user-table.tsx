@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pagination } from "@/components/shared/pagination";
+import { TableToolbar } from "@/components/shared/table-toolbar";
 import { IUser, IPagination } from "@/types";
 import { columns } from "./user-column";
 
@@ -57,7 +58,22 @@ export function UserTable({ data, pagination }: UserTableProps) {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-3">
+      <TableToolbar
+        searchPlaceholder="Search name, email or phone"
+        filters={[
+          {
+            key: "role",
+            label: "Role",
+            allLabel: "All roles",
+            options: [
+              { label: "User", value: "User" },
+              { label: "Admin", value: "Admin" },
+            ],
+          },
+        ]}
+      />
+
       <div className="border rounded-md">
         <Table>
           <TableHeader>

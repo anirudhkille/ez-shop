@@ -20,6 +20,8 @@ import * as addressRepository from "@/modules/address/address.repository";
 import { AppError } from "@/utils/app-error";
 import * as userRepository from "@/modules/user/user.repository";
 import type { IUser } from "@/modules/user/user.model";
+import { escapeRegex } from "@/validation/common.schema";
+import type { FilterQuery } from "mongoose";
 import { getGoogleAuthURL } from "./user.google";
 
 const REFRESH_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -289,12 +291,28 @@ export const logout = async (token: string) => {
   return { loggedOut: true };
 };
 
-export const getAllUsers = async (page = 1, limit = 10) => {
+export const getAllUsers = async (
+  page = 1,
+  limit = 10,
+  query: { search?: string; role?: string } = {},
+) => {
   const skip = (page - 1) * limit;
 
+  const filter: FilterQuery<IUser> = {};
+
+  if (query.role) {
+    filter.role = query.role;
+  }
+
+  const search = query.search?.trim();
+  if (search) {
+    const pattern = new RegExp(escapeRegex(search), "i");
+    filter.$or = [{ name: pattern }, { email: pattern }, { phone: pattern }];
+  }
+
   const [users, total] = await Promise.all([
-    userRepository.findAll(skip, limit, "-password"),
-    userRepository.countDocuments(),
+    userRepository.findAll(skip, limit, "-password", filter),
+    userRepository.countDocuments(filter),
   ]);
 
   return {

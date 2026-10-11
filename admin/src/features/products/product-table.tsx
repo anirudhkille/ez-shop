@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pagination } from "@/components/shared/pagination";
+import { TableToolbar } from "@/components/shared/table-toolbar";
 import { IProduct, IPagination } from "@/types";
 import { columns } from "./product-column";
 
@@ -57,7 +58,32 @@ export function ProductTable({ data, pagination }: ProductTableProps) {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-3">
+      <TableToolbar
+        searchPlaceholder="Search product name, slug or tag"
+        filters={[
+          {
+            key: "publish",
+            label: "Published",
+            allLabel: "All",
+            options: [
+              { label: "Published", value: "true" },
+              { label: "Unpublished", value: "false" },
+            ],
+          },
+          {
+            key: "gender",
+            label: "Gender",
+            allLabel: "All genders",
+            options: [
+              { label: "Men", value: "men" },
+              { label: "Women", value: "women" },
+              { label: "Unisex", value: "unisex" },
+            ],
+          },
+        ]}
+      />
+
       <div className="border rounded-md">
         <Table>
           <TableHeader>
