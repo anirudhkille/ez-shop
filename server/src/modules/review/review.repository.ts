@@ -4,16 +4,6 @@ import Review, {
 } from "@/modules/review/review.model";
 import { Types, UpdateQuery } from "mongoose";
 
-export const create = async (data: {
-  product?: string | Types.ObjectId;
-  rating?: number;
-  comment?: string;
-  user?: string | Types.ObjectId;
-}) => {
-  const review = new Review(data);
-  return await review.save();
-};
-
 /**
  * An absent comment is unset rather than skipped. Mongoose strips undefined
  * keys from $set, so omitting it would silently leave the reviewer's previous
@@ -73,16 +63,6 @@ export const summaryFor = async (productId: string) => {
     rating: row ? Math.round(row.average * 100) / 100 : 0,
     reviewsCount: row?.count ?? 0,
   };
-};
-
-export const findOwnedById = async (
-  id: string | Types.ObjectId,
-  userId: string,
-) => {
-  return (await Review.findOne({ _id: id, user: userId }).populate(
-    "user",
-    "name",
-  )) as ReviewWithAuthor | null;
 };
 
 export const findOwnedByProductAndUser = async (

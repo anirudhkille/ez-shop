@@ -7,5 +7,3 @@ export const newsletterSchema = z.object({
 });
 
 export const newsletterPaginationQuerySchema = paginationQuerySchema;
-export const newsletterQuerySchema = paginationQuerySchema;
-export const subscribeNewsletterSchema = newsletterSchema;

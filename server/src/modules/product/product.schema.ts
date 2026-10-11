@@ -29,10 +29,7 @@ const positiveNumberSchema = z.preprocess(
 
 const optionalNonNegativeNumberSchema = z.preprocess(
   cleanNumberInput,
-  z.coerce
-    .number()
-    .nonnegative("Value must be zero or greater")
-    .optional(),
+  z.coerce.number().nonnegative("Value must be zero or greater").optional(),
 );
 
 const stockSchema = z.preprocess(
@@ -84,7 +81,7 @@ const parseJsonInput = (
   }
 };
 
-export const productVariantSizeSchema = z.object({
+const productVariantSizeSchema = z.object({
   size: nonEmptyString,
   stock: stockSchema,
   sku: optionalNonEmptyString,
@@ -92,7 +89,7 @@ export const productVariantSizeSchema = z.object({
   discountPrice: optionalNonNegativeNumberSchema,
 });
 
-export const productVariantSchema = z.object({
+const productVariantSchema = z.object({
   color: nonEmptyString,
   colorCode: optionalNonEmptyString,
   images: z.array(nonEmptyString).default([]),
@@ -109,7 +106,7 @@ const productVariantsUpdateSchema = z.preprocess(
   variantArraySchema.optional(),
 );
 
-export const variantImageMapItemSchema = z.object({
+const variantImageMapItemSchema = z.object({
   variantIndex: nonNegativeIntegerSchema,
   count: nonNegativeIntegerSchema,
 });
@@ -236,7 +233,7 @@ const priceFilterSchema = z
     );
   }, "Invalid price range");
 
-export const productSortSchema = z.enum([
+const productSortSchema = z.enum([
   "price-low",
   "price-high",
   "newest",
@@ -265,23 +262,3 @@ export const productParamsSchema = z.object({
 
 export const productIdParamSchema = idParamSchema;
 export const similarProductParamsSchema = idParamSchema;
-export const similarProductIdParamSchema = idParamSchema;
-export const productSlugParamsSchema = productParamsSchema;
-
-export const categorySchema = z.object({
-  name: nonEmptyString,
-  slug: nonEmptyString,
-});
-
-export const filteredProductsQuerySchema = filteredProductQuerySchema;
-export const productFilterQuerySchema = filteredProductQuerySchema;
-export const filterQuerySchema = filteredProductQuerySchema;
-export const productListQuerySchema = productQuerySchema;
-export const productSearchQuerySchema = searchQuerySchema;
-export const productParamSchema = productParamsSchema;
-export const similarProductParamSchema = similarProductParamsSchema;
-export const productCreateBodySchema = productCreateSchema;
-export const productUpdateBodySchema = productUpdateSchema;
-export const productVariantsSchemaForCreate = productVariantsSchema;
-export const productVariantsSchemaForUpdate = productVariantsUpdateSchema;
-export { idParamSchema, objectIdSchema };

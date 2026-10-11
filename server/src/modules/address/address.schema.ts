@@ -45,4 +45,3 @@ export const addressUpdateSchema = z
   });
 
 export const addressIdParamSchema = idParamSchema;
-export const addressParamSchema = idParamSchema;

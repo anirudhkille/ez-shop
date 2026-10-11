@@ -12,6 +12,12 @@ export interface IPaginatedResponse<T> {
   pagination?: IPagination;
 }
 
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
 export interface IUser {
   _id: string;
   name?: string;

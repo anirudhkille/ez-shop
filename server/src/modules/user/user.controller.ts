@@ -11,16 +11,6 @@ import { sendResponse } from "@/utils/response";
 import { refreshCookieOptions } from "@/utils/cookies";
 import crypto from "crypto";
 
-const OAUTH_STATE_COOKIE = "oauth_state";
-
-const oauthStateCookieOptions = () => ({
-  httpOnly: true,
-  secure: env.NODE_ENV === "production",
-  sameSite: "lax" as const,
-  maxAge: 10 * 60 * 1000,
-  path: "/",
-});
-
 export const signUp = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
   await userService.signUp(email, password);
@@ -165,10 +155,29 @@ export const deleteUserById = asyncHandler(
   },
 );
 
+const OAUTH_STATE_COOKIE = "oauth_state";
+const OAUTH_REDIRECT_COOKIE = "oauth_redirect";
+
+const oauthCookieOptions = () => ({
+  httpOnly: true,
+  secure: env.NODE_ENV === "production",
+  sameSite: "lax" as const,
+  maxAge: 10 * 60 * 1000,
+  path: "/",
+});
+
 export const googleAuth = asyncHandler(async (req: Request, res: Response) => {
-  const state = isAllowedPostAuthRedirect(req.query.redirect_uri)
-    ? req.query.redirect_uri
-    : undefined;
+  const state = crypto.randomBytes(32).toString("hex");
+
+  res.cookie(OAUTH_STATE_COOKIE, state, oauthCookieOptions());
+
+  if (isAllowedPostAuthRedirect(req.query.redirect_uri)) {
+    res.cookie(
+      OAUTH_REDIRECT_COOKIE,
+      req.query.redirect_uri,
+      oauthCookieOptions(),
+    );
+  }
 
   return res.redirect(userService.googleAuthURL(state));
 });
@@ -176,16 +185,30 @@ export const googleAuth = asyncHandler(async (req: Request, res: Response) => {
 export const googleCallback = asyncHandler(
   async (req: Request, res: Response) => {
     const code = String(req.query.code ?? "");
+    const returnedState = String(req.query.state ?? "");
+    const expectedState = String(req.cookies?.[OAUTH_STATE_COOKIE] ?? "");
+    const redirectTarget = req.cookies?.[OAUTH_REDIRECT_COOKIE];
 
-    // The native app passes its scheme through Google's `state`; the web client
-    // sends nothing and keeps the existing behaviour.
-    const target = isAllowedPostAuthRedirect(req.query.state)
-      ? req.query.state
-      : `${env.CLIENT_URL}/auth/callback`;
+    res.clearCookie(OAUTH_STATE_COOKIE, { path: "/" });
+    res.clearCookie(OAUTH_REDIRECT_COOKIE, { path: "/" });
 
-    if (!code) {
-      return res.redirect(`${env.CLIENT_URL}/login?error=google_auth_failed`);
+    const fail = (reason: string) =>
+      res.redirect(
+        `${env.CLIENT_URL}/login?error=google_auth_failed&reason=${reason}`,
+      );
+
+    if (!code) return fail("no_code");
+    if (!expectedState || !returnedState) return fail("missing_state");
+
+    const a = Buffer.from(returnedState);
+    const b = Buffer.from(expectedState);
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+      return fail("state_mismatch");
     }
+
+    const target = isAllowedPostAuthRedirect(redirectTarget)
+      ? redirectTarget
+      : `${env.CLIENT_URL}/auth/callback`;
 
     const tokens = await getGoogleTokens(code);
     const profile = await getGoogleUser(tokens.access_token);

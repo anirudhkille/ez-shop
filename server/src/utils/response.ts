@@ -7,11 +7,6 @@ export interface Pagination {
   totalPages: number;
 }
 
-export interface ErrorDetail {
-  field: string;
-  message: string;
-}
-
 export const sendResponse = <T = Record<string, unknown>>(
   res: Response,
   status = 200,

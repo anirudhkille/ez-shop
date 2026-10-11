@@ -29,9 +29,3 @@ export const adminProfileUpdateSchema = z
   .refine((value) => Object.keys(value).length > 0, {
     message: "At least one profile field is required",
   });
-
-export const loginSchema = adminLoginSchema;
-export const forgotPasswordSchema = adminForgotPasswordSchema;
-export const resetPasswordSchema = adminResetPasswordSchema;
-export const profileUpdateSchema = adminProfileUpdateSchema;
-export const adminProfileSchema = adminProfileUpdateSchema;

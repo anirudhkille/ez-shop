@@ -2,6 +2,7 @@ import {
   deleteOrder,
   getMyOrder,
   getOrderById,
+  getOrderStats,
   getOrderBySessionId,
   getOrders,
   placeCODOrder,
@@ -32,6 +33,7 @@ router.get(
   validate(orderPaginationQuerySchema, "query"),
   getOrders,
 );
+router.get("/stats", protect, authorize(["Admin"]), getOrderStats);
 router.get(
   "/session-id/:sessionId",
   optionalAuth,

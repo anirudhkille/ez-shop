@@ -3,41 +3,53 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, ShoppingCart, Users, IndianRupee } from "lucide-react";
 import { serverFetch } from "@/lib/server-api";
 import { DashboardCharts } from "@/features/dashboard/dashboard-charts";
-import { IPaginatedResponse, IOrder, IProduct } from "@/types";
+import { ApiResponse, IPaginatedResponse, IOrder, IProduct } from "@/types";
 
 export const metadata = {
   title: "Dashboard | EZ Shop Admin",
 };
 
+const PAGE_SIZE = 100;
+
+type OrderStats = {
+  totalOrders: number;
+  totalRevenue: number;
+  paidOrders: number;
+  pendingOrders: number;
+  failedOrders: number;
+};
+
 async function getStats() {
   try {
-    const [productsRes, ordersRes, usersRes] = await Promise.all([
-      serverFetch("/api/product?limit=1000", { cache: "no-store" }),
-      serverFetch("/api/order?limit=1000", { cache: "no-store" }),
-      serverFetch("/api/user?limit=1000", { cache: "no-store" }),
+    const [productsRes, ordersRes, usersRes, statsRes] = await Promise.all([
+      serverFetch(`/api/product?limit=${PAGE_SIZE}`, { cache: "no-store" }),
+      serverFetch(`/api/order?limit=${PAGE_SIZE}`, { cache: "no-store" }),
+      serverFetch(`/api/user?limit=${PAGE_SIZE}`, { cache: "no-store" }),
+      serverFetch("/api/order/stats", { cache: "no-store" }),
     ]);
 
     const products: IPaginatedResponse<IProduct> = await productsRes.json();
     const orders: IPaginatedResponse<IOrder> = await ordersRes.json();
     const users: IPaginatedResponse<{ _id: string }> = await usersRes.json();
+    const stats: ApiResponse<OrderStats> = await statsRes.json();
 
     const ordersList: IOrder[] = orders.data || [];
     const productsList: IProduct[] = products.data || [];
 
-    const totalRevenue = ordersList.reduce(
-      (sum: number, order) => sum + (order.totalAmount || 0),
-      0,
-    );
-
+    // Counts come from the server aggregates — the list endpoints cap `limit`
+    // at 100, so summing a client-side page would under-report. Revenue is
+    // aggregated over every paid order, not just the current page.
     return {
       totalProducts: products.pagination?.total ?? productsList.length,
-      totalOrders: orders.pagination?.total ?? ordersList.length,
+      totalOrders: stats.data?.totalOrders ?? orders.pagination?.total ?? 0,
       totalUsers: users.pagination?.total ?? (users.data || []).length,
-      totalRevenue,
+      totalRevenue: stats.data?.totalRevenue ?? 0,
       orders: ordersList,
       products: productsList,
     };
-  } catch {
+  } catch (error) {
+    console.error("Dashboard stats failed to load", error);
+
     return {
       totalProducts: 0,
       totalOrders: 0,

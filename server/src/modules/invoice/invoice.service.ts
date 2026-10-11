@@ -4,6 +4,12 @@ import * as invoiceRepository from "@/modules/invoice/invoice.repository";
 import * as productRepository from "@/modules/product/product.repository";
 import type { IInvoiceProduct } from "@/modules/invoice/invoice.model";
 
+const isDuplicateKeyError = (error: unknown) =>
+  typeof error === "object" &&
+  error !== null &&
+  "code" in error &&
+  (error as { code?: unknown }).code === 11000;
+
 /** Loose shape so a mongoose Order document satisfies it structurally. */
 type OrderLike = {
   _id: unknown;
@@ -74,25 +80,34 @@ export const issueInvoiceForOrder = async (order: OrderLike) => {
     | null
     | undefined;
 
-  return await invoiceRepository.create({
-    invoiceNumber: await invoiceRepository.nextInvoiceNumber(),
-    order: orderId,
-    user: order.user ? String(order.user) : null,
-    customerName: order.name ?? snapshotAddress?.name,
-    customerEmail: order.email ?? undefined,
-    customerPhone: order.phone ?? snapshotAddress?.phone,
-    address: order.address as never,
-    products,
-    subtotal: order.subtotal ?? 0,
-    discount: order.discount ?? 0,
-    ...(couponCode ? { couponCode } : {}),
-    deliveryCharge: order.deliveryCharge ?? 0,
-    totalAmount: order.totalAmount ?? 0,
-    paymentType: order.paymentType ?? undefined,
-    paymentStatus: order.paymentStatus ?? undefined,
-    orderStatus: order.orderStatus ?? undefined,
-    issuedAt: new Date(),
-  });
+  try {
+    return await invoiceRepository.create({
+      invoiceNumber: await invoiceRepository.nextInvoiceNumber(),
+      order: orderId,
+      user: order.user ? String(order.user) : null,
+      customerName: order.name ?? snapshotAddress?.name,
+      customerEmail: order.email ?? undefined,
+      customerPhone: order.phone ?? snapshotAddress?.phone,
+      address: order.address as never,
+      products,
+      subtotal: order.subtotal ?? 0,
+      discount: order.discount ?? 0,
+      ...(couponCode ? { couponCode } : {}),
+      deliveryCharge: order.deliveryCharge ?? 0,
+      totalAmount: order.totalAmount ?? 0,
+      paymentType: order.paymentType ?? undefined,
+      paymentStatus: order.paymentStatus ?? undefined,
+      orderStatus: order.orderStatus ?? undefined,
+      issuedAt: new Date(),
+    });
+  } catch (error) {
+    if (isDuplicateKeyError(error)) {
+      const concurrent = await invoiceRepository.findByOrder(orderId);
+      if (concurrent) return concurrent;
+    }
+
+    throw error;
+  }
 };
 
 /**
@@ -151,19 +166,6 @@ export const getInvoiceForOrder = async (
   const invoice =
     existing ??
     (await issueInvoiceForOrder(await loadOwnedOrder(orderId, userId)));
-
-  return {
-    ...invoice,
-    products: await resolveProductNames(invoice.products ?? []),
-  };
-};
-
-export const getInvoiceByNumber = async (invoiceNumber: string) => {
-  const invoice = await invoiceRepository.findByNumber(invoiceNumber);
-
-  if (!invoice) {
-    throw new AppError("Invoice not found", 404);
-  }
 
   return {
     ...invoice,

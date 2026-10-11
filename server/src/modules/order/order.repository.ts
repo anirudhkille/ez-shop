@@ -43,6 +43,33 @@ export const countDocuments = async (filter?: FilterQuery<IOrder>) => {
   return await Order.countDocuments(filter);
 };
 
+export const revenueByStatus = async () => {
+  const rows = await Order.aggregate<{
+    _id: string;
+    total: number;
+    count: number;
+  }>([
+    {
+      $group: {
+        _id: "$paymentStatus",
+        total: { $sum: "$totalAmount" },
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  return rows.reduce(
+    (acc, row) => {
+      acc[row._id ?? "pending"] = {
+        revenue: row.total ?? 0,
+        count: row.count,
+      };
+      return acc;
+    },
+    {} as Record<string, { revenue: number; count: number }>,
+  );
+};
+
 /**
  * Fields the account orders list renders. Deliberately excludes the
  * denormalised guest PII (`name`, `email`, `phone`, `address`) and the payment

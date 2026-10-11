@@ -23,8 +23,5 @@ export const categoryUpdateSchema = z
   });
 
 export const categoryPaginationQuerySchema = paginationQuerySchema;
-export const categoryQuerySchema = paginationQuerySchema;
-export const categoryIdParamSchema = idParamSchema;
-export const objectIdParamSchema = idParamSchema;
 
-export const categorySchema = categoryCreateSchema;
+export const categoryIdParamSchema = idParamSchema;

@@ -12,12 +12,11 @@ import {
   zipSchema,
 } from "@/validation/common.schema";
 
-export const deliveryMethodSchema = z.enum(
-  ["standard", "express", "same-day"],
-  { message: "Invalid delivery method" },
-);
+const deliveryMethodSchema = z.enum(["standard", "express", "same-day"], {
+  message: "Invalid delivery method",
+});
 
-export const checkoutAddressSchema = z.object({
+const checkoutAddressSchema = z.object({
   name: nameSchema,
   addressLine1: nonEmptyString,
   addressLine2: optionalNonEmptyString,
@@ -67,17 +66,7 @@ export const orderStatusUpdateSchema = z
   });
 
 export const orderPaginationQuerySchema = paginationQuerySchema;
-export const orderQuerySchema = paginationQuerySchema;
 export const orderIdParamSchema = idParamSchema;
-export const orderIdParamsSchema = idParamSchema;
 export const sessionIdParamSchema = z.object({
   sessionId: nonEmptyString,
 });
-
-export const authenticatedCheckoutSchema = addressDeliverySchema;
-export const orderCheckoutSchema = addressDeliverySchema;
-export const checkoutSchema = addressDeliverySchema;
-export const guestOrderSchema = guestCheckoutSchema;
-export const updateOrderSchema = orderStatusUpdateSchema;
-export const orderStatusSchema = orderStatusUpdateSchema;
-export { idParamSchema };

@@ -33,10 +33,6 @@ export const findByOrder = async (orderId: string) => {
   return await Invoice.findOne({ order: orderId }).lean();
 };
 
-export const findByNumber = async (invoiceNumber: string) => {
-  return await Invoice.findOne({ invoiceNumber }).lean();
-};
-
 /**
  * Resolves an invoice for a user request. `userId` scopes the lookup so one
  * customer cannot read another's invoice by guessing an order id.
@@ -52,13 +48,6 @@ export const findForUser = async (
   }
 
   return await Invoice.findOne(filter).lean();
-};
-
-export const existsForOrder = async (orderId: string) => {
-  const invoice = await Invoice.findOne({ order: orderId })
-    .select("_id")
-    .lean();
-  return invoice !== null;
 };
 
 export const isValidOrderId = (value: string) =>

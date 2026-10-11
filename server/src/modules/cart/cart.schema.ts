@@ -23,7 +23,3 @@ export const updateCartSchema = z.object({
 export const cartItemIdParamSchema = z.object({
   cartItemId: objectIdSchema,
 });
-
-export const cartAddSchema = addToCartSchema;
-export const cartUpdateSchema = updateCartSchema;
-export const cartItemParamSchema = cartItemIdParamSchema;

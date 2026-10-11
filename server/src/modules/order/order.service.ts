@@ -67,6 +67,23 @@ export const getOrders = async (limit: number, page: number) => {
   };
 };
 
+export const getOrderStats = async () => {
+  const [byStatus, totalOrders] = await Promise.all([
+    orderRepository.revenueByStatus(),
+    orderRepository.countDocuments(),
+  ]);
+
+  const paid = byStatus.paid ?? { revenue: 0, count: 0 };
+
+  return {
+    totalOrders,
+    totalRevenue: paid.revenue,
+    paidOrders: paid.count,
+    pendingOrders: byStatus.pending?.count ?? 0,
+    failedOrders: byStatus.failed?.count ?? 0,
+  };
+};
+
 export const getMyOrder = async (
   userId: string,
   limit: number,

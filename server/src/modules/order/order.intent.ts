@@ -26,7 +26,7 @@ export interface GuestCheckoutBody {
   couponCode?: string;
 }
 
-export type Buyer =
+type Buyer =
   | { kind: "user"; userId: string }
   | { kind: "guest"; name: string; email: string; phone: string };
 

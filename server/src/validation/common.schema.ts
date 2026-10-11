@@ -13,8 +13,6 @@ export const idParamSchema = z.object({
   id: objectIdSchema,
 });
 
-export const objectIdParamSchema = idParamSchema;
-
 export const orderIdParamSchema = z.object({
   orderId: objectIdSchema,
 });

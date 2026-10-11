@@ -35,11 +35,4 @@ export const reviewProductParamSchema = z.object({
   productId: objectIdSchema,
 });
 export const reviewIdParamSchema = idParamSchema;
-export const productReviewParamSchema = reviewProductParamSchema;
-export const productIdParamSchema = reviewProductParamSchema;
-export const reviewParamSchema = reviewIdParamSchema;
 export const reviewPaginationQuerySchema = paginationQuerySchema;
-export const reviewQuerySchema = paginationQuerySchema;
-
-export const postReviewSchema = reviewCreateSchema;
-export const updateReviewSchema = reviewUpdateSchema;

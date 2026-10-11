@@ -26,6 +26,14 @@ export const getOrders = asyncHandler(async (req: Request, res: Response) => {
   );
 });
 
+export const getOrderStats = asyncHandler(
+  async (_req: Request, res: Response) => {
+    const result = await orderService.getOrderStats();
+
+    return sendResponse(res, 200, "Order stats fetched successfully", result);
+  },
+);
+
 export const getMyOrder = asyncHandler(async (req: Request, res: Response) => {
   const limit = Number(req.query.limit) || 10;
   const page = Number(req.query.page) || 1;

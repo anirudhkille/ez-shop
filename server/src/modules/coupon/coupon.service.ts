@@ -153,7 +153,7 @@ export const evaluateCoupon = async (
  * order never burns a use. Returns false if the coupon was exhausted in the
  * meantime, in which case the caller must abandon the order.
  */
-export const claimCouponUse = async (code: string): Promise<boolean> => {
+const claimCouponUse = async (code: string): Promise<boolean> => {
   const coupon = await couponRepository.findByCode(code);
 
   if (!coupon) return false;
@@ -163,7 +163,7 @@ export const claimCouponUse = async (code: string): Promise<boolean> => {
   return claimed !== null;
 };
 
-export const releaseCouponUse = async (code: string): Promise<void> => {
+const releaseCouponUse = async (code: string): Promise<void> => {
   const coupon = await couponRepository.findByCode(code);
 
   if (coupon) {

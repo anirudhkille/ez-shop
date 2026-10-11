@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Document } from "mongoose";
 
-export type CouponType = "percentage" | "fixed";
+type CouponType = "percentage" | "fixed";
 
 export interface ICoupon extends Document {
   code: string;
