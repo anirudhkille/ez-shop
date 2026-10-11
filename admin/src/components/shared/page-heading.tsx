@@ -14,10 +14,10 @@ export const PageHeading: React.FC<PageHeadingProps> = ({
   return (
     <div className="flex w-full flex-wrap items-end justify-between gap-4">
       <div>
-        <h2 className="font-display text-foreground text-3xl font-bold tracking-tight uppercase">
+        <h2 className="font-display text-3xl font-bold tracking-tight text-foreground uppercase">
           {title}
         </h2>
-        <p className="font-body text-muted-foreground mt-1 text-sm">
+        <p className="mt-1 font-body text-sm text-muted-foreground">
           {description}
         </p>
       </div>

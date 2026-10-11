@@ -1,9 +1,12 @@
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
+import { serverFetch } from "@/lib/server-api";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
 import ProfileForm from "./profile-form";
-import { serverFetch } from "@/lib/server-api";
 
 export const metadata = {
   title: "Profile | Dashboard - EZ Shop Admin",
@@ -38,7 +41,7 @@ export default async function ProfilePage() {
             <CardTitle>Profile Picture</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
-            <Avatar className="w-24 h-24">
+            <Avatar className="h-24 w-24">
               <AvatarImage src="" />
               <AvatarFallback className="text-2xl">
                 {admin.name?.charAt(0)?.toUpperCase() || "A"}

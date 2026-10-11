@@ -1,6 +1,16 @@
 import * as React from "react";
+
+import { useRouter } from "next/navigation";
+
 import { ColumnDef } from "@tanstack/react-table";
+
+import { toast } from "sonner";
+
 import { MoreHorizontal } from "lucide-react";
+
+import { clientFetch } from "@/lib/client-api";
+import { formatDate } from "@/lib/format-date";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -10,11 +20,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { ICoupon } from "@/types";
-import { useRouter } from "next/navigation";
-import { clientFetch } from "@/lib/client-api";
-import { formatDate } from "@/lib/format-date";
-import { toast } from "sonner";
 
 const isExpired = (coupon: ICoupon) =>
   !!coupon.expiresAt && new Date(coupon.expiresAt).getTime() < Date.now();
@@ -164,7 +171,7 @@ const CouponActions = ({ coupon }: { coupon: ICoupon }) => {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="w-8 h-8 p-0"
+          className="h-8 w-8 p-0"
           onClick={(event) => event.stopPropagation()}
         >
           <span className="sr-only">Open menu</span>

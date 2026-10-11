@@ -1,9 +1,14 @@
-import { notFound } from "next/navigation";
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
-import CouponForm from "@/features/coupon/coupon-form";
-import { serverFetch } from "@/lib/server-api";
 import React from "react";
+
+import { notFound } from "next/navigation";
+
+import { serverFetch } from "@/lib/server-api";
+
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
+import CouponForm from "@/features/coupon/coupon-form";
 
 export const metadata = {
   title: "Edit Coupon | Dashboard - EZ Shop Admin",

@@ -1,9 +1,14 @@
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
-import SubscriberTable from "@/features/newsletter/subscriber-table";
-import { serverFetch } from "@/lib/server-api";
-import { IPaginatedResponse, INewsletterSubscriber } from "@/types";
 import React from "react";
+
+import { serverFetch } from "@/lib/server-api";
+
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
+import SubscriberTable from "@/features/newsletter/subscriber-table";
+
+import { INewsletterSubscriber, IPaginatedResponse } from "@/types";
 
 export const metadata = {
   title: "Newsletter | Dashboard - EZ Shop Admin",
@@ -18,9 +23,12 @@ export default async function Page({ searchParams }: PageProps) {
   const page = Math.max(Number(sp.page) || 1, 1);
   const limit = Math.max(Number(sp.limit) || 10, 1);
 
-  const data = await serverFetch(`/api/newsletter?page=${page}&limit=${limit}`, {
-    cache: "no-store",
-  });
+  const data = await serverFetch(
+    `/api/newsletter?page=${page}&limit=${limit}`,
+    {
+      cache: "no-store",
+    }
+  );
 
   if (!data.ok) {
     return <div>Could not load subscribers</div>;

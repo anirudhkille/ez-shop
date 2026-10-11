@@ -1,7 +1,19 @@
 "use client";
+
 import * as React from "react";
+
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 import { ColumnDef } from "@tanstack/react-table";
+
+import { toast } from "sonner";
+
 import { MoreHorizontal } from "lucide-react";
+
+import { clientFetch } from "@/lib/client-api";
+import { formatDate } from "@/lib/format-date";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -11,12 +23,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { IUser } from "@/types";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { clientFetch } from "@/lib/client-api";
-import { formatDate } from "@/lib/format-date";
-import { toast } from "sonner";
 
 export const columns: ColumnDef<IUser>[] = [
   {
@@ -52,10 +60,10 @@ export const columns: ColumnDef<IUser>[] = [
           width={40}
           src={avatar}
           alt="Avatar"
-          className="object-cover w-10 h-10 rounded-full"
+          className="h-10 w-10 rounded-full object-cover"
         />
       ) : (
-        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
           <span className="text-sm font-medium text-muted-foreground">
             {(row.original.name || row.original.email)?.[0]?.toUpperCase()}
           </span>
@@ -77,9 +85,7 @@ export const columns: ColumnDef<IUser>[] = [
   {
     accessorKey: "phone",
     header: "Phone",
-    cell: ({ row }) => (
-      <div>{row.getValue("phone") || "—"}</div>
-    ),
+    cell: ({ row }) => <div>{row.getValue("phone") || "—"}</div>,
   },
   {
     accessorKey: "role",
@@ -140,7 +146,7 @@ const UserActions = ({ user }: { user: IUser }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="w-8 h-8 p-0">
+        <Button variant="ghost" className="h-8 w-8 p-0">
           <span className="sr-only">Open menu</span>
           <MoreHorizontal />
         </Button>

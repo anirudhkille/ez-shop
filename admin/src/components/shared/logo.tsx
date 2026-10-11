@@ -20,7 +20,6 @@ export default function Logo({
   alt?: string;
 }) {
   return (
-     
     // SVG sources unless images.dangerouslyAllowSVG is enabled; a 2 KB local
     // mark gains nothing from the optimizer.
     <img

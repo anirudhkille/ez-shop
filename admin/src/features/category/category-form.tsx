@@ -1,12 +1,21 @@
 "use client";
 
 import React from "react";
-import { toast } from "sonner";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { useRouter } from "next/navigation";
 
+import { useForm } from "react-hook-form";
+
+import { z } from "zod";
+
+import { toast } from "sonner";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { clientFetch } from "@/lib/client-api";
+import { generateSlug } from "@/lib/slug";
+
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,10 +25,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+
 import { ImageUpload } from "@/components/shared/image-upload";
-import { clientFetch } from "@/lib/client-api";
-import { generateSlug } from "@/lib/slug";
+
 import { ICategory } from "@/types";
 
 interface CategoryFormProps {
@@ -68,7 +76,7 @@ export default function CategoryForm({ data }: CategoryFormProps) {
           method: data ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        },
+        }
       );
 
       const result = await response.json();

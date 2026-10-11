@@ -1,9 +1,14 @@
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
-import { ProductTable } from "@/features/products/product-table";
-import { serverFetch } from "@/lib/server-api";
-import { IPaginatedResponse, IProduct } from "@/types";
 import React from "react";
+
+import { serverFetch } from "@/lib/server-api";
+
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
+import { ProductTable } from "@/features/products/product-table";
+
+import { IPaginatedResponse, IProduct } from "@/types";
 
 export const metadata = {
   title: "Products | Dashboard - EZ Shop Admin",
@@ -24,7 +29,10 @@ export default async function Page({ searchParams }: PageProps) {
   const page = Math.max(Number(sp.page) || 1, 1);
   const limit = Math.max(Number(sp.limit) || 10, 1);
 
-  const query = new URLSearchParams({ page: String(page), limit: String(limit) });
+  const query = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
   for (const key of ["search", "publish", "gender"] as const) {
     if (sp[key]) query.set(key, sp[key]!);
   }

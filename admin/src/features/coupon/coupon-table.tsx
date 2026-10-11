@@ -1,15 +1,16 @@
 "use client";
 
 import * as React from "react";
+
 import {
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 
 import {
@@ -20,8 +21,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { Pagination } from "@/components/shared/pagination";
+
 import { ICoupon, IPagination } from "@/types";
+
 import { columns } from "./coupon-column";
 
 interface CouponTableProps {
@@ -58,7 +62,7 @@ export default function CouponTable({ data, pagination }: CouponTableProps) {
 
   return (
     <div className="w-full">
-      <div className="border rounded-md">
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

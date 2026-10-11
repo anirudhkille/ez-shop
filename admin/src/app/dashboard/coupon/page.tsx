@@ -1,9 +1,14 @@
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
-import CouponTable from "@/features/coupon/coupon-table";
-import { serverFetch } from "@/lib/server-api";
-import { IPaginatedResponse, ICoupon } from "@/types";
 import React from "react";
+
+import { serverFetch } from "@/lib/server-api";
+
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
+import CouponTable from "@/features/coupon/coupon-table";
+
+import { ICoupon, IPaginatedResponse } from "@/types";
 
 export const metadata = {
   title: "Coupons | Dashboard - EZ Shop Admin",
@@ -32,10 +37,7 @@ export default async function Page({ searchParams }: PageProps) {
       />
 
       <Separator />
-      <CouponTable
-        data={coupons.data || []}
-        pagination={coupons.pagination}
-      />
+      <CouponTable data={coupons.data || []} pagination={coupons.pagination} />
     </div>
   );
 }

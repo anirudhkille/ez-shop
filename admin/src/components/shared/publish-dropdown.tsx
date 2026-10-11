@@ -1,11 +1,11 @@
 import { Label } from "../ui/label";
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "../ui/select";
 
 interface PublishDropdownProps {

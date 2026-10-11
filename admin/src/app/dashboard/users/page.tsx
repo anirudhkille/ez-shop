@@ -1,16 +1,26 @@
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
-import { UserTable } from "@/features/users/user-table";
-import { serverFetch } from "@/lib/server-api";
-import { IPaginatedResponse, IUser } from "@/types";
 import React from "react";
+
+import { serverFetch } from "@/lib/server-api";
+
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
+import { UserTable } from "@/features/users/user-table";
+
+import { IPaginatedResponse, IUser } from "@/types";
 
 export const metadata = {
   title: "Users | Dashboard - EZ Shop Admin",
 };
 
 interface PageProps {
-  searchParams: Promise<{ page?: string; limit?: string; search?: string; role?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    limit?: string;
+    search?: string;
+    role?: string;
+  }>;
 }
 
 export default async function Page({ searchParams }: PageProps) {
@@ -18,7 +28,10 @@ export default async function Page({ searchParams }: PageProps) {
   const page = Math.max(Number(sp.page) || 1, 1);
   const limit = Math.max(Number(sp.limit) || 10, 1);
 
-  const query = new URLSearchParams({ page: String(page), limit: String(limit) });
+  const query = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
   for (const key of ["search", "role"] as const) {
     if (sp[key]) query.set(key, sp[key]!);
   }
@@ -30,10 +43,7 @@ export default async function Page({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-5">
-      <PageHeading
-        title="Users"
-        description="Manage registered users"
-      />
+      <PageHeading title="Users" description="Manage registered users" />
 
       <Separator />
       <UserTable data={posts.data || []} pagination={posts.pagination} />

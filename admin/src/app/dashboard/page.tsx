@@ -1,9 +1,14 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, ShoppingCart, Users, IndianRupee } from "lucide-react";
+
+import { IndianRupee, Package, ShoppingCart, Users } from "lucide-react";
+
 import { serverFetch } from "@/lib/server-api";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { DashboardCharts } from "@/features/dashboard/dashboard-charts";
-import { ApiResponse, IPaginatedResponse, IOrder, IProduct } from "@/types";
+
+import { ApiResponse, IOrder, IPaginatedResponse, IProduct } from "@/types";
 
 export const metadata = {
   title: "Dashboard | EZ Shop Admin",
@@ -93,10 +98,10 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-display text-foreground text-3xl font-bold tracking-tight uppercase">
+        <h2 className="font-display text-3xl font-bold tracking-tight text-foreground uppercase">
           Dashboard
         </h2>
-        <p className="font-body text-muted-foreground mt-1 text-sm">
+        <p className="mt-1 font-body text-sm text-muted-foreground">
           Store performance at a glance.
         </p>
       </div>
@@ -110,10 +115,10 @@ export default async function DashboardPage() {
               className="card-hover border-brand-border/70"
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="font-body text-muted-foreground text-xs font-medium tracking-wider uppercase">
+                <CardTitle className="font-body text-xs font-medium tracking-wider text-muted-foreground uppercase">
                   {card.title}
                 </CardTitle>
-                <span className="bg-brand-orange/10 text-brand-orange flex size-8 shrink-0 items-center justify-center rounded-lg">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-orange/10 text-brand-orange">
                   <Icon className="size-4" aria-hidden />
                 </span>
               </CardHeader>

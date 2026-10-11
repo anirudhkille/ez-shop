@@ -1,7 +1,10 @@
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
-import CouponForm from "@/features/coupon/coupon-form";
 import React from "react";
+
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
+import CouponForm from "@/features/coupon/coupon-form";
 
 export const metadata = {
   title: "New Coupon | Dashboard - EZ Shop Admin",

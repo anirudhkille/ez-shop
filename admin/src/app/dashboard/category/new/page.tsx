@@ -1,7 +1,10 @@
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
-import CategoryForm from "@/features/category/category-form";
 import React from "react";
+
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
+import CategoryForm from "@/features/category/category-form";
 
 export const metadata = {
   title: "Category | Dashboard - EZ Shop Admin",

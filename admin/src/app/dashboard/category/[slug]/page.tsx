@@ -1,9 +1,14 @@
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
-import CategoryForm from "@/features/category/category-form";
-import { serverFetch } from "@/lib/server-api";
-import { ICategory } from "@/types";
 import React from "react";
+
+import { serverFetch } from "@/lib/server-api";
+
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
+import CategoryForm from "@/features/category/category-form";
+
+import { ICategory } from "@/types";
 
 export const metadata = {
   title: "Category | Dashboard - EZ Shop Admin",
@@ -20,7 +25,7 @@ export default async function page({
   });
   const list = await listRes.json();
   const category = (list.data || []).find(
-    (item: ICategory) => item.slug === slug,
+    (item: ICategory) => item.slug === slug
   );
 
   return (

@@ -1,6 +1,16 @@
 import * as React from "react";
+
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 import { ColumnDef } from "@tanstack/react-table";
+
+import { toast } from "sonner";
+
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+
+import { clientFetch } from "@/lib/client-api";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -10,11 +20,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { IProduct } from "@/types";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { clientFetch } from "@/lib/client-api";
-import { toast } from "sonner";
 
 export const columns: ColumnDef<IProduct>[] = [
   {
@@ -50,7 +57,7 @@ export const columns: ColumnDef<IProduct>[] = [
           width={48}
           src={src}
           alt="Product"
-          className="object-cover w-12 h-12 rounded-md"
+          className="h-12 w-12 rounded-md object-cover"
         />
       ) : null;
     },
@@ -58,9 +65,7 @@ export const columns: ColumnDef<IProduct>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("name")}</div>
-    ),
+    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "price",
@@ -137,7 +142,7 @@ const ProductActions = ({ product }: { product: IProduct }) => {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="w-8 h-8 p-0"
+          className="h-8 w-8 p-0"
           onClick={(event) => event.stopPropagation()}
         >
           <span className="sr-only">Open menu</span>

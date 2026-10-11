@@ -1,11 +1,17 @@
 import * as React from "react";
+
 import { ColumnDef } from "@tanstack/react-table";
+
+import { toast } from "sonner";
+
 import { Mail } from "lucide-react";
+
+import { formatDate } from "@/lib/format-date";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+
 import { INewsletterSubscriber } from "@/types";
-import { formatDate } from "@/lib/format-date";
-import { toast } from "sonner";
 
 export const columns: ColumnDef<INewsletterSubscriber>[] = [
   {
@@ -33,7 +39,9 @@ export const columns: ColumnDef<INewsletterSubscriber>[] = [
   {
     accessorKey: "email",
     header: "Email",
-    cell: ({ row }) => <span className="font-medium">{row.getValue("email")}</span>,
+    cell: ({ row }) => (
+      <span className="font-medium">{row.getValue("email")}</span>
+    ),
   },
   {
     accessorKey: "createdAt",

@@ -1,18 +1,37 @@
 "use client";
+
 import * as React from "react";
+
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+
 import {
   BadgeCheck,
   ChevronsUpDown,
-  LogOut,
   LayoutDashboard,
+  LogOut,
   Mail,
   Package,
-  Tags,
   ShoppingCart,
+  Tags,
   TicketPercent,
   Users,
 } from "lucide-react";
 
+import { removeAuthToken } from "@/lib/client-api";
+
+import useAuthStore from "@/store/auth-store";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -27,21 +46,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
 import Logo from "../shared/logo";
-import useAuthStore from "@/store/auth-store";
-import { removeAuthToken } from "@/lib/client-api";
 
 const navMain = [
   {
@@ -106,11 +111,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <div className="flex items-center justify-center">
           <div className="flex gap-2.5 py-2 text-sidebar-foreground">
             <Logo size={32} className="rounded-lg" />
-            <div className="grid flex-1 text-sm leading-tight text-left">
-              <span className="font-display truncate font-bold tracking-wide">
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-display font-bold tracking-wide">
                 EZ SHOP
               </span>
-              <span className="text-muted-foreground truncate text-xs">
+              <span className="truncate text-xs text-muted-foreground">
                 admin dashboard
               </span>
             </div>
@@ -147,15 +152,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
-                  <Avatar className="w-8 h-8 rounded-lg">
+                  <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage alt={name || ""} />
-                    <AvatarFallback className="uppercase rounded-lg">
+                    <AvatarFallback className="rounded-lg uppercase">
                       {name?.[0]}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="grid flex-1 text-sm leading-tight text-left">
-                    <span className="font-semibold truncate">{name}</span>
-                    <span className="text-xs truncate">{email}</span>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">{name}</span>
+                    <span className="truncate text-xs">{email}</span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />
                 </SidebarMenuButton>
@@ -168,15 +173,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               >
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar className="w-8 h-8 rounded-lg">
+                    <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage alt={name || ""} />
-                      <AvatarFallback className="uppercase rounded-lg">
+                      <AvatarFallback className="rounded-lg uppercase">
                         {name?.[0]}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="grid flex-1 text-sm leading-tight text-left">
-                      <span className="font-semibold truncate">{name}</span>
-                      <span className="text-xs truncate">{email}</span>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-semibold">{name}</span>
+                      <span className="truncate text-xs">{email}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>

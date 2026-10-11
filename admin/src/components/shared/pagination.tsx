@@ -1,10 +1,19 @@
 "use client";
 
 import * as React from "react";
+
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface PaginationProps {
   page: number;
@@ -13,7 +22,12 @@ interface PaginationProps {
   totalPages: number;
 }
 
-export function Pagination({ page, limit, total, totalPages }: PaginationProps) {
+export function Pagination({
+  page,
+  limit,
+  total,
+  totalPages,
+}: PaginationProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -37,7 +51,7 @@ export function Pagination({ page, limit, total, totalPages }: PaginationProps) 
           value={String(limit)}
           onValueChange={(value) => navigate(1, Number(value))}
         >
-          <SelectTrigger className="w-[110px] h-8 text-sm">
+          <SelectTrigger className="h-8 w-[110px] text-sm">
             <SelectValue placeholder="Rows" />
           </SelectTrigger>
           <SelectContent>

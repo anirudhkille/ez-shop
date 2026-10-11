@@ -1,13 +1,24 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { z } from "zod";
-import { useForm, useFieldArray, Control } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { useRouter } from "next/navigation";
+
+import { Control, useFieldArray, useForm } from "react-hook-form";
+
+import { z } from "zod";
+
+import { toast } from "sonner";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { Plus, Trash2 } from "lucide-react";
 
+import { clientFetch } from "@/lib/client-api";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -17,12 +28,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import PublishDropdown from "@/components/shared/publish-dropdown";
+
 import { ImageUpload } from "@/components/shared/image-upload";
-import { clientFetch } from "@/lib/client-api";
+import PublishDropdown from "@/components/shared/publish-dropdown";
+
 import { ICategory, IProduct } from "@/types";
 
 interface ProductFormProps {
@@ -81,7 +90,7 @@ function SizesFields({
         <p className="text-sm text-muted-foreground">No sizes added yet.</p>
       )}
       {fields.map((field, sizeIndex) => (
-        <div key={field.id} className="grid gap-2 sm:grid-cols-6 items-end">
+        <div key={field.id} className="grid items-end gap-2 sm:grid-cols-6">
           <FormField
             control={control}
             name={`variants.${variantIndex}.sizes.${sizeIndex}.size`}
@@ -134,7 +143,7 @@ function SizesFields({
                     {...field}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : 0,
+                        e.target.value ? Number(e.target.value) : 0
                       )
                     }
                   />
@@ -154,7 +163,7 @@ function SizesFields({
                     {...field}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : 0,
+                        e.target.value ? Number(e.target.value) : 0
                       )
                     }
                   />
@@ -208,9 +217,7 @@ export default function ProductForm({ data }: ProductFormProps) {
       isFeatured: data?.isFeatured ?? false,
       isBestSellers: data?.isBestSellers ?? false,
       tag: data?.tag || "New",
-      variants: data?.variants
-        ? JSON.parse(JSON.stringify(data.variants))
-        : [],
+      variants: data?.variants ? JSON.parse(JSON.stringify(data.variants)) : [],
     },
   });
 
@@ -250,7 +257,7 @@ export default function ProductForm({ data }: ProductFormProps) {
           method: data ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        },
+        }
       );
 
       const result = await response.json();
@@ -330,7 +337,7 @@ export default function ProductForm({ data }: ProductFormProps) {
                     {...field}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value ? Number(e.target.value) : 0,
+                        e.target.value ? Number(e.target.value) : 0
                       )
                     }
                   />

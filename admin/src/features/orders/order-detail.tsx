@@ -1,10 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
+
 import { useRouter } from "next/navigation";
+
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { clientFetch } from "@/lib/client-api";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -12,8 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import { IOrder } from "@/types";
-import { clientFetch } from "@/lib/client-api";
 
 interface OrderDetailProps {
   order: IOrder;
@@ -22,7 +27,9 @@ interface OrderDetailProps {
 export default function OrderDetail({ order }: OrderDetailProps) {
   const router = useRouter();
   const [orderStatus, setOrderStatus] = useState<string>(order.orderStatus);
-  const [paymentStatus, setPaymentStatus] = useState<string>(order.paymentStatus);
+  const [paymentStatus, setPaymentStatus] = useState<string>(
+    order.paymentStatus
+  );
   const [updating, setUpdating] = useState(false);
 
   const handleUpdate = async () => {
@@ -69,9 +76,15 @@ export default function OrderDetail({ order }: OrderDetailProps) {
             <CardTitle>Customer Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <p><strong>Name:</strong> {order.name}</p>
-            <p><strong>Email:</strong> {order.email}</p>
-            <p><strong>Phone:</strong> {order.phone}</p>
+            <p>
+              <strong>Name:</strong> {order.name}
+            </p>
+            <p>
+              <strong>Email:</strong> {order.email}
+            </p>
+            <p>
+              <strong>Phone:</strong> {order.phone}
+            </p>
           </CardContent>
         </Card>
 
@@ -80,14 +93,19 @@ export default function OrderDetail({ order }: OrderDetailProps) {
             <CardTitle>Delivery Address</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <p><strong>{order.address.name}</strong></p>
+            <p>
+              <strong>{order.address.name}</strong>
+            </p>
             <p>{order.address.addressLine1}</p>
             {order.address.addressLine2 && <p>{order.address.addressLine2}</p>}
             <p>
-              {order.address.city}, {order.address.state} {order.address.zipCode}
+              {order.address.city}, {order.address.state}{" "}
+              {order.address.zipCode}
             </p>
             <p>{order.address.country}</p>
-            <p><strong>Phone:</strong> {order.address.phone}</p>
+            <p>
+              <strong>Phone:</strong> {order.address.phone}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -110,7 +128,9 @@ export default function OrderDetail({ order }: OrderDetailProps) {
               {order.products.map((item, i) => (
                 <tr key={i} className="border-b">
                   <td className="py-2">
-                    {item.product && typeof item.product === "object" && "name" in item.product
+                    {item.product &&
+                    typeof item.product === "object" &&
+                    "name" in item.product
                       ? (item.product as { name: string }).name
                       : "Product"}
                   </td>
@@ -143,7 +163,7 @@ export default function OrderDetail({ order }: OrderDetailProps) {
                 <td colSpan={3} className="py-2 text-lg font-bold">
                   Total
                 </td>
-                <td className="py-2 text-lg font-bold text-right">
+                <td className="py-2 text-right text-lg font-bold">
                   ₹{order.totalAmount?.toFixed(2)}
                 </td>
               </tr>

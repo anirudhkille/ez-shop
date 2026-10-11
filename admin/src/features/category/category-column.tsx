@@ -1,6 +1,16 @@
 import * as React from "react";
+
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 import { ColumnDef } from "@tanstack/react-table";
+
+import { toast } from "sonner";
+
 import { MoreHorizontal } from "lucide-react";
+
+import { clientFetch } from "@/lib/client-api";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -10,11 +20,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { ICategory } from "@/types";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { clientFetch } from "@/lib/client-api";
-import { toast } from "sonner";
 
 export const columns: ColumnDef<ICategory>[] = [
   {
@@ -48,16 +55,14 @@ export const columns: ColumnDef<ICategory>[] = [
         width={48}
         src={(row.getValue("image") as string) || ""}
         alt="Category"
-        className="object-cover w-12 h-12 rounded-md"
+        className="h-12 w-12 rounded-md object-cover"
       />
     ),
   },
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("name")}</div>
-    ),
+    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
     id: "actions",
@@ -96,7 +101,7 @@ const CategoryActions = ({ category }: { category: ICategory }) => {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="w-8 h-8 p-0"
+          className="h-8 w-8 p-0"
           onClick={(event) => event.stopPropagation()}
         >
           <span className="sr-only">Open menu</span>

@@ -1,5 +1,17 @@
 "use client";
+
 import * as React from "react";
+
+import { useRouter } from "next/navigation";
+
+import { BadgeCheck, LogOut } from "lucide-react";
+
+import { removeAuthToken } from "@/lib/client-api";
+
+import useAuthStore from "@/store/auth-store";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,12 +21,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BadgeCheck, LogOut } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import useAuthStore from "@/store/auth-store";
-import { removeAuthToken } from "@/lib/client-api";
 
 export default function AccountMenu() {
   const router = useRouter();
@@ -32,7 +38,7 @@ export default function AccountMenu() {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
-          <Avatar className="w-8 h-8">
+          <Avatar className="h-8 w-8">
             <AvatarImage alt={name || ""} />
             <AvatarFallback className="uppercase">
               {name?.[0] || ""}
@@ -48,15 +54,15 @@ export default function AccountMenu() {
       >
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-            <Avatar className="w-8 h-8 rounded-lg">
+            <Avatar className="h-8 w-8 rounded-lg">
               <AvatarImage alt={name || ""} />
-              <AvatarFallback className="uppercase rounded-lg">
+              <AvatarFallback className="rounded-lg uppercase">
                 {name?.[0] || ""}
               </AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-sm leading-tight text-left">
-              <span className="font-semibold truncate">{name || "Admin"}</span>
-              <span className="text-xs truncate">{email || ""}</span>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">{name || "Admin"}</span>
+              <span className="truncate text-xs">{email || ""}</span>
             </div>
           </div>
         </DropdownMenuLabel>

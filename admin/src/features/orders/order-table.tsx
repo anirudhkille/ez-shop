@@ -1,15 +1,16 @@
 "use client";
 
 import * as React from "react";
+
 import {
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 
 import {
@@ -20,9 +21,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { Pagination } from "@/components/shared/pagination";
 import { TableToolbar } from "@/components/shared/table-toolbar";
+
 import { IOrder, IPagination } from "@/types";
+
 import { columns } from "./order-column";
 
 interface OrderTableProps {
@@ -85,7 +89,7 @@ export function OrderTable({ data, pagination }: OrderTableProps) {
         ]}
       />
 
-      <div className="border rounded-md">
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

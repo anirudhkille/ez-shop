@@ -1,9 +1,14 @@
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
-import UserDetail from "@/features/users/user-detail";
-import { serverFetch } from "@/lib/server-api";
-import { IUserAdminDetail } from "@/types";
 import React from "react";
+
+import { serverFetch } from "@/lib/server-api";
+
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
+import UserDetail from "@/features/users/user-detail";
+
+import { IUserAdminDetail } from "@/types";
 
 export const metadata = {
   title: "User Details | Dashboard - EZ Shop Admin",

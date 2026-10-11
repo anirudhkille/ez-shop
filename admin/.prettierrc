@@ -1,0 +1,61 @@
+{
+  "semi": true,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "printWidth": 80,
+  "useTabs": false,
+  "arrowParens": "always",
+  "endOfLine": "lf",
+
+  "plugins": [
+    "@trivago/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss"
+  ],
+
+  "tailwindStylesheet": "./src/app/globals.css",
+  "tailwindFunctions": ["cn", "cva"],
+
+  "importOrder": [
+    "^react$",
+    "^react-dom$",
+    "^react/.*$",
+
+    "^next$",
+    "^next/.*$",
+    "^next-themes$",
+    "^@tanstack/react-table$",
+    "^react-hook-form$",
+    "^@hookform/resolvers$",
+    "^zod$",
+    "^zustand$",
+    "^recharts$",
+    "^sonner$",
+    "^react-dropzone$",
+
+    "<THIRD_PARTY_MODULES>",
+
+    "^@radix-ui/.*$",
+    "^lucide-react$",
+
+    "^@/types/.*$",
+    "^@/lib/.*$",
+    "^@/store/.*$",
+    "^@/context/.*$",
+
+    "^@/components/ui/.*$",
+    "^@/components/shared/.*$",
+    "^@/components/layout/.*$",
+    "^@/components/.*$",
+
+    "^@/features/.*$",
+
+    "^@/.*$",
+
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "importOrderGroupNamespaceSpecifiers": true,
+  "importOrderCaseInsensitive": true
+}

@@ -19,7 +19,7 @@ export function removeAuthToken() {
 
 export async function clientFetch(
   path: string,
-  init?: RequestInit,
+  init?: RequestInit
 ): Promise<Response> {
   const token = getAuthToken();
   const url = `${SERVER_URL}${path}`;

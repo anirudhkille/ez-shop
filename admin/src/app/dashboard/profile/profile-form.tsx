@@ -1,11 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { toast } from "sonner";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { useRouter } from "next/navigation";
+
+import { useForm } from "react-hook-form";
+
+import { z } from "zod";
+
+import { toast } from "sonner";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { clientFetch } from "@/lib/client-api";
+
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,8 +24,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { clientFetch } from "@/lib/client-api";
 
 const formSchema = z.object({
   name: z.string().nonempty({ message: "Please enter your name" }),
@@ -57,9 +64,7 @@ export default function ProfileForm({ admin }: ProfileFormProps) {
         toast.error(result.message);
       }
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "An error occurred",
-      );
+      toast.error(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setLoading(false);
     }

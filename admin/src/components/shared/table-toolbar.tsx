@@ -65,12 +65,13 @@ export function TableToolbar({ searchPlaceholder, filters = [] }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [term]);
 
-  const active = Boolean(search) || filters.some((f) => searchParams.get(f.key));
+  const active =
+    Boolean(search) || filters.some((f) => searchParams.get(f.key));
 
   return (
     <div className="flex flex-wrap items-center gap-2">
       <div className="relative min-w-[220px] flex-1">
-        <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={term}
           onChange={(event) => setTerm(event.target.value)}
@@ -88,10 +89,7 @@ export function TableToolbar({ searchPlaceholder, filters = [] }: Props) {
             apply(filter.key, value === "all" ? "" : value)
           }
         >
-          <SelectTrigger
-            aria-label={filter.label}
-            className="w-[170px]"
-          >
+          <SelectTrigger aria-label={filter.label} className="w-[170px]">
             <SelectValue placeholder={filter.label} />
           </SelectTrigger>
           <SelectContent>

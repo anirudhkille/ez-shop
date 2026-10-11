@@ -1,10 +1,16 @@
-import { notFound } from "next/navigation";
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
-import ProductForm from "@/features/products/product-form";
-import { serverFetch } from "@/lib/server-api";
-import { IPaginatedResponse, IProduct } from "@/types";
 import React from "react";
+
+import { notFound } from "next/navigation";
+
+import { serverFetch } from "@/lib/server-api";
+
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
+import ProductForm from "@/features/products/product-form";
+
+import { IPaginatedResponse, IProduct } from "@/types";
 
 export const metadata = {
   title: "Product | Dashboard - EZ Shop Admin",
@@ -20,7 +26,9 @@ export default async function Page({
   // The product API only exposes a public /:slug/:id read, so the single
   // product is resolved from the admin list endpoint by id — the same approach
   // the category detail page uses.
-  const res = await serverFetch("/api/product?limit=1000", { cache: "no-store" });
+  const res = await serverFetch("/api/product?limit=1000", {
+    cache: "no-store",
+  });
 
   if (!res.ok) {
     notFound();

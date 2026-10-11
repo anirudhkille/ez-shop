@@ -1,9 +1,14 @@
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
-import CategoryTable from "@/features/category/category-table";
-import { serverFetch } from "@/lib/server-api";
-import { IPaginatedResponse, ICategory } from "@/types";
 import React from "react";
+
+import { serverFetch } from "@/lib/server-api";
+
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
+import CategoryTable from "@/features/category/category-table";
+
+import { ICategory, IPaginatedResponse } from "@/types";
 
 export const metadata = {
   title: "Category | Dashboard - EZ Shop Admin",

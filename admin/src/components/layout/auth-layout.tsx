@@ -1,12 +1,14 @@
 import React, { ReactNode } from "react";
+
+import Logo from "../shared/logo";
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from "../ui/card";
-import Logo from "../shared/logo";
+
 interface AuthProps {
   title: string;
   description: string;
@@ -19,10 +21,10 @@ export default function AuthLayout({
   children,
 }: AuthProps) {
   return (
-    <div className="flex items-center justify-center h-screen px-3">
+    <div className="flex h-screen items-center justify-center px-3">
       <Card className="w-full max-w-sm py-5">
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center w-full mb-5">
+          <div className="mb-5 flex w-full items-center justify-center">
             <Logo />
           </div>
           <CardTitle>{title}</CardTitle>

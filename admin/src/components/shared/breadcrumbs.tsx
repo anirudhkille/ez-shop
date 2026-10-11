@@ -1,5 +1,11 @@
 "use client";
+
 import React from "react";
+
+import { usePathname } from "next/navigation";
+
+import { Slash } from "lucide-react";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,12 +14,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { usePathname } from "next/navigation";
-import { Slash } from "lucide-react";
 
 export default function BreadCrumbs() {
   const pathname = usePathname();
-  const segments = pathname.split("/").slice(2); 
+  const segments = pathname.split("/").slice(2);
 
   if (segments.length === 0) {
     return (
@@ -42,7 +46,7 @@ export default function BreadCrumbs() {
           const href = "/dashboard/" + segments.slice(0, index + 1).join("/");
 
           return (
-            <div className="items-center hidden gap-2 md:flex" key={href}>
+            <div className="hidden items-center gap-2 md:flex" key={href}>
               <BreadcrumbSeparator>
                 <Slash />
               </BreadcrumbSeparator>

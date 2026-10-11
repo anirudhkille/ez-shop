@@ -1,11 +1,15 @@
 "use client";
 
-import { UploadIcon, Trash2Icon } from "lucide-react";
 import { useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { Label } from "../ui/label";
-import { Button } from "../ui/button";
+
 import Image from "next/image";
+
+import { useDropzone } from "react-dropzone";
+
+import { Trash2Icon, UploadIcon } from "lucide-react";
+
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
 
 interface ImageUploadProps {
   onUploadSuccess: (urls: string[]) => void;
@@ -75,12 +79,12 @@ export function ImageUpload({
 
       <div
         {...getRootProps()}
-        className="p-6 text-center border-2 border-dashed rounded-lg cursor-pointer"
+        className="cursor-pointer rounded-lg border-2 border-dashed p-6 text-center"
       >
         <input {...getInputProps()} />
         {isDragActive ? (
           <div className="flex flex-col items-center justify-center space-y-3">
-            <div className="p-3 border rounded-full">
+            <div className="rounded-full border p-3">
               <UploadIcon
                 className="size-7 text-muted-foreground"
                 aria-hidden="true"
@@ -90,7 +94,7 @@ export function ImageUpload({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center space-y-3">
-            <div className="p-3 border rounded-full">
+            <div className="rounded-full border p-3">
               <UploadIcon
                 className="size-7 text-muted-foreground"
                 aria-hidden="true"
@@ -111,7 +115,7 @@ export function ImageUpload({
                 alt="Preview"
                 height={120}
                 width={120}
-                className="object-cover rounded-lg size-24"
+                className="size-24 rounded-lg object-cover"
               />
               <Button
                 variant="destructive"

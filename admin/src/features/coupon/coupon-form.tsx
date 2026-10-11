@@ -1,12 +1,21 @@
 "use client";
 
 import React from "react";
-import { toast } from "sonner";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { useRouter } from "next/navigation";
 
+import { useForm } from "react-hook-form";
+
+import { z } from "zod";
+
+import { toast } from "sonner";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { clientFetch } from "@/lib/client-api";
+
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -17,8 +26,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -26,7 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { clientFetch } from "@/lib/client-api";
+
 import { ICoupon } from "@/types";
 
 interface CouponFormProps {
@@ -43,7 +50,7 @@ const optionalNumber = z
       value === undefined ||
       value === "" ||
       (Number.isFinite(Number(value)) && Number(value) > 0),
-    { message: "Must be a number greater than 0" },
+    { message: "Must be a number greater than 0" }
   );
 
 const formSchema = z
@@ -106,7 +113,8 @@ export default function CouponForm({ data }: CouponFormProps) {
       type: data?.type || "percentage",
       value: data ? String(data.value) : "",
       description: data?.description || "",
-      minOrderValue: data?.minOrderValue != null ? String(data.minOrderValue) : "",
+      minOrderValue:
+        data?.minOrderValue != null ? String(data.minOrderValue) : "",
       maxDiscountAmount:
         data?.maxDiscountAmount != null ? String(data.maxDiscountAmount) : "",
       maxUses: data?.maxUses != null ? String(data.maxUses) : "",
@@ -149,8 +157,7 @@ export default function CouponForm({ data }: CouponFormProps) {
       if (maxUses !== undefined) payload.maxUses = maxUses;
 
       const maxUsesPerUser = toNumber(values.maxUsesPerUser);
-      if (maxUsesPerUser !== undefined)
-        payload.maxUsesPerUser = maxUsesPerUser;
+      if (maxUsesPerUser !== undefined) payload.maxUsesPerUser = maxUsesPerUser;
 
       if (values.expiresAt)
         payload.expiresAt = new Date(values.expiresAt).toISOString();
@@ -164,7 +171,7 @@ export default function CouponForm({ data }: CouponFormProps) {
           method: data ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        },
+        }
       );
 
       const result = await response.json();
@@ -176,9 +183,7 @@ export default function CouponForm({ data }: CouponFormProps) {
         toast.error(result.message);
       }
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "An error occurred"
-      );
+      toast.error(error instanceof Error ? error.message : "An error occurred");
     }
   };
 
@@ -299,15 +304,11 @@ export default function CouponForm({ data }: CouponFormProps) {
                 <FormItem>
                   <FormLabel>Maximum discount</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      min={0}
-                      placeholder="500"
-                      {...field}
-                    />
+                    <Input type="number" min={0} placeholder="500" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Caps what a large order can take off. Leave blank for no cap.
+                    Caps what a large order can take off. Leave blank for no
+                    cap.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

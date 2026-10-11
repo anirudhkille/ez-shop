@@ -1,9 +1,12 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
+import { toast } from "sonner";
+
 import {
   Heart,
   IndianRupee,
@@ -14,6 +17,10 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+import { clientFetch } from "@/lib/client-api";
+import { formatDate } from "@/lib/format-date";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -21,9 +28,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -32,9 +37,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { IUserAdminDetail } from "@/types";
-import { clientFetch } from "@/lib/client-api";
-import { formatDate } from "@/lib/format-date";
 
 interface UserDetailProps {
   detail: IUserAdminDetail;
@@ -133,17 +137,17 @@ export default function UserDetail({ detail }: UserDetailProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-4 mb-6">
+          <div className="mb-6 flex items-center gap-4">
             {user.avatar ? (
               <Image
                 height={80}
                 width={80}
                 src={user.avatar}
                 alt={user.name || "User"}
-                className="object-cover w-20 h-20 rounded-full"
+                className="h-20 w-20 rounded-full object-cover"
               />
             ) : (
-              <div className="flex items-center justify-center w-20 h-20 rounded-full bg-muted">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
                 <span className="text-2xl font-medium text-muted-foreground">
                   {(user.name || user.email)?.[0]?.toUpperCase()}
                 </span>
@@ -170,10 +174,7 @@ export default function UserDetail({ detail }: UserDetailProps) {
             />
             <Field label="Items Bought" value={String(stats.itemCount)} />
             <Field label="Joined" value={formatDate(user.createdAt)} />
-            <Field
-              label="Last Updated"
-              value={formatDate(user.updatedAt)}
-            />
+            <Field label="Last Updated" value={formatDate(user.updatedAt)} />
           </div>
         </CardContent>
       </Card>
@@ -194,7 +195,7 @@ export default function UserDetail({ detail }: UserDetailProps) {
           {orders.length === 0 ? (
             <p className="text-sm text-muted-foreground">No orders yet.</p>
           ) : (
-            <div className="border rounded-md">
+            <div className="rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -340,7 +341,11 @@ export default function UserDetail({ detail }: UserDetailProps) {
 
       <Separator />
 
-      <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+      <Button
+        variant="destructive"
+        onClick={handleDelete}
+        disabled={isDeleting}
+      >
         <Trash2 className="mr-2 h-4 w-4" />
         {isDeleting ? "Deleting…" : "Delete User"}
       </Button>
@@ -362,9 +367,7 @@ function Field({
       <label className="text-sm font-medium text-muted-foreground">
         {label}
       </label>
-      <p className={capitalize ? "capitalize" : undefined}>
-        {value || "—"}
-      </p>
+      <p className={capitalize ? "capitalize" : undefined}>{value || "—"}</p>
     </div>
   );
 }

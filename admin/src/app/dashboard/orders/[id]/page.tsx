@@ -1,8 +1,12 @@
-import { PageHeading } from "@/components/shared/page-heading";
-import { Separator } from "@/components/ui/separator";
-import OrderDetail from "@/features/orders/order-detail";
-import { serverFetch } from "@/lib/server-api";
 import React from "react";
+
+import { serverFetch } from "@/lib/server-api";
+
+import { Separator } from "@/components/ui/separator";
+
+import { PageHeading } from "@/components/shared/page-heading";
+
+import OrderDetail from "@/features/orders/order-detail";
 
 export const metadata = {
   title: "Order Details | Dashboard - EZ Shop Admin",

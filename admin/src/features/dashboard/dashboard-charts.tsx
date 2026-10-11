@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+
 import {
   Area,
   AreaChart,
@@ -12,7 +13,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { IOrder, IProduct } from "@/types";
 
 const AXIS_TICK = { fill: "hsl(var(--muted-foreground))" };
@@ -82,7 +85,6 @@ function topProducts(orders: IOrder[]) {
 
 export function DashboardCharts({
   orders,
-  products,
   totalProducts = 0,
 }: {
   orders: IOrder[];
@@ -110,14 +112,35 @@ export function DashboardCharts({
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={240}>
-            <AreaChart data={data} margin={{ left: 0, right: 16, top: 8, bottom: 0 }}>
+            <AreaChart
+              data={data}
+              margin={{ left: 0, right: 16, top: 8, bottom: 0 }}
+            >
               <defs>
-                <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                <linearGradient
+                  id="revenueGradient"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor="hsl(var(--primary))"
+                    stopOpacity={0.3}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="hsl(var(--primary))"
+                    stopOpacity={0}
+                  />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} {...GRID_STROKE} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                {...GRID_STROKE}
+              />
               <XAxis
                 dataKey="label"
                 tick={{ ...AXIS_TICK, fontSize: 12 }}
@@ -132,7 +155,10 @@ export function DashboardCharts({
                 width={60}
               />
               <Tooltip
-                formatter={(value) => [formatINR(Number(value) || 0), "Revenue"]}
+                formatter={(value) => [
+                  formatINR(Number(value) || 0),
+                  "Revenue",
+                ]}
                 labelClassName="font-medium"
                 contentStyle={TOOLTIP_STYLE}
               />
@@ -155,8 +181,15 @@ export function DashboardCharts({
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={data} margin={{ left: 0, right: 16, top: 8, bottom: 0 }}>
-              <CartesianGrid {...GRID_STROKE} strokeDasharray="3 3" vertical={false} />
+            <BarChart
+              data={data}
+              margin={{ left: 0, right: 16, top: 8, bottom: 0 }}
+            >
+              <CartesianGrid
+                {...GRID_STROKE}
+                strokeDasharray="3 3"
+                vertical={false}
+              />
               <XAxis
                 dataKey="label"
                 tick={AXIS_TICK}
@@ -175,7 +208,11 @@ export function DashboardCharts({
                 labelClassName="font-medium"
                 contentStyle={TOOLTIP_STYLE}
               />
-              <Bar dataKey="orders" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+              <Bar
+                dataKey="orders"
+                fill="hsl(var(--primary))"
+                radius={[4, 4, 0, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -192,7 +229,11 @@ export function DashboardCharts({
               layout="vertical"
               margin={{ left: 24, right: 16, top: 8, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} {...GRID_STROKE} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                horizontal={false}
+                {...GRID_STROKE}
+              />
               <XAxis type="number" hide />
               <YAxis
                 dataKey="name"
@@ -203,10 +244,17 @@ export function DashboardCharts({
                 tickLine={false}
               />
               <Tooltip
-                formatter={(value) => [formatINR(Number(value) || 0), "Revenue"]}
+                formatter={(value) => [
+                  formatINR(Number(value) || 0),
+                  "Revenue",
+                ]}
                 contentStyle={TOOLTIP_STYLE}
               />
-              <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+              <Bar
+                dataKey="revenue"
+                fill="hsl(var(--primary))"
+                radius={[0, 4, 4, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -214,7 +262,9 @@ export function DashboardCharts({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-medium">Catalog Overview</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Catalog Overview
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col justify-center">
           <div className="text-3xl font-bold">{totalProducts}</div>
