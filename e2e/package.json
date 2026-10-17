@@ -1,0 +1,28 @@
+{
+  "name": "ez-shop-e2e",
+  "private": true,
+  "packageManager": "bun@1.4.2",
+  "version": "1.0.0",
+  "description": "Playwright end-to-end tests for ez-shop: customer storefront, admin dashboard, and REST API.",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "debug": "playwright test --debug",
+    "install:browsers": "playwright install chromium",
+    "report": "playwright show-report",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\""
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.0",
+    "playwright": "^1.53.0",
+    "@types/node": "^24",
+    "typescript": "~5.9.3",
+    "dotenv": "^17.2.3"
+  },
+  "dependencies": {
+    "mongodb": "^6.12.0",
+    "bcryptjs": "^2.4.3"
+  }
+}

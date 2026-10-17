@@ -1,0 +1,15 @@
+node_modules/
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+dist/
+logs/
+*.log
+.env.local
+.env.*.local
+
+# Ad-hoc debug output from manual runs (e2e-*.txt, run-*.txt, etc.)
+e2e-*.txt
+run-*.txt
+debug*.txt

@@ -7,6 +7,9 @@
     "lint-staged": "^16.2.7"
   },
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "e2e": "bun run --cwd e2e test",
+    "e2e:headed": "bun run --cwd e2e test:headed",
+    "e2e:ui": "bun run --cwd e2e test:ui"
   }
 }

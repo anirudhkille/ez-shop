@@ -139,7 +139,7 @@ holds Husky and lint-staged, and each directory keeps its own `bun.lock`.
 ```bash
 cd server
 bun install
-cp .env .env        # then fill in the values below
+# create server/.env and fill in the values below
 bun run dev         # tsx watch, http://localhost:8080
 ```
 
@@ -152,7 +152,6 @@ fast with a logged reason instead of surfacing later as a runtime error.
 | `PORT` | API port (default `8080`) |
 | `NODE_ENV` | `development` \| `production` \| `test` |
 | `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` | Token signing secrets |
-| `SESSION_SECRET` | Express session secret |
 | `CLIENT_URL`, `ADMIN_URL` | Frontend origins, allowed by CORS |
 | `CORS_ORIGINS` | Extra comma-separated origins, added to `CLIENT_URL` and `ADMIN_URL` |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL` | Google OAuth |
@@ -163,6 +162,7 @@ fast with a logged reason instead of surfacing later as a runtime error.
 | `SENTRY_DSN` | Error reporting. Optional — omit it and Sentry stays inert |
 | `SENTRY_ENVIRONMENT`, `SENTRY_RELEASE` | Overrides for the Sentry environment/release tags |
 | `SENTRY_TRACES_SAMPLE_RATE` | Performance sampling, `0`–`1` (default `0`, errors only) |
+| `E2E_BYPASS_RATE_LIMIT` | Lets the Playwright suite skip `authLimiter`. Ignored when `NODE_ENV=production` |
 
 ### 2. Storefront
 
@@ -224,6 +224,31 @@ deliberately treated as different failures.
 | `admin` | `bun run dev` | Next.js dev server (Turbopack) |
 | | `bun run build` / `bun run start` | Production build and serve |
 | | `bun run lint` | ESLint |
+| `e2e` | `bun run e2e` (repo root) | Playwright suite — storefront, admin and API |
+| | `bun run e2e:headed` / `bun run e2e:ui` | Same suite, visible browser / UI mode |
+
+## Testing
+
+Two layers, run independently:
+
+**Unit tests** — `server/` uses `node:test` and needs no database:
+
+```bash
+cd server && bun run test
+```
+
+**End-to-end tests** — `e2e/` uses Playwright against a running local stack
+(MongoDB from `server/.env`, API on `:7777`, storefront on `:5173`, admin on `:3000`):
+
+```bash
+bun install --cwd e2e && bun run --cwd e2e install:browsers
+bun run e2e
+```
+
+Playwright starts the three dev servers itself when they are not already
+running. Test accounts are seeded straight into MongoDB (the email-OTP signup
+flow cannot complete unattended) and deleted afterwards. See
+[`e2e/README.md`](e2e/README.md) for details.
 
 ## API conventions
 
@@ -261,7 +286,7 @@ Collection endpoints accept `?page` and `?limit` (max 100).
 ## Deployment
 
 `render.yaml` builds and serves the `server/` workspace as a Node web service
-(health check on `/`). The storefront and admin dashboard are deployed
+(health check on `/api/health`). The storefront and admin dashboard are deployed
 separately as static/Node apps and point at the API via their public base URL
 variables.
 
