@@ -35,8 +35,8 @@ import {
   shopperJourney,
 } from "../lib/journeys.js";
 
-// Stage strings use k6's "duration:target" shorthand for ramping-vus, so the
-// whole shape of the test is overridable without editing this file:
+// Stage strings use a "duration:target" shorthand, so the whole shape of the
+// test is overridable without editing this file:
 //   -e BROWSE_STAGES="30s:5,1m:5,30s:20,1m:20,15s:0"
 const DEFAULTS = {
   BROWSE_STAGES: "30s:5,1m:5,30s:20,1m:20,15s:0",
@@ -46,9 +46,34 @@ const DEFAULTS = {
   GRACEFUL_RAMPDOWN: "30s",
 };
 
+/**
+ * Turn "30s:5,1m:5" into [{ duration: "30s", target: 5 }, ...].
+ *
+ * k6 used to accept that shorthand string directly in `stages`, but v2 requires
+ * a real array and fails with
+ *   cannot unmarshal string into ... scenarios.stages of type []executor.Stage
+ */
+function parseStages(spec) {
+  return String(spec)
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => {
+      const [duration, target] = part.split(":");
+
+      if (!duration || target === undefined) {
+        throw new Error(
+          `Invalid stage "${part}". Expected the form duration:target, e.g. "30s:5".`,
+        );
+      }
+
+      return { duration: duration.trim(), target: Number(target) };
+    });
+}
+
 function stages(name) {
   const raw = __ENV[name];
-  return raw && String(raw) !== "" ? String(raw) : DEFAULTS[name];
+  return parseStages(raw && String(raw) !== "" ? raw : DEFAULTS[name]);
 }
 
 function hasCreds(role) {

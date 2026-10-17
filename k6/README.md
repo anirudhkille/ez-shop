@@ -61,47 +61,48 @@ k6 run -e USER2_EMAIL=... -e USER2_PASSWORD=... tests/security.test.js
 k6 run --out json=results.json tests/load.test.js   # machine-readable output
 ```
 
-## The rate limiter will block the load test
+## The rate limiter and the load test
 
-`config/limiter.ts` puts every request behind a global limiter of **1000
-requests per 15 minutes per IP**, and the auth endpoints behind **10 per 15
-minutes**.
+`config/limiter.ts` puts every request behind a global limiter, and the auth
+endpoints behind a much tighter one. Both are far below what a load test can
+generate from one machine, so `load.test.js` calls
+`assertRateLimitAllowsLoad()` during setup and **aborts** rather than reporting
+a wall of 429s that measures the limiter instead of the application.
 
-Both are far below what a load test can generate from one machine, so
-`load.test.js` calls `assertRateLimitAllowsLoad()` during setup and **aborts**
-rather than reporting a wall of 429s that measures the limiter instead of the
-application.
-
-You will see one of these:
+Without raising it you get:
 
 ```
 The server allows only 1000 requests per window per IP, so this test would
 mostly measure 429s. ...
 ```
 
-To actually load-test, the limiter has to give way. The three options, in the
-order I would pick them:
+### Raising it
 
-1. **A staging deployment with the ceiling raised.** Nothing here needs to change
-   in the repository, but it does need the application to allow it — see below.
-2. **Make both ceilings configurable** (`RATE_LIMIT_MAX` / `AUTH_RATE_LIMIT_MAX`,
-   defaulting to the current 1000 / 10) so staging can raise them without a code
-   change.
-3. Lower `MIN_RATE_LIMIT` and accept that the results describe the limiter, not
-   the API. Useful for a smoke run, never for a real number.
+The limiter reads its ceilings from the environment, so no code change is
+needed:
 
-### What the application needs before this can work
+```bash
+# terminal 1 - raise the global ceiling
+RATE_LIMIT_MAX=100000 bun run dev        # PowerShell: $env:RATE_LIMIT_MAX=100000; bun run dev
 
-`DISABLE_RATE_LIMIT=true` already exists, but it only reaches `authLimiter`.
-`apiLimiter` has **no bypass at all** — every request is capped, including
-`GET /api/health`, which is where the advertised ceiling is read from.
+# terminal 2
+k6 run -e BASE_URL=http://localhost:7777 tests/load.test.js
+```
 
-So the load test cannot be unblocked by configuration alone today. The
-application needs one of:
+`RATE_LIMIT_MAX` and `AUTH_RATE_LIMIT_MAX` keep the limiter *active* at a
+higher ceiling, which is what you want for a real number — it still catches a
+runaway loop. `DISABLE_RATE_LIMIT=true` skips both limiters entirely; because
+`skip` short-circuits before the headers are written, the response then carries
+no `RateLimit-Limit` at all, which preflight reports as "cannot verify" and
+proceeds anyway.
 
-- a `skip` on `apiLimiter` honouring `DISABLE_RATE_LIMIT` / `RATE_LIMIT_MAX`, or
-- a trust proxy aware `keyGenerator`, so the limiter counts real client IPs
-  rather than every request appearing to come from one address.
+Which one you can use depends on the limiter defaults: at the shipped default
+of 1000, only raising `RATE_LIMIT_MAX` satisfies preflight cleanly.
+
+One thing neither of those addresses: behind a proxy the limiter counts the
+proxy's IP rather than the client's, so every request looks like it comes from
+one address. A trust-proxy-aware `keyGenerator` is what you want before
+load-testing anything deployed.
 
 The auth limiter matters for every test, not just the load one: the suite logs
 in at most twice per run, and passing `*_TOKEN` avoids that entirely.

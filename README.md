@@ -163,6 +163,9 @@ fast with a logged reason instead of surfacing later as a runtime error.
 | `SENTRY_ENVIRONMENT`, `SENTRY_RELEASE` | Overrides for the Sentry environment/release tags |
 | `SENTRY_TRACES_SAMPLE_RATE` | Performance sampling, `0`–`1` (default `0`, errors only) |
 | `E2E_BYPASS_RATE_LIMIT` | Lets the Playwright suite skip `authLimiter`. Ignored when `NODE_ENV=production` |
+| `RATE_LIMIT_MAX` | Requests per 15 min per IP for the global limiter (default `1000`). Raise it to load-test |
+| `AUTH_RATE_LIMIT_MAX` | Login attempts per 15 min per IP (default `10`) |
+| `DISABLE_RATE_LIMIT` | Skips both limiters. Emits no `RateLimit-*` headers |
 
 ### 2. Storefront
 
