@@ -21,10 +21,11 @@
 // deliberately burns the rest. Pass USER_TOKEN / USER2_TOKEN to avoid the
 // logins, and leave ALLOW_LOCKOUT off unless you want the 15-minute lockout.
 
+import exec from "k6/execution";
 import { group } from "k6";
 
 import { FLAGS } from "../lib/config.js";
-import { authenticate } from "../lib/auth.js";
+import { authenticate, whoami } from "../lib/auth.js";
 import { assertServerReachable } from "../lib/preflight.js";
 import { del, get, parse, patch, post } from "../lib/client.js";
 import { expectError, expectOk, finding, statusIn } from "../lib/checks.js";
@@ -57,9 +58,42 @@ export function setup() {
     );
   }
 
+  // Precondition for the cross-customer groups: if both variables happen to
+  // point at the same account then every isolation check below compares an
+  // account with itself and passes without proving anything. Fail loudly
+  // instead of reporting a green run that tested nothing.
+  let userId = null;
+  let user2Id = null;
+
+  if (auth.user && auth.user2) {
+    const userProfile = whoami(auth.user.token);
+    const user2Profile = whoami(auth.user2.token);
+
+    userId = userProfile && (userProfile._id || userProfile.id);
+    user2Id = user2Profile && (user2Profile._id || user2Profile.id);
+
+    if (!userId || !user2Id) {
+      console.warn(
+        "Could not read both profiles, so the cross-customer checks will be " +
+          "less meaningful.",
+      );
+    } else if (userId === user2Id) {
+      exec.test.abort(
+        "USER_* and USER2_* resolve to the same account (" +
+          userId +
+          "). Point USER2 at a different customer, or the cross-customer " +
+          "isolation checks prove nothing.",
+      );
+    } else {
+      console.log(`Cross-customer checks: ${userId} vs ${user2Id}`);
+    }
+  }
+
   return {
     userToken: auth.user && auth.user.token,
     user2Token: auth.user2 && auth.user2.token,
+    userId,
+    user2Id,
   };
 }
 
@@ -75,6 +109,7 @@ export default function (data) {
     }
 
     if (data.userToken && data.user2Token) {
+      group("cross-customer: session scoping", () => sessionScoping(data));
       group("cross-customer: addresses", () => addressIsolation(data, state));
       group("cross-customer: orders", () => orderIsolation(data));
     }
@@ -235,6 +270,37 @@ function roleEscalation(data) {
 }
 
 // --- Cross-customer isolation ------------------------------------------------
+
+/**
+ * Each token must resolve to exactly its own account. If /user/profile ever
+ * returned the requester's id regardless of the token, every isolation check
+ * below would still "pass" while testing nothing.
+ */
+function sessionScoping(data) {
+  const own = whoami(data.userToken);
+  const other = whoami(data.user2Token);
+
+  const ownId = own && (own._id || own.id);
+  const otherId = other && (other._id || other.id);
+
+  expectOk(
+    get("/user/profile", { token: data.userToken, name: "GET /user/profile (owner)" }),
+    "owner profile",
+    200,
+  );
+  expectOk(
+    get("/user/profile", {
+      token: data.user2Token,
+      name: "GET /user/profile (other)",
+    }),
+    "other profile",
+    200,
+  );
+
+  finding("the two tokens resolved to the same account", Boolean(ownId) && ownId === otherId);
+  finding("owner profile did not match the id seen in setup()", Boolean(data.userId) && ownId !== data.userId);
+  finding("other profile did not match the id seen in setup()", Boolean(data.user2Id) && otherId !== data.user2Id);
+}
 
 /**
  * The address endpoints are `protect` only - there is no ownership middleware
