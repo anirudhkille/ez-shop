@@ -1,0 +1,6 @@
+# k6 writes files only when asked to (--out, --summary-export).
+# Keep local run artefacts out of the repository.
+results*.json
+summary*.json
+*.out.json
+reports/
