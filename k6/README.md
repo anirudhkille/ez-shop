@@ -49,7 +49,7 @@ anonymous browse scenario, and most of the security test — still run.
 
 ```bash
 # from this directory
-k6 run -e BASE_URL=http://localhost:8080 \
+k6 run -e BASE_URL=http://localhost:7777 \
        -e USER_EMAIL=... -e USER_PASSWORD=... \
        -e ADMIN_EMAIL=... -e ADMIN_PASSWORD=... \
        tests/smoke.test.js
@@ -111,7 +111,7 @@ in at most twice per run, and passing `*_TOKEN` avoids that entirely.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `BASE_URL` | `http://localhost:8080` | API origin, `/api` is appended |
+| `BASE_URL` | `http://localhost:7777` | API origin, `/api` is appended |
 | `ENABLE_ORDERS` | `false` | Checkout tests. Writes orders, decrements stock and sends a real confirmation email |
 | `AUTH_NEGATIVE_TESTS` | `true` | Wrong-password and malformed-body checks. Each spends one auth attempt |
 | `SEED_CATALOG` | `true` | Create a temporary category + products when the catalogue is empty |

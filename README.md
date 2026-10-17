@@ -140,7 +140,7 @@ holds Husky and lint-staged, and each directory keeps its own `bun.lock`.
 cd server
 bun install
 # create server/.env and fill in the values below
-bun run dev         # tsx watch, http://localhost:8080
+bun run dev         # tsx watch, http://localhost:7777
 ```
 
 `server/.env` is validated at boot by a Zod schema, so a missing value fails
@@ -149,7 +149,7 @@ fast with a logged reason instead of surfacing later as a runtime error.
 | Variable | Purpose |
 | --- | --- |
 | `MONGO_URI` | MongoDB connection string |
-| `PORT` | API port (default `8080`) |
+| `PORT` | API port (default `7777`) |
 | `NODE_ENV` | `development` \| `production` \| `test` |
 | `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` | Token signing secrets |
 | `CLIENT_URL`, `ADMIN_URL` | Frontend origins, allowed by CORS |
@@ -178,7 +178,7 @@ bun install
 
 | Variable | Purpose |
 | --- | --- |
-| `VITE_API_BASE_URL` | API base URL, e.g. `http://localhost:8080/api` |
+| `VITE_API_BASE_URL` | API base URL, e.g. `http://localhost:7777/api` |
 | `VITE_SENTRY_DSN` | Error reporting. Optional — omit it and Sentry stays inert |
 | `VITE_SENTRY_ENVIRONMENT`, `VITE_SENTRY_RELEASE` | Overrides for the Sentry environment/release tags |
 | `VITE_SENTRY_TRACES_SAMPLE_RATE` | Performance sampling, `0`–`1` (default `0`, errors only) |

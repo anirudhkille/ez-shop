@@ -2,7 +2,7 @@
 // Run this first, and after every deploy. It is cheap and spends only the two
 // auth-limiter attempts used by setup() (zero when tokens are supplied).
 //
-//   k6 run -e BASE_URL=http://localhost:8080 \
+//   k6 run -e BASE_URL=http://localhost:7777 \
 //          -e USER_EMAIL=... -e USER_PASSWORD=... \
 //          -e ADMIN_EMAIL=... -e ADMIN_PASSWORD=... tests/smoke.test.js
 

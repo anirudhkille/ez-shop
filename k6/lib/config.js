@@ -1,7 +1,7 @@
 // Central configuration. Everything is driven by environment variables so the
 // same scripts run unchanged against local, staging or a deployed server:
 //
-//   k6 run -e BASE_URL=http://localhost:8080 -e USER_EMAIL=... tests/smoke.test.js
+//   k6 run -e BASE_URL=http://localhost:7777 -e USER_EMAIL=... tests/smoke.test.js
 
 const read = (name, fallback) =>
   __ENV[name] !== undefined && __ENV[name] !== "" ? __ENV[name] : fallback;
@@ -17,7 +17,7 @@ const number = (name, fallback) => {
   return Number.isFinite(value) ? value : fallback;
 };
 
-export const BASE_URL = read("BASE_URL", "http://localhost:8080").replace(
+export const BASE_URL = read("BASE_URL", "http://localhost:7777").replace(
   /\/+$/,
   "",
 );

@@ -8,7 +8,7 @@
 // This is the test that finds IDOR. Most of it needs no fixtures at all, so it
 // runs without touching the catalogue or placing orders.
 //
-//   k6 run -e BASE_URL=http://localhost:8080 \
+//   k6 run -e BASE_URL=http://localhost:7777 \
 //          -e USER_EMAIL=... -e USER_PASSWORD=... \
 //          -e USER2_EMAIL=... -e USER2_PASSWORD=... \
 //          tests/security.test.js

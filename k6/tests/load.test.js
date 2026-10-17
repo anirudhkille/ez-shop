@@ -9,7 +9,7 @@
 // concurrency - it is looking for 5xx, lockouts and latency drift, not for
 // correct field names.
 //
-//   k6 run -e BASE_URL=http://localhost:8080 \
+//   k6 run -e BASE_URL=http://localhost:7777 \
 //          -e USER_EMAIL=... -e USER_PASSWORD=... \
 //          -e ADMIN_EMAIL=... -e ADMIN_PASSWORD=... \
 //          tests/load.test.js
