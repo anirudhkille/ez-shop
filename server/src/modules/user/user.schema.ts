@@ -11,6 +11,7 @@ import {
 } from "@/validation/common.schema";
 
 export const signupSchema = z.object({
+  name: nonEmptyString,
   email: emailSchema,
   password: passwordSchema,
 });

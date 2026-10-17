@@ -49,7 +49,6 @@ export async function seedUser(account: SeedAccount): Promise<void> {
         email: account.email,
         role: 'User',
         isEmailVerified: true,
-        isProfileCompleted: true,
       },
       $set: { password: passwordHash },
     },

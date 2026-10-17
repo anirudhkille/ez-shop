@@ -34,7 +34,7 @@ const saveRefreshSession = async (userId: string, refreshToken: string) => {
   );
 };
 
-export const signUp = async (email: string, password: string) => {
+export const signUp = async (name: string, email: string, password: string) => {
   const userExists = await userRepository.findByEmail(email);
   if (userExists) {
     throw new AppError("Email already registered", 409);
@@ -44,7 +44,7 @@ export const signUp = async (email: string, password: string) => {
 
   await sessionRepository.upsert(
     `signup:${email}`,
-    JSON.stringify({ email, password, otp }),
+    JSON.stringify({ name, email, password, otp }),
     new Date(Date.now() + 10 * 60 * 1000),
   );
 
@@ -65,6 +65,7 @@ export const verifySignupOTP = async (email: string, otp: string) => {
   }
 
   const data = JSON.parse(session.value) as {
+    name?: string;
     email: string;
     otp: string;
     password: string;
@@ -75,6 +76,7 @@ export const verifySignupOTP = async (email: string, otp: string) => {
   }
 
   const newUser = await userRepository.createUser({
+    name: data.name,
     email: data.email,
     password: data.password,
     isEmailVerified: true,
@@ -108,7 +110,7 @@ export const login = async (email: string, password: string) => {
   const user = await userRepository.findByEmail(email);
 
   if (!user || !(await user.matchPassword(password))) {
-    throw new AppError("Invalid credentials", 401);
+    throw new AppError("Invalid email or password", 401);
   }
 
   const accessToken = generateAccessToken({

@@ -167,11 +167,7 @@ export default function UserDetail({ detail }: UserDetailProps) {
             <Field
               label="Email Verified"
               value={user.isEmailVerified ? "Yes" : "No"}
-            />
-            <Field
-              label="Profile Completed"
-              value={user.isProfileCompleted ? "Yes" : "No"}
-            />
+            />            
             <Field label="Items Bought" value={String(stats.itemCount)} />
             <Field label="Joined" value={formatDate(user.createdAt)} />
             <Field label="Last Updated" value={formatDate(user.updatedAt)} />

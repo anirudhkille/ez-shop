@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Lock, Mail } from "lucide-react";
+import { Lock, Mail, User } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 import { FormInputWithIcon, FormLabel } from "@/shared/components/ui/form";
@@ -14,6 +14,9 @@ import { FormInputWithIcon, FormLabel } from "@/shared/components/ui/form";
 import { useSignup } from "../hooks/use-user";
 
 const formSchema = z.object({
+  name: z.string().trim().min(2, {
+    message: "Please enter your name",
+  }),
   email: z.string().email({
     message: "Invalid email address",
   }),
@@ -28,6 +31,7 @@ export function SignupForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
@@ -39,6 +43,17 @@ export function SignupForm() {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <div className="space-y-1">
+        <FormLabel htmlFor="name">Name</FormLabel>
+        <FormInputWithIcon
+          control={form.control}
+          name="name"
+          placeholder="Enter your name"
+          className="rounded-md py-3"
+          icon={<User size={16} />}
+        />
+      </div>
+
       <div className="space-y-1">
         <FormLabel htmlFor="email">Email</FormLabel>
         <FormInputWithIcon
@@ -76,7 +91,7 @@ export function SignupForm() {
         type="submit"
         disabled={isPending}
       >
-        Login
+        Sign Up
       </Button>
     </form>
   );

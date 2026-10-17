@@ -12,8 +12,8 @@ import { refreshCookieOptions } from "@/utils/cookies";
 import crypto from "crypto";
 
 export const signUp = asyncHandler(async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  await userService.signUp(email, password);
+  const { name, email, password } = req.body;
+  await userService.signUp(name, email, password);
 
   return sendResponse(res, 201, "OTP sent to email", { sent: true });
 });

@@ -9,7 +9,6 @@ export interface IUser extends Document {
   googleId?: string;
   avatar?: string;
   isEmailVerified: boolean;
-  isProfileCompleted: boolean;
   role: string;
   matchPassword(password: string): Promise<boolean>;
 }
@@ -24,7 +23,6 @@ const userSchema = new mongoose.Schema<IUser>(
     avatar: { type: String },
     role: { type: String, default: "User" },
     isEmailVerified: { type: Boolean, default: false },
-    isProfileCompleted: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
