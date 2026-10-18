@@ -1,8 +1,3 @@
-import { flushSentry } from "./config/sentry";
-
-import { env } from "./config/env.config";
-import { logger } from "./config/logger";
-
 import express from "express";
 import cors from "cors";
 import compression from "compression";
@@ -10,7 +5,6 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import { shouldCompress } from "./config/compression";
 import { corsOptions } from "./config/cors-options";
-import { databaseConnection } from "./config/database";
 import { apiLimiter } from "./config/limiter";
 import { errorHandler } from "./middlewares/error-handler.middleware";
 import { sendResponse } from "./utils/response";
@@ -68,20 +62,4 @@ app.use((req, res) => {
 
 app.use(errorHandler);
 
-const startServer = async () => {
-  try {
-    await databaseConnection();
-    const port = env.PORT;
-    app.listen(port, () => {
-      logger.info(`Server Listening @ ${port}`);
-    });
-  } catch (error) {
-    logger.error(error, "Failed to start server");
-
-    await flushSentry(2000);
-
-    process.exit(1);
-  }
-};
-
-startServer();
+export default app;

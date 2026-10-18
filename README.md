@@ -123,6 +123,11 @@ follows the same layering:
 and middleware never import a model directly. Keeping this boundary means query
 projections, lean reads and indexes are changed in one place.
 
+Beyond the modules, two files make up the entry point: `app.ts` assembles the
+Express app (security middleware, routes, 404 and the error handler) and exports
+it, and `server.ts` boots it — connecting to MongoDB, starting the listener and
+exiting on a failed start.
+
 ## Getting started
 
 ### Prerequisites
