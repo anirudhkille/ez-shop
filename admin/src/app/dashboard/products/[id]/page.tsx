@@ -26,7 +26,7 @@ export default async function Page({
   // The product API only exposes a public /:slug/:id read, so the single
   // product is resolved from the admin list endpoint by id — the same approach
   // the category detail page uses.
-  const res = await serverFetch("/api/product?limit=1000", {
+  const res = await serverFetch("/api/product?limit=100", {
     cache: "no-store",
   });
 

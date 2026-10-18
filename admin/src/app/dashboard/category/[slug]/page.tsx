@@ -1,5 +1,7 @@
 import React from "react";
 
+import { notFound } from "next/navigation";
+
 import { serverFetch } from "@/lib/server-api";
 
 import { Separator } from "@/components/ui/separator";
@@ -20,13 +22,22 @@ export default async function page({
   params: Promise<{ slug: string }>;
 }) {
   const slug = (await params).slug;
-  const listRes = await serverFetch("/api/category?limit=1000", {
+  const listRes = await serverFetch("/api/category?limit=100", {
     cache: "no-store",
   });
+
+  if (!listRes.ok) {
+    notFound();
+  }
+
   const list = await listRes.json();
   const category = (list.data || []).find(
     (item: ICategory) => item.slug === slug
   );
+
+  if (!category) {
+    notFound();
+  }
 
   return (
     <div className="space-y-5">
