@@ -4,7 +4,14 @@ import { SlidersHorizontal, X } from "lucide-react";
 
 import { cn } from "@/shared/lib/utils";
 
-import { defaultFilters, type FilterState } from "../lib/filters";
+import { useProductFacets } from "../hooks/use-product";
+import { PRICE_MIN } from "../lib/constants";
+import {
+  countActiveFilters,
+  defaultFilters,
+  type FilterState,
+  priceCeiling,
+} from "../lib/filters";
 import { FilterSections } from "./filter-sections";
 
 interface FilterDrawerProps {
@@ -20,12 +27,9 @@ export function FilterDrawer({
 }: FilterDrawerProps) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<FilterState>(filters);
-  const draftActiveCount =
-    draft.categories.length +
-    draft.sizes.length +
-    draft.colors.length +
-    (draft.minRating > 0 ? 1 : 0) +
-    (draft.priceRange[1] < 20000 ? 1 : 0);
+  const { data: facets } = useProductFacets();
+  const [, priceMax] = priceCeiling(facets?.price.max);
+  const draftActiveCount = countActiveFilters(draft, priceMax);
 
   const handleOpen = () => {
     setDraft(filters);
@@ -92,7 +96,9 @@ export function FilterDrawer({
 
         <div className="border-brand-border pb-safe flex gap-3 border-t p-4">
           <button
-            onClick={() => setDraft(defaultFilters)}
+            onClick={() =>
+              setDraft({ ...defaultFilters, priceRange: [PRICE_MIN, priceMax] })
+            }
             className="border-brand-border font-body text-muted-foreground hover:text-foreground hover:border-brand-foreground flex-1 rounded-xl border py-3 text-sm font-semibold transition-colors duration-150"
           >
             Clear All

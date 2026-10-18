@@ -133,6 +133,19 @@ export const getFilteredProducts = asyncHandler(
   },
 );
 
+export const getProductFacets = asyncHandler(
+  async (req: Request, res: Response) => {
+    const result = await productService.getProductFacets();
+
+    return sendResponse(
+      res,
+      200,
+      "Product filters fetched successfully",
+      result,
+    );
+  },
+);
+
 export const getFeaturedProducts = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await productService.getFeaturedProducts();

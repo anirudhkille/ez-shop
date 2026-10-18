@@ -419,6 +419,51 @@ export const getFilteredProducts = async (query: FilteredProductsQuery) => {
 
 type SortOption = Record<string, 1 | -1>;
 
+const SIZE_ORDER = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+
+const sizeRank = (size: string): [number, number] => {
+  const letterIndex = SIZE_ORDER.indexOf(size.toUpperCase());
+
+  if (letterIndex !== -1) return [0, letterIndex];
+
+  const numeric = Number(size);
+
+  if (!Number.isNaN(numeric)) return [1, numeric];
+
+  return [2, 0];
+};
+
+const sortSizes = (sizes: string[]) =>
+  [...sizes].sort((a, b) => {
+    const [aGroup, aRank] = sizeRank(a);
+    const [bGroup, bRank] = sizeRank(b);
+
+    return aGroup - bGroup || aRank - bRank || a.localeCompare(b);
+  });
+
+export const getProductFacets = async () => {
+  const facets = await productRepository.findFacets();
+
+  const price = facets.price[0];
+  const maxRating = Math.min(Math.floor(facets.ratings[0]?.max ?? 0), 5);
+
+  return {
+    price: { min: price?.min ?? 0, max: price?.max ?? 0 },
+    sizes: sortSizes(
+      facets.sizes
+        .map((item) => item._id)
+        .filter((size): size is string => Boolean(size)),
+    ),
+    colors: facets.colors
+      .filter((item): item is { _id: string; colorCode?: string } =>
+        Boolean(item._id),
+      )
+      .map((item) => ({ label: item._id, hex: item.colorCode ?? "#cccccc" }))
+      .sort((a, b) => a.label.localeCompare(b.label)),
+    ratings: Array.from({ length: maxRating }, (_, index) => maxRating - index),
+  };
+};
+
 /**
  * Every sort ends on `_id`. Without a unique tiebreaker the ordering is not
  * deterministic, and skip/limit over a non-deterministic order does not

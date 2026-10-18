@@ -6,15 +6,9 @@ import { ChevronDown, Star } from "lucide-react";
 import { useCategorys } from "@/features/category";
 import { cn } from "@/shared/lib/utils";
 
-import {
-  ALL_COLORS,
-  ALL_SIZES,
-  PRICE_MAX,
-  PRICE_MIN,
-  PRICE_STEP,
-  RATING_OPTIONS,
-} from "../lib/constants";
-import { type FilterState, toggleInList } from "../lib/filters";
+import { useProductFacets } from "../hooks/use-product";
+import { PRICE_MIN, PRICE_STEP } from "../lib/constants";
+import { type FilterState, priceCeiling, toggleInList } from "../lib/filters";
 
 export type FilterVariant = "drawer" | "sidebar";
 
@@ -114,6 +108,9 @@ function CategoryFilter({ filters, onChange, variant }: SectionProps) {
 }
 
 function PriceRangeFilter({ filters, onChange, variant }: SectionProps) {
+  const { data: facets } = useProductFacets();
+  const [, priceMax] = priceCeiling(facets?.price.max);
+
   return (
     <FilterSection
       title="Price Range"
@@ -132,7 +129,7 @@ function PriceRangeFilter({ filters, onChange, variant }: SectionProps) {
         <input
           type="range"
           min={PRICE_MIN}
-          max={PRICE_MAX}
+          max={priceMax}
           step={PRICE_STEP}
           value={filters.priceRange[1]}
           onChange={(e) =>
@@ -153,13 +150,17 @@ function PriceRangeFilter({ filters, onChange, variant }: SectionProps) {
 
 function SizeFilter({ filters, onChange, variant }: SectionProps) {
   const isDrawer = variant === "drawer";
+  const { data: facets } = useProductFacets();
+  const sizes = facets?.sizes ?? [];
+
+  if (sizes.length === 0) return null;
 
   return (
     <FilterSection title="Size" isDrawer={isDrawer} initiallyOpen={isDrawer}>
       <div
         className={isDrawer ? "flex flex-wrap gap-2" : "flex flex-wrap gap-1.5"}
       >
-        {ALL_SIZES.map((size) => {
+        {sizes.map((size) => {
           const active = filters.sizes.includes(size);
 
           return (
@@ -194,6 +195,10 @@ function SizeFilter({ filters, onChange, variant }: SectionProps) {
 
 function ColorFilter({ filters, onChange, variant }: SectionProps) {
   const isDrawer = variant === "drawer";
+  const { data: facets } = useProductFacets();
+  const colors = facets?.colors ?? [];
+
+  if (colors.length === 0) return null;
 
   return (
     <FilterSection title="Color" isDrawer={isDrawer} initiallyOpen={isDrawer}>
@@ -202,7 +207,7 @@ function ColorFilter({ filters, onChange, variant }: SectionProps) {
           isDrawer ? "flex flex-wrap gap-4" : "flex flex-wrap gap-3 px-1"
         }
       >
-        {ALL_COLORS.map(({ label, hex }) => {
+        {colors.map(({ label, hex }) => {
           const active = filters.colors.includes(label);
 
           return (
@@ -254,6 +259,10 @@ function ColorFilter({ filters, onChange, variant }: SectionProps) {
 
 function RatingFilter({ filters, onChange, variant }: SectionProps) {
   const isDrawer = variant === "drawer";
+  const { data: facets } = useProductFacets();
+  const ratings = facets?.ratings ?? [];
+
+  if (ratings.length === 0) return null;
 
   return (
     <FilterSection
@@ -262,7 +271,7 @@ function RatingFilter({ filters, onChange, variant }: SectionProps) {
       initiallyOpen={isDrawer}
     >
       <div className={isDrawer ? "flex flex-wrap gap-2" : "space-y-1"}>
-        {RATING_OPTIONS.map((r) => (
+        {ratings.map((r) => (
           <button
             key={r}
             onClick={() =>

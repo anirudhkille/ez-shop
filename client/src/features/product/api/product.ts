@@ -1,4 +1,7 @@
+import type { TApiResponse } from "@/shared/lib/api-response";
 import { axiosInstance } from "@/shared/lib/axios-instance";
+
+import type { TProductFacets } from "../types";
 
 export const searchProducts = async (name: string, limit = 20) => {
   const res = await axiosInstance.get(`/product/search`, {
@@ -15,6 +18,12 @@ export const getProductBySlug = async (slug: string, id: string) => {
 export const getFilteredProducts = async (params: Record<string, unknown>) => {
   const response = await axiosInstance.get("/product/filter", { params });
   return response.data;
+};
+
+export const getProductFacets = async () => {
+  const res =
+    await axiosInstance.get<TApiResponse<TProductFacets>>("/product/facets");
+  return res.data;
 };
 
 export const getFeaturedProducts = async () => {

@@ -1,4 +1,4 @@
-import type { FilterState } from "./filters";
+import { type FilterState, isPriceNarrowed } from "./filters";
 
 const sortMap: Record<string, string> = {
   "price-asc": "price-low",
@@ -10,7 +10,8 @@ const sortMap: Record<string, string> = {
 
 export const buildFilterParams = (
   filters: FilterState,
-  sortBy: string
+  sortBy: string,
+  priceMax: number
 ): Record<string, string | number> => {
   const params: Record<string, string | number> = {};
 
@@ -18,7 +19,7 @@ export const buildFilterParams = (
     params.category = filters.categories.join(",");
   }
 
-  if (filters.priceRange) {
+  if (isPriceNarrowed(filters, priceMax)) {
     params.price = `${filters.priceRange[0]}-${filters.priceRange[1]}`;
   }
 

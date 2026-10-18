@@ -7,8 +7,15 @@ import type { TCategory } from "@/features/category";
 import type { TProduct } from "@/features/product";
 
 import { buildFilterParams } from "../lib/build-filter-params";
-import { defaultFilters, type FilterState } from "../lib/filters";
-import { useFilteredProducts } from "./use-product";
+import { PRICE_MIN } from "../lib/constants";
+import {
+  countActiveFilters,
+  defaultFilters,
+  type FilterState,
+  isPriceNarrowed,
+  priceCeiling,
+} from "../lib/filters";
+import { useFilteredProducts, useProductFacets } from "./use-product";
 
 export const SORT_OPTIONS = [
   { value: "featured", label: "Featured" },
@@ -18,19 +25,10 @@ export const SORT_OPTIONS = [
   { value: "newest", label: "Newest" },
 ];
 
-const MAX_PRICE = 300;
-
 const matchesCategory = (cat: TCategory, key: string) =>
   cat._id === key ||
   cat.slug === key ||
   cat.name.toLowerCase() === key.toLowerCase();
-
-const countActiveFilters = (f: FilterState) =>
-  f.categories.length +
-  f.sizes.length +
-  f.colors.length +
-  (f.minRating > 0 ? 1 : 0) +
-  (f.priceRange[1] < MAX_PRICE ? 1 : 0);
 
 export interface FilterChip {
   label: string;
@@ -39,6 +37,7 @@ export interface FilterChip {
 
 export const useProductFilters = () => {
   const { data: categories } = useCategorys();
+  const { data: facets } = useProductFacets();
   const [params] = useSearchParams();
   const category = params.get("category");
 
@@ -46,6 +45,17 @@ export const useProductFilters = () => {
   const [sortOpen, setSortOpen] = useState(false);
   const [showFilter, setShowFilter] = useState(true);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
+  const [, priceMax] = priceCeiling(facets?.price.max);
+
+  const [syncedPrice, setSyncedPrice] = useState(false);
+
+  if (!syncedPrice && facets) {
+    setSyncedPrice(true);
+    setFilters((current) => ({
+      ...current,
+      priceRange: [PRICE_MIN, priceMax],
+    }));
+  }
 
   const categoryMap = useMemo(() => {
     const map: Record<string, string> = {};
@@ -86,8 +96,8 @@ export const useProductFilters = () => {
   }
 
   const queryParams = useMemo(
-    () => ({ ...buildFilterParams(filters, sortBy), limit: 12 }),
-    [filters, sortBy]
+    () => ({ ...buildFilterParams(filters, sortBy, priceMax), limit: 12 }),
+    [filters, sortBy, priceMax]
   );
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -98,11 +108,12 @@ export const useProductFilters = () => {
     (data?.pages[0] as { pagination?: { total?: number } } | undefined)
       ?.pagination?.total ?? 0;
 
-  const activeFilterCount = countActiveFilters(filters);
+  const activeFilterCount = countActiveFilters(filters, priceMax);
   const activeSort =
     SORT_OPTIONS.find((o) => o.value === sortBy) ?? SORT_OPTIONS[0];
 
-  const clearFilters = () => setFilters(defaultFilters);
+  const clearFilters = () =>
+    setFilters({ ...defaultFilters, priceRange: [PRICE_MIN, priceMax] });
 
   const removeFrom = <K extends "categories" | "colors" | "sizes">(
     key: K,
@@ -134,12 +145,12 @@ export const useProductFilters = () => {
           },
         ]
       : []),
-    ...(filters.priceRange[1] < MAX_PRICE
+    ...(isPriceNarrowed(filters, priceMax)
       ? [
           {
             label: `\u2264\u20b9${filters.priceRange[1]}`,
             remove: () =>
-              setFilters((f) => ({ ...f, priceRange: [0, MAX_PRICE] })),
+              setFilters((f) => ({ ...f, priceRange: [PRICE_MIN, priceMax] })),
           },
         ]
       : []),

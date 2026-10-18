@@ -70,6 +70,10 @@ export const findFiltered = async (
   limit: number,
 ) => {
   return await Product.find(query)
+    .select(
+      "name slug image tag price discountPrice rating reviewsCount category variants.colorCode",
+    )
+    .populate({ path: "category", select: "name" })
     .sort(sortOption)
     .skip(skip)
     .limit(limit)
@@ -108,4 +112,55 @@ export const findSimilar = async (id: string, categoryId: Types.ObjectId) => {
 
 export const findByIdSelect = async (id: string, select: string) => {
   return await Product.findById(id).select(select).lean();
+};
+
+interface ProductFacetsAggregation {
+  price: { min?: number; max?: number }[];
+  sizes: { _id?: string }[];
+  colors: { _id?: string; colorCode?: string }[];
+  ratings: { max?: number }[];
+}
+
+export const findFacets = async () => {
+  const effectivePrice = {
+    $cond: [
+      { $gt: [{ $ifNull: ["$discountPrice", 0] }, 0] },
+      "$discountPrice",
+      "$price",
+    ],
+  };
+
+  const [facets] = await Product.aggregate<ProductFacetsAggregation>([
+    { $match: { publish: true } },
+    {
+      $facet: {
+        price: [
+          {
+            $group: {
+              _id: null,
+              min: { $min: effectivePrice },
+              max: { $max: effectivePrice },
+            },
+          },
+        ],
+        sizes: [
+          { $unwind: "$variants" },
+          { $unwind: "$variants.sizes" },
+          { $group: { _id: "$variants.sizes.size" } },
+        ],
+        colors: [
+          { $unwind: "$variants" },
+          {
+            $group: {
+              _id: "$variants.color",
+              colorCode: { $first: "$variants.colorCode" },
+            },
+          },
+        ],
+        ratings: [{ $group: { _id: null, max: { $max: "$rating" } } }],
+      },
+    },
+  ]);
+
+  return facets;
 };

@@ -11,6 +11,7 @@ import {
   getFeaturedProducts,
   getFilteredProducts,
   getProductBySlug,
+  getProductFacets,
   getSimilarProducts,
   searchProducts,
 } from "../api/product";
@@ -61,6 +62,14 @@ export const useFilteredProducts = (filters: Record<string, unknown>) => {
 
       return page < totalPages ? page + 1 : undefined;
     },
+  });
+};
+
+export const useProductFacets = () => {
+  return useQuery({
+    queryFn: getProductFacets,
+    queryKey: ["product-facets"],
+    select: (res) => res?.data,
   });
 };
 

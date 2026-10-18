@@ -14,6 +14,13 @@ export type TVariant = {
   }[];
 };
 
+export type TProductFacets = {
+  price: { min: number; max: number };
+  sizes: string[];
+  colors: { label: string; hex: string }[];
+  ratings: number[];
+};
+
 export type TProduct = {
   _id: string;
   name: string;

@@ -16,7 +16,8 @@ export { VariantPicker } from "./components/variant-picker";
 export {
   useBestSellers,
   useFeaturedProducts,
+  useProductFacets,
   useSimilarProducts,
 } from "./hooks/use-product";
 export type { FilterChip } from "./hooks/use-product-filters";
-export type { TProduct, TVariant } from "./types";
+export type { TProduct, TProductFacets, TVariant } from "./types";

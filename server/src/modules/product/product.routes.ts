@@ -16,6 +16,7 @@ import {
   getProducts,
   getProductById,
   getProductBySlugAndId,
+  getProductFacets,
   updateProduct,
   deleteProduct,
   getFilteredProducts,
@@ -42,6 +43,7 @@ router.get(
   getFilteredProducts,
 );
 router.get("/search", validate(searchQuerySchema, "query"), getSearchProduct);
+router.get("/facets", getProductFacets);
 router.get(
   "/:slug/:id",
   validate(productParamsSchema, "params"),
