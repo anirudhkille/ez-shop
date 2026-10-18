@@ -157,7 +157,6 @@ fast with a logged reason instead of surfacing later as a runtime error.
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL` | Google OAuth |
 | `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET` | Image uploads |
 | `RESEND_API_KEY`, `EMAIL_FROM` | Transactional email |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_EMAIL`, `SMTP_PASSWORD` | SMTP fallback |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Card payments |
 | `SENTRY_DSN` | Error reporting. Optional — omit it and Sentry stays inert |
 | `SENTRY_ENVIRONMENT`, `SENTRY_RELEASE` | Overrides for the Sentry environment/release tags |

@@ -39,11 +39,6 @@ const envSchema = z.object({
   RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required"),
   EMAIL_FROM: z.string().min(1, "EMAIL_FROM is required"),
 
-  SMTP_HOST: z.string().default("localhost"),
-  SMTP_PORT: z.coerce.number().default(587),
-  SMTP_EMAIL: z.string().min(1, "SMTP_EMAIL is required"),
-  SMTP_PASSWORD: z.string().min(1, "SMTP_PASSWORD is required"),
-
   STRIPE_SECRET_KEY: z.string().min(1, "STRIPE_SECRET_KEY is required"),
   STRIPE_WEBHOOK_SECRET: z.string().min(1, "STRIPE_WEBHOOK_SECRET is required"),
 

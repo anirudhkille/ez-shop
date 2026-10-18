@@ -1,8 +1,8 @@
 import crypto from "crypto";
-import nodemailer from "nodemailer";
 import { AppError } from "@/utils/app-error";
 import { env } from "@/config/env.config";
 import { resetPasswordTemplate } from "@/templates/reset-email.template";
+import { sendEmail } from "@/services/email.service";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -13,7 +13,7 @@ import type { IAdmin } from "@/modules/admin/admin.model";
 export const login = async (email: string, password: string) => {
   const user = await adminRepository.findByEmail(email);
   if (!user || !(await user.matchPassword(password))) {
-    throw new AppError("Invalid credentials", 401);
+    throw new AppError("Invalid email or password", 401);
   }
 
   const accessToken = generateAccessToken({
@@ -49,16 +49,7 @@ export const forgotPassword = async (email: string) => {
 
   const resetUrl = `${env.ADMIN_URL}/reset-password?token=${resetToken}`;
 
-  const transporter = nodemailer.createTransport({
-    host: env.SMTP_HOST,
-    port: env.SMTP_PORT,
-    auth: {
-      user: env.SMTP_EMAIL,
-      pass: env.SMTP_PASSWORD,
-    },
-  });
-
-  await transporter.sendMail({
+  await sendEmail({
     to: user.email,
     subject: "Password Reset Request",
     html: resetPasswordTemplate(user.name, resetUrl),
