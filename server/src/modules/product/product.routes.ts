@@ -15,6 +15,7 @@ import {
   postProduct,
   getProducts,
   getProductById,
+  getProductBySlugAndId,
   updateProduct,
   deleteProduct,
   getFilteredProducts,
@@ -44,8 +45,9 @@ router.get("/search", validate(searchQuerySchema, "query"), getSearchProduct);
 router.get(
   "/:slug/:id",
   validate(productParamsSchema, "params"),
-  getProductById,
+  getProductBySlugAndId,
 );
+router.get("/:id", validate(productIdParamSchema, "params"), getProductById);
 router.get("/", validate(productQuerySchema, "query"), getProducts);
 router.post(
   "/",

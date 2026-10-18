@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2 } from "lucide-react";
 
 import { clientFetch } from "@/lib/client-api";
+import { MAX_PAGE_SIZE } from "@/lib/pagination";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -227,7 +228,7 @@ export default function ProductForm({ data }: ProductFormProps) {
   });
 
   useEffect(() => {
-    clientFetch("/api/category?limit=1000")
+    clientFetch(`/api/category?limit=${MAX_PAGE_SIZE}`)
       .then((res) => res.json())
       .then((result) => setCategories(result.data || []))
       .catch(() => toast.error("Failed to load categories"));

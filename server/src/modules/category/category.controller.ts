@@ -33,6 +33,14 @@ export const getCategory = asyncHandler(async (req: Request, res: Response) => {
   );
 });
 
+export const getCategoryById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const result = await categoryService.getCategoryById(req.params.id);
+
+    return sendResponse(res, 200, "Category fetched successfully", result);
+  },
+);
+
 export const updateCategory = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await categoryService.updateCategory(

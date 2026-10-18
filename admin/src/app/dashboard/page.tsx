@@ -3,6 +3,7 @@ import React from "react";
 import { IndianRupee, Package, ShoppingCart, Users } from "lucide-react";
 
 import { serverFetch } from "@/lib/server-api";
+import { MAX_PAGE_SIZE } from "@/lib/pagination";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -14,7 +15,7 @@ export const metadata = {
   title: "Dashboard | EZ Shop Admin",
 };
 
-const PAGE_SIZE = 100;
+const PAGE_SIZE = MAX_PAGE_SIZE;
 
 type OrderStats = {
   totalOrders: number;

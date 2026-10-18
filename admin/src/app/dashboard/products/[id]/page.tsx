@@ -10,7 +10,7 @@ import { PageHeading } from "@/components/shared/page-heading";
 
 import ProductForm from "@/features/products/product-form";
 
-import { IPaginatedResponse, IProduct } from "@/types";
+import { ApiResponse, IProduct } from "@/types";
 
 export const metadata = {
   title: "Product | Dashboard - EZ Shop Admin",
@@ -23,19 +23,14 @@ export default async function Page({
 }) {
   const { id } = await params;
 
-  // The product API only exposes a public /:slug/:id read, so the single
-  // product is resolved from the admin list endpoint by id — the same approach
-  // the category detail page uses.
-  const res = await serverFetch("/api/product?limit=100", {
-    cache: "no-store",
-  });
+  const res = await serverFetch(`/api/product/${id}`, { cache: "no-store" });
 
   if (!res.ok) {
     notFound();
   }
 
-  const body: IPaginatedResponse<IProduct> = await res.json();
-  const product = (body.data || []).find((item) => item._id === id);
+  const body: ApiResponse<IProduct> = await res.json();
+  const product = body.data;
 
   if (!product) {
     notFound();

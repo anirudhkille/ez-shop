@@ -80,7 +80,7 @@ const CategoryActions = ({ category }: { category: ICategory }) => {
 
   const handleView = () => {
     setOpen(false);
-    router.push(`/dashboard/category/${category.slug}`);
+    router.push(`/dashboard/category/${category._id}`);
   };
 
   const handleDelete = async () => {

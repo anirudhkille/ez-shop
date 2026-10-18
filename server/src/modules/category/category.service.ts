@@ -57,6 +57,16 @@ export const getAllCategories = async (page = 1, limit = 10) => {
   };
 };
 
+export const getCategoryById = async (id: string) => {
+  const category = await categoryRepository.findById(id);
+
+  if (!category) {
+    throw new AppError("Category not found", 404);
+  }
+
+  return category;
+};
+
 export const updateCategory = async (
   id: string,
   body: { name?: string; slug?: string; image?: string },

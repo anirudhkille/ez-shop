@@ -235,12 +235,18 @@ export const getProducts = async (query: ProductQuery) => {
   };
 };
 
-export const getProductById = async (slug: string, id: string) => {
+export const getProductById = async (id: string) => {
   const product = await productRepository.findById(id);
 
   if (!product) {
     throw new AppError("Product not found", 404);
   }
+
+  return product;
+};
+
+export const getProductBySlugAndId = async (slug: string, id: string) => {
+  const product = await getProductById(id);
 
   if (product.slug !== slug) {
     return {

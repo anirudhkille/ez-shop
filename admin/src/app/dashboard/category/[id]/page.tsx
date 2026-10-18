@@ -10,7 +10,7 @@ import { PageHeading } from "@/components/shared/page-heading";
 
 import CategoryForm from "@/features/category/category-form";
 
-import { ICategory } from "@/types";
+import { ApiResponse, ICategory } from "@/types";
 
 export const metadata = {
   title: "Category | Dashboard - EZ Shop Admin",
@@ -19,21 +19,17 @@ export const metadata = {
 export default async function page({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ id: string }>;
 }) {
-  const slug = (await params).slug;
-  const listRes = await serverFetch("/api/category?limit=100", {
-    cache: "no-store",
-  });
+  const id = (await params).id;
+  const res = await serverFetch(`/api/category/${id}`, { cache: "no-store" });
 
-  if (!listRes.ok) {
+  if (!res.ok) {
     notFound();
   }
 
-  const list = await listRes.json();
-  const category = (list.data || []).find(
-    (item: ICategory) => item.slug === slug
-  );
+  const body: ApiResponse<ICategory> = await res.json();
+  const category = body.data;
 
   if (!category) {
     notFound();
@@ -43,7 +39,7 @@ export default async function page({
     <div className="space-y-5">
       <PageHeading
         title="Category"
-        description="the category details below. Click save when done."
+        description="Review the category details below. Click save when done."
       />
 
       <Separator />

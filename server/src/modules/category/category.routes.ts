@@ -9,6 +9,7 @@ import {
 } from "@/modules/category/category.schema";
 import {
   getCategory,
+  getCategoryById,
   postCategory,
   updateCategory,
   deleteCategory,
@@ -19,6 +20,7 @@ import { upload } from "@/middlewares/upload.middleware";
 const router = express.Router();
 
 router.get("/", validate(categoryPaginationQuerySchema, "query"), getCategory);
+router.get("/:id", validate(categoryIdParamSchema, "params"), getCategoryById);
 router.post(
   "/",
   protect,

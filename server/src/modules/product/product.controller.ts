@@ -43,7 +43,15 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
 
 export const getProductById = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await productService.getProductById(
+    const result = await productService.getProductById(req.params.id);
+
+    return sendResponse(res, 200, "Product fetched successfully", result);
+  },
+);
+
+export const getProductBySlugAndId = asyncHandler(
+  async (req: Request, res: Response) => {
+    const result = await productService.getProductBySlugAndId(
       req.params.slug,
       req.params.id,
     );
