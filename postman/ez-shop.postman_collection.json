@@ -1,0 +1,1574 @@
+{
+  "info": {
+    "_postman_id": "b7f3c1a2-5d4e-4c9b-9a10-8e6f2d3b7c41",
+    "name": "EZ-Shop API",
+    "description": "Complete Postman collection for the EZ-Shop Express/Mongoose API.\n\n## Base URL\nSet per environment. `baseUrl` already includes the `/api` prefix.\n- Local: http://localhost:7777/api\n- Deployed: https://ez-shop-server.onrender.com/api\n\n## Auth\nAccess token is a JWT returned in the response body as `data.token` (15 min lifetime). Send it as `Authorization: Bearer <token>`.\nThe refresh token is an httpOnly cookie named `refreshToken` (7 days): login sets it, `GET /user/refresh` rotates it. Postman stores cookies automatically, so `GET /user/refresh` works right after login without extra setup.\n\n- `POST /user/login` -> stores `accessToken` and `userToken`.\n- `POST /admin/login` -> stores `adminToken`.\n- The Admin folders override collection auth with `{{adminToken}}`.\n- Public catalog reads explicitly opt out of auth.\n\n## Response envelope\nSuccess: `{ \"success\": true, \"message\": \"...\", \"data\": <payload>, \"pagination\"?: {...} }`\nValidation failure (400): `{ \"success\": false, \"message\": \"Validation failed\", \"data\": { \"code\": \"VALIDATION_ERROR\", \"details\": [{ \"field\", \"message\" }] } }`\nOther errors: `{ \"success\": false, \"message\": \"...\", \"data\": { \"code\": \"API_ERROR\" | \"UNAUTHORIZED\" | \"INTERNAL_SERVER_ERROR\" } }`\n\n## Rate limits\n- Global: 1000 requests / 15 min per IP (header `RateLimit-Limit`).\n- Auth endpoints (signup, login, verify OTP, forgot-password, reset-password): 10 / 15 min per IP. Running the auth folder repeatedly will start returning 429.\n\n## Gotcha: route ordering inside /api/product\n`/featured`, `/best-sellers`, `/filter`, `/search`, `/facets` and `/similar/:id` are registered before `/:slug/:id` and `/:id`. A product id must be a 24-char ObjectId, so a non-ObjectId segment falls through to the 404 handler.\n\n## IDs\nVariables such as `productId`, `categoryId`, `cartItemId`, `addressId` and `orderId` are captured automatically by the test scripts of the requests that create or list them. Run those first, or paste values into the collection variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Collection-level smoke check: every JSON response must carry the envelope.",
+          "// The invoice PDF download is the only non-JSON response, so guard on Content-Type.",
+          "var contentType = pm.response.headers.get('Content-Type') || '';",
+          "",
+          "if (contentType.indexOf('application/json') !== -1) {",
+          "  pm.test('response uses the { success, message, data } envelope', function () {",
+          "    var body = pm.response.json();",
+          "    pm.expect(body, 'body is not JSON').to.be.an('object');",
+          "    pm.expect(body).to.have.property('success');",
+          "    pm.expect(body).to.have.property('message');",
+          "    pm.expect(body).to.have.property('data');",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:7777/api", "type": "string" },
+    { "key": "accessToken", "value": "", "type": "string" },
+    { "key": "userToken", "value": "", "type": "string" },
+    { "key": "adminToken", "value": "", "type": "string" },
+    { "key": "userEmail", "value": "customer@example.com", "type": "string" },
+    { "key": "userPassword", "value": "Password123", "type": "string" },
+    { "key": "adminEmail", "value": "admin@example.com", "type": "string" },
+    { "key": "adminPassword", "value": "Password123", "type": "string" },
+    { "key": "otp", "value": "123456", "type": "string" },
+    { "key": "resetToken", "value": "", "type": "string" },
+    { "key": "userId", "value": "", "type": "string" },
+    { "key": "productId", "value": "", "type": "string" },
+    { "key": "productSlug", "value": "", "type": "string" },
+    { "key": "categoryId", "value": "", "type": "string" },
+    { "key": "cartItemId", "value": "", "type": "string" },
+    { "key": "addressId", "value": "", "type": "string" },
+    { "key": "orderId", "value": "", "type": "string" },
+    { "key": "reviewId", "value": "", "type": "string" },
+    { "key": "couponId", "value": "", "type": "string" },
+    { "key": "sessionId", "value": "cs_test_placeholder", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /api/health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json();",
+                  "pm.test('status is ok', function () { pm.expect(b.data.status).to.eql('ok'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health",
+            "description": "Liveness probe. Response: `{ success, message, data: { status, uptime } }`."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth (User)",
+      "item": [
+        {
+          "name": "POST /user/signup",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/user/signup",
+            "description": "Creates an unverified user and emails a 6-digit OTP. Returns 201 with `{ sent: true }` — no token yet. Verify with `POST /user/verify-signup-otp`. Rate limited to 10 per 15 min per IP."
+          }
+        },
+        {
+          "name": "POST /user/verify-signup-otp",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var b = pm.response.json();",
+                  "var token = b.data && b.data.token;",
+                  "if (token) {",
+                  "  pm.collectionVariables.set('accessToken', token);",
+                  "  pm.collectionVariables.set('userToken', token);",
+                  "}",
+                  "if (b.data && b.data._id) { pm.collectionVariables.set('userId', b.data._id); }",
+                  "pm.test('access token captured', function () { pm.expect(token).to.be.a('string').and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"otp\": \"{{otp}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/user/verify-signup-otp",
+            "description": "Exchanges the emailed OTP for an access token. Sets the `refreshToken` cookie and stores the token in `accessToken` / `userToken`. OTP must be exactly 6 digits."
+          }
+        },
+        {
+          "name": "POST /user/login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json();",
+                  "var token = b.data && b.data.token;",
+                  "if (token) {",
+                  "  pm.collectionVariables.set('accessToken', token);",
+                  "  pm.collectionVariables.set('userToken', token);",
+                  "}",
+                  "if (b.data && b.data._id) { pm.collectionVariables.set('userId', b.data._id); }",
+                  "pm.test('access token captured', function () { pm.expect(token).to.be.a('string').and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/user/login",
+            "description": "Customer login. Returns the user object spread with `token`, and sets the httpOnly `refreshToken` cookie. Stores the token in `accessToken` and `userToken`. Rate limited to 10 per 15 min per IP."
+          }
+        },
+        {
+          "name": "GET /user/refresh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var b = pm.response.json();",
+                  "var token = b.data && b.data.token;",
+                  "if (token) {",
+                  "  pm.collectionVariables.set('accessToken', token);",
+                  "  pm.collectionVariables.set('userToken', token);",
+                  "}",
+                  "pm.test('rotated access token captured', function () { pm.expect(token).to.be.a('string').and.not.empty; });",
+                  "pm.test('refresh cookie rotated', function () {",
+                  "  pm.expect(pm.cookies.has('refreshToken'), 'refreshToken cookie missing — run POST /user/login first').to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/user/refresh",
+            "description": "Rotates the access token using the httpOnly `refreshToken` cookie. No body and no Authorization header — the cookie is the credential, so it only works in the same Postman session that ran `POST /user/login`."
+          }
+        },
+        {
+          "name": "POST /user/logout",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/user/logout",
+            "description": "Revokes the refresh session server-side and clears the `refreshToken` cookie."
+          }
+        },
+        {
+          "name": "POST /user/forgot-password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/user/forgot-password",
+            "description": "Emails a password-reset token. Returns `{ sent: true }` regardless of whether the address exists, to avoid account enumeration. Rate limited to 10 per 15 min per IP."
+          }
+        },
+        {
+          "name": "PUT /user/reset-password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{resetToken}}\",\n  \"newPassword\": \"Password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/user/reset-password",
+            "description": "Consumes the reset token from the email. `newPassword` must be 8-128 characters. Rate limited to 10 per 15 min per IP."
+          }
+        },
+        {
+          "name": "GET /user/google",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/user/google",
+            "description": "Starts the Google OAuth flow. Sets a `state` cookie and issues a 302 to accounts.google.com. Open it in a browser, not the Postman runner — there is no JSON response."
+          }
+        },
+        {
+          "name": "GET /user/google/callback",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/user/google/callback?code=&state=",
+            "description": "OAuth callback. Google calls this directly; it is listed only for completeness. It validates the `state` cookie, sets the `refreshToken` cookie and redirects to the client."
+          }
+        },
+        {
+          "name": "GET /user/profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json();",
+                  "if (b.data && b.data._id) { pm.collectionVariables.set('userId', b.data._id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/user/profile",
+            "description": "Current customer profile. Requires `accessToken` — run `POST /user/login` first."
+          }
+        },
+        {
+          "name": "PATCH /user (update profile)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane A. Doe\",\n  \"phone\": \"+1 555 010 2030\",\n  \"avatar\": \"https://example.com/avatar.png\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/user",
+            "description": "Partial profile update. All fields optional, but at least one is required. Note the route is `PATCH /api/user` (mounted at `/`), not `/api/user/profile`."
+          }
+        },
+        {
+          "name": "PUT /user/password (change password)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"{{userPassword}}\",\n  \"newPassword\": \"Password456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/user/password",
+            "description": "Change password while signed in. Both passwords must be 8-128 characters."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth (Admin)",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminToken}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "POST /admin/login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json();",
+                  "var token = b.data && (b.data.token || b.data.accessToken);",
+                  "if (token) { pm.collectionVariables.set('adminToken', token); }",
+                  "pm.test('admin token captured', function () { pm.expect(token).to.be.a('string').and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/admin/login",
+            "description": "Admin login. Stores the token in `adminToken`, which every Admin folder uses. Rate limited to 10 per 15 min per IP."
+          }
+        },
+        {
+          "name": "POST /admin/forgot-password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/admin/forgot-password",
+            "description": "Emails an admin password-reset token. Rate limited to 10 per 15 min per IP."
+          }
+        },
+        {
+          "name": "PUT /admin/reset-password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{resetToken}}\",\n  \"password\": \"Password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/admin/reset-password",
+            "description": "Consumes the admin reset token. Field is `password` here, not `newPassword` as on the customer route."
+          }
+        },
+        {
+          "name": "GET /admin/profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/profile",
+            "description": "Signed-in admin profile. Uses `adminToken`."
+          }
+        },
+        {
+          "name": "PATCH /admin/profile",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Store Admin\",\n  \"phone\": \"+1 555 987 6543\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/admin/profile",
+            "description": "Partial admin profile update. `name` and `phone` only, at least one required."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "GET /product (list)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json();",
+                  "var first = b.data && b.data[0];",
+                  "if (first) {",
+                  "  pm.collectionVariables.set('productId', first._id);",
+                  "  if (first.slug) { pm.collectionVariables.set('productSlug', first.slug); }",
+                  "}",
+                  "pm.test('returns an array', function () { pm.expect(b.data).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/product?page=1&limit=12&publish=true",
+            "description": "Paginated listing. Returns full documents (not projected) populated with `category`.\n\nQuery params: `page` (>=1, default 1), `limit` (1-100, default 10), `search`, `publish` (`true`/`false`), `isFeatured`, `isNewArrival`, `gender` (`men`/`women`/`unisex`), `category` (a single category id).\n\nCaptures `productId` and `productSlug` from the first item."
+          }
+        },
+        {
+          "name": "GET /product/filter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json();",
+                  "var first = b.data && b.data[0];",
+                  "if (first) {",
+                  "  pm.collectionVariables.set('productId', first._id);",
+                  "  if (first.slug) { pm.collectionVariables.set('productSlug', first.slug); }",
+                  "}",
+                  "pm.test('pagination block present', function () { pm.expect(b.pagination).to.be.an('object'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/product/filter?sort=newest&page=1&limit=12",
+            "description": "Storefront filter endpoint. Only ever returns published products and projects just the card fields (`name`, `slug`, `image`, `tag`, `price`, `discountPrice`, `rating`, `reviewsCount`, `category.name`, `variants.colorCode`) — deliberately not full documents, the payload is ~6 KB for 12 items vs ~37 KB for the same page from `GET /product`.\n\nAll params optional: `search`, `category` (comma-separated ObjectIds), `gender` (comma-separated), `type` (comma-separated subset of `New`, `Featured`, `Sale`), `price` (`min-max`, e.g. `100-500`), `size` (comma-separated), `color` (comma-separated), `sort` (`price-low` | `price-high` | `newest` | `featured` | `rating`, default `newest`), `minRating` (1-5), `page`, `limit` (1-100, default 20).\n\nInvalid enum values are rejected with 400 VALIDATION_ERROR."
+          }
+        },
+        {
+          "name": "GET /product/filter (size + colour + price)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/product/filter?size=M,L&color=Black,White&price=500-2000&minRating=4&sort=price-low&page=1&limit=12",
+            "description": "Multi-facet example. Comma-separated `size`/`color` become `$in` queries on `variants.sizes.size` / `variants.color`; `price` applies to `discountPrice` OR `price`."
+          }
+        },
+        {
+          "name": "GET /product/facets",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var d = pm.response.json().data;",
+                  "pm.test('facets shape', function () {",
+                  "  pm.expect(d).to.have.property('price');",
+                  "  pm.expect(d).to.have.property('sizes');",
+                  "  pm.expect(d).to.have.property('colors');",
+                  "  pm.expect(d).to.have.property('ratings');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/product/facets",
+            "description": "Available filter options derived from the live catalogue (single `$facet` aggregation over published products). Returns `{ price: { min, max }, sizes: string[], colors: [{ label, hex }], ratings: number[] }`.\n\nThe storefront fetches this once and caches it for 5 minutes. Sizes come back in wearing order (XXS..XXXL, then numeric)."
+          }
+        },
+        {
+          "name": "GET /product/featured",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/product/featured",
+            "description": "Up to 8 published products flagged `isFeatured`, populated with `category.name`."
+          }
+        },
+        {
+          "name": "GET /product/best-sellers",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/product/best-sellers",
+            "description": "Up to 6 published products flagged `isBestSellers`."
+          }
+        },
+        {
+          "name": "GET /product/search",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/product/search?name=shirt&limit=10",
+            "description": "Quick typeahead search. Matches `name` with a case-insensitive regex. `name` is required and `limit` is 1-50 (default 10). This endpoint does not filter on `publish`."
+          }
+        },
+        {
+          "name": "GET /product/similar/:id",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/product/similar/{{productId}}",
+            "description": "Up to 4 other published products in the same category. Registered before `/:slug/:id`, so `similar` is never mistaken for a slug."
+          }
+        },
+        {
+          "name": "GET /product/:slug/:id",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/product/{{productSlug}}/{{productId}}",
+            "description": "Canonical product-detail route. If the slug no longer matches the stored slug (e.g. the product was renamed) the response is `{ product, redirectUrl: \"/<slug>/<_id>\" }` instead of `{ product }` — the client is expected to follow it. Run `GET /product` first to populate `productSlug` and `productId`."
+          }
+        },
+        {
+          "name": "GET /product/:id",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/product/{{productId}}",
+            "description": "Fetch a single product by ObjectId. Returns 404 API_ERROR when it does not exist."
+          }
+        },
+        {
+          "name": "Admin",
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{adminToken}}",
+                "type": "string"
+              }
+            ]
+          },
+          "item": [
+            {
+              "name": "POST /product (create)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                      "var b = pm.response.json();",
+                      "if (b.data && b.data._id) {",
+                      "  pm.collectionVariables.set('productId', b.data._id);",
+                      "  if (b.data.slug) { pm.collectionVariables.set('productSlug', b.data.slug); }",
+                      "}",
+                      "pm.test('new product id captured', function () { pm.expect(pm.collectionVariables.get('productId')).to.be.a('string').and.not.empty; });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "name", "value": "Test Product", "type": "text" },
+                    { "key": "description", "value": "A product created from the Postman collection.", "type": "text" },
+                    { "key": "price", "value": "1299", "type": "text" },
+                    { "key": "discountPrice", "value": "999", "type": "text" },
+                    { "key": "stock", "value": "25", "type": "text" },
+                    { "key": "category", "value": "{{categoryId}}", "type": "text" },
+                    { "key": "gender", "value": "unisex", "type": "text" },
+                    { "key": "tag", "value": "New", "type": "text" },
+                    { "key": "publish", "value": "true", "type": "text" },
+                    { "key": "isFeatured", "value": "true", "type": "text" },
+                    { "key": "isBestSellers", "value": "false", "type": "text" },
+                    {
+                      "key": "variants",
+                      "value": "[{\"color\":\"Black\",\"colorCode\":\"#000000\",\"images\":[],\"sizes\":[{\"size\":\"M\",\"stock\":10,\"sku\":\"TP-BLK-M\",\"price\":1299,\"discountPrice\":999},{\"size\":\"L\",\"stock\":15,\"sku\":\"TP-BLK-L\",\"price\":1299,\"discountPrice\":999}]}]",
+                      "type": "text"
+                    },
+                    { "key": "image", "src": null, "type": "file" },
+                    { "key": "variantImages", "src": null, "type": "file" }
+                  ]
+                },
+                "url": "{{baseUrl}}/product",
+                "description": "multipart/form-data (required — the route has `upload.fields([image, variantImages])` before validation).\n\n`image` (max 1) and `variantImages` (max 50) are optional files uploaded to Cloudinary.\n\n`variants` and `variantImageMap` are sent as JSON **strings** and parsed by the schema:\n`variants`: `[{ color, colorCode, images[], sizes: [{ size, stock, sku, price, discountPrice }] }]`\n`variantImageMap`: `[{ variantIndex, count }]` — assigns `count` of the uploaded `variantImages` to `variants[variantIndex].images`.\n\nRequired: `name`, `description`, `price` (>0), `stock` (>=0), `category` (ObjectId). Optional: `discountPrice`, `image`, `slug` (auto-slugified from `name` when omitted), `gender` (default unisex), `tag` (default New), `publish` (default true), `isFeatured` / `isBestSellers` (default false).\n\nRun `GET /category` or create a category first so `{{categoryId}}` is populated."
+              }
+            },
+            {
+              "name": "PATCH /product/:id",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "price", "value": "1199", "type": "text" },
+                    { "key": "discountPrice", "value": "899", "type": "text" },
+                    { "key": "isFeatured", "value": "false", "type": "text" },
+                    { "key": "image", "src": null, "type": "file" }
+                  ]
+                },
+                "url": "{{baseUrl}}/product/{{productId}}",
+                "description": "Partial update, also multipart. At least one field is required. Renaming updates the slug automatically. Replacing `variants` replaces the whole array — it is a JSON string here too."
+              }
+            },
+            {
+              "name": "DELETE /product/:id",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": "{{baseUrl}}/product/{{productId}}",
+                "description": "Deletes the product and returns the deleted document. Note this does not remove Cloudinary assets or existing order line items."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "GET /category (list)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json();",
+                  "var first = b.data && b.data[0];",
+                  "if (first && first._id) { pm.collectionVariables.set('categoryId', first._id); }",
+                  "pm.test('returns an array', function () { pm.expect(b.data).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/category?page=1&limit=50",
+            "description": "Public category list, paginated (`page` >= 1, `limit` 1-100, default 10). Served from a 5-minute in-process cache that is invalidated on any category write — expect ~13 ms when warm. Captures `categoryId` from the first item."
+          }
+        },
+        {
+          "name": "GET /category/:id",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/category/{{categoryId}}",
+            "description": "Single category by ObjectId."
+          }
+        },
+        {
+          "name": "POST /category (create)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "var b = pm.response.json();",
+                  "if (b.data && b.data._id) { pm.collectionVariables.set('categoryId', b.data._id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Test Category", "type": "text" },
+                { "key": "slug", "value": "test-category", "type": "text" },
+                { "key": "image", "src": null, "type": "file" }
+              ]
+            },
+            "url": "{{baseUrl}}/category",
+            "description": "Admin only. multipart/form-data because of `upload.single(\"image\")`. `name` and `slug` are required; `image` is an optional file. Clears the category cache. Captures `categoryId`."
+          }
+        },
+        {
+          "name": "PATCH /category/:id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Renamed Category", "type": "text" },
+                { "key": "slug", "value": "renamed-category", "type": "text" }
+              ]
+            },
+            "url": "{{baseUrl}}/category/{{categoryId}}",
+            "description": "Admin only, multipart. At least one field required. Uploading a new `image` deletes the previous Cloudinary asset. Clears the category cache."
+          }
+        },
+        {
+          "name": "DELETE /category/:id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/category/{{categoryId}}",
+            "description": "Admin only. Deletes the category and its Cloudinary image. Products referencing it keep a dangling `category` id."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "GET /cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var b = pm.response.json();",
+                  "var items = b.data && (b.data.items || b.data.products);",
+                  "if (items && items.length && items[0]._id) {",
+                  "  pm.collectionVariables.set('cartItemId', items[0]._id);",
+                  "} else if (items && items.length && items[0].cartItemId) {",
+                  "  pm.collectionVariables.set('cartItemId', items[0].cartItemId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/cart",
+            "description": "The signed-in customer's cart. Captures `cartItemId` from the first line item when present."
+          }
+        },
+        {
+          "name": "GET /cart/count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/cart/count",
+            "description": "Cheap line-item count for the header badge."
+          }
+        },
+        {
+          "name": "POST /cart (add item)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var b = pm.response.json();",
+                  "var items = b.data && (b.data.items || b.data.products);",
+                  "if (items && items.length) {",
+                  "  var last = items[items.length - 1];",
+                  "  if (last._id) { pm.collectionVariables.set('cartItemId', last._id); }",
+                  "}",
+                  "pm.test('request accepted', function () { pm.expect([200, 201]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/cart",
+            "description": "Adds a product to the cart. `productId` is required (ObjectId); `variantId` and `size` are optional but must be sent together for variant-level stock. `quantity` is 1-10, default 1.\n\nRun `GET /product` first so `{{productId}}` is populated."
+          }
+        },
+        {
+          "name": "PUT /cart (update quantity)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartItemId\": \"{{cartItemId}}\",\n  \"quantity\": 2\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/cart",
+            "description": "Sets the absolute quantity for a line item (1-10). Not a delta. `cartItemId` comes from `GET /cart` or the add response."
+          }
+        },
+        {
+          "name": "DELETE /cart/clear",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/cart/clear",
+            "description": "Empties the cart. Registered before `/:cartItemId`, so `clear` is never treated as an id."
+          }
+        },
+        {
+          "name": "DELETE /cart/:cartItemId",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/cart/{{cartItemId}}",
+            "description": "Removes a single line item."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wishlist",
+      "item": [
+        {
+          "name": "GET /wishlist",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/wishlist",
+            "description": "The customer's wishlist ids."
+          }
+        },
+        {
+          "name": "GET /wishlist/details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/wishlist/details",
+            "description": "Wishlist with populated product details."
+          }
+        },
+        {
+          "name": "POST /wishlist/toggle",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/wishlist/toggle",
+            "description": "Adds the product if absent, removes it if present. There is no separate add/remove endpoint."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Addresses",
+      "item": [
+        {
+          "name": "GET /address",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var b = pm.response.json();",
+                  "var list = b.data;",
+                  "if (Array.isArray(list) && list.length && list[0]._id) {",
+                  "  pm.collectionVariables.set('addressId', list[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/address",
+            "description": "All saved addresses for the signed-in customer. Captures `addressId`."
+          }
+        },
+        {
+          "name": "POST /address (create)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "var b = pm.response.json();",
+                  "if (b.data && b.data._id) { pm.collectionVariables.set('addressId', b.data._id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Home\",\n  \"name\": \"Jane Doe\",\n  \"phone\": \"+1 555 010 2030\",\n  \"addressLine1\": \"221B Baker Street\",\n  \"addressLine2\": \"Apt 4\",\n  \"zipCode\": \"400001\",\n  \"state\": \"Maharashtra\",\n  \"city\": \"Mumbai\",\n  \"country\": \"India\",\n  \"isDefault\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/address",
+            "description": "Creates an address. Required: `label` (`Home` | `Work` | `Other`), `name` (letters only), `phone`, `addressLine1`, `zipCode` (digits), `state`, `city`, `country`. Optional: `addressLine2`, `isDefault` (default false). Captures `addressId`, which the checkout requests need."
+          }
+        },
+        {
+          "name": "PATCH /address/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isDefault\": false,\n  \"city\": \"Pune\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/address/{{addressId}}",
+            "description": "Partial update. At least one field required; the same field rules as create apply to whichever fields you send."
+          }
+        },
+        {
+          "name": "DELETE /address/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/address/{{addressId}}",
+            "description": "Deletes the address."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "GET /review/:productId",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var b = pm.response.json();",
+                  "var list = b.data;",
+                  "if (Array.isArray(list) && list.length && list[0]._id) {",
+                  "  pm.collectionVariables.set('reviewId', list[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/review/{{productId}}?page=1&limit=10",
+            "description": "Public paginated reviews for a product (`page` >= 1, `limit` 1-100, default 10). Captures `reviewId` from the first review."
+          }
+        },
+        {
+          "name": "GET /review/mine/:productId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/review/mine/{{productId}}",
+            "description": "The signed-in customer's own review for a product, so the UI can prefill the edit form. Registered before `/:productId`."
+          }
+        },
+        {
+          "name": "POST /review (create)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('created', function () { pm.expect([200, 201]).to.include(pm.response.code); });",
+                  "var b = pm.response.json();",
+                  "if (b.data && b.data._id) { pm.collectionVariables.set('reviewId', b.data._id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"rating\": 5,\n  \"comment\": \"Fits perfectly.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/review",
+            "description": "Creates a review. `productId` (ObjectId) and `rating` (integer 1-5) are required; `comment` is optional. One review per user per product — a second attempt is rejected."
+          }
+        },
+        {
+          "name": "PATCH /review/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Still good after a month.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/review/{{reviewId}}",
+            "description": "Updates your own review. At least one field required."
+          }
+        },
+        {
+          "name": "DELETE /review/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/review/{{reviewId}}",
+            "description": "Deletes your own review."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Coupons",
+      "item": [
+        {
+          "name": "POST /coupon/apply",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME10\",\n  \"subtotal\": 1499\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/coupon/apply",
+            "description": "Public discount quote so guests can preview savings. Uses `optionalAuth`: if a valid `accessToken` is present the per-user usage limit is also checked. `code` is uppercased and validated against `^[A-Za-z0-9_-]+$` (2-32 chars); `subtotal` must be >= 0. Returns the computed discount, or an error when the code is expired, inactive, below `minOrderValue` or used up."
+          }
+        },
+        {
+          "name": "GET /coupon (list)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var b = pm.response.json();",
+                  "var list = b.data;",
+                  "if (Array.isArray(list) && list.length && list[0]._id) {",
+                  "  pm.collectionVariables.set('couponId', list[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/coupon?page=1&limit=10",
+            "description": "Admin only. Paginated coupon list with optional `search`."
+          }
+        },
+        {
+          "name": "GET /coupon/:id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/coupon/{{couponId}}",
+            "description": "Admin only. Single coupon by ObjectId."
+          }
+        },
+        {
+          "name": "POST /coupon (create)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+                  "var b = pm.response.json();",
+                  "if (b.data && b.data._id) { pm.collectionVariables.set('couponId', b.data._id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME10\",\n  \"type\": \"percentage\",\n  \"value\": 10,\n  \"description\": \"10% off your first order\",\n  \"minOrderValue\": 500,\n  \"maxDiscountAmount\": 300,\n  \"maxUses\": 1000,\n  \"maxUsesPerUser\": 1,\n  \"expiresAt\": \"2027-12-31T23:59:59.000Z\",\n  \"active\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/coupon",
+            "description": "Admin only. Required: `code` (2-32 chars, letters/digits/`-`/`_`, uppercased automatically), `type` (`percentage` | `fixed`), `value` (>0).\n\nRules: `percentage` value cannot exceed 100, and `maxUsesPerUser` is only allowed on `percentage` coupons (sending it on a `fixed` coupon is a 400).\n\nOptional: `description`, `minOrderValue`, `maxDiscountAmount`, `maxUses`, `maxUsesPerUser`, `expiresAt`, `active`."
+          }
+        },
+        {
+          "name": "PATCH /coupon/:id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"active\": false,\n  \"maxUses\": 2000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/coupon/{{couponId}}",
+            "description": "Admin only. Partial update; the code itself cannot be changed. At least one field required."
+          }
+        },
+        {
+          "name": "DELETE /coupon/:id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/coupon/{{couponId}}",
+            "description": "Admin only. Deletes the coupon. Already-placed orders keep their recorded discount."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "POST /order/cod (signed-in COD)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('created', function () { pm.expect([200, 201]).to.include(pm.response.code); });",
+                  "var b = pm.response.json();",
+                  "if (b.data && b.data._id) { pm.collectionVariables.set('orderId', b.data._id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"addressId\": \"{{addressId}}\",\n  \"deliveryMethod\": \"standard\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/order/cod",
+            "description": "Places a cash-on-delivery order from the signed-in customer's cart, using a saved address. `addressId` (ObjectId) and `deliveryMethod` (`standard` | `express` | `same-day`) are required. Stock is verified before the order is written, and the cart is cleared on success.\n\nRequires a non-empty cart — run `POST /cart` first. Captures `orderId`."
+          }
+        },
+        {
+          "name": "POST /order/guest (guest COD)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('created', function () { pm.expect([200, 201]).to.include(pm.response.code); });",
+                  "var b = pm.response.json();",
+                  "if (b.data && b.data._id) { pm.collectionVariables.set('orderId', b.data._id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"products\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"size\": \"M\",\n      \"quantity\": 1\n    }\n  ],\n  \"address\": {\n    \"name\": \"John Guest\",\n    \"addressLine1\": \"12 Market Road\",\n    \"addressLine2\": \"Unit 3\",\n    \"city\": \"Bengaluru\",\n    \"state\": \"Karnataka\",\n    \"zipCode\": \"560001\",\n    \"country\": \"India\",\n    \"phone\": \"+91 98765 43210\"\n  },\n  \"deliveryMethod\": \"express\",\n  \"name\": \"John Guest\",\n  \"email\": \"guest@example.com\",\n  \"phone\": \"+91 98765 43210\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/order/guest",
+            "description": "Guest checkout with no account. `products` is an array of `{ productId, variantId?, size?, quantity }` (at least one, quantity 1-10); `address` is a full inline address; `deliveryMethod` is required; plus contact `name`, `email`, `phone` at the order level. Point your Stripe CLI at `POST /api/webhook` to see the order flip to paid."
+          }
+        },
+        {
+          "name": "GET /order (admin list)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var b = pm.response.json();",
+                  "var list = b.data;",
+                  "if (Array.isArray(list) && list.length && list[0]._id) {",
+                  "  pm.collectionVariables.set('orderId', list[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/order?page=1&limit=10&orderStatus=processing&paymentStatus=paid",
+            "description": "Admin only. Paginated orders. Optional `search`, `orderStatus` (`processing` | `shipped` | `delivered`) and `paymentStatus` (`pending` | `paid` | `failed`). Captures `orderId`."
+          }
+        },
+        {
+          "name": "GET /order/stats",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/order/stats",
+            "description": "Admin only. Aggregate dashboard counters. Registered before `/:id`."
+          }
+        },
+        {
+          "name": "GET /order/my-orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/order/my-orders?page=1&limit=10",
+            "description": "The signed-in customer's order history, paginated. Uses `accessToken`."
+          }
+        },
+        {
+          "name": "GET /order/session-id/:sessionId",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/order/session-id/{{sessionId}}",
+            "description": "Looks an order up by Stripe checkout session id — used by the success page after redirect. `optionalAuth`: signed-in owners see the full order, guests get the public subset."
+          }
+        },
+        {
+          "name": "GET /order/order-id/:id",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/order/order-id/{{orderId}}",
+            "description": "Order lookup by id with `optionalAuth`, for the guest order-confirmation page."
+          }
+        },
+        {
+          "name": "GET /order/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/order/{{orderId}}",
+            "description": "Authenticated order detail. Uses `accessToken`; ownership is enforced."
+          }
+        },
+        {
+          "name": "PATCH /order/:id (status)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderStatus\": \"shipped\",\n  \"paymentStatus\": \"paid\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/order/{{orderId}}",
+            "description": "Admin only. `orderStatus` (`processing` | `shipped` | `delivered`) and/or `paymentStatus` (`pending` | `paid` | `failed`); at least one required."
+          }
+        },
+        {
+          "name": "DELETE /order/:id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/order/{{orderId}}",
+            "description": "Admin only. Deletes the order record. Note this does not restock the items."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment",
+      "item": [
+        {
+          "name": "POST /payment/create-checkout-session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('created', function () { pm.expect([200, 201]).to.include(pm.response.code); });",
+                  "var b = pm.response.json();",
+                  "var d = b.data || {};",
+                  "var sid = d.sessionId || d.id;",
+                  "if (sid) { pm.collectionVariables.set('sessionId', sid); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"addressId\": \"{{addressId}}\",\n  \"deliveryMethod\": \"standard\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/payment/create-checkout-session",
+            "description": "Starts a Stripe Checkout session for the signed-in customer's cart. Same body as `POST /order/cod`. Returns the session (including its id and redirect URL) and captures `sessionId`. Requires a non-empty cart."
+          }
+        },
+        {
+          "name": "POST /payment/create-guest-session",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"products\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"size\": \"M\",\n      \"quantity\": 1\n    }\n  ],\n  \"address\": {\n    \"name\": \"John Guest\",\n    \"addressLine1\": \"12 Market Road\",\n    \"city\": \"Bengaluru\",\n    \"state\": \"Karnataka\",\n    \"zipCode\": \"560001\",\n    \"country\": \"India\",\n    \"phone\": \"+91 98765 43210\"\n  },\n  \"deliveryMethod\": \"standard\",\n  \"name\": \"John Guest\",\n  \"email\": \"guest@example.com\",\n  \"phone\": \"+91 98765 43210\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/payment/create-guest-session",
+            "description": "Stripe Checkout for a guest. Same body as `POST /order/guest`."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invoice",
+      "item": [
+        {
+          "name": "GET /invoice/:orderId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/invoice/{{orderId}}",
+            "description": "Invoice data for an order you own. Uses `accessToken`."
+          }
+        },
+        {
+          "name": "GET /invoice/:orderId/download",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/invoice/{{orderId}}/download",
+            "description": "Streams the generated PDF invoice. In Postman use **Send and Download** — the response is `application/pdf`, not JSON, so the collection-level envelope test will fail on this one."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Newsletter",
+      "item": [
+        {
+          "name": "POST /newsletter (subscribe)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"subscriber@example.com\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/newsletter",
+            "description": "Public newsletter signup. Only `email` is required; re-subscribing an existing address is idempotent, not a 409."
+          }
+        },
+        {
+          "name": "GET /newsletter (admin list)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/newsletter?page=1&limit=10",
+            "description": "Admin only. Paginated subscriber list."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users (Admin)",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminToken}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "GET /user (list)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var b = pm.response.json();",
+                  "var list = b.data;",
+                  "if (Array.isArray(list) && list.length && list[0]._id) {",
+                  "  pm.collectionVariables.set('userId', list[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/user?page=1&limit=10&role=User",
+            "description": "Admin only. Paginated users with optional `search` (max 120 chars) and `role` (`User` | `Admin`). Captures `userId`."
+          }
+        },
+        {
+          "name": "GET /user/:id/dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/user/{{userId}}/dashboard",
+            "description": "Admin only. Per-customer dashboard detail (orders, totals). Registered before `/:id`."
+          }
+        },
+        {
+          "name": "GET /user/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/user/{{userId}}",
+            "description": "Admin only. Single user by ObjectId."
+          }
+        },
+        {
+          "name": "DELETE /user/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/user/{{userId}}",
+            "description": "Admin only. Deletes the user. Their orders and reviews remain."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "POST /webhook (Stripe)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              {
+                "key": "stripe-signature",
+                "value": "t=0,v1=REPLACE_WITH_REAL_SIGNATURE",
+                "description": "Generated by Stripe. The handler verifies it against STRIPE_WEBHOOK_SECRET and returns 400 without a valid one."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"evt_test\",\n  \"type\": \"checkout.session.completed\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"cs_test_placeholder\",\n      \"metadata\": { \"orderId\": \"{{orderId}}\" },\n      \"payment_intent\": \"pi_test_placeholder\"\n    }\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/webhook",
+            "description": "Stripe webhook. Receives the **raw** body (`express.raw`, mounted before `express.json()`), verifies the `stripe-signature` header and, on `checkout.session.completed`, marks the order paid, sets it to `processing` and clears the buyer's cart.\n\nYou cannot hand-craft a working signature. Test it properly with the Stripe CLI:\n```\nstripe listen --forward-to localhost:7777/api/webhook\n```\nThis request is included for reference only; it returns 400 as shipped."
+          }
+        }
+      ]
+    }
+  ]
+}
