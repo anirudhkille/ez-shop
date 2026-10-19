@@ -8,12 +8,8 @@ export const create = async (data: {
   return await Category.create(data);
 };
 
-export const findAll = async (skip = 0, limit = 10) => {
-  return await Category.find().skip(skip).limit(limit).lean();
-};
-
-export const countDocuments = async () => {
-  return await Category.countDocuments();
+export const findAll = async () => {
+  return await Category.find().lean();
 };
 
 export const findById = async (id: string) => {

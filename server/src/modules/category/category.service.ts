@@ -1,7 +1,14 @@
 import cloudinary from "@/config/cloudinary";
 import { uploadToCloudinary } from "@/utils/upload-to-cloudinary";
 import { AppError } from "@/utils/app-error";
+import { createTtlCache } from "@/utils/ttl-cache";
 import * as categoryRepository from "@/modules/category/category.repository";
+
+const CATEGORY_CACHE_TTL_MS = 5 * 60 * 1000;
+
+const categoryCache = createTtlCache<
+  Awaited<ReturnType<typeof categoryRepository.findAll>>
+>(CATEGORY_CACHE_TTL_MS);
 
 const extractCloudinaryPublicId = (imageUrl: string) => {
   return imageUrl.split("/").pop()?.split(".")[0];
@@ -35,19 +42,21 @@ export const createCategory = async (
     image: finalImageUrl,
   });
 
+  categoryCache.clear();
+
   return category;
 };
 
 export const getAllCategories = async (page = 1, limit = 10) => {
-  const skip = (page - 1) * limit;
+  const categories = await categoryCache.load(() =>
+    categoryRepository.findAll(),
+  );
 
-  const [categories, total] = await Promise.all([
-    categoryRepository.findAll(skip, limit),
-    categoryRepository.countDocuments(),
-  ]);
+  const start = (page - 1) * limit;
+  const total = categories.length;
 
   return {
-    items: categories,
+    items: categories.slice(start, start + limit),
     pagination: {
       total,
       page,
@@ -97,6 +106,8 @@ export const updateCategory = async (
     image: imageUrl,
   });
 
+  categoryCache.clear();
+
   return updated;
 };
 
@@ -110,6 +121,8 @@ export const deleteCategory = async (id: string) => {
   if (category.image) {
     await deleteCategoryImage(category.image);
   }
+
+  categoryCache.clear();
 
   return category;
 };
