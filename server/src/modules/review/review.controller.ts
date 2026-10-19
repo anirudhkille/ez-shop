@@ -1,4 +1,5 @@
 import { asyncHandler } from "@/utils/async-handler";
+import { param } from "@/utils/params";
 import { sendResponse } from "@/utils/response";
 import { Request, Response } from "express";
 import * as reviewService from "@/modules/review/review.service";
@@ -11,7 +12,7 @@ export const postReview = asyncHandler(async (req: Request, res: Response) => {
 
 export const getMyReview = asyncHandler(async (req: Request, res: Response) => {
   const result = await reviewService.getMyReview(
-    req.params.productId,
+    param(req.params.productId),
     req.user!._id,
   );
 
@@ -24,7 +25,7 @@ export const getReviewByProduct = asyncHandler(
     const page = Number(req.query.page) || 1;
 
     const result = await reviewService.getReviewByProduct(
-      req.params.productId,
+      param(req.params.productId),
       limit,
       page,
     );
@@ -42,7 +43,7 @@ export const getReviewByProduct = asyncHandler(
 export const updateReview = asyncHandler(
   async (req: Request, res: Response) => {
     const review = await reviewService.updateReview(
-      req.params.id,
+      param(req.params.id),
       req.user!._id,
       req.body,
     );
@@ -54,7 +55,7 @@ export const updateReview = asyncHandler(
 export const deleteReview = asyncHandler(
   async (req: Request, res: Response) => {
     const review = await reviewService.deleteReview(
-      req.params.id,
+      param(req.params.id),
       req.user!._id,
     );
 

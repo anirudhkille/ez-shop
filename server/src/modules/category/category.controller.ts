@@ -1,4 +1,5 @@
 import { asyncHandler } from "@/utils/async-handler";
+import { param } from "@/utils/params";
 import { sendResponse } from "@/utils/response";
 import { Request, Response } from "express";
 import * as categoryService from "@/modules/category/category.service";
@@ -35,7 +36,7 @@ export const getCategory = asyncHandler(async (req: Request, res: Response) => {
 
 export const getCategoryById = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await categoryService.getCategoryById(req.params.id);
+    const result = await categoryService.getCategoryById(param(req.params.id));
 
     return sendResponse(res, 200, "Category fetched successfully", result);
   },
@@ -44,7 +45,7 @@ export const getCategoryById = asyncHandler(
 export const updateCategory = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await categoryService.updateCategory(
-      req.params.id,
+      param(req.params.id),
       req.body,
       req.file,
     );
@@ -55,7 +56,7 @@ export const updateCategory = asyncHandler(
 
 export const deleteCategory = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await categoryService.deleteCategory(req.params.id);
+    const result = await categoryService.deleteCategory(param(req.params.id));
 
     return sendResponse(res, 200, "Category deleted successfully", result);
   },

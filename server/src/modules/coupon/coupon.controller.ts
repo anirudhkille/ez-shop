@@ -1,4 +1,5 @@
 import { asyncHandler } from "@/utils/async-handler";
+import { param } from "@/utils/params";
 import { sendResponse } from "@/utils/response";
 import { Request, Response } from "express";
 import * as couponService from "@/modules/coupon/coupon.service";
@@ -38,7 +39,7 @@ export const getCoupons = asyncHandler(async (req: Request, res: Response) => {
 
 export const getCouponById = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await couponService.getCouponById(req.params.id);
+    const result = await couponService.getCouponById(param(req.params.id));
 
     return sendResponse(res, 200, "Coupon fetched successfully", result);
   },
@@ -46,7 +47,10 @@ export const getCouponById = asyncHandler(
 
 export const updateCoupon = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await couponService.updateCoupon(req.params.id, req.body);
+    const result = await couponService.updateCoupon(
+      param(req.params.id),
+      req.body,
+    );
 
     return sendResponse(res, 200, "Coupon updated successfully", result);
   },
@@ -54,7 +58,7 @@ export const updateCoupon = asyncHandler(
 
 export const deleteCoupon = asyncHandler(
   async (req: Request, res: Response) => {
-    await couponService.deleteCoupon(req.params.id);
+    await couponService.deleteCoupon(param(req.params.id));
 
     return sendResponse(res, 200, "Coupon deleted successfully", {
       deleted: true,

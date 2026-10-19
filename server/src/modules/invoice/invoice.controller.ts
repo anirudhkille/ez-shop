@@ -1,6 +1,7 @@
 import PDFDocument from "pdfkit";
 
 import { asyncHandler } from "@/utils/async-handler";
+import { param } from "@/utils/params";
 import { buildInvoicePdf } from "@/modules/invoice/invoice.pdf";
 import * as invoiceService from "@/modules/invoice/invoice.service";
 import { Request, Response } from "express";
@@ -8,7 +9,7 @@ import { Request, Response } from "express";
 export const downloadInvoice = asyncHandler(
   async (req: Request, res: Response) => {
     const invoice = await invoiceService.getInvoiceForOrder(
-      req.params.orderId,
+      param(req.params.orderId),
       req.user?._id?.toString(),
     );
 
@@ -27,7 +28,7 @@ export const downloadInvoice = asyncHandler(
 
 export const getInvoice = asyncHandler(async (req: Request, res: Response) => {
   const invoice = await invoiceService.getInvoiceForOrder(
-    req.params.orderId,
+    param(req.params.orderId),
     req.user?._id?.toString(),
   );
 

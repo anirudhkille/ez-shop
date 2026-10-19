@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "@/utils/async-handler";
+import { param } from "@/utils/params";
 import { env } from "@/config/env.config";
 import * as userService from "@/modules/user/user.service";
 import {
@@ -135,14 +136,14 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const getUserById = asyncHandler(async (req: Request, res: Response) => {
-  const user = await userService.getUserById(req.params.id);
+  const user = await userService.getUserById(param(req.params.id));
 
   return sendResponse(res, 200, "User fetched successfully", user);
 });
 
 export const getUserAdminDetail = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await userService.getUserAdminDetail(req.params.id);
+    const result = await userService.getUserAdminDetail(param(req.params.id));
 
     return sendResponse(res, 200, "User details fetched successfully", result);
   },
@@ -150,7 +151,7 @@ export const getUserAdminDetail = asyncHandler(
 
 export const deleteUserById = asyncHandler(
   async (req: Request, res: Response) => {
-    await userService.deleteUserById(req.params.id);
+    await userService.deleteUserById(param(req.params.id));
 
     return sendResponse(res, 200, "User deleted successfully", {
       deleted: true,

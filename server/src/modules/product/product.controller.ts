@@ -1,4 +1,5 @@
 import { asyncHandler } from "@/utils/async-handler";
+import { param } from "@/utils/params";
 import { sendResponse } from "@/utils/response";
 import { Request, Response } from "express";
 import * as productService from "@/modules/product/product.service";
@@ -43,7 +44,7 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
 
 export const getProductById = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await productService.getProductById(req.params.id);
+    const result = await productService.getProductById(param(req.params.id));
 
     return sendResponse(res, 200, "Product fetched successfully", result);
   },
@@ -52,8 +53,8 @@ export const getProductById = asyncHandler(
 export const getProductBySlugAndId = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await productService.getProductBySlugAndId(
-      req.params.slug,
-      req.params.id,
+      param(req.params.slug),
+      param(req.params.id),
     );
 
     if (result.redirectUrl) {
@@ -75,7 +76,7 @@ export const getProductBySlugAndId = asyncHandler(
 export const updateProduct = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await productService.updateProduct(
-      req.params.id,
+      param(req.params.id),
       req.body,
       req.files,
     );
@@ -86,7 +87,7 @@ export const updateProduct = asyncHandler(
 
 export const deleteProduct = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await productService.deleteProduct(req.params.id);
+    const result = await productService.deleteProduct(param(req.params.id));
 
     return sendResponse(res, 200, "Product deleted successfully", result);
   },
@@ -169,7 +170,9 @@ export const getBestSellers = asyncHandler(
 
 export const getSimilarProducts = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await productService.getSimilarProducts(req.params.id);
+    const result = await productService.getSimilarProducts(
+      param(req.params.id),
+    );
 
     return sendResponse(
       res,

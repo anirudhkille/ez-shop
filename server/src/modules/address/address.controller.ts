@@ -1,4 +1,5 @@
 import { asyncHandler } from "@/utils/async-handler";
+import { param } from "@/utils/params";
 import { sendResponse } from "@/utils/response";
 import { Request, Response } from "express";
 import * as addressService from "@/modules/address/address.service";
@@ -22,7 +23,7 @@ export const getAddressByUser = asyncHandler(
 export const updateAddress = asyncHandler(
   async (req: Request, res: Response) => {
     const address = await addressService.updateAddress(
-      req.params.id,
+      param(req.params.id),
       req.user!._id,
       req.body,
     );
@@ -34,7 +35,7 @@ export const updateAddress = asyncHandler(
 export const deleteAddress = asyncHandler(
   async (req: Request, res: Response) => {
     const address = await addressService.deleteAddress(
-      req.params.id,
+      param(req.params.id),
       req.user!._id,
     );
 

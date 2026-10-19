@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "@/utils/async-handler";
+import { param } from "@/utils/params";
 import { sendResponse } from "@/utils/response";
 import * as cartService from "@/modules/cart/cart.service";
 
@@ -32,7 +33,7 @@ export const removeFromCart = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await cartService.removeFromCart(
       req.user!._id,
-      req.params.cartItemId,
+      param(req.params.cartItemId),
     );
 
     return sendResponse(res, 200, "Item removed", result);

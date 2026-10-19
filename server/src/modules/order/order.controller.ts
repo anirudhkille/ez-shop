@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "@/utils/async-handler";
+import { param } from "@/utils/params";
 import { sendResponse } from "@/utils/response";
 import * as orderService from "@/modules/order/order.service";
 
@@ -61,7 +62,10 @@ export const getMyOrder = asyncHandler(async (req: Request, res: Response) => {
 
 export const getOrderById = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await orderService.getOrderById(req.params.id, req.user);
+    const result = await orderService.getOrderById(
+      param(req.params.id),
+      req.user,
+    );
 
     return sendResponse(res, 200, "Order fetched successfully", result);
   },
@@ -78,7 +82,7 @@ export const placeGuestCODOrder = asyncHandler(
 export const getOrderBySessionId = asyncHandler(
   async (req: Request, res: Response) => {
     const result = await orderService.getOrderBySessionId(
-      req.params.sessionId,
+      param(req.params.sessionId),
       req.user,
     );
 
@@ -87,13 +91,13 @@ export const getOrderBySessionId = asyncHandler(
 );
 
 export const updateOrder = asyncHandler(async (req: Request, res: Response) => {
-  const result = await orderService.updateOrder(req.params.id, req.body);
+  const result = await orderService.updateOrder(param(req.params.id), req.body);
 
   return sendResponse(res, 200, "Order updated successfully", result);
 });
 
 export const deleteOrder = asyncHandler(async (req: Request, res: Response) => {
-  const result = await orderService.deleteOrder(req.params.id);
+  const result = await orderService.deleteOrder(param(req.params.id));
 
   return sendResponse(res, 200, "Order deleted successfully", result);
 });
