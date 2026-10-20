@@ -20,6 +20,7 @@ import {
 } from "../components/order-line-items";
 import { useDownloadInvoice } from "../hooks/use-invoice";
 import { useOrderDetail } from "../hooks/use-order";
+import { isAwaitingPayment } from "../lib/order-status";
 
 const DELIVERY_LABELS: Record<string, string> = {
   standard: "Standard",
@@ -164,7 +165,10 @@ export default function OrderDetail() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <OrderStatusPill status={order.orderStatus} />
+            <OrderStatusPill
+              status={order.orderStatus}
+              awaitingPayment={isAwaitingPayment(order)}
+            />
             <button
               type="button"
               onClick={() => downloadInvoice(order._id)}

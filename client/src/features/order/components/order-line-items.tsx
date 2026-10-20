@@ -6,11 +6,20 @@ import { ImageOff } from "lucide-react";
 
 import { formatPrice } from "@/shared/lib/format-price";
 
-import { getLineItemProduct, getOrderStatusMeta } from "../lib/order-status";
+import {
+  AWAITING_PAYMENT_META,
+  getLineItemProduct,
+  getOrderStatusMeta,
+} from "../lib/order-status";
 import type { TOrderProduct } from "../types";
 
-export const OrderStatusPill: FC<{ status?: string }> = ({ status }) => {
-  const meta = getOrderStatusMeta(status);
+export const OrderStatusPill: FC<{
+  status?: string;
+  awaitingPayment?: boolean;
+}> = ({ status, awaitingPayment = false }) => {
+  const meta = awaitingPayment
+    ? AWAITING_PAYMENT_META
+    : getOrderStatusMeta(status);
 
   return (
     <span

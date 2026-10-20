@@ -1,9 +1,12 @@
 import express from "express";
 import {
+  abandonPaymentIntent,
   createCheckoutSession,
   createGuestCheckoutSession,
+  createPaymentIntent,
 } from "@/modules/payment/payment.controller";
 import {
+  abandonPaymentSchema,
   addressDeliverySchema,
   guestCheckoutSchema,
 } from "@/modules/order/order.schema";
@@ -19,9 +22,21 @@ router.post(
   createCheckoutSession,
 );
 router.post(
+  "/create-payment-intent",
+  protect,
+  validate(addressDeliverySchema),
+  createPaymentIntent,
+);
+router.post(
   "/create-guest-session",
   validate(guestCheckoutSchema),
   createGuestCheckoutSession,
+);
+router.post(
+  "/abandon",
+  protect,
+  validate(abandonPaymentSchema),
+  abandonPaymentIntent,
 );
 
 export default router;

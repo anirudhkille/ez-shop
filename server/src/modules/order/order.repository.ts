@@ -5,6 +5,44 @@ export const create = async (data: Partial<IOrder>) => {
   return await Order.create(data);
 };
 
+/**
+ * Flips a one-shot flag atomically. Stripe can deliver two events for the same
+ * order at once, so the winner is decided in the database, not in memory.
+ */
+const claimOnce = async (
+  orderId: string,
+  field: "stockClaimed" | "confirmationSent",
+) =>
+  await Order.findOneAndUpdate(
+    { _id: orderId, [field]: { $ne: true } },
+    { $set: { [field]: true } },
+    { new: true },
+  );
+
+export const claimStockFlag = (orderId: string) =>
+  claimOnce(orderId, "stockClaimed");
+
+export const claimConfirmationFlag = (orderId: string) =>
+  claimOnce(orderId, "confirmationSent");
+
+/** Sweeps app orders whose sheet was closed without a webhook event. */
+export const failStalePendingCardOrders = async (userId: string) => {
+  const cutoff = new Date(Date.now() - 30 * 60 * 1000);
+
+  await Order.updateMany(
+    {
+      user: userId,
+      paymentType: "card",
+      paymentStatus: "pending",
+      // App orders carry a PaymentIntent; web orders carry a Checkout session.
+      paymentIntentId: { $exists: true, $ne: null },
+      sessionId: { $exists: false },
+      createdAt: { $lt: cutoff },
+    },
+    { $set: { paymentStatus: "failed" } },
+  );
+};
+
 const BUYER_FIELDS = "name email phone";
 
 const withResolvedBuyer = <

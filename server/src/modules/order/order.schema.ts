@@ -75,3 +75,6 @@ export const orderIdParamSchema = idParamSchema;
 export const sessionIdParamSchema = z.object({
   sessionId: nonEmptyString,
 });
+export const abandonPaymentSchema = z.object({
+  orderId: objectIdSchema,
+});

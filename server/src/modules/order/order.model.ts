@@ -39,6 +39,10 @@ export interface IOrder {
   paymentIntentId?: string;
   sessionId?: string;
   orderStatus?: string;
+  /** Set once the sale is confirmed, so a webhook retry cannot decrement twice. */
+  stockClaimed?: boolean;
+  /** Set once the confirmation mail has gone out. */
+  confirmationSent?: boolean;
 }
 
 const orderSchema = new mongoose.Schema(
@@ -107,6 +111,8 @@ const orderSchema = new mongoose.Schema(
       enum: ["processing", "shipped", "delivered"],
       default: "processing",
     },
+    stockClaimed: { type: Boolean, default: false },
+    confirmationSent: { type: Boolean, default: false },
   },
   { timestamps: true },
 );

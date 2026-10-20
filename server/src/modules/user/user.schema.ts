@@ -16,9 +16,11 @@ export const signupSchema = z.object({
   password: passwordSchema,
 });
 
+/** `client` lets the app ask for the refresh token in the body too. */
 export const loginSchema = z.object({
   email: emailSchema,
   password: loginPasswordSchema,
+  client: z.literal("app").optional(),
 });
 
 export const verifySignupOTPSchema = z.object({
@@ -27,6 +29,7 @@ export const verifySignupOTPSchema = z.object({
     .string()
     .trim()
     .regex(/^\d{6}$/, "OTP must be 6 digits"),
+  client: z.literal("app").optional(),
 });
 
 export const forgotPasswordSchema = z.object({
@@ -58,3 +61,14 @@ export const userPaginationQuerySchema = paginationQuerySchema.extend({
   role: z.enum(["User", "Admin"]).optional(),
 });
 export const userIdParamSchema = idParamSchema;
+
+/** The app posts the ID token from Google Play Services, not an OAuth code. */
+export const googleMobileSchema = z.object({
+  idToken: nonEmptyString,
+});
+
+/** App-only refresh: body token instead of the web cookie. */
+export const appRefreshSchema = z.object({
+  client: z.literal("app"),
+  refreshToken: nonEmptyString,
+});

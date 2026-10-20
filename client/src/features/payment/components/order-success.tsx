@@ -83,19 +83,33 @@ export function OrderSuccess({
   const paymentTail = order.paymentIntentId
     ? order.paymentIntentId.slice(-4)
     : (order.sessionId || "").slice(-4);
+  // The webhook settles card orders, so a fresh redirect can still be pending.
+  const awaitingPayment =
+    order.paymentType === "card" && order.paymentStatus === "pending";
 
   return (
     <main className="mx-auto max-w-6xl px-6 pt-24 pb-20 lg:px-10">
       <section className="mb-10 text-center">
         <div className="bg-brand-orange/12 text-brand-orange mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full text-xs font-black tracking-[0.22em] uppercase">
-          Paid
+          {awaitingPayment ? "Pending" : "Paid"}
         </div>
         <h1 className="font-display text-foreground text-4xl font-black uppercase lg:text-5xl">
-          Your Order Is Confirmed
+          {awaitingPayment
+            ? "We're Confirming Your Payment"
+            : "Your Order Is Confirmed"}
         </h1>
         <p className="text-muted-foreground mx-auto mt-3 max-w-2xl text-sm leading-6">
-          We&apos;ve received your order and sent a confirmation to
-          <strong> {maskedEmail || "your email"}</strong>.
+          {awaitingPayment ? (
+            <>
+              Your order is saved. This page updates by itself as soon as Stripe
+              confirms the payment.
+            </>
+          ) : (
+            <>
+              We&apos;ve received your order and sent a confirmation to
+              <strong> {maskedEmail || "your email"}</strong>.
+            </>
+          )}
         </p>
       </section>
 

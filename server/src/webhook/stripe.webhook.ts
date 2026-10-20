@@ -1,12 +1,18 @@
 import Stripe from "stripe";
 import express, { Request, Response } from "express";
-import * as orderRepository from "@/modules/order/order.repository";
-import * as cartRepository from "@/modules/cart/cart.repository";
+import {
+  markOrderPaid,
+  markOrderPaymentFailed,
+} from "@/modules/order/order.payment";
 import { env } from "@/config/env.config";
 import { Sentry, sentryEnabled } from "@/config/sentry";
 
 const router = express.Router();
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
+
+/** Maps a Stripe event to the order in its metadata. */
+const orderIdFrom = (metadata: Record<string, string> | null | undefined) =>
+  metadata?.orderId;
 
 router.post(
   "/webhook",
@@ -26,43 +32,65 @@ router.post(
       return res.status(400).send(`Webhook Error: ${(err as Error).message}`);
     }
 
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object as unknown as {
-        metadata?: { orderId?: string };
-        payment_intent?: string;
-      };
-
-      const orderId = session.metadata?.orderId;
-      if (!orderId) return res.status(200).send("OK");
-
-      try {
-        const order = await orderRepository.findById(orderId);
-        if (!order) return res.status(200).send("OK");
-
-        if (order.paymentStatus === "paid") return res.status(200).send("OK");
-
-        order.paymentStatus = "paid";
-        order.paymentIntentId = session.payment_intent;
-        order.orderStatus = "processing";
-        if (order.user) {
-          await cartRepository.clearProducts(String(order.user));
+    const orderId = (() => {
+      switch (event.type) {
+        case "checkout.session.completed":
+        case "checkout.session.expired": {
+          const session = event.data.object as unknown as {
+            metadata?: Record<string, string>;
+          };
+          return orderIdFrom(session.metadata) ?? null;
         }
-
-        await order.save();
-      } catch (err) {
-        if (sentryEnabled) {
-          Sentry.withScope((scope) => {
-            scope.setTag("route", "/webhook");
-            scope.setTag("stripeEventType", event.type);
-            scope.setTag("orderId", orderId);
-            Sentry.captureException(err);
-          });
+        case "payment_intent.succeeded":
+        case "payment_intent.payment_failed": {
+          const intent = event.data.object as unknown as {
+            metadata?: Record<string, string>;
+          };
+          return orderIdFrom(intent.metadata) ?? null;
         }
-
-        return res
-          .status(500)
-          .send(`Webhook processing error: ${(err as Error).message}`);
+        default:
+          return null;
       }
+    })();
+
+    if (!orderId) return res.status(200).send("OK");
+
+    try {
+      switch (event.type) {
+        case "checkout.session.completed": {
+          const session = event.data.object as unknown as {
+            payment_intent?: string | null;
+          };
+          await markOrderPaid(orderId, session.payment_intent);
+          break;
+        }
+        case "payment_intent.succeeded": {
+          const intent = event.data.object as unknown as { id: string };
+          await markOrderPaid(orderId, intent.id);
+          break;
+        }
+        // Abandoned session and refused card have the same outcome: no money.
+        case "checkout.session.expired":
+        case "payment_intent.payment_failed": {
+          await markOrderPaymentFailed(orderId);
+          break;
+        }
+        default:
+          break;
+      }
+    } catch (err) {
+      if (sentryEnabled) {
+        Sentry.withScope((scope) => {
+          scope.setTag("route", "/webhook");
+          scope.setTag("stripeEventType", event.type);
+          scope.setTag("orderId", orderId);
+          Sentry.captureException(err);
+        });
+      }
+
+      return res
+        .status(500)
+        .send(`Webhook processing error: ${(err as Error).message}`);
     }
 
     res.status(200).send("OK");

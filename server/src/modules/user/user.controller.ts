@@ -7,10 +7,16 @@ import {
   getGoogleTokens,
   getGoogleUser,
   isAllowedPostAuthRedirect,
+  verifyGoogleIdToken,
 } from "@/modules/user/user.google";
 import { sendResponse } from "@/utils/response";
 import { refreshCookieOptions } from "@/utils/cookies";
+import { AppError } from "@/utils/app-error";
 import crypto from "crypto";
+
+/** The app has no cookie jar, so it also gets the refresh token in the body. */
+const appRefresh = (client: string | undefined, refreshToken: string) =>
+  client === "app" ? { refreshToken } : {};
 
 export const signUp = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -29,6 +35,7 @@ export const verifySignupOTP = asyncHandler(
     return sendResponse(res, 201, "Account verified successfully", {
       ...result.user,
       token: result.accessToken,
+      ...appRefresh(req.body.client, result.refreshToken),
     });
   },
 );
@@ -42,6 +49,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   return sendResponse(res, 200, "Login successful", {
     ...result.user,
     token: result.accessToken,
+    ...appRefresh(req.body.client, result.refreshToken),
   });
 });
 
@@ -107,8 +115,51 @@ export const refreshToken = asyncHandler(
   },
 );
 
+/** App-only refresh; the browser keeps using the cookie route. */
+export const appRefreshToken = asyncHandler(
+  async (req: Request, res: Response) => {
+    const result = await userService.refreshToken(req.body.refreshToken);
+
+    return sendResponse(res, 200, "Access token refreshed", {
+      token: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
+  },
+);
+
+export const googleMobileLogin = asyncHandler(
+  async (req: Request, res: Response) => {
+    let profile;
+
+    try {
+      profile = await verifyGoogleIdToken(req.body.idToken);
+    } catch {
+      throw new AppError("Google sign-in failed", 401);
+    }
+
+    const result = await userService.googleLogin({
+      email: profile.email,
+      name: profile.name,
+      googleId: profile.id,
+      avatar: profile.picture,
+    });
+
+    res.cookie("refreshToken", result.refreshToken, refreshCookieOptions());
+
+    return sendResponse(res, 200, "Signed in with Google", {
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+      user: result.user,
+    });
+  },
+);
+
 export const logout = asyncHandler(async (req: Request, res: Response) => {
-  const token = req.cookies.refreshToken;
+  // The app has no cookie, so it passes the token it holds.
+  const appToken =
+    req.body?.client === "app" ? req.body?.refreshToken : undefined;
+  const token = appToken ?? req.cookies.refreshToken;
+
   await userService.logout(token);
 
   res.clearCookie("refreshToken", refreshCookieOptions());

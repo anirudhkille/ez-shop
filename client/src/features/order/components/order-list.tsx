@@ -11,6 +11,7 @@ import {
   OrderStatusPill,
 } from "../components/order-line-items";
 import {
+  isAwaitingPayment,
   matchesStatusFilter,
   ORDER_STATUS_FILTERS,
   type TOrderStatusFilter,
@@ -60,7 +61,10 @@ function OrderCard({
         </div>
 
         <div className="flex items-center gap-3">
-          <OrderStatusPill status={order.orderStatus} />
+          <OrderStatusPill
+            status={order.orderStatus}
+            awaitingPayment={isAwaitingPayment(order)}
+          />
           <p className="font-display text-brand-orange text-base font-bold whitespace-nowrap">
             {formatPrice(order.totalAmount)}
           </p>

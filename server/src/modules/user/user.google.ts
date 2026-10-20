@@ -1,8 +1,12 @@
+import { OAuth2Client } from "google-auth-library";
+
 import { env } from "@/config/env.config";
 
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
 const REQUEST_TIMEOUT_MS = 10_000;
+
+const idTokenClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
 export interface GoogleTokens {
   access_token: string;
@@ -94,4 +98,31 @@ export const getGoogleUser = async (
   }
 
   return profile;
+};
+
+/** Verifies the ID token the app gets from Google Play Services. */
+export const verifyGoogleIdToken = async (
+  idToken: string,
+): Promise<GoogleProfile> => {
+  const ticket = await idTokenClient.verifyIdToken({
+    idToken,
+    audience: env.GOOGLE_CLIENT_ID,
+  });
+  const payload = ticket.getPayload();
+
+  if (!payload?.sub || !payload.email) {
+    throw new Error("Google account did not return an email");
+  }
+
+  if (!payload.email_verified) {
+    throw new Error("Google email is missing or not verified");
+  }
+
+  return {
+    id: payload.sub,
+    email: payload.email,
+    verified_email: true,
+    name: payload.name,
+    picture: payload.picture,
+  };
 };
