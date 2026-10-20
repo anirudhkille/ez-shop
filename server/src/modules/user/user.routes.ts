@@ -9,6 +9,8 @@ import {
   login,
   logout,
   refreshToken,
+  appRefreshToken,
+  googleMobileLogin,
   resetPassword,
   signUp,
   updatePassword,
@@ -18,7 +20,9 @@ import {
   verifySignupOTP,
 } from "@/modules/user/user.controller";
 import {
+  appRefreshSchema,
   forgotPasswordSchema,
+  googleMobileSchema,
   loginSchema,
   passwordUpdateSchema,
   profileUpdateSchema,
@@ -40,6 +44,13 @@ router.get("/refresh", refreshToken);
 
 router.get("/google", googleAuth);
 router.get("/google/callback", googleCallback);
+router.post(
+  "/google/mobile",
+  authLimiter,
+  validate(googleMobileSchema),
+  googleMobileLogin,
+);
+router.post("/refresh-token", validate(appRefreshSchema), appRefreshToken);
 
 router.post("/signup", authLimiter, validate(signupSchema), signUp);
 router.post(

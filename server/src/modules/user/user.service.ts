@@ -22,6 +22,7 @@ import * as userRepository from "@/modules/user/user.repository";
 import type { IUser } from "@/modules/user/user.model";
 import { escapeRegex } from "@/validation/common.schema";
 import type { FilterQuery } from "mongoose";
+import { hashToken } from "@/utils/token-hash";
 import { getGoogleAuthURL } from "./user.google";
 
 const REFRESH_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -29,7 +30,7 @@ const REFRESH_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const saveRefreshSession = async (userId: string, refreshToken: string) => {
   await sessionRepository.upsert(
     `refresh:${userId}`,
-    refreshToken,
+    hashToken(refreshToken),
     new Date(Date.now() + REFRESH_TTL_MS),
   );
 };
@@ -268,8 +269,8 @@ export const refreshToken = async (token: string) => {
 
   const session = await sessionRepository.rotate(
     `refresh:${userId}`,
-    token,
-    newRefreshToken,
+    hashToken(token),
+    hashToken(newRefreshToken),
     new Date(Date.now() + REFRESH_TTL_MS),
   );
 

@@ -35,6 +35,15 @@ export const getOrderStatusMeta = (status?: string) =>
     className: "border-brand-border bg-muted/40 text-muted-foreground",
   };
 
+/** A card order the Stripe webhook has not settled yet. */
+export const isAwaitingPayment = (order: TOrderSummary) =>
+  order.paymentType === "card" && order.paymentStatus === "pending";
+
+export const AWAITING_PAYMENT_META = {
+  label: "Awaiting payment",
+  className: "border-amber-400/20 bg-amber-400/10 text-amber-400",
+};
+
 export const matchesStatusFilter = (
   order: TOrderSummary,
   filter: TOrderStatusFilter

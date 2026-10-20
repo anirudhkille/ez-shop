@@ -1,7 +1,6 @@
 import Stripe from "stripe";
 import * as orderRepository from "@/modules/order/order.repository";
 import {
-  claimStock,
   createPricedOrder,
   priceCart,
   priceGuestLines,
@@ -11,8 +10,7 @@ import {
   type Pricing,
 } from "@/modules/order/order.intent";
 import { env } from "@/config/env.config";
-import * as invoiceService from "@/modules/invoice/invoice.service";
-import { sendOrderConfirmation } from "@/modules/order/order.email";
+import { AppError } from "@/utils/app-error";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
@@ -83,29 +81,21 @@ const openSession = async (
     cancel_url: `${env.CLIENT_URL}/failure`,
     billing_address_collection: "required",
     shipping_address_collection: { allowed_countries: ["IN"] },
-    payment_intent_data: { receipt_email: email },
+    payment_intent_data: { receipt_email: email, metadata },
     customer_email: email,
     metadata,
   });
 
 /**
- * Closes out a card sale once Stripe has accepted the session: stock comes off
- * the shelf, the session is recorded against the order, and the invoice is
- * issued. Callers that fail to open a session delete the order instead, so a
- * card that is never charged never holds stock.
+ * Records the session against the order. Stock, invoice and email are left to
+ * the webhook: a session being created is not a sale.
  */
-const settleCardOrder = async (
+const recordSession = async (
   order: Awaited<ReturnType<typeof orderRepository.create>>,
-  lines: Parameters<typeof claimStock>[0],
   session: Stripe.Checkout.Session,
 ) => {
-  await claimStock(lines);
-
   order.sessionId = session.id;
   await order.save();
-
-  await invoiceService.issueInvoiceForOrder(order);
-  await sendOrderConfirmation(order._id);
 };
 
 export const createCheckoutSession = async (
@@ -140,7 +130,7 @@ export const createCheckoutSession = async (
     throw error;
   }
 
-  await settleCardOrder(order, lines, session);
+  await recordSession(order, session);
 
   return {
     type: "card",
@@ -174,10 +164,96 @@ export const createGuestCheckoutSession = async (body: GuestCheckoutBody) => {
     throw error;
   }
 
-  await settleCardOrder(order, lines, session);
+  await recordSession(order, session);
 
   return {
     type: "card",
     url: session.url,
   };
+};
+
+/** Opens a PaymentIntent for the native PaymentSheet. */
+export const createPaymentIntent = async (
+  userId: string,
+  body: CheckoutSessionBody,
+  userEmail: string,
+) => {
+  const { addressId, deliveryMethod, couponCode } = body;
+
+  // A dismissed sheet emits no webhook, so old attempts are swept on retry.
+  await orderRepository.failStalePendingCardOrders(userId);
+
+  const lines = await priceCart(userId);
+  const address = await resolveSavedAddress(addressId);
+
+  const { order, pricing } = await createPricedOrder({
+    lines,
+    buyer: { kind: "user", userId },
+    address,
+    deliveryMethod,
+    couponCode,
+    paymentType: "card",
+  });
+
+  const orderId = String(order._id);
+
+  let intent: Stripe.PaymentIntent;
+  try {
+    intent = await stripe.paymentIntents.create({
+      amount: Math.round(pricing.total * 100),
+      currency: "inr",
+      automatic_payment_methods: { enabled: true },
+      receipt_email: userEmail,
+      metadata: { orderId, userId: userId.toString() },
+    });
+  } catch (error) {
+    await orderRepository.deleteById(orderId);
+    throw error;
+  }
+
+  order.paymentIntentId = intent.id;
+  await order.save();
+
+  return {
+    type: "payment_intent",
+    orderId,
+    clientSecret: intent.client_secret,
+    amount: pricing.total,
+  };
+};
+
+/** Called when the sheet is dismissed, so the order does not stay pending. */
+export const abandonPaymentIntent = async (userId: string, orderId: string) => {
+  const order = await orderRepository.findById(orderId);
+
+  if (!order || String(order.user) !== userId) {
+    throw new AppError("Order not found", 404);
+  }
+
+  if (order.paymentStatus !== "pending" || !order.paymentIntentId) {
+    return { abandoned: false };
+  }
+
+  try {
+    const intent = await stripe.paymentIntents.retrieve(order.paymentIntentId);
+    const cancellable =
+      intent.status === "canceled" ||
+      intent.status === "requires_payment_method" ||
+      intent.status === "requires_confirmation" ||
+      intent.status === "requires_action";
+
+    if (!cancellable) return { abandoned: false };
+
+    if (intent.status !== "canceled") {
+      await stripe.paymentIntents.cancel(order.paymentIntentId);
+    }
+  } catch {
+    // Stripe is the source of truth; the webhook settles anything unexpected.
+    return { abandoned: false };
+  }
+
+  order.paymentStatus = "failed";
+  await order.save();
+
+  return { abandoned: true };
 };

@@ -273,3 +273,21 @@ export const createPricedOrder = async ({
 
 export const claimStock = (lines: PricedLine[]): Promise<unknown> =>
   decrementStock(lines.map(toStockItem));
+
+/** Claims stock from a persisted order, so the webhook can do the deduction. */
+export const claimStockForOrder = (
+  products: {
+    product: unknown;
+    variantId?: string | null;
+    size?: string | null;
+    quantity: number;
+  }[],
+): Promise<unknown> =>
+  decrementStock(
+    products.map((item) => ({
+      product: String((item.product as { _id?: unknown })?._id ?? item.product),
+      variantId: item.variantId ?? undefined,
+      size: item.size ?? undefined,
+      quantity: item.quantity,
+    })),
+  );
