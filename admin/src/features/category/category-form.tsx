@@ -132,6 +132,7 @@ export default function CategoryForm({ data }: CategoryFormProps) {
                 <ImageUpload
                   key={data?._id ?? "new"}
                   initialImages={field.value}
+                  folder="ez-shop/categories"
                   onUploadSuccess={(urls) => field.onChange(urls)}
                 />
               </FormControl>
