@@ -501,6 +501,8 @@ export default function ProductForm({ data }: ProductFormProps) {
                 <ImageUpload
                   key={data?._id ?? "new"}
                   initialImages={field.value}
+                  folder="ez-shop/products"
+                  enableEditing
                   onUploadSuccess={(urls) => field.onChange(urls)}
                 />
               </FormControl>
@@ -584,6 +586,8 @@ export default function ProductForm({ data }: ProductFormProps) {
                       <FormControl>
                         <ImageUpload
                           initialImages={field.value}
+                          folder="ez-shop/products/variants"
+                          enableEditing
                           onUploadSuccess={(urls) => field.onChange(urls)}
                         />
                       </FormControl>
