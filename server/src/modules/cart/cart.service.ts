@@ -36,7 +36,6 @@ export const getCart = async (userId: string) => {
 
   const validItems: (typeof cart.products)[number][] = [];
   let subtotal = 0;
-  let discountTotal = 0;
 
   for (const item of cart.products) {
     const prod = item.product as unknown as {
@@ -47,14 +46,13 @@ export const getCart = async (userId: string) => {
 
     if (!prod || !prod.publish) continue;
 
-    const price = item.priceAtPurchase ?? prod.price;
-    const discountPrice = item.discountPriceAtPurchase ?? prod.discountPrice;
+    const unitPrice =
+      item.discountPriceAtPurchase ||
+      item.priceAtPurchase ||
+      prod.discountPrice ||
+      prod.price;
 
-    subtotal += price * item.quantity;
-
-    if (discountPrice) {
-      discountTotal += (price - discountPrice) * item.quantity;
-    }
+    subtotal += unitPrice * item.quantity;
 
     validItems.push(item);
   }
@@ -63,8 +61,8 @@ export const getCart = async (userId: string) => {
     ...cart.toObject(),
     products: validItems,
     subtotal,
-    discountTotal,
-    total: subtotal - discountTotal,
+    discountTotal: 0,
+    total: subtotal,
   };
 };
 
@@ -88,8 +86,6 @@ export const addToCart = async (
     throw new AppError("Product not available", 400);
   }
 
-  let selectedPrice = product.price;
-  let selectedDiscount = product.discountPrice;
   let sizeStock = product.stock;
 
   const sizeObj = findVariantSize(product, variantId, size);
@@ -100,8 +96,6 @@ export const addToCart = async (
     }
 
     sizeStock = sizeObj.stock;
-    selectedPrice = sizeObj.price ?? selectedPrice;
-    selectedDiscount = sizeObj.discountPrice ?? selectedDiscount;
   }
 
   if (sizeStock <= 0) {
@@ -132,8 +126,8 @@ export const addToCart = async (
       variantId,
       size,
       quantity: addQty,
-      priceAtPurchase: selectedPrice,
-      discountPriceAtPurchase: selectedDiscount,
+      priceAtPurchase: product.price,
+      discountPriceAtPurchase: product.discountPrice || undefined,
     });
   }
 
