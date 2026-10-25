@@ -441,8 +441,21 @@ const sortSizes = (sizes: string[]) =>
     return aGroup - bGroup || aRank - bRank || a.localeCompare(b);
   });
 
-export const getProductFacets = async () => {
-  const facets = await productRepository.findFacets();
+export const getProductFacets = async (query: { category?: string } = {}) => {
+  const match: FilterQuery<IProduct> = { publish: true };
+
+  if (query.category) {
+    const categoryIds = query.category
+      .split(",")
+      .filter((id) => mongoose.Types.ObjectId.isValid(id))
+      .map((id) => new mongoose.Types.ObjectId(id));
+
+    if (categoryIds.length) {
+      match.category = { $in: categoryIds };
+    }
+  }
+
+  const facets = await productRepository.findFacets(match);
 
   const price = facets.price[0];
   const maxRating = Math.min(Math.floor(facets.ratings[0]?.max ?? 0), 5);

@@ -8,6 +8,14 @@ const sortMap: Record<string, string> = {
   rating: "rating",
 };
 
+export const buildFacetParams = (
+  filters: FilterState
+): Record<string, string> => {
+  if (!filters.categories?.length) return {};
+
+  return { category: filters.categories.join(",") };
+};
+
 export const buildFilterParams = (
   filters: FilterState,
   sortBy: string,

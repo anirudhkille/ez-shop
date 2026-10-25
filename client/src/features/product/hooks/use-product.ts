@@ -65,10 +65,10 @@ export const useFilteredProducts = (filters: Record<string, unknown>) => {
   });
 };
 
-export const useProductFacets = () => {
+export const useProductFacets = (params?: Record<string, unknown>) => {
   return useQuery({
-    queryFn: getProductFacets,
-    queryKey: ["product-facets"],
+    queryFn: () => getProductFacets(params),
+    queryKey: ["product-facets", params],
     select: (res) => res?.data,
   });
 };
