@@ -114,10 +114,10 @@ export const isGuestAddressComplete = (guest: GuestDetails): boolean =>
   isGuestAddressValid(guest);
 
 export const unitPriceFor = (item: CheckoutCartItem): number =>
-  item.discountPriceAtPurchase ??
-  item.priceAtPurchase ??
-  item.product.discountPrice ??
-  item.product.price ??
+  item.discountPriceAtPurchase ||
+  item.priceAtPurchase ||
+  item.product.discountPrice ||
+  item.product.price ||
   0;
 
 export const categoryLabelFor = (item: CheckoutCartItem): string | undefined =>

@@ -119,7 +119,7 @@ export const priceCart = async (userId: string): Promise<PricedLine[]> => {
       variantId: item.variantId ? String(item.variantId) : undefined,
       size: item.size,
       quantity: item.quantity,
-      price: item.discountPriceAtPurchase ?? item.priceAtPurchase,
+      price: item.discountPriceAtPurchase || item.priceAtPurchase,
       name: product.name,
       image: product.image,
     };

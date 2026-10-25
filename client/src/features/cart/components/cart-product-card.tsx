@@ -21,13 +21,19 @@ export type CartItem = {
   quantity: number;
   size?: string;
   variantId?: string;
+  priceAtPurchase?: number;
+  discountPriceAtPurchase?: number;
 };
 
 export function CartProductCard({ item }: { item: CartItem }) {
   const { mutate: removeCartItem } = useRemoveCartItem();
   const { mutate: updateCartQty } = useUpdateCartQty();
 
-  const unitPrice = item.product.discountPrice ?? item.product.price;
+  const unitPrice =
+    item.discountPriceAtPurchase ||
+    item.priceAtPurchase ||
+    item.product.discountPrice ||
+    item.product.price;
 
   const handleIncrease = () => {
     updateCartQty({

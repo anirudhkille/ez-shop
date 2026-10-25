@@ -19,24 +19,16 @@ const nextGuestId = () => `guest_${Date.now()}_${++guestIdCounter}`;
 
 const computeGuestCartData = (cartItems: GuestCartItem[]) => {
   const subtotal = cartItems.reduce(
-    (sum, i) => sum + (i.product.price ?? 0) * i.quantity,
+    (sum, i) =>
+      sum + (i.product.discountPrice || i.product.price || 0) * i.quantity,
     0
   );
-  const discountTotal = cartItems.reduce((sum, i) => {
-    const discountPrice = i.product.discountPrice;
-    return (
-      sum +
-      (discountPrice && discountPrice > 0
-        ? (i.product.price - discountPrice) * i.quantity
-        : 0)
-    );
-  }, 0);
   return {
     products: cartItems,
     subtotal,
-    discountTotal,
+    discountTotal: 0,
     shipping: 0,
-    total: subtotal - discountTotal,
+    total: subtotal,
   };
 };
 
@@ -114,8 +106,8 @@ export const useAddToCart = () => {
           variantId: payload.variantId,
           // Mirrors the server cart, which stores the price at purchase so a
           // later price change cannot alter an existing cart's totals.
-          priceAtPurchase: payload.discountPrice ?? payload.price,
-          discountPriceAtPurchase: payload.discountPrice,
+          priceAtPurchase: payload.discountPrice || payload.price,
+          discountPriceAtPurchase: payload.discountPrice || undefined,
         });
         syncGuestCartToCache(queryClient);
         return Promise.resolve({ data: {} });
