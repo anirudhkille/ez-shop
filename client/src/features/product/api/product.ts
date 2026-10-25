@@ -20,9 +20,11 @@ export const getFilteredProducts = async (params: Record<string, unknown>) => {
   return response.data;
 };
 
-export const getProductFacets = async () => {
-  const res =
-    await axiosInstance.get<TApiResponse<TProductFacets>>("/product/facets");
+export const getProductFacets = async (params?: Record<string, unknown>) => {
+  const res = await axiosInstance.get<TApiResponse<TProductFacets>>(
+    "/product/facets",
+    { params }
+  );
   return res.data;
 };
 

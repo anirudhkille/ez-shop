@@ -7,6 +7,7 @@ import { useCategorys } from "@/features/category";
 import { cn } from "@/shared/lib/utils";
 
 import { useProductFacets } from "../hooks/use-product";
+import { buildFacetParams } from "../lib/build-filter-params";
 import { PRICE_MIN, PRICE_STEP } from "../lib/constants";
 import { type FilterState, priceCeiling, toggleInList } from "../lib/filters";
 
@@ -108,7 +109,7 @@ function CategoryFilter({ filters, onChange, variant }: SectionProps) {
 }
 
 function PriceRangeFilter({ filters, onChange, variant }: SectionProps) {
-  const { data: facets } = useProductFacets();
+  const { data: facets } = useProductFacets(buildFacetParams(filters));
   const [, priceMax] = priceCeiling(facets?.price.max);
 
   return (
@@ -150,7 +151,7 @@ function PriceRangeFilter({ filters, onChange, variant }: SectionProps) {
 
 function SizeFilter({ filters, onChange, variant }: SectionProps) {
   const isDrawer = variant === "drawer";
-  const { data: facets } = useProductFacets();
+  const { data: facets } = useProductFacets(buildFacetParams(filters));
   const sizes = facets?.sizes ?? [];
 
   if (sizes.length === 0) return null;
@@ -195,7 +196,7 @@ function SizeFilter({ filters, onChange, variant }: SectionProps) {
 
 function ColorFilter({ filters, onChange, variant }: SectionProps) {
   const isDrawer = variant === "drawer";
-  const { data: facets } = useProductFacets();
+  const { data: facets } = useProductFacets(buildFacetParams(filters));
   const colors = facets?.colors ?? [];
 
   if (colors.length === 0) return null;
@@ -259,7 +260,7 @@ function ColorFilter({ filters, onChange, variant }: SectionProps) {
 
 function RatingFilter({ filters, onChange, variant }: SectionProps) {
   const isDrawer = variant === "drawer";
-  const { data: facets } = useProductFacets();
+  const { data: facets } = useProductFacets(buildFacetParams(filters));
   const ratings = facets?.ratings ?? [];
 
   if (ratings.length === 0) return null;

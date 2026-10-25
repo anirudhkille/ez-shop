@@ -121,7 +121,7 @@ interface ProductFacetsAggregation {
   ratings: { max?: number }[];
 }
 
-export const findFacets = async () => {
+export const findFacets = async (match: FilterQuery<IProduct>) => {
   const effectivePrice = {
     $cond: [
       { $gt: [{ $ifNull: ["$discountPrice", 0] }, 0] },
@@ -131,7 +131,7 @@ export const findFacets = async () => {
   };
 
   const [facets] = await Product.aggregate<ProductFacetsAggregation>([
-    { $match: { publish: true } },
+    { $match: match },
     {
       $facet: {
         price: [

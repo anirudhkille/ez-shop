@@ -136,7 +136,10 @@ export const getFilteredProducts = asyncHandler(
 
 export const getProductFacets = asyncHandler(
   async (req: Request, res: Response) => {
-    const result = await productService.getProductFacets();
+    const query = req.query;
+    const result = await productService.getProductFacets({
+      category: queryString(query.category),
+    });
 
     return sendResponse(
       res,
