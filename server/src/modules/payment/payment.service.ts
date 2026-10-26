@@ -8,6 +8,7 @@ import {
   resolveSavedAddress,
   type GuestCheckoutBody,
   type Pricing,
+  type ShippingAddress,
 } from "@/modules/order/order.intent";
 import { env } from "@/config/env.config";
 import { AppError } from "@/utils/app-error";
@@ -69,19 +70,38 @@ const buildLineItems = ({
   return items;
 };
 
+const toStripeShipping = (
+  address: ShippingAddress,
+): Stripe.Checkout.SessionCreateParams.PaymentIntentData.Shipping => ({
+  name: address.name,
+  phone: address.phone,
+  address: {
+    line1: address.addressLine1,
+    ...(address.addressLine2 ? { line2: address.addressLine2 } : {}),
+    city: address.city,
+    state: address.state,
+    postal_code: address.zipCode,
+    country: "IN",
+  },
+});
+
 const openSession = async (
   pricing: Pricing,
   email: string,
   metadata: Record<string, string>,
+  address: ShippingAddress,
 ): Promise<Stripe.Checkout.Session> =>
   await stripe.checkout.sessions.create({
     mode: "payment",
     line_items: buildLineItems(pricing),
     success_url: `${env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${env.CLIENT_URL}/failure`,
-    billing_address_collection: "required",
-    shipping_address_collection: { allowed_countries: ["IN"] },
-    payment_intent_data: { receipt_email: email, metadata },
+    billing_address_collection: "auto",
+    payment_intent_data: {
+      receipt_email: email,
+      metadata,
+      shipping: toStripeShipping(address),
+    },
     customer_email: email,
     metadata,
   });
@@ -121,10 +141,15 @@ export const createCheckoutSession = async (
 
   let session: Stripe.Checkout.Session;
   try {
-    session = await openSession(pricing, userEmail, {
-      orderId,
-      userId: userId.toString(),
-    });
+    session = await openSession(
+      pricing,
+      userEmail,
+      {
+        orderId,
+        userId: userId.toString(),
+      },
+      address,
+    );
   } catch (error) {
     await orderRepository.deleteById(orderId);
     throw error;
@@ -158,7 +183,7 @@ export const createGuestCheckoutSession = async (body: GuestCheckoutBody) => {
 
   let session: Stripe.Checkout.Session;
   try {
-    session = await openSession(pricing, email, { orderId });
+    session = await openSession(pricing, email, { orderId }, shippingAddress);
   } catch (error) {
     await orderRepository.deleteById(orderId);
     throw error;
