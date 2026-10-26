@@ -26,6 +26,8 @@ import stripeWebhook from "./webhook/stripe.webhook";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(compression({ filter: shouldCompress, level: 6 }));
