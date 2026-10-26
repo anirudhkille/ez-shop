@@ -88,7 +88,7 @@ export const orderConfirmationTemplate = (
 
       <p style="color: #555555; font-size: 16px; line-height: 1.6;">
         We have received your order. Your order number is
-        <strong>#${order.id.slice(-6).toUpperCase()}</strong>.
+        <strong>#${order.id}</strong>.
       </p>
 
       <table role="presentation" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
@@ -118,7 +118,7 @@ export const orderConfirmationTemplate = (
       ${address}
 
       <p style="text-align: center; margin: 25px 0;">
-        <a href="${trackUrl}" style="display: inline-block; background-color: #000000; color: #ffffff; padding: 14px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+        <a href="${trackUrl}" style="display: inline-block; background-color: #FF640A; color: #ffffff; padding: 14px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
           Track your order
         </a>
       </p>

@@ -28,7 +28,7 @@ export default async function Page({
   return (
     <div className="space-y-5">
       <PageHeading
-        title={`Order #${post.data._id.slice(-8)}`}
+        title={`Order #${post.data._id}`}
         description="View and manage order details"
       />
 

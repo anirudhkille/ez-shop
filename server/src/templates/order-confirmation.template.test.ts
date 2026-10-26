@@ -15,12 +15,12 @@ const base = {
 };
 
 describe("orderConfirmationTemplate", () => {
-  it("shows the short order reference and the greeting", () => {
+  it("shows the full order id and the greeting", () => {
     const html = orderConfirmationTemplate(base, "https://shop.test/track");
 
     assert.match(html, /Thanks for your order/);
     assert.match(html, /Hi <strong>Anirudh<\/strong>/);
-    assert.match(html, /#EA1234/);
+    assert.match(html, /#507f191e810c19729de860ea1234/);
   });
 
   it("multiplies unit price by quantity", () => {
@@ -95,10 +95,19 @@ describe("orderConfirmationTemplate", () => {
   it("links to the tracking page it is given", () => {
     const html = orderConfirmationTemplate(
       base,
+      "https://shop.test/track-order?orderId=507f191e810c19729de860ea1234",
+    );
+
+    assert.match(html, /track-order\?orderId=507f191e810c19729de860ea1234/);
+  });
+
+  it("uses the brand orange for the tracking button", () => {
+    const html = orderConfirmationTemplate(
+      base,
       "https://shop.test/track-order",
     );
 
-    assert.match(html, /href="https:\/\/shop\.test\/track-order"/);
+    assert.match(html, /background-color: #FF640A/);
   });
 
   it("spells out how the order is being paid for", () => {

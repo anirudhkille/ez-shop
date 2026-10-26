@@ -12,7 +12,7 @@ import { TrackOrderForm } from "../components/track-order-form";
 import { useTrackOrder } from "../hooks/use-track-order";
 
 export default function TrackOrder() {
-  const { order, isLoading, isError, search } = useTrackOrder();
+  const { order, isLoading, isError, searchedId, search } = useTrackOrder();
 
   return (
     <>
@@ -35,7 +35,11 @@ export default function TrackOrder() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <TrackOrderForm isLoading={isLoading} onSearch={search} />
+              <TrackOrderForm
+                isLoading={isLoading}
+                defaultOrderId={searchedId}
+                onSearch={search}
+              />
             </CardContent>
           </Card>
 
@@ -52,8 +56,8 @@ export default function TrackOrder() {
           {order && (
             <Card className="bg-card border-brand-border mt-6">
               <CardHeader>
-                <CardTitle className="font-display text-foreground text-xl tracking-wide">
-                  Order #{order._id?.slice(-6).toUpperCase()}
+                <CardTitle className="font-display text-foreground text-base tracking-wide break-all sm:text-lg">
+                  Order #{order._id}
                 </CardTitle>
               </CardHeader>
               <CardContent>

@@ -206,8 +206,8 @@ export default function UserDetail({ detail }: UserDetailProps) {
                 <TableBody>
                   {orders.map((order) => (
                     <TableRow key={order._id}>
-                      <TableCell className="font-mono text-xs">
-                        {order._id.slice(-8)}
+                      <TableCell className="font-mono text-xs break-all">
+                        {order._id}
                       </TableCell>
                       <TableCell>{formatDate(order.createdAt)}</TableCell>
                       <TableCell>
