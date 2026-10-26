@@ -74,7 +74,7 @@ export const sendOrderConfirmation = async (
 
     await sendEmail({
       to,
-      subject: `Your EZ Shop order #${String(order._id).slice(-6).toUpperCase()}`,
+      subject: `Your EZ Shop order #${String(order._id)}`,
       html: orderConfirmationTemplate(
         {
           id: String(order._id),
@@ -105,7 +105,7 @@ export const sendOrderConfirmation = async (
               }
             : undefined,
         },
-        `${env.CLIENT_URL}/track-order`,
+        `${env.CLIENT_URL}/track-order?orderId=${encodeURIComponent(String(order._id))}`,
       ),
     });
   } catch (error) {

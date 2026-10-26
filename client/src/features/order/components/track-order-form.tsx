@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { useForm } from "react-hook-form";
 
 import { z } from "zod";
@@ -13,14 +15,23 @@ const trackSchema = z.object({
 
 interface TrackOrderFormProps {
   isLoading: boolean;
+  defaultOrderId?: string;
   onSearch: (orderId: string) => void;
 }
 
-export function TrackOrderForm({ isLoading, onSearch }: TrackOrderFormProps) {
+export function TrackOrderForm({
+  isLoading,
+  defaultOrderId = "",
+  onSearch,
+}: TrackOrderFormProps) {
   const form = useForm<z.infer<typeof trackSchema>>({
     resolver: zodResolver(trackSchema),
-    defaultValues: { orderId: "" },
+    defaultValues: { orderId: defaultOrderId },
   });
+
+  useEffect(() => {
+    form.reset({ orderId: defaultOrderId });
+  }, [defaultOrderId, form]);
 
   const onSubmit = form.handleSubmit((values) => onSearch(values.orderId));
 

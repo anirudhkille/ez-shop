@@ -19,7 +19,7 @@ export const resetPasswordTemplate = (name: string, resetUrl: string) => {
       </p>
 
       <p style="text-align: center; margin: 25px 0;">
-        <a href="${resetUrl}" style="display: inline-block; background-color: #000000; color: #ffffff; padding: 14px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+        <a href="${resetUrl}" style="display: inline-block; background-color: #FF640A; color: #ffffff; padding: 14px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
           Reset password
         </a>
       </p>

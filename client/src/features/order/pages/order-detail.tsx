@@ -131,14 +131,14 @@ export default function OrderDetail() {
 
   const items = order.products ?? [];
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const shortId = order._id.slice(-6).toUpperCase();
+  const fullOrderId = order._id;
   const deliveryCharge = order.deliveryCharge ?? 0;
 
   return (
     <>
       <Head
-        title={`Order #${shortId} | EZ Shop`}
-        description={`Details for order #${shortId} at EZ Shop.`}
+        title={`Order #${fullOrderId} | EZ Shop`}
+        description={`Details for order #${fullOrderId} at EZ Shop.`}
         noIndex
       />
       <Container className="mt-10 max-w-4xl px-5 py-16 sm:px-8 md:px-10">
@@ -151,8 +151,8 @@ export default function OrderDetail() {
 
         <div className="mt-4 mb-8 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="font-display text-foreground text-3xl font-black uppercase">
-              Order #{shortId}
+            <h1 className="font-display text-foreground text-xl font-black break-all sm:text-2xl">
+              Order #{fullOrderId}
             </h1>
             <p className="font-body text-muted-foreground mt-1 text-sm">
               Placed{" "}
@@ -169,6 +169,13 @@ export default function OrderDetail() {
               status={order.orderStatus}
               awaitingPayment={isAwaitingPayment(order)}
             />
+            <Link
+              to={`/track-order?orderId=${order._id}`}
+              className="border-brand-border text-muted-foreground hover:border-brand-orange/50 hover:text-brand-orange font-body inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold tracking-wider uppercase transition-colors"
+            >
+              <Truck size={14} aria-hidden />
+              Track order
+            </Link>
             <button
               type="button"
               onClick={() => downloadInvoice(order._id)}

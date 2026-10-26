@@ -28,10 +28,6 @@ interface OrderListProps {
   compact?: boolean;
 }
 
-function shortOrderId(id: string) {
-  return id.slice(-6).toUpperCase();
-}
-
 function OrderCard({
   order,
   collapsible,
@@ -51,8 +47,8 @@ function OrderCard({
     <article className="bg-card border-brand-border rounded-2xl border">
       <header className="border-brand-border/40 flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4">
         <div className="min-w-0">
-          <h3 className="font-display text-foreground text-base font-bold">
-            #{shortOrderId(order._id)}
+          <h3 className="font-display text-foreground text-sm font-bold break-all">
+            Order #{order._id}
           </h3>
           <p className="font-body text-muted-foreground mt-0.5 text-xs">
             Placed {new Date(order.createdAt).toLocaleDateString("en-IN")} ·{" "}
@@ -70,7 +66,7 @@ function OrderCard({
           </p>
           <Link
             to={`/account/orders/${order._id}`}
-            aria-label={`View details for order ${shortOrderId(order._id)}`}
+            aria-label={`View details for order ${order._id}`}
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <ChevronRight size={16} aria-hidden />
