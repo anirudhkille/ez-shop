@@ -3,7 +3,6 @@ export {
   AddressAutocompleteCombobox,
   type TResolvedAddressFields,
 } from "./components/address-autocomplete-combobox";
-export { isMapboxEnabled } from "./api/mapbox-geocode";
 export { useAddressAutocomplete } from "./hooks/use-address-autocomplete";
 export { PanelCard } from "./components/panel";
 export { ProfileCard } from "./components/profile-form";

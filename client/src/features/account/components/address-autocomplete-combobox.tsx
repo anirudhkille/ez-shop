@@ -5,7 +5,6 @@ import { Loader2, MapPin } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import { cn } from "@/shared/lib/utils";
 
-import { isMapboxEnabled } from "../api/mapbox-geocode";
 import { useAddressAutocomplete } from "../hooks/use-address-autocomplete";
 
 export type TResolvedAddressFields = {
@@ -207,7 +206,7 @@ export function AddressAutocompleteCombobox({
         )}
       </div>
 
-      {isMapboxEnabled && isSearching && !showSuggestions && (
+      {isSearching && !showSuggestions && (
         <p className="text-muted-foreground text-xs">Searching…</p>
       )}
     </>

@@ -42,3 +42,25 @@ export const authLimiter = rateLimit({
     error: { code: "RATE_LIMITED" },
   },
 });
+
+const configuredMapboxMax = Number(process.env.MAPBOX_RATE_LIMIT_MAX);
+const mapboxMax =
+  Number.isFinite(configuredMapboxMax) && configuredMapboxMax > 0
+    ? configuredMapboxMax
+    : 60;
+
+export const mapboxLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: mapboxMax,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) =>
+    process.env.NODE_ENV === "test" ||
+    rateLimitDisabled ||
+    (e2eBypassEnabled && req.headers["x-e2e-test"] === "ezshop"),
+  message: {
+    success: false,
+    message: "Too many address lookups, please try again later.",
+    error: { code: "RATE_LIMITED" },
+  },
+});
