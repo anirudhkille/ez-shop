@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 
 import {
   getMapboxSessionToken,
-  isMapboxEnabled,
   retrieveAddress,
   suggestAddresses,
   type TMapboxSuggestion,
@@ -54,7 +53,7 @@ export const useAddressAutocomplete = (
   useEffect(() => {
     const trimmed = query.trim();
 
-    if (!isMapboxEnabled || trimmed.length < MIN_QUERY_LENGTH) {
+    if (trimmed.length < MIN_QUERY_LENGTH) {
       abortRef.current?.abort();
       abortRef.current = null;
       requestIdRef.current += 1;

@@ -36,6 +36,8 @@ const envSchema = z.object({
   CLOUDINARY_KEY: z.string().min(1, "CLOUDINARY_KEY is required"),
   CLOUDINARY_SECRET: z.string().min(1, "CLOUDINARY_SECRET is required"),
 
+  MAPBOX_TOKEN: z.string().default(""),
+
   RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required"),
   EMAIL_FROM: z.string().min(1, "EMAIL_FROM is required"),
 
