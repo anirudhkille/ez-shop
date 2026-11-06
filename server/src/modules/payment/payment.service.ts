@@ -227,6 +227,9 @@ export const createPaymentIntent = async (
     intent = await stripe.paymentIntents.create({
       amount: Math.round(pricing.total * 100),
       currency: "inr",
+      description: `EZ Shop order ${orderId}: ${lines
+        .map((line) => `${line.name} x${line.quantity}`)
+        .join(", ")}`.slice(0, 1000),
       automatic_payment_methods: { enabled: true },
       receipt_email: userEmail,
       metadata: { orderId, userId: userId.toString() },
