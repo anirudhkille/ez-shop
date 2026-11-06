@@ -232,6 +232,7 @@ export const createPaymentIntent = async (
         .join(", ")}`.slice(0, 1000),
       automatic_payment_methods: { enabled: true },
       receipt_email: userEmail,
+      shipping: toStripeShipping(address),
       metadata: { orderId, userId: userId.toString() },
     });
   } catch (error) {
