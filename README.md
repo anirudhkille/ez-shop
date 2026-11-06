@@ -160,6 +160,7 @@ fast with a logged reason instead of surfacing later as a runtime error.
 | `CLIENT_URL`, `ADMIN_URL` | Frontend origins, allowed by CORS |
 | `CORS_ORIGINS` | Extra comma-separated origins, added to `CLIENT_URL` and `ADMIN_URL` |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL` | Google OAuth |
+| `GOOGLE_ANDROID_CLIENT_ID` | Optional Android OAuth client, accepted as an additional ID-token audience |
 | `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET` | Image uploads |
 | `RESEND_API_KEY`, `EMAIL_FROM` | Transactional email |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Card payments |

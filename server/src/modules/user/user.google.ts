@@ -8,6 +8,11 @@ const REQUEST_TIMEOUT_MS = 10_000;
 
 const idTokenClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
+const googleIdTokenAudiences = [
+  env.GOOGLE_CLIENT_ID,
+  env.GOOGLE_ANDROID_CLIENT_ID,
+].filter(Boolean);
+
 export interface GoogleTokens {
   access_token: string;
   expires_in: number;
@@ -106,7 +111,7 @@ export const verifyGoogleIdToken = async (
 ): Promise<GoogleProfile> => {
   const ticket = await idTokenClient.verifyIdToken({
     idToken,
-    audience: env.GOOGLE_CLIENT_ID,
+    audience: googleIdTokenAudiences,
   });
   const payload = ticket.getPayload();
 
