@@ -52,10 +52,12 @@ export function TableToolbar({ searchPlaceholder, filters = [] }: Props) {
   };
 
   const [term, setTerm] = React.useState(search);
+  const [lastSearch, setLastSearch] = React.useState(search);
 
-  React.useEffect(() => {
+  if (search !== lastSearch) {
+    setLastSearch(search);
     setTerm(search);
-  }, [search]);
+  }
 
   React.useEffect(() => {
     if (term === search) return;
