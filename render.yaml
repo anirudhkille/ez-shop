@@ -9,5 +9,7 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 24.14.1
+      - key: NODE_ENV
+        value: production
       - key: SENTRY_DSN
         sync: false

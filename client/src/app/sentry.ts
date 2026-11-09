@@ -3,7 +3,7 @@ import * as Sentry from "@sentry/react";
 const dsn = import.meta.env.VITE_SENTRY_DSN;
 const sampleRate = Number(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE ?? 0);
 
-export const sentryEnabled = Boolean(dsn);
+export const sentryEnabled = import.meta.env.PROD && Boolean(dsn);
 
 if (sentryEnabled) {
   Sentry.init({

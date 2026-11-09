@@ -2,7 +2,8 @@ import * as Sentry from "@sentry/node";
 
 import { env } from "./env.config";
 
-export const sentryEnabled = Boolean(env.SENTRY_DSN) && env.NODE_ENV !== "test";
+export const sentryEnabled =
+  Boolean(env.SENTRY_DSN) && env.NODE_ENV === "production";
 
 if (sentryEnabled) {
   Sentry.init({

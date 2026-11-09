@@ -164,7 +164,7 @@ fast with a logged reason instead of surfacing later as a runtime error.
 | `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET` | Image uploads |
 | `RESEND_API_KEY`, `EMAIL_FROM` | Transactional email |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Card payments |
-| `SENTRY_DSN` | Error reporting. Optional — omit it and Sentry stays inert |
+| `SENTRY_DSN` | Error reporting. Only initialized when `NODE_ENV=production`; omit it and Sentry stays inert |
 | `SENTRY_ENVIRONMENT`, `SENTRY_RELEASE` | Overrides for the Sentry environment/release tags |
 | `SENTRY_TRACES_SAMPLE_RATE` | Performance sampling, `0`–`1` (default `0`, errors only) |
 | `E2E_BYPASS_RATE_LIMIT` | Lets the Playwright suite skip `authLimiter`. Ignored when `NODE_ENV=production` |
@@ -184,7 +184,7 @@ bun install
 | Variable | Purpose |
 | --- | --- |
 | `VITE_API_BASE_URL` | API base URL, e.g. `http://localhost:7777/api` |
-| `VITE_SENTRY_DSN` | Error reporting. Optional — omit it and Sentry stays inert |
+| `VITE_SENTRY_DSN` | Error reporting. Only initialized in production builds; omit it and Sentry stays inert |
 | `VITE_SENTRY_ENVIRONMENT`, `VITE_SENTRY_RELEASE` | Overrides for the Sentry environment/release tags |
 | `VITE_SENTRY_TRACES_SAMPLE_RATE` | Performance sampling, `0`–`1` (default `0`, errors only) |
 
