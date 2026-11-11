@@ -1,25 +1,14 @@
-import * as React from "react";
-
 import { useRouter } from "next/navigation";
 
 import { ColumnDef } from "@tanstack/react-table";
 
 import { toast } from "sonner";
 
-import { MoreHorizontal } from "lucide-react";
-
 import { clientFetch } from "@/lib/client-api";
 import { formatDate } from "@/lib/format-date";
 
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { RowActions } from "@/components/shared/row-actions";
+import { selectColumn } from "@/components/shared/table-columns";
 
 import { ICoupon } from "@/types";
 
@@ -37,28 +26,7 @@ const couponStatus = (coupon: ICoupon) => {
 };
 
 export const columns: ColumnDef<ICoupon>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  selectColumn<ICoupon>(),
   {
     accessorKey: "code",
     header: "Code",
@@ -129,15 +97,12 @@ export const columns: ColumnDef<ICoupon>[] = [
 
 const CouponActions = ({ coupon }: { coupon: ICoupon }) => {
   const router = useRouter();
-  const [open, setOpen] = React.useState(false);
 
   const handleEdit = () => {
-    setOpen(false);
     router.push(`/dashboard/coupon/${coupon._id}`);
   };
 
   const handleToggle = async () => {
-    setOpen(false);
     const response = await clientFetch(`/api/coupon/${coupon._id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -153,7 +118,6 @@ const CouponActions = ({ coupon }: { coupon: ICoupon }) => {
   };
 
   const handleDelete = async () => {
-    setOpen(false);
     const response = await clientFetch(`/api/coupon/${coupon._id}`, {
       method: "DELETE",
     });
@@ -167,25 +131,15 @@ const CouponActions = ({ coupon }: { coupon: ICoupon }) => {
   };
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="h-8 w-8 p-0"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onSelect={handleEdit}>Edit</DropdownMenuItem>
-        <DropdownMenuItem onSelect={handleToggle}>
-          {coupon.active ? "Deactivate" : "Activate"}
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={handleDelete}>Delete</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <RowActions
+      actions={[
+        { label: "Edit", onSelect: handleEdit },
+        {
+          label: coupon.active ? "Deactivate" : "Activate",
+          onSelect: handleToggle,
+        },
+        { label: "Delete", onSelect: handleDelete },
+      ]}
+    />
   );
 };

@@ -9,33 +9,12 @@ import { Mail } from "lucide-react";
 import { formatDate } from "@/lib/format-date";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { selectColumn } from "@/components/shared/table-columns";
 
 import { INewsletterSubscriber } from "@/types";
 
 export const columns: ColumnDef<INewsletterSubscriber>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  selectColumn<INewsletterSubscriber>(),
   {
     accessorKey: "email",
     header: "Email",
