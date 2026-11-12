@@ -4,24 +4,17 @@ import { useCallback, useState } from "react";
 
 import Image from "next/image";
 
-import { useDropzone } from "react-dropzone";
-
 import { toast } from "sonner";
 
-import {
-  Crop,
-  Loader2,
-  Trash2Icon,
-  UploadIcon,
-  Wand2,
-} from "lucide-react";
+import { useDropzone } from "react-dropzone";
 
-import { uploadImage } from "@/lib/cloudinary";
+import { Crop, Loader2, Trash2Icon, UploadIcon, Wand2 } from "lucide-react";
+
 import { cropImage, removeImageBackground } from "@/lib/image-editing";
+import { uploadImage } from "@/lib/upload";
 
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
-
 import { ImageCropDialog } from "./image-crop-dialog";
 
 interface ImageUploadProps {
@@ -41,7 +34,7 @@ interface BusyState {
 export function ImageUpload({
   onUploadSuccess,
   initialImages = [],
-  folder = "ez-shop/products",
+  folder = "products",
   enableEditing = false,
 }: ImageUploadProps) {
   const [previews, setPreviews] = useState<string[]>(initialImages);
@@ -144,7 +137,12 @@ export function ImageUpload({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/*": [] },
+    accept: {
+      "image/jpeg": [".jpg", ".jpeg"],
+      "image/png": [".png"],
+      "image/webp": [".webp"],
+      "image/avif": [".avif"],
+    },
     multiple: true,
   });
 

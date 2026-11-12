@@ -1,5 +1,5 @@
-import cloudinary from "@/config/cloudinary";
-import { uploadToCloudinary } from "@/utils/upload-to-cloudinary";
+import { logger } from "@/config/logger";
+import { uploadToR2, deleteFromR2 } from "@/utils/upload-to-r2";
 import { AppError } from "@/utils/app-error";
 import { createTtlCache } from "@/utils/ttl-cache";
 import * as categoryRepository from "@/modules/category/category.repository";
@@ -10,14 +10,11 @@ const categoryCache = createTtlCache<
   Awaited<ReturnType<typeof categoryRepository.findAll>>
 >(CATEGORY_CACHE_TTL_MS);
 
-const extractCloudinaryPublicId = (imageUrl: string) => {
-  return imageUrl.split("/").pop()?.split(".")[0];
-};
-
 const deleteCategoryImage = async (imageUrl: string) => {
-  const publicId = extractCloudinaryPublicId(imageUrl);
-  if (publicId) {
-    await cloudinary.uploader.destroy(`ez-shop/categories/${publicId}`);
+  try {
+    await deleteFromR2(imageUrl);
+  } catch (error) {
+    logger.warn({ err: error, imageUrl }, "Failed to delete category image");
   }
 };
 
@@ -30,10 +27,8 @@ export const createCategory = async (
   let finalImageUrl = imageUrl || "";
 
   if (file) {
-    const result = (await uploadToCloudinary("categories", file.buffer)) as {
-      secure_url: string;
-    };
-    finalImageUrl = result.secure_url;
+    const result = await uploadToR2("categories", file.buffer);
+    finalImageUrl = result.url;
   }
 
   const category = await categoryRepository.create({
@@ -94,10 +89,8 @@ export const updateCategory = async (
       await deleteCategoryImage(category.image);
     }
 
-    const result = (await uploadToCloudinary("categories", file.buffer)) as {
-      secure_url: string;
-    };
-    imageUrl = result.secure_url;
+    const result = await uploadToR2("categories", file.buffer);
+    imageUrl = result.url;
   }
 
   const updated = await categoryRepository.updateById(id, {

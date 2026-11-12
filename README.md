@@ -49,7 +49,7 @@ download, plus role-gated store management for staff.
 | --- | --- |
 | **Storefront** | React 19, Vite, TypeScript, Tailwind CSS v4, React Router 7, TanStack Query 5, Zustand, React Hook Form, Zod, Axios, Lucide, Sonner |
 | **Admin** | Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4, next-themes, TanStack Table, Recharts, shadcn-style Radix primitives |
-| **API** | Node, Express 5, Mongoose 8, Zod, jsonwebtoken, Passport (Google OAuth), Stripe, PDFKit, Cloudinary, Resend, express-rate-limit, Helmet, Pino |
+| **API** | Node, Express 5, Mongoose 8, Zod, jsonwebtoken, Passport (Google OAuth), Stripe, PDFKit, Cloudflare R2, Resend, express-rate-limit, Helmet, Pino |
 | **Database** | MongoDB |
 | **Shared styling** | CSS-variable design tokens, Barlow Condensed (display) + Outfit (body) |
 
@@ -161,7 +161,8 @@ fast with a logged reason instead of surfacing later as a runtime error.
 | `CORS_ORIGINS` | Extra comma-separated origins, added to `CLIENT_URL` and `ADMIN_URL` |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL` | Google OAuth |
 | `GOOGLE_ANDROID_CLIENT_ID` | Optional Android OAuth client, accepted as an additional ID-token audience |
-| `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET` | Image uploads |
+| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | Cloudflare R2 image storage |
+| `R2_PUBLIC_URL` | Public CDN base for uploaded images |
 | `RESEND_API_KEY`, `EMAIL_FROM` | Transactional email |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Card payments |
 | `SENTRY_DSN` | Error reporting. Only initialized when `NODE_ENV=production`; omit it and Sentry stays inert |
@@ -205,8 +206,6 @@ cp .env.example .env
 | Variable | Purpose |
 | --- | --- |
 | `NEXT_PUBLIC_SERVER_URL` | API base URL |
-| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Cloudinary cloud for uploads |
-| `NEXT_PUBLIC_UPLOAD_PRESET` | Cloudinary unsigned upload preset |
 
 ```bash
 bun run dev

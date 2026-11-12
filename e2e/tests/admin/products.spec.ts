@@ -49,7 +49,7 @@ test('admin can create a product and see it in the product list', async ({
     const createdCategory = await api.post('/category', {
       name: categoryName,
       slug: slugify(categoryName),
-      image: 'https://res.cloudinary.com/ez-shop-e2e/image/upload/e2e-category-placeholder.jpg',
+      image: 'https://ezshop-cdn.anirudhkille.com/e2e/category-placeholder.jpg',
     });
     expect(createdCategory.ok(), `POST /api/category failed: ${await createdCategory.text()}`).toBeTruthy();
     categoryId = (await ApiClient.json(createdCategory))?.data?._id ?? (await ApiClient.json(createdCategory))?._id;

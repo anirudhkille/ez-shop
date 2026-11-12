@@ -33,9 +33,11 @@ const envSchema = z.object({
   CLIENT_URL: z.string().min(1, "CLIENT_URL is required"),
   ADMIN_URL: z.string().min(1, "ADMIN_URL is required"),
 
-  CLOUDINARY_NAME: z.string().min(1, "CLOUDINARY_NAME is required"),
-  CLOUDINARY_KEY: z.string().min(1, "CLOUDINARY_KEY is required"),
-  CLOUDINARY_SECRET: z.string().min(1, "CLOUDINARY_SECRET is required"),
+  R2_ACCOUNT_ID: z.string().min(1, "R2_ACCOUNT_ID is required"),
+  R2_ACCESS_KEY_ID: z.string().min(1, "R2_ACCESS_KEY_ID is required"),
+  R2_SECRET_ACCESS_KEY: z.string().min(1, "R2_SECRET_ACCESS_KEY is required"),
+  R2_BUCKET: z.string().min(1, "R2_BUCKET is required"),
+  R2_PUBLIC_URL: z.string().url("R2_PUBLIC_URL must be a valid URL"),
 
   MAPBOX_TOKEN: z.string().default(""),
 

@@ -21,6 +21,7 @@ import orderRoutes from "./modules/order/order.routes";
 import paymentRoutes from "./modules/payment/payment.routes";
 import productRoutes from "./modules/product/product.routes";
 import reviewRoutes from "./modules/review/review.routes";
+import uploadRoutes from "./modules/upload/upload.routes";
 import userRoutes from "./modules/user/user.routes";
 import wishlistRoutes from "./modules/wishlist/wishlist.routes";
 import stripeWebhook from "./webhook/stripe.webhook";
@@ -57,6 +58,7 @@ app.use("/api/order", orderRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/review", reviewRoutes);
+app.use("/api/upload", uploadRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 

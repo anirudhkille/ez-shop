@@ -1,4 +1,4 @@
-import { uploadToCloudinary } from "@/utils/upload-to-cloudinary";
+import { uploadToR2 } from "@/utils/upload-to-r2";
 import { AppError } from "@/utils/app-error";
 import slugify from "slugify";
 import mongoose from "mongoose";
@@ -148,8 +148,8 @@ export const postProduct = async (body: ProductBody, files?: UploadedFiles) => {
 
   if (files && !Array.isArray(files) && files.image) {
     const file = files.image[0];
-    const result = await uploadToCloudinary("products", file.buffer);
-    body.image = result.secure_url;
+    const result = await uploadToR2("products", file.buffer);
+    body.image = result.url;
   }
 
   if (files && !Array.isArray(files) && files.variantImages) {
@@ -163,12 +163,12 @@ export const postProduct = async (body: ProductBody, files?: UploadedFiles) => {
       variants[variantIndex].images = [];
 
       for (let i = 0; i < count; i++) {
-        const result = await uploadToCloudinary(
+        const result = await uploadToR2(
           "products/variants",
           variantFiles[fileIndex].buffer,
         );
 
-        variants[variantIndex].images.push(result.secure_url);
+        variants[variantIndex].images.push(result.url);
         fileIndex++;
       }
     }
@@ -270,21 +270,21 @@ export const updateProduct = async (
 
   if (files && !Array.isArray(files) && files.image) {
     const file = files.image[0];
-    const result = await uploadToCloudinary("products", file.buffer);
-    body.image = result.secure_url;
+    const result = await uploadToR2("products", file.buffer);
+    body.image = result.url;
   }
 
   if (files && !Array.isArray(files) && files.variantImages) {
     const variantFiles = files.variantImages;
 
     for (let i = 0; i < variantFiles.length; i++) {
-      const result = await uploadToCloudinary(
+      const result = await uploadToR2(
         "products/variants",
         variantFiles[i].buffer,
       );
 
       if (variants[i]) {
-        variants[i].images = [result.secure_url];
+        variants[i].images = [result.url];
       }
     }
   }

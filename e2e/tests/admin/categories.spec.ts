@@ -17,10 +17,11 @@ const newAdmin = () => ({
 const slugify = (text: string) =>
   text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 
-// Stand-in image URL. The stored category only needs a non-empty string;
-// cleanup asks Cloudinary to remove it, which is a no-op for an unknown id.
+// Stand-in image URL. The stored category only needs a non-empty string, and
+// cleanup deletes this non-existent key from R2. DeleteObject is idempotent, so
+// the test never removes a real asset.
 const CATEGORY_PLACEHOLDER_IMAGE =
-  'https://res.cloudinary.com/ez-shop-e2e/image/upload/e2e-category-placeholder.jpg';
+  'https://ezshop-cdn.anirudhkille.com/e2e/category-placeholder.jpg';
 
 test.afterAll(async () => {
   await closeSeedDb();
@@ -44,14 +45,7 @@ test('admin can create a category and see it in the category list', async ({
 
   // The stored category requires an image: the API accepts either an uploaded
   // file or an `image` URL, and the Mongoose model rejects an empty string.
-  // Reuse an existing category's image so the admin list renders a real file.
-  const existingRes = await api.get('/category?limit=1');
-  const existingBody = await ApiClient.json(existingRes);
-  const existingCategories = Array.isArray(existingBody)
-    ? existingBody
-    : existingBody?.data?.categories ?? existingBody?.data ?? [];
-  const image: string =
-    existingCategories[0]?.image || CATEGORY_PLACEHOLDER_IMAGE;
+  const image = CATEGORY_PLACEHOLDER_IMAGE;
 
   const created = await api.post('/category', {
     name: categoryName,
