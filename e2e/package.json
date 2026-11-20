@@ -19,7 +19,7 @@
     "playwright": "^1.65.1",
     "@types/node": "^26",  
     "typescript": "~7.0.2",
-    "dotenv": "^17.2.3"
+    "dotenv": "^18.0.10"
   },
   "dependencies": {
     "mongodb": "^7.9.0",
