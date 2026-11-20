@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import { QueryFilter } from "mongoose";
 
 import Coupon, { ICoupon } from "@/modules/coupon/coupon.model";
 
@@ -7,7 +7,7 @@ export const create = async (data: Partial<ICoupon>) => {
 };
 
 export const findAll = async (skip = 0, limit = 10, search?: string) => {
-  const filter: FilterQuery<ICoupon> = {};
+  const filter: QueryFilter<ICoupon> = {};
 
   if (search) {
     filter.code = { $regex: search, $options: "i" };
@@ -21,7 +21,7 @@ export const findAll = async (skip = 0, limit = 10, search?: string) => {
 };
 
 export const countDocuments = async (search?: string) => {
-  const filter: FilterQuery<ICoupon> = {};
+  const filter: QueryFilter<ICoupon> = {};
 
   if (search) {
     filter.code = { $regex: search, $options: "i" };

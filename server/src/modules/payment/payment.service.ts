@@ -11,13 +11,14 @@ import {
   type ShippingAddress,
 } from "@/modules/order/order.intent";
 import { env } from "@/config/env.config";
+import { DeliveryMethod } from "@/modules/order/order.model";
 import { AppError } from "@/utils/app-error";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 interface CheckoutSessionBody {
   addressId: string;
-  deliveryMethod: string;
+  deliveryMethod: DeliveryMethod;
   couponCode?: string;
 }
 

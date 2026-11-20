@@ -1,4 +1,4 @@
-import type { FilterQuery, UpdateQuery } from "mongoose";
+import type { QueryFilter, UpdateQuery } from "mongoose";
 import User, { type IUser } from "@/modules/user/user.model";
 
 export const findByEmail = async (email: string) => {
@@ -29,14 +29,14 @@ export const findAll = async (
   skip = 0,
   limit = 10,
   select?: string,
-  filter: FilterQuery<IUser> = {},
+  filter: QueryFilter<IUser> = {},
 ) => {
   const query = User.find(filter).skip(skip).limit(limit);
   if (select) query.select(select);
   return await query;
 };
 
-export const countDocuments = async (filter: FilterQuery<IUser> = {}) => {
+export const countDocuments = async (filter: QueryFilter<IUser> = {}) => {
   return await User.countDocuments(filter);
 };
 

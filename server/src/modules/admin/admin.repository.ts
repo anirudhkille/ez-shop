@@ -1,5 +1,5 @@
 import Admin, { type IAdmin } from "@/modules/admin/admin.model";
-import type { FilterQuery, UpdateQuery } from "mongoose";
+import type { QueryFilter, UpdateQuery } from "mongoose";
 
 export const findByEmail = async (email: string) => {
   return await Admin.findOne({ email });
@@ -21,6 +21,6 @@ export const findByIdAndUpdate = async (
   });
 };
 
-export const findOne = async (filter: FilterQuery<IAdmin>) => {
+export const findOne = async (filter: QueryFilter<IAdmin>) => {
   return await Admin.findOne(filter);
 };

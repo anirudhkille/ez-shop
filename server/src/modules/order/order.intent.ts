@@ -5,7 +5,11 @@ import * as couponService from "@/modules/coupon/coupon.service";
 import * as orderRepository from "@/modules/order/order.repository";
 import * as productRepository from "@/modules/product/product.repository";
 import { decrementStock, verifyStock } from "@/modules/product/product.service";
-import { IOrder, IOrderProduct } from "@/modules/order/order.model";
+import {
+  DeliveryMethod,
+  IOrder,
+  IOrderProduct,
+} from "@/modules/order/order.model";
 import { AppError } from "@/utils/app-error";
 
 /** A line as submitted by a guest, who has no persisted cart. */
@@ -19,7 +23,7 @@ export interface GuestLineInput {
 export interface GuestCheckoutBody {
   products: GuestLineInput[];
   address: ShippingAddress;
-  deliveryMethod: string;
+  deliveryMethod: DeliveryMethod;
   name: string;
   email: string;
   phone: string;
@@ -55,7 +59,7 @@ export interface PricedLine {
 export interface Pricing {
   lines: PricedLine[];
   subtotal: number;
-  deliveryMethod: string;
+  deliveryMethod: DeliveryMethod;
   deliveryCharge: number;
   discount: number;
   coupon: { code: string; type: string; discount: number } | null;
@@ -203,7 +207,7 @@ export interface CreateOrderInput {
   lines: PricedLine[];
   buyer: Buyer;
   address: ShippingAddress;
-  deliveryMethod: string;
+  deliveryMethod: DeliveryMethod;
   couponCode?: string;
   paymentType: "cod" | "card";
 }

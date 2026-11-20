@@ -11,16 +11,16 @@ import {
   resolveSavedAddress,
   type GuestCheckoutBody,
 } from "@/modules/order/order.intent";
-import { IOrder } from "@/modules/order/order.model";
+import { DeliveryMethod, IOrder } from "@/modules/order/order.model";
 import { AppError } from "@/utils/app-error";
 import * as invoiceService from "@/modules/invoice/invoice.service";
 import { sendOrderConfirmation } from "@/modules/order/order.email";
 import { escapeRegex } from "@/validation/common.schema";
-import type { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 
 interface CODRequestBody {
   addressId: string;
-  deliveryMethod: string;
+  deliveryMethod: DeliveryMethod;
   couponCode?: string;
 }
 
@@ -57,14 +57,14 @@ export const getOrders = async (
 ) => {
   const skip = (page - 1) * limit;
 
-  const filter: FilterQuery<IOrder> = {};
+  const filter: QueryFilter<IOrder> = {};
 
   if (query.orderStatus) {
-    filter.orderStatus = query.orderStatus;
+    filter.orderStatus = query.orderStatus as IOrder["orderStatus"];
   }
 
   if (query.paymentStatus) {
-    filter.paymentStatus = query.paymentStatus;
+    filter.paymentStatus = query.paymentStatus as IOrder["paymentStatus"];
   }
 
   const search = query.search?.trim();
