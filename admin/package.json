@@ -44,7 +44,7 @@
     "zustand": "^5.1.0"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
