@@ -35,7 +35,7 @@ jobs:
       run:
         working-directory: ${{ matrix.workspace }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -85,7 +85,7 @@ jobs:
       STRIPE_SECRET_KEY: sk_test_ci
       STRIPE_WEBHOOK_SECRET: whsec_ci
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -135,7 +135,7 @@ jobs:
       STRIPE_SECRET_KEY: sk_test_ci
       STRIPE_WEBHOOK_SECRET: whsec_ci
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: oven-sh/setup-bun@v2
         with:
