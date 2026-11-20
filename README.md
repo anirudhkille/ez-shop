@@ -133,7 +133,7 @@ exiting on a failed start.
 ### Prerequisites
 
 - [Bun](https://bun.sh) 1.4+ — the package manager for all four projects
-- Node.js 22+ — the runtime (Bun installs dependencies; Node runs the code)
+- Node.js 26+ — the runtime (Bun installs dependencies; Node runs the code)
 - A MongoDB instance (local or hosted)
 
 Each project is installed and run independently — the root `package.json` only
