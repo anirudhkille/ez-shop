@@ -1,5 +1,5 @@
 import Order, { IOrder } from "@/modules/order/order.model";
-import { FilterQuery, Types } from "mongoose";
+import { QueryFilter, Types } from "mongoose";
 
 export const create = async (data: Partial<IOrder>) => {
   return await Order.create(data);
@@ -55,9 +55,7 @@ const withResolvedBuyer = <
   order: T,
 ) => {
   const buyer = (order as { user?: unknown }).user as
-    | { name?: string; email?: string; phone?: string }
-    | null
-    | undefined;
+    { name?: string; email?: string; phone?: string } | null | undefined;
 
   return {
     ...order,
@@ -70,7 +68,7 @@ const withResolvedBuyer = <
 export const find = async (
   skip: number,
   limit: number,
-  filter: FilterQuery<IOrder> = {},
+  filter: QueryFilter<IOrder> = {},
 ) => {
   const orders = await Order.find(filter)
     .populate("user", BUYER_FIELDS)
@@ -81,7 +79,7 @@ export const find = async (
   return orders.map(withResolvedBuyer);
 };
 
-export const countDocuments = async (filter: FilterQuery<IOrder> = {}) => {
+export const countDocuments = async (filter: QueryFilter<IOrder> = {}) => {
   return await Order.countDocuments(filter);
 };
 
@@ -223,7 +221,7 @@ export const findByIdPopulated = async (
   return order ? withResolvedBuyer(order) : null;
 };
 
-export const findOnePopulated = async (filter: FilterQuery<IOrder>) => {
+export const findOnePopulated = async (filter: QueryFilter<IOrder>) => {
   return await Order.findOne(filter).populate(
     "products.product",
     "name image price slug",

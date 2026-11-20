@@ -1,15 +1,15 @@
-import { FilterQuery } from "mongoose";
+import { QueryFilter } from "mongoose";
 import Wishlist, { IWishlist } from "@/modules/wishlist/wishlist.model";
 
-export const findOne = async (filter: FilterQuery<IWishlist>) => {
+export const findOne = async (filter: QueryFilter<IWishlist>) => {
   return await Wishlist.findOne(filter);
 };
 
-export const findOneLean = async (filter: FilterQuery<IWishlist>) => {
+export const findOneLean = async (filter: QueryFilter<IWishlist>) => {
   return await Wishlist.findOne(filter).lean();
 };
 
-export const findOnePopulated = async (filter: FilterQuery<IWishlist>) => {
+export const findOnePopulated = async (filter: QueryFilter<IWishlist>) => {
   return await Wishlist.findOne(filter).populate("products").lean();
 };
 

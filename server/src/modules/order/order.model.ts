@@ -8,6 +8,11 @@ export interface IOrderProduct {
   size?: string;
 }
 
+export type DeliveryMethod = "standard" | "express" | "same-day";
+export type PaymentStatus = "pending" | "paid" | "failed";
+export type PaymentType = "cod" | "card";
+export type OrderStatus = "processing" | "shipped" | "delivered";
+
 export interface IOrder {
   user?: mongoose.Types.ObjectId | string | null;
   name?: string;
@@ -24,7 +29,7 @@ export interface IOrder {
     country: string;
     phone: string;
   };
-  deliveryMethod?: string;
+  deliveryMethod?: DeliveryMethod;
   subtotal?: number;
   discount?: number;
   coupon?: {
@@ -34,18 +39,18 @@ export interface IOrder {
   };
   deliveryCharge?: number;
   totalAmount?: number;
-  paymentStatus?: string;
-  paymentType?: string;
+  paymentStatus?: PaymentStatus;
+  paymentType?: PaymentType;
   paymentIntentId?: string;
   sessionId?: string;
-  orderStatus?: string;
+  orderStatus?: OrderStatus;
   /** Set once the sale is confirmed, so a webhook retry cannot decrement twice. */
   stockClaimed?: boolean;
   /** Set once the confirmation mail has gone out. */
   confirmationSent?: boolean;
 }
 
-const orderSchema = new mongoose.Schema(
+const orderSchema = new mongoose.Schema<IOrder>(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -117,4 +122,4 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-export default mongoose.model("Order", orderSchema);
+export default mongoose.model<IOrder>("Order", orderSchema);

@@ -1,5 +1,5 @@
 import Product, { IProduct } from "@/modules/product/product.model";
-import { FilterQuery, Types, UpdateQuery } from "mongoose";
+import { QueryFilter, Types, UpdateQuery } from "mongoose";
 
 export const create = async (
   data: Partial<IProduct> & { variantImageMap?: unknown },
@@ -8,7 +8,7 @@ export const create = async (
 };
 
 export const find = async (
-  filter: FilterQuery<IProduct>,
+  filter: QueryFilter<IProduct>,
   skip: number,
   limit: number,
 ) => {
@@ -19,7 +19,7 @@ export const find = async (
     .populate("category");
 };
 
-export const countDocuments = async (filter: FilterQuery<IProduct>) => {
+export const countDocuments = async (filter: QueryFilter<IProduct>) => {
   return await Product.countDocuments(filter);
 };
 
@@ -28,7 +28,9 @@ export const findById = async (id: string | Types.ObjectId) => {
 };
 
 export const findByIds = async (ids: (string | Types.ObjectId)[]) => {
-  return await Product.find({ _id: { $in: ids } });
+  return await Product.find({
+    _id: { $in: ids.map((id) => new Types.ObjectId(id)) },
+  });
 };
 
 /** Atomic decrement, bypassing the update validators. */
@@ -64,7 +66,7 @@ export const findSearch = async (keyword: string, limit: number) => {
 };
 
 export const findFiltered = async (
-  query: FilterQuery<IProduct>,
+  query: QueryFilter<IProduct>,
   sortOption: Record<string, 1 | -1>,
   skip: number,
   limit: number,
@@ -99,7 +101,7 @@ export const findBestSellers = async () => {
 
 export const findSimilar = async (id: string, categoryId: Types.ObjectId) => {
   return await Product.find({
-    _id: { $ne: id },
+    _id: { $ne: new Types.ObjectId(id) },
     category: categoryId,
     publish: true,
   })
@@ -121,7 +123,7 @@ interface ProductFacetsAggregation {
   ratings: { max?: number }[];
 }
 
-export const findFacets = async (match: FilterQuery<IProduct>) => {
+export const findFacets = async (match: QueryFilter<IProduct>) => {
   const effectivePrice = {
     $cond: [
       { $gt: [{ $ifNull: ["$discountPrice", 0] }, 0] },

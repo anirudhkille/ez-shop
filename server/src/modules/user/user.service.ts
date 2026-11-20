@@ -21,7 +21,7 @@ import { AppError } from "@/utils/app-error";
 import * as userRepository from "@/modules/user/user.repository";
 import type { IUser } from "@/modules/user/user.model";
 import { escapeRegex } from "@/validation/common.schema";
-import type { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 import { hashToken } from "@/utils/token-hash";
 import { getGoogleAuthURL } from "./user.google";
 
@@ -301,7 +301,7 @@ export const getAllUsers = async (
 ) => {
   const skip = (page - 1) * limit;
 
-  const filter: FilterQuery<IUser> = {};
+  const filter: QueryFilter<IUser> = {};
 
   if (query.role) {
     filter.role = query.role;

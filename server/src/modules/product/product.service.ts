@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { IProduct, IVariant } from "@/modules/product/product.model";
 import * as productRepository from "@/modules/product/product.repository";
 import { escapeRegex } from "@/validation/common.schema";
-import type { FilterQuery } from "mongoose";
+import type { QueryFilter } from "mongoose";
 
 interface VariantImageMap {
   variantIndex: number;
@@ -55,16 +55,15 @@ interface FilteredProductsQuery {
   limit?: string;
 }
 
-type ProductFilter = FilterQuery<IProduct> & { isNewArrival?: boolean };
+type ProductFilter = QueryFilter<IProduct> & { isNewArrival?: boolean };
 
-type FilteredDBQuery = FilterQuery<IProduct> & {
+type FilteredDBQuery = QueryFilter<IProduct> & {
   "variants.sizes.size"?: { $in: string[] };
   "variants.color"?: { $in: string[] };
 };
 
 type UploadedFiles =
-  | Express.Multer.File[]
-  | { [fieldname: string]: Express.Multer.File[] };
+  Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] };
 
 export const decrementStock = async (
   items: {
@@ -201,11 +200,11 @@ export const getProducts = async (query: ProductQuery) => {
   }
 
   if (query.gender) {
-    filter.gender = query.gender;
+    filter.gender = query.gender as IProduct["gender"];
   }
 
   if (query.category) {
-    filter.category = query.category;
+    filter.category = new mongoose.Types.ObjectId(query.category);
   }
 
   const search = query.search?.trim();
@@ -356,8 +355,10 @@ export const getFilteredProducts = async (query: FilteredProductsQuery) => {
   }
 
   if (gender) {
-    const genders = gender.split(",");
-    dbQuery.gender = { $in: genders.map((g: string) => g.toLowerCase()) };
+    const genders = gender
+      .split(",")
+      .map((g) => g.toLowerCase()) as IProduct["gender"][];
+    dbQuery.gender = { $in: genders };
   }
 
   if (type) {
@@ -442,7 +443,7 @@ const sortSizes = (sizes: string[]) =>
   });
 
 export const getProductFacets = async (query: { category?: string } = {}) => {
-  const match: FilterQuery<IProduct> = { publish: true };
+  const match: QueryFilter<IProduct> = { publish: true };
 
   if (query.category) {
     const categoryIds = query.category
