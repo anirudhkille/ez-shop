@@ -64,7 +64,7 @@ export function TableToolbar({ searchPlaceholder, filters = [] }: Props) {
 
     const timer = setTimeout(() => apply("search", term), 350);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react/exhaustive-deps
   }, [term]);
 
   const active =

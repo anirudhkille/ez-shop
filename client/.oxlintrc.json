@@ -1,0 +1,47 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript"],
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "browser": true,
+    "es2020": true
+  },
+  "ignorePatterns": ["dist/**"],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@/features/*/*"],
+            "message": "Import a feature's public API from '@/features/<name>', not its internals."
+          },
+          {
+            "group": ["@/shared/types/*"],
+            "message": "Domain types live with their feature. Transport types belong in '@/shared/lib'."
+          }
+        ]
+      }
+    ],
+    "react/exhaustive-deps": "warn",
+    "react/incompatible-library": "off",
+    "react/only-export-components": [
+      "warn",
+      {
+        "allowConstantExport": true
+      }
+    ],
+    "react/rules-of-hooks": "error",
+    "react/set-state-in-effect": "off"
+  },
+  "overrides": [
+    {
+      "files": ["src/app/routes.tsx"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
+}

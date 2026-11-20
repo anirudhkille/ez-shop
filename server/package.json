@@ -43,18 +43,17 @@
   },
   "scripts": {
     "build": "tsc && tsc-alias",
+    "typecheck": "tsc --noEmit",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "test": "node --import tsx --test \"src/**/*.test.ts\"",
-    "lint": "eslint . --ext .ts",
+    "lint": "oxlint .",
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "eslint": "^10.14.0",
+    "oxlint": "^1.94.0",
     "prettier": "^3.8.1",
-    "tsx": "^4.21.0",
-    "typescript-eslint": "^8.72.1"
+    "tsx": "^4.21.0"
   },
   "overrides": {
     "minimatch": "^11.0.5"

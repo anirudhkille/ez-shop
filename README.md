@@ -223,14 +223,14 @@ deliberately treated as different failures.
 | | `bun run build` | Compile with `tsc` + rewrite path aliases |
 | | `bun start` | Run the compiled build |
 | | `bun run test` | Unit tests (`node:test`, no DB required) |
-| | `bun run lint` / `bun run format` | ESLint / Prettier |
+| | `bun run lint` / `bun run format` | oxlint / Prettier |
 | `client` | `bun run dev` | Vite dev server |
 | | `bun run build` | Type-check then build |
-| | `bun run lint` / `bun run format` | ESLint / Prettier |
+| | `bun run lint` / `bun run format` | oxlint / Prettier |
 | | `bunx knip` | Unused files, dependencies and exports |
 | `admin` | `bun run dev` | Next.js dev server (Turbopack) |
 | | `bun run build` / `bun run start` | Production build and serve |
-| | `bun run lint` | ESLint |
+| | `bun run lint` | oxlint |
 | `e2e` | `bun run e2e` (repo root) | Playwright suite — storefront, admin and API |
 | | `bun run e2e:headed` / `bun run e2e:ui` | Same suite, visible browser / UI mode |
 
