@@ -63,6 +63,13 @@ const optionalNonEmptyString = z.preprocess(
   nonEmptyString.optional(),
 );
 
+const optionalSeoString = (max: number) =>
+  z.preprocess(
+    (value) =>
+      typeof value === "string" && value.trim() === "" ? undefined : value,
+    z.string().trim().min(1).max(max).optional(),
+  );
+
 const parseJsonInput = (
   value: unknown,
   ctx: z.RefinementCtx,
@@ -132,6 +139,10 @@ const productFields = {
   isBestSellers: booleanSchema,
   tag: z.enum(["Best Seller", "Trending", "Limited", "New", "Hot", "Sale"]),
   slug: optionalNonEmptyString,
+  imageAlt: optionalSeoString(160),
+  seoTitle: optionalSeoString(70),
+  seoDescription: optionalSeoString(160),
+  seoKeywords: optionalSeoString(300),
 };
 
 export const productCreateSchema = z.object({
@@ -160,6 +171,10 @@ export const productUpdateSchema = z
     isBestSellers: productFields.isBestSellers.optional(),
     tag: productFields.tag.optional(),
     slug: productFields.slug,
+    imageAlt: productFields.imageAlt,
+    seoTitle: productFields.seoTitle,
+    seoDescription: productFields.seoDescription,
+    seoKeywords: productFields.seoKeywords,
     variants: productVariantsUpdateSchema,
     variantImageMap: productVariantImageMapSchema,
   })

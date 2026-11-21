@@ -8,9 +8,11 @@ import { corsOptions } from "./config/cors-options";
 import { apiLimiter } from "./config/limiter";
 import { errorHandler } from "./middlewares/error-handler.middleware";
 import { sendResponse } from "./utils/response";
+import { getRedisHealth } from "./utils/redis-health";
 
 import addressRoutes from "./modules/address/address.routes";
 import adminRoutes from "./modules/admin/admin.routes";
+import aiRoutes from "./modules/ai/ai.routes";
 import cartRoutes from "./modules/cart/cart.routes";
 import categoryRoutes from "./modules/category/category.routes";
 import couponRoutes from "./modules/coupon/coupon.routes";
@@ -39,15 +41,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(apiLimiter);
 
-app.get("/api/health", (req, res) => {
-  sendResponse(res, 200, "Server is running", {
+app.get("/api/health", async (_req, res) => {
+  const redisHealth = await getRedisHealth();
+
+  return sendResponse(res, 200, "Server is running", {
     status: "ok",
     uptime: process.uptime(),
+    redis: redisHealth,
   });
 });
 
 app.use("/api/address", addressRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/ai", aiRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/coupon", couponRoutes);

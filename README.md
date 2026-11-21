@@ -31,6 +31,8 @@ download, plus role-gated store management for staff.
 - Order management with status transitions, plus invoice download
 - Customer detail with lifetime value, recent orders, wishlist and addresses
 - Newsletter subscriber list
+- AI Product Studio that drafts product copy, tags, SEO metadata and image alt
+  text for review before saving
 - Light and dark themes sharing the storefront's brand palette
 
 ### API (`server/`)
@@ -154,6 +156,8 @@ fast with a logged reason instead of surfacing later as a runtime error.
 | Variable | Purpose |
 | --- | --- |
 | `MONGO_URI` | MongoDB connection string |
+| `ATLAS_SEARCH_INDEX` | Optional Atlas Search index name. Set it to `product_search` after creating `server/atlas/product-search-index.json`; blank uses the MongoDB text-index fallback |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Optional Upstash Redis for distributed rate limits and the shared category cache; blank uses the in-process fallbacks |
 | `PORT` | API port (default `7777`) |
 | `NODE_ENV` | `development` \| `production` \| `test` |
 | `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` | Token signing secrets |
@@ -163,6 +167,10 @@ fast with a logged reason instead of surfacing later as a runtime error.
 | `GOOGLE_ANDROID_CLIENT_ID` | Optional Android OAuth client, accepted as an additional ID-token audience |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | Cloudflare R2 image storage |
 | `R2_PUBLIC_URL` | Public CDN base for uploaded images |
+| `AI_API_KEY` | Optional key for AI Product Studio. Leave blank to disable the endpoint |
+| `AI_BASE_URL`, `AI_MODEL` | OpenAI-compatible endpoint and model (defaults: OpenAI, `gpt-4.1-mini`) |
+| `AI_VISION_ENABLED`, `AI_TIMEOUT_MS` | Send product images to the model and set the request timeout |
+| `AI_RATE_LIMIT_MAX` | AI requests per 15 min per IP (default `20`) |
 | `RESEND_API_KEY`, `EMAIL_FROM` | Transactional email |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Card payments |
 | `SENTRY_DSN` | Error reporting. Only initialized when `NODE_ENV=production`; omit it and Sentry stays inert |

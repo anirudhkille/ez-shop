@@ -39,4 +39,8 @@ export type TProduct = {
   reviewsCount: number;
   tag: string;
   publish: boolean;
+  imageAlt?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
 };

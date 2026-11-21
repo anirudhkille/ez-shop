@@ -31,6 +31,10 @@ export interface IProduct extends Document {
   reviewsCount: number;
   tag: string;
   publish: boolean;
+  imageAlt?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
 }
 
 const variantSchema = new mongoose.Schema<IVariant>({
@@ -130,8 +134,102 @@ const productSchema = new mongoose.Schema<IProduct>(
       type: Boolean,
       default: true,
     },
+    imageAlt: {
+      type: String,
+      trim: true,
+      maxlength: 160,
+    },
+    seoTitle: {
+      type: String,
+      trim: true,
+      maxlength: 70,
+    },
+    seoDescription: {
+      type: String,
+      trim: true,
+      maxlength: 160,
+    },
+    seoKeywords: {
+      type: String,
+      trim: true,
+      maxlength: 300,
+    },
   },
   { timestamps: true },
+);
+
+// Full-text search. The storefront uses Atlas Search when configured; this
+// index keeps local development, CI and the fallback path working.
+productSchema.index(
+  { name: "text", description: "text", slug: "text", tag: "text" },
+  {
+    name: "product_text",
+    weights: { name: 10, tag: 5, slug: 3, description: 1 },
+  },
+);
+productSchema.index(
+  { name: 1 },
+  {
+    name: "product_name_prefix",
+  },
+);
+
+// Storefront listing and filter queries always start from published products.
+productSchema.index(
+  { publish: 1, category: 1, createdAt: -1, _id: 1 },
+  { name: "product_category_newest" },
+);
+productSchema.index(
+  { publish: 1, category: 1, price: 1, discountPrice: 1, _id: 1 },
+  { name: "product_category_price" },
+);
+productSchema.index(
+  { publish: 1, category: 1, price: -1, discountPrice: -1, _id: 1 },
+  { name: "product_category_price_desc" },
+);
+productSchema.index(
+  { publish: 1, category: 1, rating: -1, _id: 1 },
+  { name: "product_category_rating" },
+);
+productSchema.index(
+  { publish: 1, price: 1, discountPrice: 1, _id: 1 },
+  { name: "product_price" },
+);
+productSchema.index(
+  { publish: 1, price: -1, discountPrice: -1, _id: 1 },
+  { name: "product_price_desc" },
+);
+productSchema.index(
+  { publish: 1, gender: 1, price: 1, discountPrice: 1, _id: 1 },
+  { name: "product_gender_price" },
+);
+productSchema.index(
+  { publish: 1, tag: 1, createdAt: -1, _id: 1 },
+  { name: "product_tag_newest" },
+);
+productSchema.index(
+  { publish: 1, isFeatured: -1, _id: 1 },
+  { name: "product_featured_newest" },
+);
+productSchema.index(
+  { publish: 1, isBestSellers: 1, createdAt: -1, _id: 1 },
+  { name: "product_bestsellers_newest" },
+);
+productSchema.index(
+  { publish: 1, rating: -1, _id: 1 },
+  { name: "product_rating" },
+);
+productSchema.index(
+  { publish: 1, "variants.sizes.size": 1, _id: 1 },
+  { name: "product_size" },
+);
+productSchema.index(
+  { publish: 1, "variants.color": 1, _id: 1 },
+  { name: "product_color" },
+);
+productSchema.index(
+  { publish: 1, createdAt: -1, _id: 1 },
+  { name: "product_newest" },
 );
 
 const Product = mongoose.model("Product", productSchema);

@@ -6,6 +6,7 @@ import {
 } from "@/modules/order/order.payment";
 import { env } from "@/config/env.config";
 import { Sentry, sentryEnabled } from "@/config/sentry";
+import { processStripeEvent } from "@/webhook/stripe-event.service";
 
 const router = express.Router();
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
@@ -56,32 +57,38 @@ router.post(
     if (!orderId) return res.status(200).send("OK");
 
     try {
-      switch (event.type) {
-        case "checkout.session.completed": {
-          const session = event.data.object as unknown as {
-            payment_intent?: string | null;
-          };
-          await markOrderPaid(orderId, session.payment_intent);
-          break;
-        }
-        case "payment_intent.succeeded": {
-          const intent = event.data.object as unknown as { id: string };
-          await markOrderPaid(orderId, intent.id);
-          break;
-        }
-        // Abandoned session and refused card have the same outcome: no money.
-        case "checkout.session.expired":
-        case "payment_intent.payment_failed": {
-          await markOrderPaymentFailed(orderId);
-          break;
-        }
-        default:
-          break;
-      }
+      await processStripeEvent(
+        { id: event.id, type: event.type, orderId },
+        async () => {
+          switch (event.type) {
+            case "checkout.session.completed": {
+              const session = event.data.object as unknown as {
+                payment_intent?: string | null;
+              };
+              await markOrderPaid(orderId, session.payment_intent);
+              break;
+            }
+            case "payment_intent.succeeded": {
+              const intent = event.data.object as unknown as { id: string };
+              await markOrderPaid(orderId, intent.id);
+              break;
+            }
+            // Abandoned session and refused card have the same outcome: no money.
+            case "checkout.session.expired":
+            case "payment_intent.payment_failed": {
+              await markOrderPaymentFailed(orderId);
+              break;
+            }
+            default:
+              break;
+          }
+        },
+      );
     } catch (err) {
       if (sentryEnabled) {
         Sentry.withScope((scope) => {
           scope.setTag("route", "/webhook");
+          scope.setTag("stripeEventId", event.id);
           scope.setTag("stripeEventType", event.type);
           scope.setTag("orderId", orderId);
           Sentry.captureException(err);

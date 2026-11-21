@@ -11,6 +11,15 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(7777),
 
   MONGO_URI: z.string().min(1, "MONGO_URI is required"),
+  ATLAS_SEARCH_INDEX: z.string().trim().default(""),
+
+  UPSTASH_REDIS_REST_URL: z
+    .string()
+    .trim()
+    .url("UPSTASH_REDIS_REST_URL must be a valid URL")
+    .or(z.literal(""))
+    .default(""),
+  UPSTASH_REDIS_REST_TOKEN: z.string().trim().default(""),
 
   CORS_ORIGINS: z
     .string()
@@ -40,6 +49,20 @@ const envSchema = z.object({
   R2_PUBLIC_URL: z.string().url("R2_PUBLIC_URL must be a valid URL"),
 
   MAPBOX_TOKEN: z.string().default(""),
+
+  AI_API_KEY: z.string().trim().default(""),
+  AI_BASE_URL: z.string().trim().url().default("https://api.openai.com/v1"),
+  AI_MODEL: z.string().trim().default("gpt-4.1-mini"),
+  AI_VISION_ENABLED: z
+    .enum(["true", "false"])
+    .default("true")
+    .transform((value) => value === "true"),
+  AI_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .max(120_000)
+    .default(30_000),
 
   RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required"),
   EMAIL_FROM: z.string().min(1, "EMAIL_FROM is required"),

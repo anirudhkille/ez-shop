@@ -1,14 +1,16 @@
 import { logger } from "@/config/logger";
+import { redisCacheStore } from "@/config/redis";
 import { uploadToR2, deleteFromR2 } from "@/utils/upload-to-r2";
 import { AppError } from "@/utils/app-error";
-import { createTtlCache } from "@/utils/ttl-cache";
+import { createSharedCache } from "@/utils/shared-cache";
 import * as categoryRepository from "@/modules/category/category.repository";
 
-const CATEGORY_CACHE_TTL_MS = 5 * 60 * 1000;
+const CATEGORY_CACHE_TTL_SECONDS = 5 * 60;
+const CATEGORY_CACHE_KEY = "ez-shop:cache:categories";
 
-const categoryCache = createTtlCache<
+const categoryCache = createSharedCache<
   Awaited<ReturnType<typeof categoryRepository.findAll>>
->(CATEGORY_CACHE_TTL_MS);
+>(CATEGORY_CACHE_KEY, CATEGORY_CACHE_TTL_SECONDS, redisCacheStore);
 
 const deleteCategoryImage = async (imageUrl: string) => {
   try {
@@ -37,7 +39,7 @@ export const createCategory = async (
     image: finalImageUrl,
   });
 
-  categoryCache.clear();
+  await categoryCache.clear();
 
   return category;
 };
@@ -99,7 +101,7 @@ export const updateCategory = async (
     image: imageUrl,
   });
 
-  categoryCache.clear();
+  await categoryCache.clear();
 
   return updated;
 };
@@ -115,7 +117,7 @@ export const deleteCategory = async (id: string) => {
     await deleteCategoryImage(category.image);
   }
 
-  categoryCache.clear();
+  await categoryCache.clear();
 
   return category;
 };

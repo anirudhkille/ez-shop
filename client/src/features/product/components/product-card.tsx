@@ -59,7 +59,7 @@ export function ProductCard({ product, className = "" }: ProductCardProps) {
         </button>
         <Image
           src={product?.image}
-          alt={product?.name}
+          alt={product?.imageAlt || product?.name}
           className="h-full w-full object-contain transition-transform duration-300 ease-out group-hover:scale-[1.04]"
         />
         <div className="absolute bottom-3 left-3 flex gap-1.5">

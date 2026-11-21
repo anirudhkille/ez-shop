@@ -7,6 +7,7 @@ import { useAddToCart } from "@/features/cart";
 import type { TProduct } from "@/features/product";
 import { ReviewSection } from "@/features/review";
 import { useToggleWishlist, useWishlists } from "@/features/wishlist";
+import { Head } from "@/shared/components/head";
 import { StarRating } from "@/shared/components/star-rating";
 import { formatRating, reviewCountLabel } from "@/shared/lib/format-rating";
 
@@ -97,79 +98,88 @@ export default function ProductDetail() {
   };
 
   return (
-    <main className="pt-20">
-      <div className="mx-auto grid max-w-350 grid-cols-1 gap-12 px-6 pb-20 lg:grid-cols-2 lg:gap-20 lg:px-10">
-        <ProductGallery
-          product={product}
-          activeImage={selection.activeImage}
-          activeImages={selection.activeImages}
-          activeVariant={selection.activeVariant}
-          selectedImageIdx={selection.selectedImageIdx}
-          onSelectImage={selection.setSelectedImageIdx}
-          onStepImage={selection.stepImage}
-        />
-
-        <div className="flex flex-col justify-center">
-          <span className="font-body text-brand-orange text-xs font-semibold tracking-widest uppercase">
-            {product.category?.name}
-          </span>
-          <h1 className="font-display text-foreground mt-2 text-5xl leading-tight font-black uppercase lg:text-6xl">
-            {product.name}
-          </h1>
-
-          <div className="mt-4 flex items-center gap-3">
-            {product.reviewsCount > 0 ? (
-              <>
-                <StarRating rating={product.rating} size={14} />
-                <span className="font-body text-muted-foreground text-sm">
-                  {formatRating(product.rating)} (
-                  {reviewCountLabel(product.reviewsCount)})
-                </span>
-              </>
-            ) : (
-              <span className="font-body text-muted-foreground text-sm">
-                No reviews yet
-              </span>
-            )}
-            <a
-              href="#reviews"
-              className="font-body text-muted-foreground hover:text-brand-orange ml-auto text-xs underline-offset-4 transition-colors hover:underline"
-            >
-              Read reviews
-            </a>
-          </div>
-
-          <ProductPrice product={product} />
-
-          <p className="font-body text-muted-foreground mt-5 leading-relaxed">
-            {product.description}
-          </p>
-
-          <VariantPicker
+    <>
+      <Head
+        title={product.seoTitle || `${product.name} | EZ Shop`}
+        description={product.seoDescription || product.description}
+        keywords={product.seoKeywords}
+        ogImage={product.image}
+        ogType="product"
+      />
+      <main className="pt-20">
+        <div className="mx-auto grid max-w-350 grid-cols-1 gap-12 px-6 pb-20 lg:grid-cols-2 lg:gap-20 lg:px-10">
+          <ProductGallery
             product={product}
+            activeImage={selection.activeImage}
+            activeImages={selection.activeImages}
             activeVariant={selection.activeVariant}
-            selectedColorIdx={selection.selectedColorIdx}
-            selectedSize={selection.selectedSize}
-            sizes={selection.sizes}
-            onSelectColor={selection.selectColor}
-            onSelectSize={selection.setSelectedSize}
+            selectedImageIdx={selection.selectedImageIdx}
+            onSelectImage={selection.setSelectedImageIdx}
+            onStepImage={selection.stepImage}
           />
 
-          <ProductActions {...actionProps} />
+          <div className="flex flex-col justify-center">
+            <span className="font-body text-brand-orange text-xs font-semibold tracking-widest uppercase">
+              {product.category?.name}
+            </span>
+            <h1 className="font-display text-foreground mt-2 text-5xl leading-tight font-black uppercase lg:text-6xl">
+              {product.name}
+            </h1>
 
-          <ProductTrustBadges />
+            <div className="mt-4 flex items-center gap-3">
+              {product.reviewsCount > 0 ? (
+                <>
+                  <StarRating rating={product.rating} size={14} />
+                  <span className="font-body text-muted-foreground text-sm">
+                    {formatRating(product.rating)} (
+                    {reviewCountLabel(product.reviewsCount)})
+                  </span>
+                </>
+              ) : (
+                <span className="font-body text-muted-foreground text-sm">
+                  No reviews yet
+                </span>
+              )}
+              <a
+                href="#reviews"
+                className="font-body text-muted-foreground hover:text-brand-orange ml-auto text-xs underline-offset-4 transition-colors hover:underline"
+              >
+                Read reviews
+              </a>
+            </div>
+
+            <ProductPrice product={product} />
+
+            <p className="font-body text-muted-foreground mt-5 leading-relaxed">
+              {product.description}
+            </p>
+
+            <VariantPicker
+              product={product}
+              activeVariant={selection.activeVariant}
+              selectedColorIdx={selection.selectedColorIdx}
+              selectedSize={selection.selectedSize}
+              sizes={selection.sizes}
+              onSelectColor={selection.selectColor}
+              onSelectSize={selection.setSelectedSize}
+            />
+
+            <ProductActions {...actionProps} />
+
+            <ProductTrustBadges />
+          </div>
         </div>
-      </div>
 
-      <ProductMobileBar {...actionProps} />
+        <ProductMobileBar {...actionProps} />
 
-      <ReviewSection
-        productId={product._id}
-        rating={product.rating}
-        reviewsCount={product.reviewsCount}
-      />
+        <ReviewSection
+          productId={product._id}
+          rating={product.rating}
+          reviewsCount={product.reviewsCount}
+        />
 
-      <RelatedProducts products={related ?? []} />
-    </main>
+        <RelatedProducts products={related ?? []} />
+      </main>
+    </>
   );
 }

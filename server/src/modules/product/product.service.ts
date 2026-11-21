@@ -4,7 +4,6 @@ import slugify from "slugify";
 import mongoose from "mongoose";
 import { IProduct, IVariant } from "@/modules/product/product.model";
 import * as productRepository from "@/modules/product/product.repository";
-import { escapeRegex } from "@/validation/common.schema";
 import type { QueryFilter } from "mongoose";
 
 interface VariantImageMap {
@@ -26,6 +25,10 @@ interface ProductBody {
   publish?: boolean;
   image?: string;
   slug?: string;
+  imageAlt?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
   variants?: string | IVariant[];
   variantImageMap?: string | VariantImageMap[];
 }
@@ -55,7 +58,10 @@ interface FilteredProductsQuery {
   limit?: string;
 }
 
-type ProductFilter = QueryFilter<IProduct> & { isNewArrival?: boolean };
+type ProductFilter = QueryFilter<IProduct> & {
+  isNewArrival?: boolean;
+  $text?: { $search: string };
+};
 
 type FilteredDBQuery = QueryFilter<IProduct> & {
   "variants.sizes.size"?: { $in: string[] };
@@ -209,8 +215,7 @@ export const getProducts = async (query: ProductQuery) => {
 
   const search = query.search?.trim();
   if (search) {
-    const pattern = new RegExp(escapeRegex(search), "i");
-    filter.$or = [{ name: pattern }, { slug: pattern }, { tag: pattern }];
+    filter.$text = { $search: search };
   }
 
   const page = Number(query.page) || 1;
@@ -339,13 +344,6 @@ export const getFilteredProducts = async (query: FilteredProductsQuery) => {
     publish: true,
   };
 
-  if (search) {
-    dbQuery.$or = [
-      { name: { $regex: search, $options: "i" } },
-      { description: { $regex: search, $options: "i" } },
-    ];
-  }
-
   if (category) {
     const categories = category
       .split(",")
@@ -402,18 +400,33 @@ export const getFilteredProducts = async (query: FilteredProductsQuery) => {
   const limitNumber = Number(limit);
   const skip = (pageNumber - 1) * limitNumber;
 
-  const [products, total] = await Promise.all([
-    productRepository.findFiltered(dbQuery, sortOption, skip, limitNumber),
-    productRepository.countDocuments(dbQuery),
-  ]);
+  const searchTerm = search?.trim();
+  let result: { items: unknown[]; total: number };
+
+  if (searchTerm) {
+    result = await productRepository.findFilteredSearch(
+      searchTerm,
+      dbQuery,
+      sortOption,
+      skip,
+      limitNumber,
+    );
+  } else {
+    const [items, total] = await Promise.all([
+      productRepository.findFiltered(dbQuery, sortOption, skip, limitNumber),
+      productRepository.countDocuments(dbQuery),
+    ]);
+
+    result = { items, total };
+  }
 
   return {
-    items: products,
+    items: result.items,
     pagination: {
-      total,
+      total: result.total,
       page: pageNumber,
       limit: limitNumber,
-      totalPages: Math.ceil(total / limitNumber),
+      totalPages: Math.ceil(result.total / limitNumber),
     },
   };
 };
