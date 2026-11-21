@@ -43,10 +43,5 @@ export const markOrderPaid = async (
 
 /** Abandoned or refused payment: no stock was claimed, so only state changes. */
 export const markOrderPaymentFailed = async (orderId: string) => {
-  const order = await orderRepository.findById(orderId);
-
-  if (!order || order.paymentStatus === "paid") return;
-
-  order.paymentStatus = "failed";
-  await order.save();
+  await orderRepository.markPaymentFailedIfNotPaid(orderId);
 };

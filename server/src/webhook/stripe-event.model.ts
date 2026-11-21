@@ -9,6 +9,7 @@ export interface IStripeEvent {
   status: StripeEventStatus;
   attempts: number;
   processingStartedAt?: Date;
+  claimId?: string;
   lastError?: string;
 }
 
@@ -25,6 +26,7 @@ const stripeEventSchema = new mongoose.Schema<IStripeEvent>(
     },
     attempts: { type: Number, default: 0 },
     processingStartedAt: { type: Date },
+    claimId: { type: String },
     lastError: { type: String },
   },
   { timestamps: true },

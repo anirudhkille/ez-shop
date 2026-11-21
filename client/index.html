@@ -1,67 +1,64 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="google-site-verification"
+      content="AWVxnqC7ymwk6jvWglMJZ5b-H0LspTaMIw7zGPl9ZgE"
+    />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="google-site-verification" content="AWVxnqC7ymwk6jvWglMJZ5b-H0LspTaMIw7zGPl9ZgE" />
+    <!-- Google Fonts Optimization -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Outfit:wght@400;500;600;700&display=swap"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Outfit:wght@400;500;600;700&display=swap"
+      />
+    </noscript>
 
-  <!-- Google Fonts Optimization -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Outfit:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-  <noscript>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Outfit:wght@400;500;600;700&display=swap">
-  </noscript>
+    <!-- Preload LCP Images for Desktop and Mobile -->
+    <link
+      rel="preload"
+      as="image"
+      href="/hero-sneaker-mobile.webp"
+      type="image/webp"
+      media="(max-width: 768px)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/hero-sneaker.webp"
+      type="image/webp"
+      media="(min-width: 769px)"
+      fetchpriority="high"
+    />
 
-  <!-- Preload LCP Images for Desktop and Mobile -->
-  <link rel="preload" as="image" href="/hero-sneaker-mobile.webp" type="image/webp" media="(max-width: 768px)" fetchpriority="high" />
-  <link rel="preload" as="image" href="/hero-sneaker.webp" type="image/webp" media="(min-width: 769px)" fetchpriority="high" />
+    <!-- Canonical, hreflang, Open Graph and Twitter metadata are rendered by
+       the app's Head component so they can reflect the current product. -->
 
-  <!-- Canonical URL -->
-  <link rel="canonical" href="https://ez-shop.onrender.com/" />
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
 
-  <!-- Hreflang -->
-  <link rel="alternate" href="https://ez-shop.onrender.com/" hreflang="en" />
-  <link rel="alternate" href="https://ez-shop.onrender.com/" hreflang="en-IN" />
-  <link rel="alternate" href="https://ez-shop.onrender.com/" hreflang="x-default" />
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
 
-  <!-- Favicon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <!-- SEO metadata is rendered by the app's Head component. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Anirudh Kille" />
+  </head>
 
-  <!-- Manifest -->
-  <link rel="manifest" href="/manifest.json" />
-
-  <!-- SEO -->
-  <meta name="robots" content="index, follow" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>EZ Shop – Online Shopping with Best Deals</title>
-  <meta name="author" content="Anirudh Kille" />
-  <meta name="keywords" content="online shopping, e commerce India, buy products online, deals, fast delivery" />
-  <meta name="description"
-    content="EZ Shop – Shop a wide range of products with exclusive deals and fast delivery. Your one-stop online shopping destination." />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="EZ Shop – Online Shopping with Best Deals" />
-  <meta property="og:description" content="Shop products online with great deals and fast delivery on EZ Shop." />
-  <meta property="og:image" content="https://ez-shop.onrender.com/og-image.png" />
-  <meta property="og:url" content="https://ez-shop.onrender.com/" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="EZ Shop" />
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="EZ Shop – Online Shopping with Best Deals" />
-  <meta name="twitter:description" content="Shop products online with great deals and fast shipping." />
-  <meta name="twitter:image" content="https://ez-shop.onrender.com/og-image.png" />
-
-</head>
-
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
-
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

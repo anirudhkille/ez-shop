@@ -1,4 +1,5 @@
 import type { Request, RequestHandler, Response } from "express";
+import { ipKeyGenerator } from "express-rate-limit";
 
 export interface RateLimitResult {
   success: boolean;
@@ -83,7 +84,17 @@ export const createRateLimiter = (
     }
 
     try {
-      const result = await limit(req.ip ?? "unknown");
+      const ip = req.ip;
+      if (!ip) {
+        res.status(400).json({
+          success: false,
+          message: "Unable to determine client IP address.",
+          error: { code: "INVALID_CLIENT_IP" },
+        });
+        return;
+      }
+
+      const result = await limit(ipKeyGenerator(ip));
 
       if (result.reason === "timeout") {
         throw new Error("Upstash rate limit timed out");

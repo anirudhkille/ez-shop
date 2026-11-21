@@ -41,9 +41,9 @@ describe("product search", () => {
     ]);
   });
 
-  it("anchors prefix matches and escapes regex metacharacters", () => {
-    assert.deepEqual(buildPrefixSearchFilter("a.b*"), {
-      name: { $regex: "^a\\.b\\*", $options: "i" },
+  it("anchors prefix matches on the normalized name and escapes regex metacharacters", () => {
+    assert.deepEqual(buildPrefixSearchFilter("A.b*"), {
+      nameLower: { $regex: "^a\\.b\\*" },
     });
   });
 
@@ -101,7 +101,7 @@ describe("product search", () => {
       slug: "text",
       tag: "text",
     });
-    assert.deepEqual(indexes.get("product_name_prefix"), { name: 1 });
+    assert.deepEqual(indexes.get("product_name_prefix"), { nameLower: 1 });
     assert.deepEqual(indexes.get("product_category_newest"), {
       publish: 1,
       category: 1,

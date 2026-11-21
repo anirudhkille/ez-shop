@@ -40,11 +40,17 @@ export const createSharedCache = <T>(
 
   return {
     async load(loader) {
+      const localValue = local.peek();
+      if (localValue !== undefined) return localValue;
+
       if (store) {
         try {
           const cached = await store.get<T>(key);
 
-          if (cached !== null) return cached;
+          if (cached !== null) {
+            local.prime(cached);
+            return cached;
+          }
         } catch (error) {
           cacheLogger.warn(
             {
@@ -82,17 +88,26 @@ export const createSharedCache = <T>(
 
       if (!store) return;
 
-      try {
-        await store.del(key);
-      } catch (error) {
-        cacheLogger.warn(
-          {
-            err: error instanceof Error ? error.message : String(error),
-            key,
-          },
-          "Redis cache delete failed; the key will expire on its ttl",
-        );
-      }
+      const deleteKey = async () => {
+        try {
+          await store.del(key);
+        } catch (error) {
+          cacheLogger.warn(
+            {
+              err: error instanceof Error ? error.message : String(error),
+              key,
+            },
+            "Redis cache delete failed; the key will expire on its ttl",
+          );
+        }
+      };
+
+      await deleteKey();
+
+      // A second delete after a short delay closes the cross-instance window
+      // where another instance could write a stale value after our first DEL.
+      const timer = setTimeout(() => void deleteKey(), 1000);
+      timer.unref?.();
     },
   };
 };

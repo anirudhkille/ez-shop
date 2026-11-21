@@ -11,12 +11,13 @@ import { QueryFilter, PipelineStage, Types, UpdateQuery } from "mongoose";
 import { logger } from "@/config/logger";
 
 const FILTERED_SELECT =
-  "name slug image tag price discountPrice rating reviewsCount category variants.colorCode";
+  "name slug image imageAlt tag price discountPrice rating reviewsCount category variants.colorCode";
 
 const FILTERED_PROJECTION: PipelineStage.Project["$project"] = {
   name: 1,
   slug: 1,
   image: 1,
+  imageAlt: 1,
   tag: 1,
   price: 1,
   discountPrice: 1,
@@ -40,11 +41,13 @@ const CATEGORY_UNWIND: PipelineStage.Unwind = {
   $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
 };
 
-let atlasFallbackLogged = false;
+let atlasFallbackLoggedAt = 0;
+const ATLAS_FALLBACK_LOG_INTERVAL_MS = 5 * 60 * 1000;
 
 const warnAtlasFallback = (error: unknown) => {
-  if (atlasFallbackLogged) return;
-  atlasFallbackLogged = true;
+  const now = Date.now();
+  if (now - atlasFallbackLoggedAt < ATLAS_FALLBACK_LOG_INTERVAL_MS) return;
+  atlasFallbackLoggedAt = now;
 
   logger.warn(
     { err: error instanceof Error ? error.message : String(error) },
@@ -115,6 +118,7 @@ const findSearchAtlas = async (keyword: string, limit: number) => {
     { $limit: limit },
     CATEGORY_LOOKUP,
     CATEGORY_UNWIND,
+    { $project: FILTERED_PROJECTION },
   ]);
 };
 
@@ -123,14 +127,16 @@ const findSearchPrefix = async (keyword: string, limit: number) => {
     ...buildPrefixSearchFilter(keyword),
     publish: true,
   })
+    .select(FILTERED_SELECT)
     .populate("category", "name")
+    .sort({ createdAt: -1, _id: 1 })
     .limit(limit);
 };
 
 const findSearchText = async (keyword: string, limit: number) => {
   return await Product.find(
     { ...buildTextSearchFilter(keyword), publish: true },
-    { score: { $meta: "textScore" } },
+    { ...FILTERED_PROJECTION, score: { $meta: "textScore" } },
   )
     .sort(buildTextSearchSort({}))
     .populate("category", "name")
@@ -217,8 +223,10 @@ const findFilteredSearchText = async (
   } as QueryFilter<IProduct>;
 
   const [items, total] = await Promise.all([
-    Product.find(textFilter, { score: { $meta: "textScore" } })
-      .select(FILTERED_SELECT)
+    Product.find(textFilter, {
+      ...FILTERED_PROJECTION,
+      score: { $meta: "textScore" },
+    })
       .populate({ path: "category", select: "name" })
       .sort(buildTextSearchSort(sortOption))
       .skip(skip)
@@ -259,7 +267,7 @@ export const findFilteredSearch = async (
 export const findFeatured = async () => {
   return await Product.find({ publish: true, isFeatured: true })
     .select(
-      "name slug image reviewsCount rating tag category price discountPrice",
+      "name slug image imageAlt reviewsCount rating tag category price discountPrice",
     )
     .populate({ path: "category", select: "name" })
     .limit(8)
@@ -268,7 +276,7 @@ export const findFeatured = async () => {
 
 export const findBestSellers = async () => {
   return await Product.find({ publish: true, isBestSellers: true })
-    .select("name slug image rating price discountPrice")
+    .select("name slug image imageAlt rating price discountPrice")
     .limit(6)
     .lean();
 };
@@ -280,7 +288,7 @@ export const findSimilar = async (id: string, categoryId: Types.ObjectId) => {
     publish: true,
   })
     .select(
-      "name slug image reviewsCount rating tag category price discountPrice",
+      "name slug image imageAlt reviewsCount rating tag category price discountPrice",
     )
     .limit(4)
     .lean();

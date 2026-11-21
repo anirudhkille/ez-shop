@@ -183,6 +183,7 @@ export const postProduct = async (body: ProductBody, files?: UploadedFiles) => {
 
   const product = await productRepository.create({
     ...body,
+    nameLower: body.name.toLowerCase(),
     variants,
     variantImageMap,
   });
@@ -190,11 +191,14 @@ export const postProduct = async (body: ProductBody, files?: UploadedFiles) => {
   return product;
 };
 
-export const getProducts = async (query: ProductQuery) => {
+export const getProducts = async (query: ProductQuery, user?: Express.User) => {
   const filter: ProductFilter = {};
+  const isAdmin = user?.role === "Admin";
 
   if (query.publish) {
-    filter.publish = query.publish === "true";
+    if (isAdmin) filter.publish = query.publish === "true";
+  } else if (!isAdmin) {
+    filter.publish = true;
   }
 
   if (query.isFeatured) {
@@ -299,6 +303,7 @@ export const updateProduct = async (
 
   const product = await productRepository.findByIdAndUpdate(id, {
     ...body,
+    ...(body.name ? { nameLower: body.name.toLowerCase() } : {}),
     variants,
   });
 

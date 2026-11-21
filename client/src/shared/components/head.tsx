@@ -23,9 +23,12 @@ export function Head({
   twitterCard = "summary_large_image",
   noIndex = false,
 }: HeadProps) {
-  // avoid window.location in SSR
+  // avoid window.location in SSR; exclude query/hash from canonical URLs
   const currentUrl =
-    typeof window !== "undefined" ? window.location.href : canonicalUrl || "";
+    canonicalUrl ||
+    (typeof window !== "undefined"
+      ? `${window.location.origin}${window.location.pathname}`
+      : "");
 
   return (
     <article>
@@ -46,7 +49,7 @@ export function Head({
       <meta property="og:image" content={ogImage} />
       {currentUrl && <meta property="og:url" content={currentUrl} />}
       <meta property="og:type" content={ogType} />
-      <meta property="og:site_name" content="Carat Years" />
+      <meta property="og:site_name" content="EZ Shop" />
 
       {/* Twitter Card */}
       <meta name="twitter:card" content={twitterCard} />

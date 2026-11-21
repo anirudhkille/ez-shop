@@ -64,11 +64,7 @@ const optionalNonEmptyString = z.preprocess(
 );
 
 const optionalSeoString = (max: number) =>
-  z.preprocess(
-    (value) =>
-      typeof value === "string" && value.trim() === "" ? undefined : value,
-    z.string().trim().min(1).max(max).optional(),
-  );
+  z.string().trim().max(max).optional();
 
 const parseJsonInput = (
   value: unknown,
@@ -261,7 +257,7 @@ const productSortSchema = z.enum([
 ]);
 
 export const filteredProductQuerySchema = z.object({
-  search: nonEmptyString.optional(),
+  search: z.string().trim().min(1).max(120).optional(),
   category: categoryFilterSchema.optional(),
   gender: genderFilterSchema.optional(),
   type: typeFilterSchema.optional(),

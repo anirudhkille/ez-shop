@@ -4,80 +4,100 @@ import { z } from "zod";
 
 import { logger } from "./logger.js";
 
-const envSchema = z.object({
-  NODE_ENV: z
-    .enum(["development", "production", "test"])
-    .default("development"),
-  PORT: z.coerce.number().default(7777),
+const envSchema = z
+  .object({
+    NODE_ENV: z
+      .enum(["development", "production", "test"])
+      .default("development"),
+    PORT: z.coerce.number().default(7777),
 
-  MONGO_URI: z.string().min(1, "MONGO_URI is required"),
-  ATLAS_SEARCH_INDEX: z.string().trim().default(""),
+    MONGO_URI: z.string().min(1, "MONGO_URI is required"),
+    ATLAS_SEARCH_INDEX: z.string().trim().default(""),
 
-  UPSTASH_REDIS_REST_URL: z
-    .string()
-    .trim()
-    .url("UPSTASH_REDIS_REST_URL must be a valid URL")
-    .or(z.literal(""))
-    .default(""),
-  UPSTASH_REDIS_REST_TOKEN: z.string().trim().default(""),
+    UPSTASH_REDIS_REST_URL: z
+      .string()
+      .trim()
+      .url("UPSTASH_REDIS_REST_URL must be a valid URL")
+      .refine(
+        (value) => value === "" || value.startsWith("https://"),
+        "UPSTASH_REDIS_REST_URL must use https",
+      )
+      .or(z.literal(""))
+      .default(""),
+    UPSTASH_REDIS_REST_TOKEN: z.string().trim().default(""),
 
-  CORS_ORIGINS: z
-    .string()
-    .default("")
-    .transform((value) =>
-      value
-        .split(",")
-        .map((origin) => origin.trim())
-        .filter(Boolean),
-    ),
+    CORS_ORIGINS: z
+      .string()
+      .default("")
+      .transform((value) =>
+        value
+          .split(",")
+          .map((origin) => origin.trim())
+          .filter(Boolean),
+      ),
 
-  JWT_ACCESS_SECRET: z.string().min(1, "JWT_ACCESS_SECRET is required"),
-  JWT_REFRESH_SECRET: z.string().min(1, "JWT_REFRESH_SECRET is required"),
+    JWT_ACCESS_SECRET: z.string().min(1, "JWT_ACCESS_SECRET is required"),
+    JWT_REFRESH_SECRET: z.string().min(1, "JWT_REFRESH_SECRET is required"),
 
-  GOOGLE_CLIENT_ID: z.string().min(1, "GOOGLE_CLIENT_ID is required"),
-  GOOGLE_ANDROID_CLIENT_ID: z.string().default(""),
-  GOOGLE_CLIENT_SECRET: z.string().min(1, "GOOGLE_CLIENT_SECRET is required"),
-  GOOGLE_CALLBACK_URL: z.string().min(1, "GOOGLE_CALLBACK_URL is required"),
+    GOOGLE_CLIENT_ID: z.string().min(1, "GOOGLE_CLIENT_ID is required"),
+    GOOGLE_ANDROID_CLIENT_ID: z.string().default(""),
+    GOOGLE_CLIENT_SECRET: z.string().min(1, "GOOGLE_CLIENT_SECRET is required"),
+    GOOGLE_CALLBACK_URL: z.string().min(1, "GOOGLE_CALLBACK_URL is required"),
 
-  CLIENT_URL: z.string().min(1, "CLIENT_URL is required"),
-  ADMIN_URL: z.string().min(1, "ADMIN_URL is required"),
+    CLIENT_URL: z.string().min(1, "CLIENT_URL is required"),
+    ADMIN_URL: z.string().min(1, "ADMIN_URL is required"),
 
-  R2_ACCOUNT_ID: z.string().min(1, "R2_ACCOUNT_ID is required"),
-  R2_ACCESS_KEY_ID: z.string().min(1, "R2_ACCESS_KEY_ID is required"),
-  R2_SECRET_ACCESS_KEY: z.string().min(1, "R2_SECRET_ACCESS_KEY is required"),
-  R2_BUCKET: z.string().min(1, "R2_BUCKET is required"),
-  R2_PUBLIC_URL: z.string().url("R2_PUBLIC_URL must be a valid URL"),
+    R2_ACCOUNT_ID: z.string().min(1, "R2_ACCOUNT_ID is required"),
+    R2_ACCESS_KEY_ID: z.string().min(1, "R2_ACCESS_KEY_ID is required"),
+    R2_SECRET_ACCESS_KEY: z.string().min(1, "R2_SECRET_ACCESS_KEY is required"),
+    R2_BUCKET: z.string().min(1, "R2_BUCKET is required"),
+    R2_PUBLIC_URL: z.string().url("R2_PUBLIC_URL must be a valid URL"),
 
-  MAPBOX_TOKEN: z.string().default(""),
+    MAPBOX_TOKEN: z.string().default(""),
 
-  AI_API_KEY: z.string().trim().default(""),
-  AI_BASE_URL: z.string().trim().url().default("https://api.openai.com/v1"),
-  AI_MODEL: z.string().trim().default("gpt-4.1-mini"),
-  AI_VISION_ENABLED: z
-    .enum(["true", "false"])
-    .default("true")
-    .transform((value) => value === "true"),
-  AI_TIMEOUT_MS: z.coerce
-    .number()
-    .int()
-    .positive()
-    .max(120_000)
-    .default(30_000),
+    AI_API_KEY: z.string().trim().default(""),
+    AI_BASE_URL: z.string().trim().url().default("https://api.openai.com/v1"),
+    AI_MODEL: z.string().trim().default("gpt-4.1-mini"),
+    AI_VISION_ENABLED: z
+      .enum(["true", "false"])
+      .default("true")
+      .transform((value) => value === "true"),
+    AI_TIMEOUT_MS: z.coerce
+      .number()
+      .int()
+      .positive()
+      .max(120_000)
+      .default(30_000),
 
-  RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required"),
-  EMAIL_FROM: z.string().min(1, "EMAIL_FROM is required"),
+    RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required"),
+    EMAIL_FROM: z.string().min(1, "EMAIL_FROM is required"),
 
-  STRIPE_SECRET_KEY: z.string().min(1, "STRIPE_SECRET_KEY is required"),
-  STRIPE_WEBHOOK_SECRET: z.string().min(1, "STRIPE_WEBHOOK_SECRET is required"),
+    STRIPE_SECRET_KEY: z.string().min(1, "STRIPE_SECRET_KEY is required"),
+    STRIPE_WEBHOOK_SECRET: z
+      .string()
+      .min(1, "STRIPE_WEBHOOK_SECRET is required"),
 
-  SENTRY_DSN: z
-    .string()
-    .default("")
-    .transform((value) => (value ? value : undefined)),
-  SENTRY_ENVIRONMENT: z.string().optional(),
-  SENTRY_RELEASE: z.string().optional(),
-  SENTRY_TRACES_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0),
-});
+    SENTRY_DSN: z
+      .string()
+      .default("")
+      .transform((value) => (value ? value : undefined)),
+    SENTRY_ENVIRONMENT: z.string().optional(),
+    SENTRY_RELEASE: z.string().optional(),
+    SENTRY_TRACES_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0),
+  })
+  .superRefine((data, ctx) => {
+    const hasUrl = data.UPSTASH_REDIS_REST_URL.length > 0;
+    const hasToken = data.UPSTASH_REDIS_REST_TOKEN.length > 0;
+
+    if (hasUrl !== hasToken) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Set both UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN, or leave both blank",
+        path: ["UPSTASH_REDIS_REST_URL"],
+      });
+    }
+  });
 
 const result = envSchema.safeParse(process.env);
 

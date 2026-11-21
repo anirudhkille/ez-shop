@@ -26,6 +26,7 @@ export interface RedisHealthOptions {
 }
 
 const DEFAULT_INTERVAL_MS = 6 * 60 * 60 * 1000;
+const FAILURE_RETRY_MS = 60 * 1000;
 const DEFAULT_TIMEOUT_MS = 2000;
 
 const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number) => {
@@ -59,6 +60,7 @@ export const createRedisHealthCheck = (options: RedisHealthOptions = {}) => {
   const healthLogger = options.logger ?? logger;
 
   let lastCheckAt = 0;
+  let lastIntervalMs = intervalMs;
   let lastResult: RedisHealthResult = client
     ? { status: "unavailable" }
     : { status: "disabled" };
@@ -76,6 +78,7 @@ export const createRedisHealthCheck = (options: RedisHealthOptions = {}) => {
         checkedAt: new Date(checkedAt).toISOString(),
         latencyMs: checkedAt - startedAt,
       };
+      lastIntervalMs = intervalMs;
     } catch (error) {
       healthLogger.warn(
         { err: error instanceof Error ? error.message : String(error) },
@@ -88,6 +91,8 @@ export const createRedisHealthCheck = (options: RedisHealthOptions = {}) => {
         checkedAt: new Date(checkedAt).toISOString(),
         latencyMs: checkedAt - startedAt,
       };
+      // Retry failures soon instead of serving a stale "unavailable" for hours.
+      lastIntervalMs = FAILURE_RETRY_MS;
     }
 
     lastCheckAt = now();
@@ -98,7 +103,7 @@ export const createRedisHealthCheck = (options: RedisHealthOptions = {}) => {
   return async (): Promise<RedisHealthResult> => {
     if (!client) return { status: "disabled" };
 
-    if (lastCheckAt > 0 && now() - lastCheckAt < intervalMs) {
+    if (lastCheckAt > 0 && now() - lastCheckAt < lastIntervalMs) {
       return lastResult;
     }
 
@@ -113,3 +118,8 @@ export const createRedisHealthCheck = (options: RedisHealthOptions = {}) => {
 };
 
 export const getRedisHealth = createRedisHealthCheck();
+
+/** Warm the cache once at startup so /api/health never waits on a cold ping. */
+export const warmRedisHealth = async () => {
+  await getRedisHealth();
+};

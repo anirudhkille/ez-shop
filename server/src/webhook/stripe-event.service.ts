@@ -1,9 +1,14 @@
 import * as stripeEventRepository from "@/webhook/stripe-event.repository";
+import type { StripeEventClaim } from "@/webhook/stripe-event.repository";
 
 export interface StripeEventStore {
-  claim(eventId: string, type: string, orderId?: string): Promise<unknown>;
-  markProcessed(eventId: string): Promise<unknown>;
-  markFailed(eventId: string, error: Error): Promise<unknown>;
+  claim(
+    eventId: string,
+    type: string,
+    orderId?: string,
+  ): Promise<StripeEventClaim>;
+  markProcessed(eventId: string, token: string): Promise<boolean>;
+  markFailed(eventId: string, token: string, error: Error): Promise<boolean>;
 }
 
 const store: StripeEventStore = {
@@ -12,21 +17,22 @@ const store: StripeEventStore = {
   markFailed: stripeEventRepository.markFailed,
 };
 
-export type StripeEventResult = "processed" | "duplicate";
+export type StripeEventResult = "processed" | "in-progress";
 
 /**
- * Runs an event's side effects at most once. A duplicate delivery is returned
- * without invoking the handler; a failed event is marked failed and rethrown so
- * Stripe retries it.
+ * Runs an event's side effects at most once. A processed duplicate is ACKed;
+ * an event owned by another worker returns "in-progress" so the webhook can
+ * ask Stripe to retry instead of silently dropping a crashed attempt.
  */
 export const processStripeEvent = async (
   event: { id: string; type: string; orderId?: string },
   handle: () => Promise<void>,
   eventStore: StripeEventStore = store,
 ): Promise<StripeEventResult> => {
-  const claimed = await eventStore.claim(event.id, event.type, event.orderId);
+  const claim = await eventStore.claim(event.id, event.type, event.orderId);
 
-  if (!claimed) return "duplicate";
+  if (claim.status === "processed") return "processed";
+  if (claim.status === "in-progress") return "in-progress";
 
   try {
     await handle();
@@ -34,7 +40,7 @@ export const processStripeEvent = async (
     const failure = error instanceof Error ? error : new Error(String(error));
 
     try {
-      await eventStore.markFailed(event.id, failure);
+      await eventStore.markFailed(event.id, claim.token, failure);
     } catch {
       // If the failure marker cannot be written, the stale-processing window
       // lets a later Stripe retry reclaim the event.
@@ -43,7 +49,7 @@ export const processStripeEvent = async (
     throw failure;
   }
 
-  await eventStore.markProcessed(event.id);
+  await eventStore.markProcessed(event.id, claim.token);
 
   return "processed";
 };

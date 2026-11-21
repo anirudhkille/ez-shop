@@ -45,7 +45,7 @@ export const productStudioOutputSchema = z.object({
   description: z.string().trim().min(20).max(1_200),
   tag: productTagSchema,
   gender: productGenderSchema,
-  imageAlt: z.string().trim().min(5).max(160),
+  imageAlt: z.string().trim().min(5).max(160).optional(),
   seoTitle: z.string().trim().min(10).max(70),
   seoDescription: z.string().trim().min(50).max(160),
   keywords: z.array(z.string().trim().min(1).max(60)).min(3).max(10),

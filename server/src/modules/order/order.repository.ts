@@ -25,6 +25,13 @@ export const claimStockFlag = (orderId: string) =>
 export const claimConfirmationFlag = (orderId: string) =>
   claimOnce(orderId, "confirmationSent");
 
+/** A failed event must never overwrite a payment that another event just paid. */
+export const markPaymentFailedIfNotPaid = async (orderId: string) =>
+  await Order.updateOne(
+    { _id: orderId, paymentStatus: { $ne: "paid" } },
+    { $set: { paymentStatus: "failed" } },
+  );
+
 /** Sweeps app orders whose sheet was closed without a webhook event. */
 export const failStalePendingCardOrders = async (userId: string) => {
   const cutoff = new Date(Date.now() - 30 * 60 * 1000);

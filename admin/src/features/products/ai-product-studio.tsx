@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { toast } from "sonner";
 
@@ -31,7 +31,7 @@ export interface ProductStudioResult {
   description: string;
   tag: "Best Seller" | "Trending" | "Limited" | "New" | "Hot" | "Sale";
   gender: "men" | "women" | "unisex";
-  imageAlt: string;
+  imageAlt?: string;
   seoTitle: string;
   seoDescription: string;
   keywords: string[];
@@ -70,9 +70,20 @@ export default function AIProductStudio({
   const [tone, setTone] = useState("professional");
   const [result, setResult] = useState<ProductStudioResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const requestRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => requestRef.current?.abort();
+  }, []);
+
+  const clearResult = () => setResult(null);
 
   const generate = async () => {
+    requestRef.current?.abort();
+    const controller = new AbortController();
+    requestRef.current = controller;
     setLoading(true);
+    setResult(null);
 
     try {
       const response = await clientFetch("/api/ai/product-studio", {
@@ -83,6 +94,7 @@ export default function AIProductStudio({
           brief: brief || undefined,
           tone,
         }),
+        signal: controller.signal,
       });
 
       const payload = await response.json();
@@ -96,13 +108,18 @@ export default function AIProductStudio({
       setResult(payload.data);
       toast.success("Product content generated");
     } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+
       toast.error(
         error instanceof Error
           ? error.message
           : "Could not generate product content"
       );
     } finally {
-      setLoading(false);
+      if (requestRef.current === controller) {
+        requestRef.current = null;
+        setLoading(false);
+      }
     }
   };
 
@@ -125,18 +142,33 @@ export default function AIProductStudio({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
-          <Textarea
-            value={brief}
-            onChange={(event) => setBrief(event.target.value)}
-            placeholder="Optional brief: occasion, audience, materials, or the selling point to emphasise."
-            maxLength={600}
-            rows={3}
-          />
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="ai-brief">
+              Brief
+            </label>
+            <Textarea
+              id="ai-brief"
+              value={brief}
+              onChange={(event) => {
+                setBrief(event.target.value);
+                clearResult();
+              }}
+              placeholder="Optional brief: occasion, audience, materials, or the selling point to emphasise."
+              maxLength={600}
+              rows={3}
+            />
+          </div>
           <div className="space-y-2">
             <label className="text-sm font-medium" htmlFor="ai-tone">
               Tone
             </label>
-            <Select value={tone} onValueChange={setTone}>
+            <Select
+              value={tone}
+              onValueChange={(value) => {
+                setTone(value);
+                clearResult();
+              }}
+            >
               <SelectTrigger id="ai-tone">
                 <SelectValue />
               </SelectTrigger>
@@ -155,9 +187,9 @@ export default function AIProductStudio({
               disabled={loading}
             >
               {loading ? (
-                <Loader2 className="size-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
               ) : (
-                <Sparkles className="size-4" />
+                <Sparkles className="size-4" aria-hidden="true" />
               )}
               {loading ? "Generating..." : "Generate"}
             </Button>
@@ -165,15 +197,28 @@ export default function AIProductStudio({
         </div>
 
         {result && (
-          <div className="space-y-4 rounded-xl border border-brand-border bg-background p-4">
+          <div
+            className="space-y-4 rounded-xl border border-brand-border bg-background p-4"
+            aria-live="polite"
+          >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap gap-2">
                 <Badge>{result.tag}</Badge>
                 <Badge variant="outline">{result.gender}</Badge>
               </div>
-              <Button type="button" size="sm" onClick={() => onApply(result)}>
-                Apply all
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={clearResult}
+                >
+                  Clear
+                </Button>
+                <Button type="button" size="sm" onClick={() => onApply(result)}>
+                  Apply all
+                </Button>
+              </div>
             </div>
 
             <div className="space-y-1">
@@ -191,12 +236,14 @@ export default function AIProductStudio({
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                  Image alt text
-                </p>
-                <p className="text-sm">{result.imageAlt}</p>
-              </div>
+              {result.imageAlt && (
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                    Image alt text
+                  </p>
+                  <p className="text-sm">{result.imageAlt}</p>
+                </div>
+              )}
               <div className="space-y-1">
                 <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                   Keywords

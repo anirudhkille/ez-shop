@@ -1,4 +1,5 @@
 import { env } from "@/config/env.config";
+import { logger } from "@/config/logger";
 import {
   productStudioInputSchema,
   productStudioOutputSchema,
@@ -44,12 +45,12 @@ Return a single JSON object with exactly these keys:
 - description: 2-4 sentences, 20-1200 characters, no HTML
 - tag: one of "Best Seller", "Trending", "Limited", "New", "Hot", "Sale"
 - gender: one of "men", "women", "unisex"
-- imageAlt: concise accessible image description, 5-160 characters
+- imageAlt: concise accessible image description, 5-160 characters. Omit this key when no image is supplied.
 - seoTitle: search title, 10-70 characters
 - seoDescription: meta description, 50-160 characters
 - keywords: 3-10 short search phrases
 
-Do not invent materials, discounts, certifications, or claims that are not supported by the input. Return JSON only, with no markdown or commentary.`;
+Do not invent materials, discounts, certifications, visual details, or claims that are not supported by the input. Return JSON only, with no markdown or commentary.`;
 
 const buildUserText = (input: ProductStudioInput) => {
   const tone = input.tone ?? "professional";
@@ -111,6 +112,7 @@ const requestCompletion = async (
   input: ProductStudioInput,
   config: AiConfig,
   fetchImpl: typeof fetch,
+  signal: AbortSignal,
   withJsonMode: boolean,
   includeImage: boolean,
 ) => {
@@ -118,7 +120,7 @@ const requestCompletion = async (
     model: config.model,
     messages: buildProductStudioMessages(input, includeImage),
     temperature: 0.6,
-    max_tokens: 900,
+    max_tokens: 1600,
   };
 
   if (withJsonMode) {
@@ -132,16 +134,20 @@ const requestCompletion = async (
       Authorization: `Bearer ${config.apiKey}`,
     },
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(config.timeoutMs),
+    signal,
   });
 };
 
 const providerError = async (response: Response) => {
   const detail = await response.text().catch(() => "");
-  const suffix = detail ? `: ${detail.slice(0, 300)}` : "";
+
+  logger.warn(
+    { status: response.status, detail: detail.slice(0, 500) },
+    "AI provider request failed",
+  );
 
   return new AppError(
-    `AI provider request failed (${response.status})${suffix}`,
+    `AI provider request failed (${response.status})`,
     response.status === 429 ? 503 : 502,
   );
 };
@@ -160,15 +166,20 @@ export const generateProductStudio = async (
     );
   }
 
-  productStudioInputSchema.parse(input);
+  const parsedInput = productStudioInputSchema.safeParse(input);
+  if (!parsedInput.success) {
+    throw new AppError("Invalid AI product studio input.", 400);
+  }
 
   const includeImage = config.visionEnabled && Boolean(input.image);
+  const signal = AbortSignal.timeout(config.timeoutMs);
 
   try {
     let response = await requestCompletion(
       input,
       config,
       fetchImpl,
+      signal,
       true,
       includeImage,
     );
@@ -178,6 +189,7 @@ export const generateProductStudio = async (
         input,
         config,
         fetchImpl,
+        signal,
         false,
         includeImage,
       );
@@ -187,6 +199,7 @@ export const generateProductStudio = async (
           input,
           config,
           fetchImpl,
+          signal,
           false,
           false,
         );
@@ -206,7 +219,12 @@ export const generateProductStudio = async (
       throw new AppError("AI provider returned an empty response.", 502);
     }
 
-    return parseProductStudioResult(content);
+    const result = parseProductStudioResult(content);
+    if (!includeImage) {
+      delete result.imageAlt;
+    }
+
+    return result;
   } catch (error) {
     if (error instanceof AppError) throw error;
 

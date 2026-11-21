@@ -1,3 +1,4 @@
+import { env } from "@/config/env.config";
 import { logger } from "@/config/logger";
 import { redisCacheStore } from "@/config/redis";
 import { uploadToR2, deleteFromR2 } from "@/utils/upload-to-r2";
@@ -6,7 +7,7 @@ import { createSharedCache } from "@/utils/shared-cache";
 import * as categoryRepository from "@/modules/category/category.repository";
 
 const CATEGORY_CACHE_TTL_SECONDS = 5 * 60;
-const CATEGORY_CACHE_KEY = "ez-shop:cache:categories";
+const CATEGORY_CACHE_KEY = `ez-shop:${env.NODE_ENV}:v1:cache:categories`;
 
 const categoryCache = createSharedCache<
   Awaited<ReturnType<typeof categoryRepository.findAll>>

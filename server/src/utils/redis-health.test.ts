@@ -112,6 +112,31 @@ describe("createRedisHealthCheck", () => {
     assert.equal(warnings.length, 1);
   });
 
+  it("retries a failed ping after the failure interval", async () => {
+    let now = 1_000;
+    let pings = 0;
+    const check = createRedisHealthCheck({
+      client: {
+        ping: async () => {
+          pings += 1;
+          if (pings === 1) throw new Error("connection refused");
+          return "PONG";
+        },
+      },
+      now: () => now,
+      intervalMs: 6 * 60 * 60 * 1000,
+      logger: silentLogger,
+    });
+
+    const failed = await check();
+    now += 60_001;
+    const recovered = await check();
+
+    assert.equal(failed.status, "unavailable");
+    assert.equal(recovered.status, "ok");
+    assert.equal(pings, 2);
+  });
+
   it("reports unavailable when the ping times out", async () => {
     const check = createRedisHealthCheck({
       client: {

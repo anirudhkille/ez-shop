@@ -57,7 +57,7 @@ router.post(
     if (!orderId) return res.status(200).send("OK");
 
     try {
-      await processStripeEvent(
+      const result = await processStripeEvent(
         { id: event.id, type: event.type, orderId },
         async () => {
           switch (event.type) {
@@ -84,6 +84,12 @@ router.post(
           }
         },
       );
+
+      if (result === "in-progress") {
+        return res
+          .status(409)
+          .send("Webhook event is already being processed; retry later.");
+      }
     } catch (err) {
       if (sentryEnabled) {
         Sentry.withScope((scope) => {
@@ -95,9 +101,7 @@ router.post(
         });
       }
 
-      return res
-        .status(500)
-        .send(`Webhook processing error: ${(err as Error).message}`);
+      return res.status(500).send("Webhook processing error");
     }
 
     res.status(200).send("OK");

@@ -1,7 +1,7 @@
 {
   "name": "product_search",
   "database": "ez-shop",
-  "collection": "products",
+  "collectionName": "products",
   "mappings": {
     "dynamic": false,
     "fields": {

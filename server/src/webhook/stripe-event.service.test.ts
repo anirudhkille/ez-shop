@@ -11,46 +11,54 @@ import {
 type StoredEvent = {
   status: "processing" | "processed" | "failed";
   attempts: number;
+  claimId?: string;
   lastError?: string;
 };
 
 /** Minimal in-memory stand-in for the unique eventId collection. */
 const createMemoryStore = () => {
   const events = new Map<string, StoredEvent>();
+  let nextToken = 0;
 
   const store: StripeEventStore = {
     async claim(eventId) {
       const existing = events.get(eventId);
 
-      if (
-        existing?.status === "processed" ||
-        existing?.status === "processing"
-      ) {
-        return null;
-      }
+      if (existing?.status === "processed") return { status: "processed" };
+      if (existing?.status === "processing") return { status: "in-progress" };
 
-      const claimed: StoredEvent = {
+      const token = `claim_${++nextToken}`;
+      events.set(eventId, {
         status: "processing",
         attempts: (existing?.attempts ?? 0) + 1,
-      };
-      events.set(eventId, claimed);
-      return claimed;
+        claimId: token,
+      });
+      return { status: "claimed", token };
     },
 
-    async markProcessed(eventId) {
+    async markProcessed(eventId, token) {
       const event = events.get(eventId);
-      if (event) events.set(eventId, { ...event, status: "processed" });
+      if (event?.claimId !== token) return false;
+
+      events.set(eventId, {
+        ...event,
+        status: "processed",
+        claimId: undefined,
+      });
+      return true;
     },
 
-    async markFailed(eventId, error) {
+    async markFailed(eventId, token, error) {
       const event = events.get(eventId);
-      if (event) {
-        events.set(eventId, {
-          ...event,
-          status: "failed",
-          lastError: error.message,
-        });
-      }
+      if (event?.claimId !== token) return false;
+
+      events.set(eventId, {
+        ...event,
+        status: "failed",
+        claimId: undefined,
+        lastError: error.message,
+      });
+      return true;
     },
   };
 
@@ -90,11 +98,11 @@ describe("processStripeEvent", () => {
       store,
     );
 
-    assert.equal(result, "duplicate");
+    assert.equal(result, "processed");
     assert.equal(handled, 0);
   });
 
-  it("does not run the handler while the same event is being processed", async () => {
+  it("reports an in-progress event so Stripe retries it", async () => {
     const { events, store } = createMemoryStore();
     events.set(event.id, { status: "processing", attempts: 1 });
     let handled = 0;
@@ -107,7 +115,7 @@ describe("processStripeEvent", () => {
       store,
     );
 
-    assert.equal(result, "duplicate");
+    assert.equal(result, "in-progress");
     assert.equal(handled, 0);
   });
 
@@ -153,10 +161,28 @@ describe("processStripeEvent", () => {
     assert.equal(stored?.status, "failed");
     assert.equal(stored?.lastError, failure.message);
   });
+
+  it("does not let a stale owner overwrite a newer claim", async () => {
+    const { events, store } = createMemoryStore();
+    events.set(event.id, {
+      status: "processing",
+      attempts: 1,
+      claimId: "claim_new",
+    });
+
+    const result = await processStripeEvent(event, async () => {}, {
+      ...store,
+      claim: async () => ({ status: "claimed", token: "claim_old" }),
+    });
+
+    assert.equal(result, "processed");
+    assert.equal(events.get(event.id)?.status, "processing");
+    assert.equal(events.get(event.id)?.claimId, "claim_new");
+  });
 });
 
 describe("claimableFilter", () => {
-  it("only reclaims failed or stale processing events", () => {
+  it("reclaims failed, stale and un-timestamped processing events", () => {
     const staleBefore = new Date("2026-01-01T00:00:00.000Z");
 
     assert.deepEqual(claimableFilter("evt_123", staleBefore), {
@@ -165,7 +191,11 @@ describe("claimableFilter", () => {
         { status: "failed" },
         {
           status: "processing",
-          processingStartedAt: { $lte: staleBefore },
+          $or: [
+            { processingStartedAt: { $lte: staleBefore } },
+            { processingStartedAt: { $exists: false } },
+            { processingStartedAt: null },
+          ],
         },
       ],
     });

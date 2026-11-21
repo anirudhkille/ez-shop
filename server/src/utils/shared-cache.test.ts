@@ -59,8 +59,13 @@ describe("createSharedCache", () => {
       loads += 1;
       return ["fresh"];
     });
+    const second = await cache.load(async () => {
+      loads += 1;
+      return ["other"];
+    });
 
     assert.deepEqual(result, ["cached"]);
+    assert.deepEqual(second, ["cached"]);
     assert.equal(loads, 0);
     assert.deepEqual(store.reads, [key]);
   });

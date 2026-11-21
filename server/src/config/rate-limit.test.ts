@@ -141,6 +141,38 @@ describe("createRateLimiter", () => {
     assert.deepEqual(nextCalls, ["next"]);
   });
 
+  it("rejects requests without a client IP", async () => {
+    const options = createOptions();
+    const response = createResponse();
+    const nextCalls: string[] = [];
+    const next: NextFunction = () => nextCalls.push("next");
+    let limitCalled = false;
+
+    const middleware = createRateLimiter(options, {
+      limit: async () => {
+        limitCalled = true;
+        return {
+          success: true,
+          limit: 10,
+          remaining: 9,
+          reset: Date.now() + 60_000,
+        };
+      },
+      fallback: passThrough,
+    });
+
+    await middleware(createRequest(""), response, next);
+
+    assert.equal(limitCalled, false);
+    assert.deepEqual(nextCalls, []);
+    assert.equal(response.statusCode, 400);
+    assert.deepEqual(response.body, {
+      success: false,
+      message: "Unable to determine client IP address.",
+      error: { code: "INVALID_CLIENT_IP" },
+    });
+  });
+
   it("falls back to the local limiter when Upstash errors", async () => {
     const options = createOptions();
     const response = createResponse();

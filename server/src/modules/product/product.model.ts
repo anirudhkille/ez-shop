@@ -16,6 +16,7 @@ export interface IVariant extends Document {
 
 export interface IProduct extends Document {
   name: string;
+  nameLower?: string;
   slug: string;
   description: string;
   category: mongoose.Types.ObjectId;
@@ -75,6 +76,10 @@ const productSchema = new mongoose.Schema<IProduct>(
     name: {
       type: String,
       required: true,
+      trim: true,
+    },
+    nameLower: {
+      type: String,
       trim: true,
     },
     slug: {
@@ -168,7 +173,7 @@ productSchema.index(
   },
 );
 productSchema.index(
-  { name: 1 },
+  { nameLower: 1 },
   {
     name: "product_name_prefix",
   },

@@ -1,5 +1,7 @@
 export interface TtlCache<T> {
   load: (loader: () => Promise<T>) => Promise<T>;
+  peek: () => T | undefined;
+  prime: (value: T) => void;
   clear: () => void;
 }
 
@@ -41,5 +43,13 @@ export const createTtlCache = <T>(ttlMs: number): TtlCache<T> => {
 
       return inFlight;
     },
+
+    prime: (nextValue) => {
+      value = nextValue;
+      expiresAt = Date.now() + ttlMs;
+    },
+
+    peek: () =>
+      value !== undefined && expiresAt > Date.now() ? value : undefined,
   };
 };

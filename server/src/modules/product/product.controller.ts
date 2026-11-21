@@ -31,6 +31,7 @@ export const postProduct = asyncHandler(async (req: Request, res: Response) => {
 export const getProducts = asyncHandler(async (req: Request, res: Response) => {
   const result = await productService.getProducts(
     req.query as ProductListQuery,
+    req.user,
   );
 
   return sendResponse(

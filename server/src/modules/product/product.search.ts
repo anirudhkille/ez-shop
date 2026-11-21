@@ -38,9 +38,9 @@ export const buildAtlasSearchStage = (
   },
 });
 
-/** Case-insensitive prefix search, backed by the name collation index. */
+/** Case-insensitive prefix search, backed by the normalized name index. */
 export const buildPrefixSearchFilter = (keyword: string) => ({
-  name: { $regex: `^${escapeRegex(keyword)}`, $options: "i" },
+  nameLower: { $regex: `^${escapeRegex(keyword.trim().toLowerCase())}` },
 });
 
 export const buildTextSearchFilter = (search: string) => ({
@@ -58,7 +58,11 @@ export const isAtlasSearchUnavailable = (error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);
   const code = (error as { code?: unknown } | null)?.code;
 
-  if (code === 6047401 || code === 40324) return true;
+  if (code === 6047401) return true;
+
+  if (code === 40324) {
+    return /\$search|search stage|pipeline stage/i.test(message);
+  }
 
   return [
     /Unrecognized pipeline stage name: '\$search'/i,

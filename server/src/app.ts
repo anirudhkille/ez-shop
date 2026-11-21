@@ -35,12 +35,9 @@ app.set("trust proxy", 1);
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(compression({ filter: shouldCompress, level: 6 }));
-app.use("/api", stripeWebhook);
-app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(apiLimiter);
 
+// Keep health checks outside the rate limiter so a host probe cannot consume
+// the shared API budget or be rejected by Redis-backed limiting.
 app.get("/api/health", async (_req, res) => {
   const redisHealth = await getRedisHealth();
 
@@ -50,6 +47,12 @@ app.get("/api/health", async (_req, res) => {
     redis: redisHealth,
   });
 });
+
+app.use("/api", stripeWebhook);
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(apiLimiter);
 
 app.use("/api/address", addressRoutes);
 app.use("/api/admin", adminRoutes);

@@ -1,5 +1,5 @@
 import express from "express";
-import { protect } from "@/middlewares/auth.middleware";
+import { optionalAuth, protect } from "@/middlewares/auth.middleware";
 import {
   filteredProductQuerySchema,
   productCreateSchema,
@@ -50,7 +50,12 @@ router.get(
   getProductBySlugAndId,
 );
 router.get("/:id", validate(productIdParamSchema, "params"), getProductById);
-router.get("/", validate(productQuerySchema, "query"), getProducts);
+router.get(
+  "/",
+  optionalAuth,
+  validate(productQuerySchema, "query"),
+  getProducts,
+);
 router.post(
   "/",
   protect,

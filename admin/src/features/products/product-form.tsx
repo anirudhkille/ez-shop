@@ -255,7 +255,9 @@ export default function ProductForm({ data }: ProductFormProps) {
 
     return {
       name: values.name || undefined,
-      description: values.description || undefined,
+      description: values.description
+        ? values.description.slice(0, 2000)
+        : undefined,
       category: categoryName,
       gender: values.gender,
       price: values.price || undefined,
@@ -263,19 +265,29 @@ export default function ProductForm({ data }: ProductFormProps) {
       tag: values.tag,
       colors: values.variants
         .map((variant) => variant.color)
-        .filter((color) => color.trim() !== ""),
+        .filter((color) => color.trim() !== "")
+        .slice(0, 10),
       sizes: [
         ...new Set(
           values.variants.flatMap((variant) =>
             variant.sizes.map((size) => size.size).filter(Boolean)
           )
         ),
-      ],
+      ].slice(0, 20),
       image: values.image[0] || undefined,
     };
   };
 
   const applyStudioResult = (result: ProductStudioResult) => {
+    if (
+      form.formState.isDirty &&
+      !window.confirm(
+        "Replace the current product content with the AI draft? Unsaved edits will be overwritten."
+      )
+    ) {
+      return;
+    }
+
     form.setValue("name", result.name, {
       shouldDirty: true,
       shouldValidate: true,
@@ -292,12 +304,14 @@ export default function ProductForm({ data }: ProductFormProps) {
       shouldDirty: true,
       shouldValidate: true,
     });
-    form.setValue("imageAlt", result.imageAlt, { shouldDirty: true });
+    if (result.imageAlt) {
+      form.setValue("imageAlt", result.imageAlt, { shouldDirty: true });
+    }
     form.setValue("seoTitle", result.seoTitle, { shouldDirty: true });
     form.setValue("seoDescription", result.seoDescription, {
       shouldDirty: true,
     });
-    form.setValue("seoKeywords", result.keywords.join(", "), {
+    form.setValue("seoKeywords", result.keywords.join(", ").slice(0, 300), {
       shouldDirty: true,
     });
 
@@ -319,10 +333,10 @@ export default function ProductForm({ data }: ProductFormProps) {
         isFeatured: values.isFeatured,
         isBestSellers: values.isBestSellers,
         tag: values.tag,
-        imageAlt: values.imageAlt || undefined,
-        seoTitle: values.seoTitle || undefined,
-        seoDescription: values.seoDescription || undefined,
-        seoKeywords: values.seoKeywords || undefined,
+        imageAlt: values.imageAlt ?? "",
+        seoTitle: values.seoTitle ?? "",
+        seoDescription: values.seoDescription ?? "",
+        seoKeywords: values.seoKeywords ?? "",
         variants: values.variants,
       };
 
@@ -612,6 +626,7 @@ export default function ProductForm({ data }: ProductFormProps) {
                   <FormControl>
                     <Input
                       placeholder="e.g. Black trail running shoe with a textured sole"
+                      maxLength={160}
                       {...field}
                     />
                   </FormControl>
