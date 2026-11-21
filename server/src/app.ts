@@ -8,6 +8,7 @@ import { corsOptions } from "./config/cors-options";
 import { apiLimiter } from "./config/limiter";
 import { errorHandler } from "./middlewares/error-handler.middleware";
 import { sendResponse } from "./utils/response";
+import { getRedisHealth } from "./utils/redis-health";
 
 import addressRoutes from "./modules/address/address.routes";
 import adminRoutes from "./modules/admin/admin.routes";
@@ -40,10 +41,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(apiLimiter);
 
-app.get("/api/health", (req, res) => {
-  sendResponse(res, 200, "Server is running", {
+app.get("/api/health", async (_req, res) => {
+  const redisHealth = await getRedisHealth();
+
+  return sendResponse(res, 200, "Server is running", {
     status: "ok",
     uptime: process.uptime(),
+    redis: redisHealth,
   });
 });
 

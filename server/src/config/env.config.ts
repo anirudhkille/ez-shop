@@ -13,6 +13,14 @@ const envSchema = z.object({
   MONGO_URI: z.string().min(1, "MONGO_URI is required"),
   ATLAS_SEARCH_INDEX: z.string().trim().default(""),
 
+  UPSTASH_REDIS_REST_URL: z
+    .string()
+    .trim()
+    .url("UPSTASH_REDIS_REST_URL must be a valid URL")
+    .or(z.literal(""))
+    .default(""),
+  UPSTASH_REDIS_REST_TOKEN: z.string().trim().default(""),
+
   CORS_ORIGINS: z
     .string()
     .default("")

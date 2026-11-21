@@ -157,6 +157,7 @@ fast with a logged reason instead of surfacing later as a runtime error.
 | --- | --- |
 | `MONGO_URI` | MongoDB connection string |
 | `ATLAS_SEARCH_INDEX` | Optional Atlas Search index name. Set it to `product_search` after creating `server/atlas/product-search-index.json`; blank uses the MongoDB text-index fallback |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Optional Upstash Redis for distributed rate limits and the shared category cache; blank uses the in-process fallbacks |
 | `PORT` | API port (default `7777`) |
 | `NODE_ENV` | `development` \| `production` \| `test` |
 | `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` | Token signing secrets |
