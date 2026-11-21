@@ -10,9 +10,11 @@ import { warmRedisHealth } from "./utils/redis-health";
 import app from "./app";
 
 const backfillProductNameLower = async () => {
-  const result = await Product.updateMany({ nameLower: { $exists: false } }, [
-    { $set: { nameLower: { $toLower: "$name" } } },
-  ]);
+  const result = await Product.updateMany(
+    { nameLower: { $exists: false } },
+    [{ $set: { nameLower: { $toLower: "$name" } } }],
+    { updatePipeline: true },
+  );
 
   if (result.modifiedCount > 0) {
     logger.info(
