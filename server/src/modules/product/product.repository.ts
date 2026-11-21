@@ -1,5 +1,56 @@
 import Product, { IProduct } from "@/modules/product/product.model";
-import { QueryFilter, Types, UpdateQuery } from "mongoose";
+import {
+  atlasSearchEnabled,
+  buildAtlasSearchStage,
+  buildPrefixSearchFilter,
+  buildTextSearchFilter,
+  buildTextSearchSort,
+  isAtlasSearchUnavailable,
+} from "@/modules/product/product.search";
+import { QueryFilter, PipelineStage, Types, UpdateQuery } from "mongoose";
+import { logger } from "@/config/logger";
+
+const FILTERED_SELECT =
+  "name slug image tag price discountPrice rating reviewsCount category variants.colorCode";
+
+const FILTERED_PROJECTION: PipelineStage.Project["$project"] = {
+  name: 1,
+  slug: 1,
+  image: 1,
+  tag: 1,
+  price: 1,
+  discountPrice: 1,
+  rating: 1,
+  reviewsCount: 1,
+  category: 1,
+  "variants.colorCode": 1,
+};
+
+const CATEGORY_LOOKUP: PipelineStage.Lookup = {
+  $lookup: {
+    from: "categories",
+    localField: "category",
+    foreignField: "_id",
+    as: "category",
+    pipeline: [{ $project: { name: 1 } }],
+  },
+};
+
+const CATEGORY_UNWIND: PipelineStage.Unwind = {
+  $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
+};
+
+let atlasFallbackLogged = false;
+
+const warnAtlasFallback = (error: unknown) => {
+  if (atlasFallbackLogged) return;
+  atlasFallbackLogged = true;
+
+  logger.warn(
+    { err: error instanceof Error ? error.message : String(error) },
+    "Atlas Search is unavailable; falling back to local search",
+  );
+};
 
 export const create = async (
   data: Partial<IProduct> & { variantImageMap?: unknown },
@@ -57,12 +108,53 @@ export const findByIdAndDelete = async (id: string | Types.ObjectId) => {
   return product;
 };
 
-export const findSearch = async (keyword: string, limit: number) => {
+const findSearchAtlas = async (keyword: string, limit: number) => {
+  return await Product.aggregate([
+    buildAtlasSearchStage(keyword),
+    { $match: { publish: true } },
+    { $limit: limit },
+    CATEGORY_LOOKUP,
+    CATEGORY_UNWIND,
+  ]);
+};
+
+const findSearchPrefix = async (keyword: string, limit: number) => {
   return await Product.find({
-    name: { $regex: keyword, $options: "i" },
+    ...buildPrefixSearchFilter(keyword),
+    publish: true,
   })
     .populate("category", "name")
     .limit(limit);
+};
+
+const findSearchText = async (keyword: string, limit: number) => {
+  return await Product.find(
+    { ...buildTextSearchFilter(keyword), publish: true },
+    { score: { $meta: "textScore" } },
+  )
+    .sort(buildTextSearchSort({}))
+    .populate("category", "name")
+    .limit(limit);
+};
+
+export const findSearch = async (keyword: string, limit: number) => {
+  if (atlasSearchEnabled()) {
+    try {
+      return await findSearchAtlas(keyword, limit);
+    } catch (error) {
+      if (!isAtlasSearchUnavailable(error)) throw error;
+
+      warnAtlasFallback(error);
+    }
+  }
+
+  const prefixMatches = await findSearchPrefix(keyword, limit);
+
+  if (prefixMatches.length > 0 || keyword.length < 2) {
+    return prefixMatches;
+  }
+
+  return await findSearchText(keyword, limit);
 };
 
 export const findFiltered = async (
@@ -72,14 +164,96 @@ export const findFiltered = async (
   limit: number,
 ) => {
   return await Product.find(query)
-    .select(
-      "name slug image tag price discountPrice rating reviewsCount category variants.colorCode",
-    )
+    .select(FILTERED_SELECT)
     .populate({ path: "category", select: "name" })
     .sort(sortOption)
     .skip(skip)
     .limit(limit)
     .lean();
+};
+
+const findFilteredSearchAtlas = async (
+  search: string,
+  filter: QueryFilter<IProduct>,
+  sortOption: Record<string, 1 | -1>,
+  skip: number,
+  limit: number,
+) => {
+  const pipeline: PipelineStage[] = [
+    buildAtlasSearchStage(search),
+    { $match: filter },
+    { $addFields: { searchScore: { $meta: "searchScore" } } },
+    { $sort: { searchScore: -1, ...sortOption } },
+    { $skip: skip },
+    { $limit: limit },
+    CATEGORY_LOOKUP,
+    CATEGORY_UNWIND,
+    { $project: FILTERED_PROJECTION },
+  ];
+  const countPipeline: PipelineStage[] = [
+    buildAtlasSearchStage(search),
+    { $match: filter },
+    { $count: "total" },
+  ];
+
+  const [items, count] = await Promise.all([
+    Product.aggregate(pipeline),
+    Product.aggregate<{ total: number }>(countPipeline),
+  ]);
+
+  return { items, total: count[0]?.total ?? 0 };
+};
+
+const findFilteredSearchText = async (
+  search: string,
+  filter: QueryFilter<IProduct>,
+  sortOption: Record<string, 1 | -1>,
+  skip: number,
+  limit: number,
+) => {
+  const textFilter = {
+    ...filter,
+    ...buildTextSearchFilter(search),
+  } as QueryFilter<IProduct>;
+
+  const [items, total] = await Promise.all([
+    Product.find(textFilter, { score: { $meta: "textScore" } })
+      .select(FILTERED_SELECT)
+      .populate({ path: "category", select: "name" })
+      .sort(buildTextSearchSort(sortOption))
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    Product.countDocuments(textFilter),
+  ]);
+
+  return { items, total };
+};
+
+export const findFilteredSearch = async (
+  search: string,
+  filter: QueryFilter<IProduct>,
+  sortOption: Record<string, 1 | -1>,
+  skip: number,
+  limit: number,
+) => {
+  if (atlasSearchEnabled()) {
+    try {
+      return await findFilteredSearchAtlas(
+        search,
+        filter,
+        sortOption,
+        skip,
+        limit,
+      );
+    } catch (error) {
+      if (!isAtlasSearchUnavailable(error)) throw error;
+
+      warnAtlasFallback(error);
+    }
+  }
+
+  return await findFilteredSearchText(search, filter, sortOption, skip, limit);
 };
 
 export const findFeatured = async () => {

@@ -64,3 +64,25 @@ export const mapboxLimiter = rateLimit({
     error: { code: "RATE_LIMITED" },
   },
 });
+
+const configuredAiMax = Number(process.env.AI_RATE_LIMIT_MAX);
+const aiMax =
+  Number.isFinite(configuredAiMax) && configuredAiMax > 0
+    ? configuredAiMax
+    : 20;
+
+export const aiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: aiMax,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) =>
+    process.env.NODE_ENV === "test" ||
+    rateLimitDisabled ||
+    (e2eBypassEnabled && req.headers["x-e2e-test"] === "ezshop"),
+  message: {
+    success: false,
+    message: "Too many AI requests, please try again later.",
+    error: { code: "RATE_LIMITED" },
+  },
+});

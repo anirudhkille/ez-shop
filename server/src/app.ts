@@ -11,6 +11,7 @@ import { sendResponse } from "./utils/response";
 
 import addressRoutes from "./modules/address/address.routes";
 import adminRoutes from "./modules/admin/admin.routes";
+import aiRoutes from "./modules/ai/ai.routes";
 import cartRoutes from "./modules/cart/cart.routes";
 import categoryRoutes from "./modules/category/category.routes";
 import couponRoutes from "./modules/coupon/coupon.routes";
@@ -48,6 +49,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/address", addressRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/ai", aiRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/coupon", couponRoutes);

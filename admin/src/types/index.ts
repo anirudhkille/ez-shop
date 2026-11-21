@@ -70,6 +70,10 @@ export interface IProduct {
   reviewsCount?: number;
   tag: "Best Seller" | "Trending" | "Limited" | "New" | "Hot" | "Sale";
   publish: boolean;
+  imageAlt?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
   createdAt: string;
   updatedAt: string;
 }

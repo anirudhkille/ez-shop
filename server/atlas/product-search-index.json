@@ -1,0 +1,26 @@
+{
+  "name": "product_search",
+  "database": "ez-shop",
+  "collection": "products",
+  "mappings": {
+    "dynamic": false,
+    "fields": {
+      "name": {
+        "type": "autocomplete",
+        "tokenization": "edgeGram",
+        "minGrams": 2,
+        "maxGrams": 20,
+        "foldDiacritics": true
+      },
+      "description": {
+        "type": "string"
+      },
+      "slug": {
+        "type": "string"
+      },
+      "tag": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -29,9 +29,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 import { ImageUpload } from "@/components/shared/image-upload";
 import PublishDropdown from "@/components/shared/publish-dropdown";
+
+import AIProductStudio, {
+  type ProductStudioResult,
+} from "@/features/products/ai-product-studio";
 
 import { ICategory, IProduct } from "@/types";
 
@@ -67,6 +72,10 @@ const formSchema = z.object({
   isFeatured: z.boolean(),
   isBestSellers: z.boolean(),
   tag: z.enum(["Best Seller", "Trending", "Limited", "New", "Hot", "Sale"]),
+  imageAlt: z.string().max(160).optional(),
+  seoTitle: z.string().max(70).optional(),
+  seoDescription: z.string().max(160).optional(),
+  seoKeywords: z.string().max(300).optional(),
   variants: z.array(variantSchema),
 });
 
@@ -218,6 +227,10 @@ export default function ProductForm({ data }: ProductFormProps) {
       isFeatured: data?.isFeatured ?? false,
       isBestSellers: data?.isBestSellers ?? false,
       tag: data?.tag || "New",
+      imageAlt: data?.imageAlt || "",
+      seoTitle: data?.seoTitle || "",
+      seoDescription: data?.seoDescription || "",
+      seoKeywords: data?.seoKeywords || "",
       variants: data?.variants ? JSON.parse(JSON.stringify(data.variants)) : [],
     },
   });
@@ -234,6 +247,63 @@ export default function ProductForm({ data }: ProductFormProps) {
       .catch(() => toast.error("Failed to load categories"));
   }, []);
 
+  const getStudioInput = () => {
+    const values = form.getValues();
+    const categoryName = categories.find(
+      (category) => category._id === values.category
+    )?.name;
+
+    return {
+      name: values.name || undefined,
+      description: values.description || undefined,
+      category: categoryName,
+      gender: values.gender,
+      price: values.price || undefined,
+      discountPrice: values.discountPrice || undefined,
+      tag: values.tag,
+      colors: values.variants
+        .map((variant) => variant.color)
+        .filter((color) => color.trim() !== ""),
+      sizes: [
+        ...new Set(
+          values.variants.flatMap((variant) =>
+            variant.sizes.map((size) => size.size).filter(Boolean)
+          )
+        ),
+      ],
+      image: values.image[0] || undefined,
+    };
+  };
+
+  const applyStudioResult = (result: ProductStudioResult) => {
+    form.setValue("name", result.name, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    form.setValue("description", result.description, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    form.setValue("tag", result.tag, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    form.setValue("gender", result.gender, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    form.setValue("imageAlt", result.imageAlt, { shouldDirty: true });
+    form.setValue("seoTitle", result.seoTitle, { shouldDirty: true });
+    form.setValue("seoDescription", result.seoDescription, {
+      shouldDirty: true,
+    });
+    form.setValue("seoKeywords", result.keywords.join(", "), {
+      shouldDirty: true,
+    });
+
+    toast.success("AI content applied. Review it before saving.");
+  };
+
   const onSubmit = async (values: FormValues) => {
     try {
       const payload = {
@@ -249,6 +319,10 @@ export default function ProductForm({ data }: ProductFormProps) {
         isFeatured: values.isFeatured,
         isBestSellers: values.isBestSellers,
         tag: values.tag,
+        imageAlt: values.imageAlt || undefined,
+        seoTitle: values.seoTitle || undefined,
+        seoDescription: values.seoDescription || undefined,
+        seoKeywords: values.seoKeywords || undefined,
         variants: values.variants,
       };
 
@@ -277,6 +351,11 @@ export default function ProductForm({ data }: ProductFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <AIProductStudio
+          getProductInput={getStudioInput}
+          onApply={applyStudioResult}
+        />
+
         <FormField
           control={form.control}
           name="name"
@@ -298,7 +377,11 @@ export default function ProductForm({ data }: ProductFormProps) {
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input placeholder="Enter product description" {...field} />
+                <Textarea
+                  placeholder="Enter product description"
+                  rows={4}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -510,6 +593,92 @@ export default function ProductForm({ data }: ProductFormProps) {
             </FormItem>
           )}
         />
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">SEO & Accessibility</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Improve search previews and make the product image easier to
+              understand.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <FormField
+              control={form.control}
+              name="imageAlt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image alt text</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g. Black trail running shoe with a textured sole"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="seoTitle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>SEO title</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Product name | EZ Shop"
+                      maxLength={70}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="seoDescription"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>SEO description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="A short description for search results"
+                      maxLength={160}
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="seoKeywords"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>SEO keywords</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="trail runner, running shoe, ez shop"
+                      maxLength={300}
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-muted-foreground">
+                    Separate keywords with commas.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">

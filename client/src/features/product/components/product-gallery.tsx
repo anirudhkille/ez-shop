@@ -32,7 +32,7 @@ export function ProductGallery({
         <img
           key={activeImage}
           src={activeImage}
-          alt={`${product.name} – ${activeVariant?.color ?? ""}`}
+          alt={`${product.imageAlt || product.name}${activeVariant?.color ? ` – ${activeVariant.color}` : ""}`}
           className="relative z-10 h-full w-full object-contain transition-opacity duration-300"
         />
         <span
