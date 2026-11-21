@@ -231,7 +231,8 @@ export const createPaymentIntent = async (
       description: `EZ Shop order ${orderId}: ${lines
         .map((line) => `${line.name} x${line.quantity}`)
         .join(", ")}`.slice(0, 1000),
-      automatic_payment_methods: { enabled: true },
+      // The app labels this option "Card", so the sheet must only offer cards.
+      allowed_payment_method_types: ["card"],
       receipt_email: userEmail,
       shipping: toStripeShipping(address),
       metadata: { orderId, userId: userId.toString() },
