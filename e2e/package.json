@@ -25,7 +25,7 @@
     "dotenv": "^18.0.10"
   },
   "dependencies": {
-    "mongodb": "^7.9.0",
+    "mongodb": "^7.9.1",
     "bcryptjs": "^2.4.3"
   }
 }
